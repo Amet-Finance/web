@@ -4,5 +4,7 @@ export default function Headers() {
     return <>
         <Head>
             <title>Exceed your expectations | Amet</title>
-        </Head></>
+            <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+        </Head>
+    </>
 }
