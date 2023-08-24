@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 2rem;
+    padding: 1rem 2rem;
+    gap: 2rem;
+}
+
+.link {
+    color: #985000;
+    cursor: pointer;
+}

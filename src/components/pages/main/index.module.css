@@ -1,0 +1,62 @@
+.container {
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    gap: 5rem;
+    padding: 5rem 3rem;
+}
+
+
+.texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 500px;
+}
+
+.boxes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    z-index: 2;
+    padding: 1.25rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+.box:hover {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 1rem rgba(255, 255, 255, 0.2);
+}
+
+.box:hover .circle {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.boxInactive {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    z-index: 2;
+    padding: 1.25rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+    cursor: not-allowed;
+}

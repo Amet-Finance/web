@@ -1,0 +1,8 @@
+.container {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 5rem;
+    min-height: 100vh;
+    padding: 5rem 3rem;
+}

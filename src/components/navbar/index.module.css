@@ -1,0 +1,118 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 2rem;
+    width: 100%;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.navLinks {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navItem {
+    position: relative;
+}
+
+.navHover {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+
+.navHover:hover {
+    color: #fff;
+}
+
+.navItem:hover .navDropDown {
+    left: 0;
+    opacity: 1;
+}
+
+.navDropDown {
+    display: flex;
+    flex-direction: column;
+    left: -400px;
+    opacity: 0;
+
+    gap: 1rem;
+    padding: 0.75rem;
+    position: absolute;
+    background-color: transparent;
+    top: 120%;
+    width: 100%;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+
+.connect {
+    padding: 0.5rem 2rem;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    font-size: 1.05rem;
+    border-radius: 0.25rem;
+}
+
+.connect:hover {
+    color: black;
+    background-color: white;
+    box-shadow: 0 0 1rem rgba(255, 255, 255, 0.5);
+}
+
+.addressContainer {
+    position: relative;
+}
+
+
+.addressDropDown {
+    position: absolute;
+    top: 150%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 2rem;
+    border: 1px solid #424242;
+    z-index: 100;
+}
+
+.address {
+    border: 1px solid #424242;
+    padding: 0.75rem 2rem;
+    border-radius: 1.5rem;
+    cursor: pointer;
+}
+
+.addressBorder {
+    border: 1px solid #424242;
+}
+
+.addressBorder:hover {
+    border: 1px solid #ffffff;
+}
+
+.enabledAddress {
+    border-radius: 1.5rem 1.5rem 0 0;
+    border-bottom: rgba(255, 255, 255, 0);
+}
+
+.enabledDrop {
+    border-radius: 0 0 1.5rem 1.5rem;
+}
+
+.disconnect {
+    cursor: pointer;
+}
