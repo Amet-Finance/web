@@ -6,7 +6,7 @@ import {getTokenInfo} from "@/modules/web3/tokens";
 import {useSelector} from "react-redux";
 import {Account} from "@/store/redux/account/type";
 
-export default function Explore({props}: any) {
+export default function ExploreId({props}: any) {
     const [info, setInfo] = useState(props);
     const account: Account = useSelector((item: any) => item.account);
     const {address} = account

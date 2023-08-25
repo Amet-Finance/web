@@ -1,4 +1,5 @@
 import Styles from "./index.module.css";
+import Image from "next/image";
 import {useEffect, useState} from "react";
 import {formatTime} from "@/modules/utils/dates";
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
@@ -201,18 +202,22 @@ function TokenDetails({tokenInfo, isLoading, type, total}: TokenDetails) {
 }
 
 function OperationDetails({tokenInfo, total, type}: TokenDetails) {
+
+    const icon = tokenInfo?.icon || "";
+    const name = tokenInfo?.name || ""
+    const symbol = tokenInfo?.symbol;
+    const balance = tokenInfo?.balance;
+
     return <>
         <div className={Styles.operationDetails}>
             <div className={Styles.tokenDetails}>
                 <div className={Styles.tokenDetails}>
-                    <img src={tokenInfo?.icon} alt="" width={50} height={50}/>
-                    <p>{tokenInfo?.name}
-                        <span>({tokenInfo?.symbol})</span>
-                    </p>
+                    <Image src={icon} alt={name} width={50} height={50}/>
+                    <p>{name}<span>({symbol})</span></p>
                 </div>
-                {Boolean(tokenInfo?.balance) && <span>{(tokenInfo?.balance || 0) / 10 ** 18}</span>}
+                {Boolean(balance) && <span>{(balance || 0) / 10 ** 18}</span>}
             </div>
-            <span>Total: {total} {tokenInfo?.symbol}</span>
+            <span>Total: {total} {symbol}</span>
         </div>
     </>
 }

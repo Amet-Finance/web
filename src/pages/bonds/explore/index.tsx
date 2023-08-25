@@ -1,7 +1,5 @@
+import Explore from "@/components/pages/bonds/pages/explore";
 
 export default function ExplorePage() {
-
-    return <>
-        <h1>Explore all the bonds</h1>
-    </>
+    return <Explore/>
 }

@@ -1,0 +1,105 @@
+.container {
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 5rem;
+    padding: 2rem 5rem;
+}
+
+.texts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.secondary {
+    color: #696969;
+}
+
+.search {
+    padding: 1rem 5rem;
+    background-color: transparent;
+    width: 500px;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.search:focus {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.bonds {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.bondsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.settings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+}
+
+.settingsContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.bond {
+    width: 200px;
+    height: 200px;
+    background-color: #424242;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.bond:hover {
+    transform: scale(1.05);
+}
+
+.showMore {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    height: 50px;
+    width: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    border-radius: 0.25rem;
+}
+
+.select {
+    padding: 0.5rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 0.25rem;
+    background-color: transparent;
+
+    /*box-sizing: border-box;*/
+    /*background-position: right 50px center;*/
+}
+
+/* Style for select options */
+.select option {
+    padding: 8px;
+}
+
+/* Hover effect for options */
+.select option:hover {
+    background-color: #f0f0f0;
+}
