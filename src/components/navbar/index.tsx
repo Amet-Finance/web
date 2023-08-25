@@ -36,10 +36,11 @@ export default function Navbar() {
 function NavItem() {
     return <>
         <div className={Styles.navItem}>
-            <Link href='/bonds'>
-                <span className={Styles.navHover}>On-chain Bonds</span>
-            </Link>
+            <span className={`${Styles.navHover} ${Styles.top}`}>Bonds</span>
             <div className={Styles.navDropDown}>
+                <Link href='/bonds'>
+                    <span className={Styles.navHover}>Overview</span>
+                </Link>
                 <Link href='/bonds/issue'>
                     <span className={Styles.navHover}>Issue</span>
                 </Link>

@@ -20,6 +20,7 @@
 
 .navItem {
     position: relative;
+    width: 100%;
 }
 
 .navHover {
@@ -28,30 +29,52 @@
     cursor: pointer;
 }
 
+.top {
+    padding-left: 1.25rem;
+}
+
 
 .navHover:hover {
     color: #fff;
 }
 
 .navItem:hover .navDropDown {
-    left: 0;
     opacity: 1;
+    visibility: unset;
+    animation: drawBorder 1.5s ease-in-out infinite;
 }
 
 .navDropDown {
     display: flex;
     flex-direction: column;
-    left: -400px;
+    visibility: hidden;
     opacity: 0;
 
     gap: 1rem;
     padding: 0.75rem;
     position: absolute;
     background-color: transparent;
-    top: 120%;
-    width: 100%;
-    border-left: 1px solid rgba(255, 255, 255, 0.5);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    top: 130%;
+    /*width: 100%;*/
+    background-color: black;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 0 0.25rem;
+}
+
+@keyframes drawBorder {
+    20% {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    40% {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    60% {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    80% {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
 }
 
 
