@@ -3,7 +3,7 @@ import ERC20 from './abi-jsons/ERC20.json'
 import {TokenInfo} from "@/modules/web3/type";
 import {getIcon} from "@/modules/utils/images";
 
-async function getTokenInfo(contractAddress: string, address?: string) {
+async function getTokenInfo(contractAddress: string, address?: string): Promise<TokenInfo|undefined> {
     const web3 = getWeb3Instance();
 
     const contract = new web3.eth.Contract(ERC20 as any, contractAddress);

@@ -8,10 +8,10 @@ type BondInfo = {
     redeemLockPeriod?: number;
     investmentToken?: string;
     investmentTokenAmount?: number;
-    investmentTokenInfo?: TokenInfo;
+    investmentTokenInfo?: TokenInfo|undefined;
     interestToken?: string;
     interestTokenAmount?: number;
-    interestTokenInfo?: TokenInfo;
+    interestTokenInfo?: TokenInfo|undefined;
 }
 
 type TokenDetails = {

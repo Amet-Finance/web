@@ -11,6 +11,7 @@ import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {decode} from "@/modules/web3/zcb";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
+import {TokenInfo} from "@/modules/web3/type";
 
 const BondTokenInfo = {
     Investment: 'Investment token',
@@ -21,12 +22,27 @@ export default function Issue() {
 
     const account: Account = useSelector((item: any) => item.account)
     const [bondInfo, setBondInfo] = useState({} as BondInfo);
+    const [tokens, setTokens] = useState({} as { [key: string]: TokenInfo })
+
+    const investmentTokenInfo = tokens[bondInfo.investmentToken?.toLowerCase() || ""]
+    const interestTokenInfo = tokens[bondInfo.interestToken?.toLowerCase() || ""]
 
     async function submit() {
-        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
-        if(transaction) {
-            const decoded = decode(transaction);
+        // todo add here the investmentTokenInfo and the interest one
+        if (!bondInfo.investmentToken || !bondInfo.interestToken) {
+            // toast add here
+            alert("Not ready to issue")
+            return;
+        }
 
+        bondInfo.investmentTokenInfo = investmentTokenInfo;
+        bondInfo.interestTokenInfo = interestTokenInfo;
+
+
+        console.log(bondInfo)
+        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
+        if (transaction) {
+            const decoded = decode(transaction);
             return openModal(ModalTypes.IssuedBondSuccess, {
                 transaction,
                 decoded
@@ -47,37 +63,39 @@ export default function Issue() {
         })
     }
 
-    useEffect(() => {
-
-        if (!bondInfo.interestToken) {
-            delete bondInfo.interestTokenInfo;
-            return setBondInfo({
-                ...bondInfo
-            })
+    function getToken(contractAddressTmp?: string) {
+        if (!contractAddressTmp) {
+            return;
         }
 
-        setBondInfo({
-            ...bondInfo,
-            interestTokenInfo: {isLoading: true}
+        const contractAddress = contractAddressTmp.toLowerCase();
+
+        setTokens({
+            ...tokens,
+            [contractAddress]: {isLoading: true}
         })
 
-        const timer = setTimeout(() => {
-            if (bondInfo.interestToken) {
-                getTokenInfo(bondInfo.interestToken, account.address)
-                    .then(response => {
-                        setBondInfo({
-                            ...bondInfo,
-                            interestTokenInfo: response
-                        })
-                    })
-                    .catch(error => {
-                        delete bondInfo.interestTokenInfo;
-                        setBondInfo({
-                            ...bondInfo
-                        })
-                    })
+        const timer = setTimeout(async () => {
+            const tokenInfo = await getTokenInfo(contractAddress, account.address);
+            const tokensTmp = {...tokens};
+            if (tokenInfo) {
+                tokensTmp[contractAddress] = tokenInfo
+            } else {
+                delete tokensTmp[contractAddress]
             }
-        }, 3000);
+
+            setTokens({
+                ...tokensTmp
+            })
+
+        }, 1500);
+
+        return timer;
+    }
+
+    useEffect(() => {
+
+        const timer = getToken(bondInfo.interestToken);
 
         return () => {
             clearTimeout(timer);
@@ -85,36 +103,7 @@ export default function Issue() {
     }, [bondInfo.interestToken])
 
     useEffect(() => {
-
-        if (!bondInfo.investmentToken) {
-            delete bondInfo.investmentTokenInfo;
-            return setBondInfo({
-                ...bondInfo
-            })
-        }
-
-        setBondInfo({
-            ...bondInfo,
-            investmentTokenInfo: {isLoading: true}
-        })
-
-        const timer = setTimeout(() => {
-            if (bondInfo.investmentToken) {
-                getTokenInfo(bondInfo.investmentToken, account.address)
-                    .then(response => {
-                        setBondInfo({
-                            ...bondInfo,
-                            investmentTokenInfo: response
-                        })
-                    })
-                    .catch(error => {
-                        delete bondInfo.investmentTokenInfo;
-                        setBondInfo({
-                            ...bondInfo
-                        })
-                    })
-            }
-        }, 3000)
+        const timer = getToken(bondInfo.investmentToken);
 
         return () => {
             clearTimeout(timer);
@@ -123,6 +112,8 @@ export default function Issue() {
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
     const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
+
+    console.log(tokens);
 
     return <>
         <main className={Styles.container}>
@@ -133,6 +124,7 @@ export default function Issue() {
                     <div className={Styles.assets}>
                         <div className={Styles.formContainer}>
                             <input type="number" className={Styles.input}
+                                   autoFocus
                                    id='total'
                                    placeholder="Total bonds" onChange={onChange}/>
                         </div>
@@ -178,12 +170,12 @@ export default function Issue() {
                 <div className={Styles.bondInfo}>
                     <TokenDetails type={BondTokenInfo.Investment}
                                   total={totalRaised}
-                                  isLoading={Boolean(bondInfo.investmentTokenInfo?.isLoading)}
-                                  tokenInfo={bondInfo.investmentTokenInfo}/>
+                                  isLoading={Boolean(investmentTokenInfo?.isLoading)}
+                                  tokenInfo={investmentTokenInfo}/>
                     <TokenDetails type={BondTokenInfo.Interest}
                                   total={totalInterest}
-                                  isLoading={Boolean(bondInfo.interestTokenInfo?.isLoading)}
-                                  tokenInfo={bondInfo.interestTokenInfo}/>
+                                  isLoading={Boolean(interestTokenInfo?.isLoading)}
+                                  tokenInfo={interestTokenInfo}/>
                 </div>
             </div>
         </main>
@@ -199,8 +191,11 @@ function TokenDetails({tokenInfo, isLoading, type, total}: TokenDetails) {
     return <>
         <div className={Styles.tokenInfo}>
             <span>{type}</span>
-            {isLoading ? <Loading/> :
-                <OperationDetails tokenInfo={tokenInfo} total={total} isLoading={isLoading} type={type}/>}
+            {
+                isLoading ?
+                    <Loading/> :
+                    <OperationDetails tokenInfo={tokenInfo} total={total} isLoading={isLoading} type={type}/>
+            }
         </div>
     </>
 }

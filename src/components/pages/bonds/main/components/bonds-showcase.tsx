@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
-import {getBonds} from "@/components/pages/bonds/main/module";
 import Loading from "@/components/utils/loading";
 import Styles from "@/components/pages/bonds/main/components/index.module.css";
 import Link from "next/link";
 import {formatTime} from "@/modules/utils/dates";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {getWeb3Instance} from "@/modules/web3";
+import * as CloudAPI from "@/modules/cloud-api";
 
 const {toBN} = getWeb3Instance().utils;
 
@@ -23,7 +23,7 @@ export default function BondsShowcase() {
         });
 
         const timer = setTimeout(() => {
-            getBonds()
+            CloudAPI.getBonds()
                 .then(res => {
                     setBonds({
                         data: res,
