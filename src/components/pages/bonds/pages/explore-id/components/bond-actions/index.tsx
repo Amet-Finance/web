@@ -7,24 +7,30 @@ import {Account} from "@/store/redux/account/type";
 import {getWeb3Instance, submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {toBN} from "web3-utils";
+import Loading from "@/components/utils/loading";
+import {TokenInfo} from "@/modules/web3/type";
+import {current} from "immer";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
     Redeem: 'redeem'
 }
 
-export default function BondActions({info}: any) {
+export default function BondActions({info, tokens}: any) {
     const [action, setAction] = useState(Actions.Purchase);
     const actionHandler = [action, setAction];
 
     return <>
         <div className={Styles.bondActions}>
             <div className={Styles.sectionHorizontal}>
-                {Object.keys(Actions).map((key: string) => <ActionButton name={key}
-                                                                         actionHandler={actionHandler}
-                                                                         key={key}/>)}
+                {
+                    Object.keys(Actions)
+                        .map((key: string) => <ActionButton name={key}
+                                                            actionHandler={actionHandler}
+                                                            key={key}/>)
+                }
             </div>
-            <Action actionHandler={actionHandler} info={info}/>
+            <Action actionHandler={actionHandler} info={info} tokens={tokens}/>
         </div>
     </>
 }
@@ -40,12 +46,15 @@ function ActionButton({name, actionHandler}: any) {
     </>
 }
 
-function Action({actionHandler, info}: any) {
+function Action({actionHandler, info, tokens}: any) {
     const [action, setAction] = actionHandler;
 
     switch (action) {
         case Actions.Purchase: {
-            return <Purchase info={info}/>
+            return <Purchase info={info} tokens={tokens}/>
+        }
+        case Actions.Redeem : {
+            return <Redeem info={info} tokens={tokens}/>
         }
         default: {
             return <></>
@@ -53,14 +62,19 @@ function Action({actionHandler, info}: any) {
     }
 }
 
-function Purchase({info}: { info: BondInfo }) {
+function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
 
     const {
         _id,
-        investmentTokenInfo,
         investmentTokenAmount,
+        total,
+        current,
+        investmentToken,
         interestToken
     } = info;
+
+    const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
+    const bondsLeft = Number(total) - Number(current);
 
     const [effectRefresher, setEffectRefresher] = useState(0);
     const [amount, setAmount] = useState(0);
@@ -76,12 +90,15 @@ function Purchase({info}: { info: BondInfo }) {
 
 
     if (!investmentTokenInfo) {
-        return null;
+        return <>
+            <div className={Styles.loader}>
+                <Loading/>
+            </div>
+        </>;
     }
 
     const decimals = Number(investmentTokenInfo?.decimals) || 18
 
-    console.log(info)
     // console.log(`investmentTokenAmount, decimals`, investmentTokenAmount, decimals)
     const investmentAmountClean = toBN(`${investmentTokenAmount}`).div(toBN(10).pow(toBN(decimals)));
     const totalPrice = amount * investmentAmountClean.toNumber();
@@ -97,24 +114,25 @@ function Purchase({info}: { info: BondInfo }) {
         setAmount(Number(value) || 0);
     }
 
-    async function sumbit() {
+    async function submit() {
         if (isApproval) {
 
             const web3 = getWeb3Instance();
             const {toBN} = web3.utils;
-            if (!info.investmentTokenInfo?.decimals || !info.investmentTokenAmount) {
+
+            if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {
                 return;
             }
 
             const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.ApproveToken, {
-                contractAddress: info.investmentToken,
-                spender: info._id,
-                value: toBN(amount).mul(toBN(info.investmentTokenAmount))
+                contractAddress: investmentToken,
+                spender: _id,
+                value: toBN(amount).mul(toBN(investmentTokenAmount))
             });
             console.log(transaction)
         } else {
             const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
-                contractAddress: info._id,
+                contractAddress: _id,
                 count: amount
             });
             console.log(transaction);
@@ -123,14 +141,34 @@ function Purchase({info}: { info: BondInfo }) {
 
     }
 
-    const title = isApproval ? `Approve ${info.investmentTokenInfo?.symbol}` : "Purchase"
+    const SubmitButton = () => {
+        let title = "Purchase"
+        let className = `${Styles.submit}`;
+        let onClick = submit
+
+
+        if (Number(amount) > Number(bondsLeft)) {
+            title = `Not enough bonds left`
+            className += ` ${Styles.disable}`
+            onClick = async () => {};
+        } else if (isApproval) {
+            title = `Approve ${investmentTokenInfo?.symbol}`
+        }
+
+        return <button className={className} onClick={onClick}>{title}</button>
+    }
 
     return <>
         <div className={Styles.section}>
-            <input className={Styles.input} type="number"
+            <input className={Styles.input}
+                   type="number"
                    onChange={onChange}
                    placeholder="The amount of bonds you want to purchase"/>
-            <button className={Styles.submit} onClick={sumbit}>{title}</button>
+            <SubmitButton/>
         </div>
     </>
+}
+
+function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
+    return <><span>Reedeem here</span></>
 }

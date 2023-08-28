@@ -6,24 +6,19 @@ import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {TransactionReceipt} from "web3-core";
 
 async function getInfo(contractAddress: string) {
-    try {
-        const web3 = getWeb3Instance()
-        const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
-        const info = await contract.methods.getInfo().call();
-        return {
-            issuer: info[0],
-            total: info[1],
-            current: info[2],
-            redeemLockPeriod: info[3],
-            investmentToken: info[4],
-            investmentTokenAmount: info[5],
-            interestToken: info[6],
-            interestTokenAmount: info[7]
-        };
-    } catch (error) {
-        console.log(error)
-        return {}
-    }
+    const web3 = getWeb3Instance()
+    const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
+    const info = await contract.methods.getInfo().call();
+    return {
+        issuer: info[0],
+        total: info[1],
+        current: info[2],
+        redeemLockPeriod: info[3],
+        investmentToken: info[4],
+        investmentTokenAmount: info[5],
+        interestToken: info[6],
+        interestTokenAmount: info[7]
+    };
 }
 
 async function getHoldings(contractAddress: string, address: string) {

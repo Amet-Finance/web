@@ -8,7 +8,15 @@ const RPC_BY_CHAINS: { [key: string]: string[] } = {
     [CHAIN_IDS.Mumbai]: ["https://rpc-mumbai.maticvigil.com"]
 }
 
-const CHAIN_INFO: { [key: string]: any } = {
+const CHAIN_INFO: {
+    [key: string]: {
+        chainId: string,
+        chainName: string,
+        rpcUrls: string[],
+        nativeCurrency: string,
+        explorer: string
+    }
+} = {
     [CHAIN_IDS.Mumbai]: {
         chainId: CHAIN_IDS.Mumbai,
         chainName: "Mumbai",

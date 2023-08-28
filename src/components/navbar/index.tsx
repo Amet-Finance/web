@@ -11,6 +11,37 @@ import {connectWallet, disconnectWallet} from "@/store/redux/account";
 import {shorten} from "@/modules/web3/utils/address";
 
 
+const navItems: any = [
+    {
+        title: "Bonds",
+        links: [
+            {
+                url: '/bonds',
+                name: "Overview"
+            },
+            {
+                url: '/issue',
+                name: "Issue"
+            },
+            {
+                url: '/explore',
+                name: "Explore"
+            },
+
+        ]
+    },
+    {
+        title: "Documents",
+        links: [
+            {
+                url: '/',
+                name: "Overview"
+            }
+        ]
+    }
+]
+
+
 export default function Navbar() {
 
     useEffect(() => {
@@ -25,7 +56,7 @@ export default function Navbar() {
             <div className={Styles.nav}>
                 <AmetLogo/>
                 <div className={Styles.navLinks}>
-                    <NavItem/>
+                    {navItems.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
                 </div>
             </div>
             <WalletState/>
@@ -33,22 +64,22 @@ export default function Navbar() {
     </>
 }
 
-function NavItem() {
+function NavItem({item}: any) {
     return <>
         <div className={Styles.navItem}>
-            <span className={`${Styles.navHover} ${Styles.top}`}>Bonds</span>
+            <span className={`${Styles.navHover} ${Styles.top}`}>{item.title}</span>
             <div className={Styles.navDropDown}>
-                <Link href='/bonds'>
-                    <span className={Styles.navHover}>Overview</span>
-                </Link>
-                <Link href='/bonds/issue'>
-                    <span className={Styles.navHover}>Issue</span>
-                </Link>
-                <Link href='/bonds/explore'>
-                    <span className={Styles.navHover}>Explore</span>
-                </Link>
+                {item.links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
             </div>
         </div>
+    </>
+}
+
+function NavLink({link}: any) {
+    return <>
+        <Link href={link.url}>
+            <span className={Styles.navHover}>{link.name}</span>
+        </Link>
     </>
 }
 

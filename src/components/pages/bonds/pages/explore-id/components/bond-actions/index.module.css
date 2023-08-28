@@ -56,3 +56,14 @@
     background-color: white;
     color: black;
 }
+
+.disable {
+    cursor: not-allowed;
+}
+
+.loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
