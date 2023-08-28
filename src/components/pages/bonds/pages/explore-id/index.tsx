@@ -30,17 +30,15 @@ export default function ExploreId({props}: any) {
     }, [address])
 
     useEffect(() => {
-        if (address) {
-            const investmentTokenInfo = getTokenInfo(info.investmentToken, address);
-            const interestTokenInfo = getTokenInfo(info.interestToken, address);
-            Promise.all([investmentTokenInfo, interestTokenInfo])
-                .then(res => {
-                    setTokens({
-                        [info.investmentToken]: res[0],
-                        [info.interestToken]: res[1]
-                    })
+        const investmentTokenInfo = getTokenInfo(info.investmentToken, address);
+        const interestTokenInfo = getTokenInfo(info.interestToken, address);
+        Promise.all([investmentTokenInfo, interestTokenInfo])
+            .then(res => {
+                setTokens({
+                    [info.investmentToken]: res[0],
+                    [info.interestToken]: res[1]
                 })
-        }
+            })
     }, [address, info.investmentToken, info.interestToken])
 
 
