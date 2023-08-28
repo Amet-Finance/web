@@ -14,17 +14,18 @@ import {shorten} from "@/modules/web3/utils/address";
 const navItems: any = [
     {
         title: "Bonds",
+        defaultUrl: "/bonds",
         links: [
             {
                 url: '/bonds',
                 name: "Overview"
             },
             {
-                url: '/issue',
+                url: '/bonds/issue',
                 name: "Issue"
             },
             {
-                url: '/explore',
+                url: '/bonds/explore',
                 name: "Explore"
             },
 
@@ -32,6 +33,7 @@ const navItems: any = [
     },
     {
         title: "Documents",
+        defaultUrl: "/",
         links: [
             {
                 url: '/',
@@ -65,11 +67,16 @@ export default function Navbar() {
 }
 
 function NavItem({item}: any) {
+
+    const {title, defaultUrl, links} = item;
+
     return <>
         <div className={Styles.navItem}>
-            <span className={`${Styles.navHover} ${Styles.top}`}>{item.title}</span>
+            <Link href={defaultUrl}>
+                <span className={`${Styles.navHover} ${Styles.top}`}>{title}</span>
+            </Link>
             <div className={Styles.navDropDown}>
-                {item.links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
+                {links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
             </div>
         </div>
     </>
