@@ -9,7 +9,7 @@
 
 .bondContainer {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     justify-content: space-between;
 }
 
@@ -43,14 +43,14 @@
 .form {
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
     gap: 3rem;
     min-width: 650px;
 }
 
 .assets {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     justify-content: space-between;
     width: 100%;
     gap: 1rem;
