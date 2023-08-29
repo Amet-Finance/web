@@ -26,6 +26,17 @@ async function getInfo(contractAddress: string): Promise<BondInfoDetailed> {
     };
 }
 
+async function getTokensInfo(contractAddress: string, tokenIds: number[]) {
+    if (!tokenIds.length) {
+        return;
+    }
+
+    const web3 = getWeb3Instance()
+    const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
+    const info = await contract.methods.getTokensPurchaseDates(tokenIds).call();
+    console.log(`info`, info)
+}
+
 function issueBonds(bondInfo: BondInfo): string | undefined {
 
     try {
@@ -112,5 +123,6 @@ export {
     purchase,
     redeem,
     decode,
-    getInfo
+    getInfo,
+    getTokensInfo
 }

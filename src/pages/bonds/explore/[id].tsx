@@ -6,11 +6,8 @@ export default function ExploreIdPage(props: any) {
 }
 
 export async function getServerSideProps({query}: any) {
-    const info = await getInfo(query.id);
+    const props = await getInfo(query.id);
     return {
-        props: {
-            _id: query.id,
-            ...info
-        }
+        props
     }
 }

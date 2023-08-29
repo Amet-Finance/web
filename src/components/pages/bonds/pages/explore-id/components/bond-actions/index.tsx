@@ -13,6 +13,7 @@ import {toast} from "react-toastify";
 import {initBalance} from "@/store/redux/account";
 import ClearSVG from "../../../../../../../../public/svg/clear";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
+import {getTokensInfo} from "@/modules/web3/zcb";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -182,6 +183,16 @@ function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: Token
     const account: Account = useSelector((item: any) => item.account);
     const contractAddress = info._id?.toLowerCase() || ""
     const balanceTokenIds = account.balance[contractAddress] || [];
+
+    useEffect(() => {
+        getTokensInfo(contractAddress, [tokenIds])
+            .then(res => {
+
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }, [tokenIds])
 
     if (!balanceTokenIds.length) {
         return <>
