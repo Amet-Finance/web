@@ -9,7 +9,10 @@ import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {toBN} from "web3-utils";
 import Loading from "@/components/utils/loading";
 import {TokenInfo} from "@/modules/web3/type";
-import {current} from "immer";
+import {toast} from "react-toastify";
+import {initBalance} from "@/store/redux/account";
+import ClearSVG from "../../../../../../../../public/svg/clear";
+import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -135,6 +138,7 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
                 contractAddress: _id,
                 count: amount
             });
+            await initBalance(account.address);
             console.log(transaction);
         }
         setEffectRefresher(Math.random());
@@ -146,11 +150,11 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
         let className = `${Styles.submit}`;
         let onClick = submit
 
-
         if (Number(amount) > Number(bondsLeft)) {
             title = `Not enough bonds left`
             className += ` ${Styles.disable}`
-            onClick = async () => {};
+            onClick = async () => {
+            };
         } else if (isApproval) {
             title = `Approve ${investmentTokenInfo?.symbol}`
         }
@@ -170,5 +174,88 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
 }
 
 function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
-    return <><span>Reedeem here</span></>
+    // todo add select all for the redeem tokens
+    const {_id} = info;
+    const [tokenIds, setTokenIds] = useState([] as any);
+    const tokenHandlers = [tokenIds, setTokenIds]
+
+    const account: Account = useSelector((item: any) => item.account);
+    const contractAddress = info._id?.toLowerCase() || ""
+    const balanceTokenIds = account.balance[contractAddress] || [];
+
+    if (!balanceTokenIds.length) {
+        return <>
+            <span>There are no bonds to redeem</span>
+        </>
+    }
+
+    const selectAll = () => setTokenIds(balanceTokenIds);
+    const clearAll = () => setTokenIds([]);
+
+    async function submit() {
+        if (!tokenIds.length) {
+            toast.error("You did not select a bond");
+            return;
+        }
+
+        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.RedeemBonds, {
+            contractAddress: _id,
+            ids: tokenIds
+        });
+        await initBalance(account.address);
+        console.log(transaction)
+    }
+
+    const SubmitButton = () => {
+        let className = `${Styles.submit}`;
+        let onClick = submit;
+
+
+        if (!tokenIds.length) {
+            className += ` ${Styles.disable}`
+            onClick = async () => {
+            }
+        }
+
+        return <button className={className} onClick={onClick}>Redeem</button>
+    }
+
+    return <>
+        <div className={Styles.redeem}>
+            <div className={Styles.redeemActions}>
+                <SelectAllSVG onClick={selectAll}/>
+                <ClearSVG onClick={clearAll}/>
+            </div>
+            <div className={Styles.tokenIds}>
+                {
+                    balanceTokenIds.map(tokenId => <TokenId tokenId={tokenId}
+                                                            tokenHandlers={tokenHandlers}
+                                                            key={tokenId}/>)
+                }
+            </div>
+            <SubmitButton/>
+        </div>
+    </>
+}
+
+function TokenId({tokenId, tokenHandlers}: any) {
+
+    const [tokenIds, setTokenIds] = tokenHandlers;
+    const tokenIndex = tokenIds.indexOf(tokenId);
+    const isSelected = tokenIndex !== -1;
+    const className = `${Styles.tokenId} ${isSelected && Styles.selectedToken}`
+
+    const select = () => {
+        if (isSelected) {
+            const tmp = [...tokenIds];
+            tmp.splice(tokenIndex, 1);
+            setTokenIds(tmp);
+        } else {
+            setTokenIds([...tokenIds, tokenId])
+        }
+    }
+
+    return <>
+        <span className={className} onClick={select}>{tokenId}</span>
+    </>
 }

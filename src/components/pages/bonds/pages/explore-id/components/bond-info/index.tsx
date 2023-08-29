@@ -4,15 +4,16 @@ import {CHAIN_INFO, DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 import Link from "next/link";
 import {formatTime} from "@/modules/utils/dates";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {TokenInfo} from "@/modules/web3/type";
+import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import {getWeb3Instance} from "@/modules/web3";
+import {format} from "@/modules/utils/numbers";
 
 export default function BondInfo({info, tokens}: any) {
 
     return <>
         <div className={Styles.bondInfo}>
             <BondIssuerInfo info={info}/>
-            <TotalInfo info={info}/>
+            <TotalInfo info={info} tokens={tokens}/>
             <BondLockInfo info={info}/>
             <BondTokensInfo info={info} tokens={tokens}/>
         </div>
@@ -41,8 +42,19 @@ function BondIssuerInfo({info}: any) {
     </>
 }
 
-function TotalInfo({info}: any) {
+function TotalInfo({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
+    const {interestToken, interestTokenBalance} = info;
+
+    const {toBN} = getWeb3Instance().utils
+    const left = Number(info.total) - Number(info.purchased);
+
+    const decimals = tokens[interestToken]?.decimals || 18
+
+    const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
+    const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
+    const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
+    const redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
 
     return <>
         <div className={Styles.section}>
@@ -51,8 +63,21 @@ function TotalInfo({info}: any) {
                 <span>{info.total}</span>
             </div>
             <div className={Styles.sectionHorizontal}>
-                <span>Bonds left to be sold:</span>
-                <span>{info.total - info.current}</span>
+                <span>Total Purchased:</span>
+                <span>{info.purchased}</span>
+            </div>
+            <div className={Styles.sectionHorizontal}>
+                <span>Total Redeemed:</span>
+                <span>{info.redeemed}</span>
+            </div>
+            <div className={Styles.sectionHorizontal}>
+                <span>Bonds left:</span>
+                <span>{left}</span>
+            </div>
+
+            <div className={Styles.sectionHorizontal}>
+                <span>Bonds redemption secured percentage:</span>
+                <span>{format(+redeemedPercentage.toFixed(2))}</span>
             </div>
         </div>
     </>

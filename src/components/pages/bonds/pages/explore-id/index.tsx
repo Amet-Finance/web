@@ -19,7 +19,7 @@ export default function ExploreId({props}: any) {
     useEffect(() => {
         const interval = setInterval(() => {
             getInfo(props._id)
-                .then(response => setInfo({...response, _id: props._id}))
+                .then(response => setInfo({...response}))
                 .catch(error => console.error(error));
         }, 3000)
 

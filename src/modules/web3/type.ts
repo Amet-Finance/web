@@ -1,3 +1,18 @@
+
+type BondInfoDetailed = {
+    _id: string,
+    issuer: string,
+    total: number,
+    purchased: number,
+    redeemed: number,
+    redeemLockPeriod: number,
+    investmentToken: string,
+    investmentTokenAmount: string,
+    interestToken: string,
+    interestTokenAmount: number,
+    interestTokenBalance: string
+}
+
 type TokenInfo = {
     name?: string,
     symbol?: string,
@@ -8,5 +23,6 @@ type TokenInfo = {
 }
 
 export type {
+    BondInfoDetailed,
     TokenInfo
 }

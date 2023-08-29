@@ -54,7 +54,8 @@ function BondsScreen({bonds}: any) {
 function Bond({item}: { item: BondInfo }) {
     const {
         total,
-        current,
+        purchased,
+        redeemed,
         investmentTokenInfo,
         interestTokenInfo,
         investmentTokenAmount,
@@ -63,11 +64,10 @@ function Bond({item}: { item: BondInfo }) {
 
     const response: any = {
         total,
-        current,
-
+        purchased,
     }
 
-    const progress = (Number(current) * 100) / Number(total);
+    const progress = (Number(purchased) * 100) / Number(total);
     if (investmentTokenInfo) {
         const amount = investmentTokenAmount || ""
         const decimals = investmentTokenInfo.decimals || ""
@@ -88,9 +88,9 @@ function Bond({item}: { item: BondInfo }) {
     return <>
         <Link href={`/bonds/explore/${item._id}`}>
             <div className={Styles.bond}>
-                <span>Total/Current: {response.total}/{item.current}</span>
+                <span>Total/Current/Redeemed: {response.total}/{item.purchased}/{item.redeemed}</span>
                 <span>Investment: {response.investment.amount} {response.investment.currency}</span>
-                <span>Redemption: {response.interest.amount} {response.interest.currency}</span>
+                <span>Interest: {response.interest.amount} {response.interest.currency}</span>
                 <span>Redeem Lock period: {formatTime(Number(item.redeemLockPeriod))}</span>
                 <span>Issuer: {item.issuer}</span>
                 <div className='progress'/>

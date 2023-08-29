@@ -35,7 +35,8 @@ const DEFAULT_CHAIN_ID = CHAIN_IDS.Mumbai;
 const TxTypes = {
     IssueBond: 'issue-bonds',
     ApproveToken: 'approve-token',
-    PurchaseBonds: 'purchase-bonds'
+    PurchaseBonds: 'purchase-bonds',
+    RedeemBonds: 'redeem-bonds'
 }
 
 export {

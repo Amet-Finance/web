@@ -1,10 +1,11 @@
 import {TokenInfo} from "@/modules/web3/type";
 
 type BondInfo = {
-    issuer?: string;
     _id?: string;
+    issuer?: string;
     total?: number;
-    current?: number;
+    purchased: number;
+    redeemed: number;
     redeemLockPeriod?: number;
     investmentToken?: string;
     investmentTokenAmount?: number;

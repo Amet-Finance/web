@@ -7,8 +7,8 @@ import {Account} from "@/store/redux/account/type";
 import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import * as Web3Service from "@/modules/web3";
-import {connectWallet, disconnectWallet} from "@/store/redux/account";
 import {shorten} from "@/modules/web3/utils/address";
+import * as AccountSlice from "@/store/redux/account";
 
 
 const navItems: any = [
@@ -49,7 +49,7 @@ export default function Navbar() {
     useEffect(() => {
         const address = Web3Service.getWalletAddress();
         if (address) {
-            connectWallet({address})
+            AccountSlice.initWallet(address);
         }
     }, [])
 
@@ -72,11 +72,11 @@ function NavItem({item}: any) {
 
     return <>
         <div className={Styles.navItem}>
-            <Link href={defaultUrl}>
-                <span className={`${Styles.navHover} ${Styles.top}`}>{title}</span>
+            <Link href={item.defaultUrl}>
+                <span className={`${Styles.navHover} ${Styles.top}`}>{item.title}</span>
             </Link>
             <div className={Styles.navDropDown}>
-                {links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
+                {item.links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
             </div>
         </div>
     </>
@@ -118,7 +118,7 @@ function ConnectedState() {
             <span className={addressStyles} onClick={enable}>{shorten(account.address)}</span>
             {isEnabled && <>
                 <div className={dropStyles}>
-                    <span className={Styles.disconnect} onClick={disconnectWallet}>Disconnect</span>
+                    <span className={Styles.disconnect} onClick={AccountSlice.disconnectWallet}>Disconnect</span>
                 </div>
             </>}
         </div>

@@ -6,6 +6,7 @@ import Web3 from "web3";
 import {TransactionConfig, TransactionReceipt} from "web3-core";
 import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
 import {sleep} from "@/modules/utils/dates";
+import {toast} from "react-toastify";
 
 function getWeb3Instance() {
     const rpcs = RPC_BY_CHAINS[DEFAULT_CHAIN_ID];
@@ -48,8 +49,17 @@ async function submitTransaction(type: string, txType: string, config: any) {
     switch (type) {
         case WalletTypes.Metamask: {
             const txHash = await Metamask.submitTransaction(transactionConfig);
-            const transaction = await trackTransaction(txHash);
-            return transaction;
+            if (txHash) {
+                const transaction = trackTransaction(txHash)
+                await toast.promise(transaction, {
+                    pending: "Transaction was submitted",
+                    error: "Transaction failed",
+                    success: "Transaction succeeded"
+                }, {
+                    draggable: true
+                });
+                return transaction.then(tx => tx);
+            }
         }
     }
 }
@@ -72,6 +82,12 @@ function getContractInfoByType(txType: string, config: any) {
             return {
                 to: config.contractAddress,
                 data: ZCB.purchase(config.contractAddress, config.count)
+            }
+        }
+        case TxTypes.RedeemBonds: {
+            return {
+                to: config.contractAddress,
+                data: ZCB.redeem(config.contractAddress, config.ids)
             }
         }
         default: {

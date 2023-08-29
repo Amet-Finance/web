@@ -24,7 +24,19 @@ async function getStats() {
     return data;
 }
 
+async function getBalance(address: string) {
+    const balanceAPI = `${API_URL}/v1/balance/${address}`
+    const {data} = await requestAPI({
+        url: balanceAPI,
+        params: {
+            chainId: DEFAULT_CHAIN_ID
+        }
+    });
+    return data;
+}
+
 export {
     getBonds,
-    getStats
+    getStats,
+    getBalance
 }

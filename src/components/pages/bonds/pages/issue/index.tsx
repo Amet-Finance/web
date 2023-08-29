@@ -40,7 +40,6 @@ export default function Issue() {
         bondInfo.interestTokenInfo = interestTokenInfo;
 
 
-        console.log(bondInfo)
         const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
         if (transaction) {
             const decoded = decode(transaction);

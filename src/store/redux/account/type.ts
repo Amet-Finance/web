@@ -1,5 +1,6 @@
 type Account = {
-    address: string
+    address: string,
+    balance: { [key: string]: any[] }
 }
 
 type ConnectPayload = {
