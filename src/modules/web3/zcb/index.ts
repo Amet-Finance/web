@@ -33,8 +33,7 @@ async function getTokensInfo(contractAddress: string, tokenIds: number[]) {
 
     const web3 = getWeb3Instance()
     const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
-    const info = await contract.methods.getTokensPurchaseDates(tokenIds).call();
-    console.log(`info`, info)
+    return await contract.methods.getTokensPurchaseDates(tokenIds).call();
 }
 
 function issueBonds(bondInfo: BondInfo): string | undefined {

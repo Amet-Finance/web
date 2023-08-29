@@ -8,12 +8,13 @@ import {getWeb3Instance, submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {toBN} from "web3-utils";
 import Loading from "@/components/utils/loading";
-import {TokenInfo} from "@/modules/web3/type";
+import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import {toast} from "react-toastify";
 import {initBalance} from "@/store/redux/account";
 import ClearSVG from "../../../../../../../../public/svg/clear";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import {getTokensInfo} from "@/modules/web3/zcb";
+import {formatTime, getTimestampUTC} from "@/modules/utils/dates";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -174,33 +175,50 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
     </>
 }
 
-function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
-    // todo add select all for the redeem tokens
-    const {_id} = info;
+function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
+
+    const {_id, redeemLockPeriod} = info;
     const [tokenIds, setTokenIds] = useState([] as any);
     const tokenHandlers = [tokenIds, setTokenIds]
 
     const account: Account = useSelector((item: any) => item.account);
     const contractAddress = info._id?.toLowerCase() || ""
     const balanceTokenIds = account.balance[contractAddress] || [];
-
+    const [holdings, setHoldings] = useState([])
+    // todo calculate as well the amount that is left there so I won't be able to choose it if there's no secured redemption amount
     useEffect(() => {
-        getTokensInfo(contractAddress, [tokenIds])
-            .then(res => {
-
+        getTokensInfo(contractAddress, balanceTokenIds)
+            .then(response => {
+                const utcTimestamp = Date.now() / 1000;
+                const tokensWithDates = response.map((date: number, index: number) => {
+                    const isValid = utcTimestamp - Number(redeemLockPeriod) > Number(date)
+                    const timeLeft = Number(date) + Number(redeemLockPeriod) - utcTimestamp
+                    return {
+                        id: balanceTokenIds[index],
+                        purchaseDate: Number(date),
+                        isValid,
+                        timeLeft: isValid ? "0" : formatTime(timeLeft)
+                    }
+                })
+                console.log(tokensWithDates)
+                setHoldings(tokensWithDates);
             })
             .catch(error => {
                 console.log(error)
             })
-    }, [tokenIds])
+    }, [account.address, account.balance[contractAddress]])
 
-    if (!balanceTokenIds.length) {
+    if (!holdings.length) {
         return <>
             <span>There are no bonds to redeem</span>
         </>
     }
 
-    const selectAll = () => setTokenIds(balanceTokenIds);
+    const selectAll = () => {
+        // todo refactor this and use one loop
+        const tokenIdsLocal = holdings.filter((item: any) => item.isValid).map((item: any) => item.id);
+        setTokenIds(tokenIdsLocal);
+    }
     const clearAll = () => setTokenIds([]);
 
     async function submit() {
@@ -213,7 +231,10 @@ function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: Token
             contractAddress: _id,
             ids: tokenIds
         });
-        await initBalance(account.address);
+        setTimeout(() => {
+            initBalance(account.address);
+        }, 5000);
+        setTokenIds([]);
         console.log(transaction)
     }
 
@@ -239,9 +260,9 @@ function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: Token
             </div>
             <div className={Styles.tokenIds}>
                 {
-                    balanceTokenIds.map(tokenId => <TokenId tokenId={tokenId}
-                                                            tokenHandlers={tokenHandlers}
-                                                            key={tokenId}/>)
+                    holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
+                                                              tokenHandlers={tokenHandlers}
+                                                              key={tokenInfo.id}/>)
                 }
             </div>
             <SubmitButton/>
@@ -249,13 +270,15 @@ function Redeem({info, tokens}: { info: BondInfo, tokens: { [key: string]: Token
     </>
 }
 
-function TokenId({tokenId, tokenHandlers}: any) {
+function TokenId({tokenInfo, tokenHandlers}: any) {
 
+    const tokenId = tokenInfo.id;
+    const purchaseDate = tokenInfo.purchaseDate;
+    const {isValid, timeLeft} = tokenInfo;
+
+    // const isValid = purchaseDate * 1000;
     const [tokenIds, setTokenIds] = tokenHandlers;
     const tokenIndex = tokenIds.indexOf(tokenId);
-    const isSelected = tokenIndex !== -1;
-    const className = `${Styles.tokenId} ${isSelected && Styles.selectedToken}`
-
     const select = () => {
         if (isSelected) {
             const tmp = [...tokenIds];
@@ -265,8 +288,14 @@ function TokenId({tokenId, tokenHandlers}: any) {
             setTokenIds([...tokenIds, tokenId])
         }
     }
+    const isSelected = tokenIndex !== -1;
+
+    const className = `${Styles.tokenId} ${isSelected && Styles.selectedToken} ${!isValid && Styles.disable}`
+    const title = !isValid ? `You can redeem the bond after ${timeLeft}` : `Select to redeem #${tokenId} Bond`
+    const onClick = isValid ? select : () => null;
+
 
     return <>
-        <span className={className} onClick={select}>{tokenId}</span>
+        <span className={className} onClick={onClick} title={title}>{tokenId}</span>
     </>
 }
