@@ -88,7 +88,7 @@ function Bond({item}: { item: BondInfo }) {
     return <>
         <Link href={`/bonds/explore/${item._id}`}>
             <div className={Styles.bond}>
-                <span>Total/Current/Redeemed: {response.total}/{item.purchased}/{item.redeemed}</span>
+                <span>Total/Purchased/Redeemed: {response.total}/{item.purchased}/{item.redeemed}</span>
                 <span>Investment: {response.investment.amount} {response.investment.currency}</span>
                 <span>Interest: {response.interest.amount} {response.interest.currency}</span>
                 <span>Redeem Lock period: {formatTime(Number(item.redeemLockPeriod))}</span>

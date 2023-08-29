@@ -71,13 +71,13 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
         _id,
         investmentTokenAmount,
         total,
-        current,
+        purchased,
         investmentToken,
         interestToken
     } = info;
 
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
-    const bondsLeft = Number(total) - Number(current);
+    const bondsLeft = Number(total) - Number(purchased);
 
     const [effectRefresher, setEffectRefresher] = useState(0);
     const [amount, setAmount] = useState(0);
