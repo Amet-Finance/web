@@ -1,4 +1,3 @@
-
 type BondInfoDetailed = {
     _id: string,
     issuer: string,
@@ -17,6 +16,7 @@ type TokenInfo = {
     name?: string,
     symbol?: string,
     decimals?: number,
+    verified?: boolean,
     icon?: string,
     balance?: number,
     isLoading?: boolean

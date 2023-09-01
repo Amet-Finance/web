@@ -4,26 +4,30 @@ import {TokenInfo} from "@/modules/web3/type";
 import {getIcon} from "@/modules/utils/images";
 
 async function getTokenInfo(contractAddress: string, address?: string): Promise<TokenInfo | undefined> {
-    const web3 = getWeb3Instance();
+    try {
+        const web3 = getWeb3Instance();
 
-    const contract = new web3.eth.Contract(ERC20 as any, contractAddress);
+        const contract = new web3.eth.Contract(ERC20 as any, contractAddress);
 
-    const name = await contract.methods.name().call();
-    const symbol = await contract.methods.symbol().call();
-    const decimals = await contract.methods.decimals().call();
+        const name = await contract.methods.name().call();
+        const symbol = await contract.methods.symbol().call();
+        const decimals = await contract.methods.decimals().call();
 
-    const result: TokenInfo = {
-        name,
-        symbol,
-        decimals,
-        icon: getIcon(contractAddress)
+        const result: TokenInfo = {
+            name,
+            symbol,
+            decimals,
+            icon: getIcon(contractAddress)
+        }
+
+        if (address) {
+            result.balance = await getTokenBalance(contractAddress, address);
+        }
+
+        return result;
+    } catch (error) {
+        return;
     }
-
-    if (address) {
-        result.balance = await getTokenBalance(contractAddress, address);
-    }
-
-    return result;
 }
 
 async function getTokenBalance(contractAddress: string, address: string) {

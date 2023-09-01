@@ -17,10 +17,6 @@ const navItems: any = [
         defaultUrl: "/bonds",
         links: [
             {
-                url: '/bonds',
-                name: "Overview"
-            },
-            {
                 url: '/bonds/issue',
                 name: "Issue"
             },
@@ -33,13 +29,8 @@ const navItems: any = [
     },
     {
         title: "Documents",
-        defaultUrl: "/",
-        links: [
-            {
-                url: '/',
-                name: "Overview"
-            }
-        ]
+        defaultUrl: "https://docs.amet.finance/v1/",
+        defaultTarget: "_blank"
     }
 ]
 
@@ -68,23 +59,27 @@ export default function Navbar() {
 
 function NavItem({item}: any) {
 
-    const {title, defaultUrl, links} = item;
+    const {title, defaultUrl, defaultTarget, links} = item;
 
     return <>
         <div className={Styles.navItem}>
-            <Link href={item.defaultUrl}>
-                <span className={`${Styles.navHover} ${Styles.top}`}>{item.title}</span>
+            <Link href={defaultUrl} target={defaultTarget || "_self"}>
+                <span className={`${Styles.navHover} ${Styles.top}`}>{title}</span>
             </Link>
-            <div className={Styles.navDropDown}>
-                {item.links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
-            </div>
+            {
+                links?.length &&
+                <>
+                    <div className={Styles.navDropDown}>
+                        {links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
+                    </div>
+                </>}
         </div>
     </>
 }
 
 function NavLink({link}: any) {
     return <>
-        <Link href={link.url}>
+        <Link href={link.url} target={link.target || "_self"}>
             <span className={Styles.navHover}>{link.name}</span>
         </Link>
     </>
@@ -117,7 +112,10 @@ function ConnectedState() {
         <div className={Styles.addressContainer}>
             <span className={addressStyles} onClick={enable}>{shorten(account.address)}</span>
             {isEnabled && <>
-                <div className={dropStyles}>
+                <div className={dropStyles} onClick={enable}>
+                    <Link href={`/address/${account.address}`}>
+                        <span>My Account</span>
+                    </Link>
                     <span className={Styles.disconnect} onClick={AccountSlice.disconnectWallet}>Disconnect</span>
                 </div>
             </>}

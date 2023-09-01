@@ -6,7 +6,7 @@ async function requestAPI({url, params, headers}: any) {
         return response.data;
     } catch (error) {
         console.log(error)
-        return undefined
+        return {data: undefined}
     }
 }
 

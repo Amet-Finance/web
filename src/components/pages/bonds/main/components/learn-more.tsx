@@ -1,10 +1,11 @@
 import Styles from './index.module.css'
+import Link from "next/link";
 
 export default function LearnMore() {
+    // todo update here the url
     return <>
-        <div className={Styles.learnMore}>
-            <h3>Learn more about on-chain bonds here!</h3>
-            <span>Click Here!</span>
-        </div>
+        <Link href="https://docs.amet.finance/v1/" target="_blank" className={Styles.learnMore}>
+            <h3>Explore Deeper Insights about Bonds</h3>
+        </Link>
     </>
 }

@@ -14,7 +14,7 @@ import {initBalance} from "@/store/redux/account";
 import ClearSVG from "../../../../../../../../public/svg/clear";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import {getTokensInfo} from "@/modules/web3/zcb";
-import {formatTime, getTimestampUTC} from "@/modules/utils/dates";
+import {formatTime} from "@/modules/utils/dates";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -185,8 +185,12 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
     const contractAddress = info._id?.toLowerCase() || ""
     const balanceTokenIds = account.balance[contractAddress] || [];
     const [holdings, setHoldings] = useState([])
-    // todo calculate as well the amount that is left there so I won't be able to choose it if there's no secured redemption amount
+    // todo calculate as well the amount that is left there
+    //  so I won't be able to choose it if there's no secured redemption amount
+
+    //todo add here a loader
     useEffect(() => {
+
         getTokensInfo(contractAddress, balanceTokenIds)
             .then(response => {
                 const utcTimestamp = Date.now() / 1000;

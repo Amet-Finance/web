@@ -16,7 +16,7 @@ export default function Home() {
                 <Link href='/bonds'>
                     <div className={Styles.box}>
                         <div className={Styles.circle}/>
-                        <span>On-chain Bonds</span>
+                        <span>Bonds</span>
                     </div>
                 </Link>
                 <div className={Styles.boxInactive}>

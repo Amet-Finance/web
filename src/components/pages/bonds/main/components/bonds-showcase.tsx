@@ -6,6 +6,7 @@ import {formatTime} from "@/modules/utils/dates";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {getWeb3Instance} from "@/modules/web3";
 import * as CloudAPI from "@/modules/cloud-api";
+import VerifiedSVG from "../../../../../../public/svg/verified";
 
 const {toBN} = getWeb3Instance().utils;
 
@@ -22,17 +23,17 @@ export default function BondsShowcase() {
             isLoading: true
         });
 
-        const timer = setTimeout(() => {
-            CloudAPI.getBonds()
-                .then(res => {
-                    setBonds({
-                        data: res,
-                        isLoading: false
-                    })
+
+        CloudAPI.getBonds()
+            .then(res => {
+                setBonds({
+                    data: res,
+                    isLoading: false
                 })
-        }, 1000);
-        return () => clearTimeout(timer);
+            })
     }, [])
+
+    console.log(bonds)
 
 
     return <>
@@ -89,8 +90,14 @@ function Bond({item}: { item: BondInfo }) {
         <Link href={`/bonds/explore/${item._id}`}>
             <div className={Styles.bond}>
                 <span>Total/Purchased/Redeemed: {response.total}/{item.purchased}/{item.redeemed}</span>
-                <span>Investment: {response.investment.amount} {response.investment.currency}</span>
-                <span>Interest: {response.interest.amount} {response.interest.currency}</span>
+                <div className={Styles.section}>
+                    <span>Investment: {response.investment.amount} {response.investment.currency} </span>
+                    {investmentTokenInfo?.verified && <VerifiedSVG/>}
+                </div>
+                <div className={Styles.section}>
+                    <span>Interest: {response.interest.amount} {response.interest.currency}</span>
+                    {interestTokenInfo?.verified && <VerifiedSVG/>}
+                </div>
                 <span>Redeem Lock period: {formatTime(Number(item.redeemLockPeriod))}</span>
                 <span>Issuer: {item.issuer}</span>
                 <div className='progress'/>
@@ -109,7 +116,7 @@ function Bond({item}: { item: BondInfo }) {
 function ShowMore() {
     return <>
         <Link href={`/bonds/explore`}>
-            <div className={Styles.bond}>
+            <div className={Styles.showMore}>
                 <span>Show more</span>
             </div>
         </Link>

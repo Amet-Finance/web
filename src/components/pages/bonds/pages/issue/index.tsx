@@ -13,6 +13,7 @@ import {decode} from "@/modules/web3/zcb";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {TokenInfo} from "@/modules/web3/type";
+import {toast} from "react-toastify";
 
 const BondTokenInfo = {
     Investment: 'Investment token',
@@ -32,7 +33,7 @@ export default function Issue() {
         // todo add here the investmentTokenInfo and the interest one
         if (!bondInfo.investmentToken || !bondInfo.interestToken) {
             // toast add here
-            alert("Not ready to issue")
+            toast.error(`Please fill all the inputs`)
             return;
         }
 

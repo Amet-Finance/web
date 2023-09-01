@@ -7,6 +7,7 @@ import {TransactionConfig, TransactionReceipt} from "web3-core";
 import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
 import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
+import * as AccountSlice from "@/store/redux/account";
 
 function getWeb3Instance() {
     const rpcs = RPC_BY_CHAINS[DEFAULT_CHAIN_ID];
@@ -15,8 +16,8 @@ function getWeb3Instance() {
     return new Web3(rpcs[index]);
 }
 
-async function connectWallet(type: string) {
-    let address;
+async function connectWallet(type: string, callback?: any) {
+    let address = getWalletAddress();
 
     switch (type) {
         case WalletTypes.Metamask: {
@@ -25,9 +26,14 @@ async function connectWallet(type: string) {
     }
 
     if (!address) {
-        alert("Could not Connect")
+        toast.error(`Could not connect ${type} wallet`)
+        return;
     }
 
+    if (callback) {
+        callback();
+    }
+    await AccountSlice.initWallet(address);
     return address;
 }
 

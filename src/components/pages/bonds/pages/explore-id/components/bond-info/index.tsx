@@ -77,10 +77,35 @@ function TotalInfo({info, tokens}: { info: BondInfoDetailed, tokens: { [key: str
 
             <div className={Styles.sectionHorizontal}>
                 <span>Bonds redemption secured percentage:</span>
-                <span>{format(+redeemedPercentage.toFixed(2))}</span>
+                <span className='secured'>{format(+redeemedPercentage.toFixed(2))}%</span>
             </div>
         </div>
+        <style jsx>{`
+          .secured {
+            color: ${getColor(redeemedPercentage)};
+          }
+
+        `}</style>
     </>
+}
+
+function getColor(percent: number) {
+
+    // if(percent > )
+    percent = Math.min(100, Math.max(0, percent));
+
+    // Calculate the red and green components based on the percentage
+    const red = 255 * (1 - percent / 100);
+    const green = 255 * (percent / 100);
+
+    // Convert the red and green values to hexadecimal format
+    const redHex = Math.round(red).toString(16).padStart(2, '0');
+    const greenHex = Math.round(green).toString(16).padStart(2, '0');
+
+    // Combine the red and green components to create the color
+    const color = `#${redHex}${greenHex}00`;
+
+    return color;
 }
 
 function BondLockInfo({info}: any) {
