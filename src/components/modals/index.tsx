@@ -5,10 +5,11 @@ import Modal, {setAppElement} from "react-modal";
 import ConnectWallet from "@/components/modals/connect-wallet";
 import {Inter} from "next/font/google";
 import IssuedBondSuccessModal from "@/components/modals/issued-bond-success-modal";
+import {RootState} from "@/store/redux/type";
 
 const inter = Inter({subsets: ['latin']})
 export default function ModalHandler() {
-    const modalState = useSelector((item: any) => item.modal)
+    const modalState = useSelector((item: RootState) => item.modal)
     const isClosed = modalState.type === ModalTypes.None;
 
     if (isClosed) {

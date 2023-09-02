@@ -18,7 +18,7 @@ type BondInfo = {
 type TokenDetails = {
     tokenInfo: TokenInfo|undefined,
     total: number,
-    isLoading: boolean,
+    isLoading?: boolean,
     type: string
 }
 

@@ -7,6 +7,7 @@ import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {getWeb3Instance} from "@/modules/web3";
 import * as CloudAPI from "@/modules/cloud-api";
 import VerifiedSVG from "../../../../../../public/svg/verified";
+import WarningSVG from "../../../../../../public/svg/warning";
 
 const {toBN} = getWeb3Instance().utils;
 
@@ -32,8 +33,6 @@ export default function BondsShowcase() {
                 })
             })
     }, [])
-
-    console.log(bonds)
 
 
     return <>
@@ -92,11 +91,11 @@ function Bond({item}: { item: BondInfo }) {
                 <span>Total/Purchased/Redeemed: {response.total}/{item.purchased}/{item.redeemed}</span>
                 <div className={Styles.section}>
                     <span>Investment: {response.investment.amount} {response.investment.currency} </span>
-                    {investmentTokenInfo?.verified && <VerifiedSVG/>}
+                    {investmentTokenInfo?.verified ? <VerifiedSVG/> : <WarningSVG/>}
                 </div>
                 <div className={Styles.section}>
                     <span>Interest: {response.interest.amount} {response.interest.currency}</span>
-                    {interestTokenInfo?.verified && <VerifiedSVG/>}
+                    {interestTokenInfo?.verified ? <VerifiedSVG/> : <WarningSVG/>}
                 </div>
                 <span>Redeem Lock period: {formatTime(Number(item.redeemLockPeriod))}</span>
                 <span>Issuer: {item.issuer}</span>

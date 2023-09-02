@@ -9,6 +9,7 @@ import {useEffect, useState} from "react";
 import * as Web3Service from "@/modules/web3";
 import {shorten} from "@/modules/web3/utils/address";
 import * as AccountSlice from "@/store/redux/account";
+import {RootState} from "@/store/redux/type";
 
 
 const navItems: any = [
@@ -87,7 +88,7 @@ function NavLink({link}: any) {
 
 
 function WalletState() {
-    const account: Account = useSelector((item: any) => item.account);
+    const account = useSelector((item: RootState) => item.account);
 
     if (account.address) {
         return <ConnectedState/>
@@ -103,7 +104,7 @@ function WalletState() {
 
 function ConnectedState() {
     const [isEnabled, setEnabled] = useState(false);
-    const account: Account = useSelector((item: any) => item.account);
+    const account = useSelector((item: RootState) => item.account);
     const enable = () => setEnabled(!isEnabled);
     const addressStyles = `${Styles.address} ${!isEnabled && Styles.addressBorder} ${isEnabled && Styles.enabledAddress}`
     const dropStyles = `${Styles.addressDropDown} ${isEnabled && Styles.enabledDrop}`

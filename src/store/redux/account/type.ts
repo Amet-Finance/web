@@ -1,13 +1,9 @@
 type Account = {
     address: string,
+    chain: string,
     balance: { [key: string]: any[] }
 }
 
-type ConnectPayload = {
-    address: string
-}
-
 export type {
-    Account,
-    ConnectPayload
+    Account
 }

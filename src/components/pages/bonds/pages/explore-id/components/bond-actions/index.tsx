@@ -15,6 +15,7 @@ import ClearSVG from "../../../../../../../../public/svg/clear";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import {getTokensInfo} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
+import {RootState} from "@/store/redux/type";
 
 const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -84,7 +85,7 @@ function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: Tok
     const [effectRefresher, setEffectRefresher] = useState(0);
     const [amount, setAmount] = useState(0);
     const [allowance, setAllowance] = useState(0)
-    const account: Account = useSelector((item: any) => item.account);
+    const account = useSelector((item: RootState) => item.account);
     const {address} = account;
 
     useEffect(() => {
@@ -181,7 +182,7 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
     const [tokenIds, setTokenIds] = useState([] as any);
     const tokenHandlers = [tokenIds, setTokenIds]
 
-    const account: Account = useSelector((item: any) => item.account);
+    const account = useSelector((item: RootState) => item.account);
     const contractAddress = info._id?.toLowerCase() || ""
     const balanceTokenIds = account.balance[contractAddress] || [];
     const [holdings, setHoldings] = useState([])
@@ -204,7 +205,8 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
                         timeLeft: isValid ? "0" : formatTime(timeLeft)
                     }
                 })
-                console.log(tokensWithDates)
+
+                // console.log(tokensWithDates)
                 setHoldings(tokensWithDates);
             })
             .catch(error => {

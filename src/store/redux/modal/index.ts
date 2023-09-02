@@ -1,8 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import store from "@/store/store";
+import {Modal} from "@/store/redux/modal/type";
 
-const emptyModalState = {
+const emptyModalState: Modal = {
     type: ModalTypes.None,
     additional: undefined
 }

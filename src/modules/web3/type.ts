@@ -17,8 +17,10 @@ type TokenInfo = {
     symbol?: string,
     decimals?: number,
     verified?: boolean,
+    unidentified?: boolean,
     icon?: string,
     balance?: number,
+    balanceClean?: string,
     isLoading?: boolean
 }
 

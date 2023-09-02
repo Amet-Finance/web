@@ -7,12 +7,13 @@ import {useSelector} from "react-redux";
 import {Account} from "@/store/redux/account/type";
 import {getInfo} from "@/modules/web3/zcb";
 import {TokenInfo} from "@/modules/web3/type";
+import {RootState} from "@/store/redux/type";
 
 export default function ExploreId({props}: any) {
     const [info, setInfo] = useState(props);
     const [tokens, setTokens] = useState({} as TokenInfo);
 
-    const account: Account = useSelector((item: any) => item.account);
+    const account = useSelector((item: RootState) => item.account);
     const {address} = account
 
 

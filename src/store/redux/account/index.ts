@@ -1,10 +1,12 @@
 import {createSlice} from "@reduxjs/toolkit";
 import store from "@/store/store";
-import {Account, ConnectPayload} from "@/store/redux/account/type";
+import {Account} from "@/store/redux/account/type";
 import * as CloudAPI from "../../../modules/cloud-api/index"
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 const emptyState: Account = {
     address: "",
+    chain: DEFAULT_CHAIN_ID,
     balance: {}
 }
 
@@ -28,7 +30,7 @@ const reducer = counterSlice.reducer;
 
 const {connect, updateBalance, disconnect} = counterSlice.actions;
 
-function connectWallet({address}: ConnectPayload) {
+function connectWallet(address: string) {
     store.dispatch(connect({
         address
     }))
@@ -47,7 +49,7 @@ async function initBalance(address: string) {
 }
 
 async function initWallet(address: string) {
-    connectWallet({address});
+    connectWallet(address);
     await initBalance(address);
 }
 
