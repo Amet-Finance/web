@@ -7,6 +7,7 @@ import Headers from "@/components/headers";
 import { Inter } from 'next/font/google'
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import GoogleAnalytics from "@/components/headers/google-analytics";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
