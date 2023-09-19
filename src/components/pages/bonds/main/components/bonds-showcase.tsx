@@ -37,8 +37,8 @@ export default function BondsShowcase() {
 
     return <>
         <div className={Styles.bondsContainer}>
-            <h1>Explore bonds</h1>
-            <p>Some bonds info goes here</p>
+            <h1>Explore New Bonds</h1>
+            <p className={`${Styles.bondsText} ${Styles.secondary}`}>Stay ahead of the curve by exploring our freshly launched bonds. These opportunities are your ticket to the forefront of decentralized finance innovation.</p>
             {bonds.isLoading ? <Loading/> : <BondsScreen bonds={bonds}/>}
         </div>
     </>
@@ -116,7 +116,7 @@ function ShowMore() {
     return <>
         <Link href={`/bonds/explore`}>
             <div className={Styles.showMore}>
-                <span>Show more</span>
+                <span>Explore more bonds</span>
             </div>
         </Link>
     </>

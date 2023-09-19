@@ -39,7 +39,7 @@
 
 .bondsContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     justify-items: center;
     gap: 1rem;
     width: 100%;
@@ -60,15 +60,24 @@
 }
 
 .bond {
-    width: 200px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
     height: 200px;
-    background-color: #424242;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 0.25rem;
     cursor: pointer;
+    font-size: 0.8rem;
+    padding: 1rem;
 }
 
 .bond:hover {
     transform: scale(1.05);
+}
+
+.section {
+    display: flex;
+    justify-content: space-between;
 }
 
 .showMore {

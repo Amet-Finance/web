@@ -29,7 +29,7 @@ const navItems: any = [
         ]
     },
     {
-        title: "Documents",
+        title: "Documentation",
         defaultUrl: "https://docs.amet.finance/v1/",
         defaultTarget: "_blank"
     }

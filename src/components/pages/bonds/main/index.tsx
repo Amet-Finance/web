@@ -12,7 +12,7 @@ export default function Bonds() {
                 <Statistics/>
             </div>
             <BondsShowcase/>
-            <LearnMore/>
+            {/*<LearnMore/>*/}
         </main>
     </>
 }

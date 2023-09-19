@@ -1,3 +1,10 @@
 1. Add chain to the top
 2. Write gitbook about amet finance
 3. Background video with arithmetic equations. Ask Karen(with Artak).
+
+
+
+// Contract issues
+1. Add owner changing
+2. (Selectable by the issuer)Add capitulation redeem logic which will redeem the bond with 25% of it's price, and show the metrics as well in the bond section
+or maybe using the date estimate the interest amount, for example if it's 2 days left it can be 98% return

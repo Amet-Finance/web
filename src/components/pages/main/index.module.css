@@ -59,3 +59,9 @@
     border-radius: 0.25rem;
     cursor: not-allowed;
 }
+
+@media (max-width: 700px) {
+    .container {
+        flex-direction: column;
+    }
+}
