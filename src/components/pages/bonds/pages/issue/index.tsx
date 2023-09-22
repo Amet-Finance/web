@@ -156,7 +156,7 @@ export default function Issue() {
                             <input type="text" className={Styles.input}
                                    id="investmentToken"
                                    onChange={onChange}
-                                   placeholder="Investment token"/>
+                                   placeholder="Investment token contract address"/>
                             <input type="number" className={Styles.input}
                                    id="investmentTokenAmount"
                                    onChange={onChange}
@@ -167,7 +167,7 @@ export default function Issue() {
                             <input type="text" className={Styles.input}
                                    id="interestToken"
                                    onChange={onChange}
-                                   placeholder="Interest token"/>
+                                   placeholder="Interest token contract address"/>
                             <input type="number" className={Styles.input}
                                    id="interestTokenAmount"
                                    onChange={onChange}

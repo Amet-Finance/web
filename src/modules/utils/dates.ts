@@ -1,4 +1,7 @@
 function formatTime(seconds: number) {
+    const years = Math.floor(seconds / 31536000);
+    seconds -= years * 2592000;
+
     const months = Math.floor(seconds / 2592000);
     seconds -= months * 2592000;
 
@@ -12,6 +15,10 @@ function formatTime(seconds: number) {
     seconds -= minutes * 60;
 
     const timeSegments = [];
+
+    if (years > 0) {
+        timeSegments.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+    }
 
     if (months > 0) {
         timeSegments.push(`${months} ${months === 1 ? 'month' : 'months'}`);

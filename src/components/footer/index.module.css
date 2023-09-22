@@ -1,12 +1,50 @@
 .container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding: 0.5rem 2rem;
+}
+
+.border {
+    width: 80%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.secondaryText {
+    color: #5B5B5B;
+}
+
+.sections {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2rem 8rem 1.5rem 8rem;
+}
+
+.mainSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .socials {
     display: flex;
-    align-items: center;
     gap: 1rem;
+}
+
+.links {
+    display: flex;
+    gap: 2rem;
+}
+
+.link {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.attributes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }

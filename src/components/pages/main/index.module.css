@@ -1,67 +1,198 @@
 .container {
     position: relative;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 5rem;
     gap: 5rem;
-    padding: 5rem 3rem;
 }
 
-.texts {
+.sections {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 18rem;
+    gap: 5rem;
+    width: 100%;
+}
+
+
+.firstSection {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+    width: 100%;
+}
+
+.firstImage {
+    position: absolute;
+    right: 0;
+}
+
+.mainText {
+    font-size: 5rem;
+}
+
+.secondaryText {
+    color: #5B5B5B;
+}
+
+.stroke {
+    width: 15%;
+    height: 1px;
+    background-color: white;
+}
+
+.paragraphText {
+    color: #5B5B5B;
+    max-width: 45%;
+}
+
+.actionButtons {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.getStarted {
+    padding: 0.75rem 2rem;
+    border-radius: 0.25rem;
+    background-color: black;
+    color: white;
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+
+.connect {
+    padding: 0.75rem 2rem;
+    border-radius: 0.25rem;
+    background-color: white;
+    color: black;
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+
+.sectionDown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: s-resize;
+}
+
+.hz {
+    width: 3px;
+    height: 100px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 20%), rgba(255, 255, 255));
+}
+
+.cl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    color: black;
+}
+
+.statsAndDocs {
+    display: flex;
+    flex-direction: column;
+}
+
+.bondBackgroundImage {
+    position: absolute;
+    left: 0;
+}
+
+.bondsSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5rem;
+    width: 100%;
+    z-index: 1;
+}
+
+.bondTexts {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.bondText {
+    max-width: 400px;
+    color: #5B5B5B;
+}
+
+.bondInfo {
+    display: flex;
+    gap: 15rem;
+}
+
+.bondInfoTexts {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    max-width: 500px;
 }
 
-.boxes {
+.bondInfoText {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.box {
+.bondInfoParagraph {
+    max-width: 400px;
+    color: #5B5B5B;
+}
+
+.statistics {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    z-index: 2;
-    padding: 1.25rem 3rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.25rem;
-    cursor: pointer;
+    justify-content: center;
+    gap: 5rem;
+    background-color: #101010;
+    width: 100%;
+    padding: 3rem 0;
 }
 
-.circle {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-
-.box:hover {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 1rem rgba(255, 255, 255, 0.2);
-}
-
-.box:hover .circle {
-    background-color: rgba(255, 255, 255, 0.5);
-}
-
-.boxInactive {
+.stat {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    z-index: 2;
-    padding: 1.25rem 3rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.25rem;
-    cursor: not-allowed;
+    gap: 0.5rem;
 }
 
-@media (max-width: 700px) {
-    .container {
-        flex-direction: column;
-    }
+.highText {
+    font-size: 2rem;
+    font-weight: 600;
+}
+.lowText {
+    font-size: 0.8rem;
+    color: #5B5B5B;
+}
+
+.documentation {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    cursor: alias;
+    /*min-height: 400px;*/
+}
+
+.documentation:hover svg path {
+    stroke-opacity: 1;
+}
+
+.documentText {
+    position: absolute;
+    font-size: 4rem;
+    z-index: 1;
 }
