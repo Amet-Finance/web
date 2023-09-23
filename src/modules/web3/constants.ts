@@ -13,17 +13,26 @@ const CHAIN_INFO: {
         chainId: string,
         chainName: string,
         rpcUrls: string[],
-        nativeCurrency: string,
-        explorer: string
+        nativeCurrency: {
+            "name": string,
+            "symbol": string,
+            "decimals": number
+        },
+        blockExplorerUrls: string[]
     }
 } = {
     [CHAIN_IDS.Mumbai]: {
         chainId: CHAIN_IDS.Mumbai,
         chainName: "Mumbai",
         rpcUrls: RPC_BY_CHAINS[CHAIN_IDS.Mumbai],
-        nativeCurrency: "MATIC",
-        explorer: "https://mumbai.polygonscan.com"
+        nativeCurrency: {
+            name: "MATIC",
+            symbol: "MATIC",
+            decimals: 18
+        },
+        blockExplorerUrls: ["https://mumbai.polygonscan.com"]
     }
+
 }
 
 const WalletTypes = {

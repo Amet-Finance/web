@@ -32,6 +32,7 @@ export default function BondActions({info, tokens}: any) {
                 {
                     Object.keys(Actions)
                         .map((key: string) => <ActionButton name={key}
+                                                            info={info}
                                                             actionHandler={actionHandler}
                                                             key={key}/>)
                 }
@@ -41,14 +42,26 @@ export default function BondActions({info, tokens}: any) {
     </>
 }
 
-function ActionButton({name, actionHandler}: any) {
+function ActionButton({name, info, actionHandler}: any) {
     const [action, setAction] = actionHandler;
+    const account = useSelector((item: RootState) => item.account);
     const isSelected = Actions[name] === action;
     const className = `${Styles.action} ${isSelected ? Styles.selectedAction : ""}`
     const select = () => setAction(Actions[name])
 
+    const showName = () => {
+        let nameTmp = name;
+        if (Actions[name] === Actions.Redeem) {
+            const contractAddress = info._id?.toLowerCase() || ""
+            const balanceTokenIds = account.balance[contractAddress] || [];
+            nameTmp += `(${balanceTokenIds.length})`;
+        }
+
+        return nameTmp;
+    }
+
     return <>
-        <span className={className} onClick={select}>{name}</span>
+        <span className={className} onClick={select}>{showName()}</span>
     </>
 }
 
@@ -180,6 +193,7 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
 
     const {_id, redeemLockPeriod} = info;
     const [tokenIds, setTokenIds] = useState([] as any);
+    const [loading, setLoading] = useState(false);
     const tokenHandlers = [tokenIds, setTokenIds]
 
     const account = useSelector((item: RootState) => item.account);
@@ -191,7 +205,7 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
 
     //todo add here a loader
     useEffect(() => {
-
+        setLoading(true);
         getTokensInfo(contractAddress, balanceTokenIds)
             .then(response => {
                 const utcTimestamp = Date.now() / 1000;
@@ -209,12 +223,11 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
                 // console.log(tokensWithDates)
                 setHoldings(tokensWithDates);
             })
-            .catch(error => {
-                console.log(error)
-            })
+            .catch(error => console.log(`getTokensInfo`, error))
+            .finally(() => setLoading(false))
     }, [account.address, account.balance[contractAddress]])
 
-    if (!holdings.length) {
+    if (!holdings.length && !loading) {
         return <>
             <span>There are no bonds to redeem</span>
         </>
@@ -260,18 +273,29 @@ function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string
 
     return <>
         <div className={Styles.redeem}>
-            <div className={Styles.redeemActions}>
-                <SelectAllSVG onClick={selectAll}/>
-                <ClearSVG onClick={clearAll}/>
-            </div>
-            <div className={Styles.tokenIds}>
-                {
-                    holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
-                                                              tokenHandlers={tokenHandlers}
-                                                              key={tokenInfo.id}/>)
-                }
-            </div>
-            <SubmitButton/>
+            {
+                loading ?
+                    <>
+                        <div className={Styles.loader}>
+                            <Loading/>
+                        </div>
+                    </>
+                    :
+                    <>
+                        <div className={Styles.redeemActions}>
+                            <SelectAllSVG onClick={selectAll}/>
+                            <ClearSVG onClick={clearAll}/>
+                        </div>
+                        <div className={Styles.tokenIds}>
+                            {
+                                holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
+                                                                          tokenHandlers={tokenHandlers}
+                                                                          key={tokenInfo.id}/>)
+                            }
+                        </div>
+                        <SubmitButton/>
+                    </>
+            }
         </div>
     </>
 }

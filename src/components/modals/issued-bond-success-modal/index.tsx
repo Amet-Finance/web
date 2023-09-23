@@ -18,7 +18,7 @@ export default function IssuedBondSuccessModal() {
             <h1>Congratulations</h1>
             <p>Your bonds were successfully issued. Visit and see the live version of
                 <Link href={url} target="_blank">
-                    <span className={Styles.link}>your bonds page.</span>
+                    <span className={Styles.link}> your bonds page.</span>
                 </Link>
             </p>
         </div>

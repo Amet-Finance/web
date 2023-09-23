@@ -51,7 +51,7 @@ function Links() {
         <div className={Styles.links}>
             {links.map(item => {
                 return <>
-                    <div className={Styles.link}>
+                    <div className={Styles.link} key={item.title}>
                         <span>{item.title}</span>
                         <div className={Styles.attributes}>
                             {item.attributes.map((attribute, index) => <Attribute info={attribute} key={index}/>)}

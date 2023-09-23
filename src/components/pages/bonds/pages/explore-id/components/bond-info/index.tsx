@@ -1,12 +1,13 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
-import {CHAIN_INFO, DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 import Link from "next/link";
 import {formatTime} from "@/modules/utils/dates";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import {getWeb3Instance} from "@/modules/web3";
 import {format} from "@/modules/utils/numbers";
+import {getExplorerAddress} from "@/modules/web3/utils/address";
+import {getExplorerToken} from "@/modules/web3/utils/token";
 
 export default function BondInfo({info, tokens}: any) {
 
@@ -21,8 +22,8 @@ export default function BondInfo({info, tokens}: any) {
 }
 
 function BondIssuerInfo({info}: any) {
-    const bondAddress = `${CHAIN_INFO[DEFAULT_CHAIN_ID].explorer}/address/${info._id}`
-    const explorerAddress = `${CHAIN_INFO[DEFAULT_CHAIN_ID].explorer}/address/${info.issuer}`
+    const bondAddress = getExplorerAddress(info._id);
+    const explorerAddress = getExplorerAddress(info.issuer);
 
     return <>
         <div className={Styles.section}>
@@ -169,7 +170,7 @@ function Token({details}: {
         return null;
     }
 
-    const tokenUrl = `${CHAIN_INFO[DEFAULT_CHAIN_ID].explorer}/token/${tokenAddress}`;
+    const tokenUrl = getExplorerToken(tokenAddress)
     const icon = tokenInfo?.icon || ""
     const name = tokenInfo?.name || ""
     const symbol = tokenInfo?.symbol || ""

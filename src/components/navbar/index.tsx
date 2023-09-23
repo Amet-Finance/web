@@ -97,7 +97,7 @@ function WalletState() {
     return <>
         <button
             className={Styles.connect}
-            onClick={openModal.bind(null, ModalTypes.ConnectWallet)}>Connect
+            onClick={() => openModal(ModalTypes.ConnectWallet)}>Connect
         </button>
     </>
 }
