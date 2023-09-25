@@ -34,15 +34,15 @@ function Links() {
         {
             title: "About Us",
             attributes: [
-                {title: 'Terms of service', url: '/'},
-                {title: 'Privacy policy', url: '/'},
+                {title: 'Terms Of Service', url: 'https://docs.amet.finance/v1/additional-materials/terms-of-service'},
+                {title: 'Privacy Policy', url: 'https://docs.amet.finance/v1/additional-materials/privacy-policy'},
             ]
         },
         {
             title: "Get Help",
             attributes: [
-                {title: 'Contact Us', url: '/'},
-                {title: 'Help Center', url: '/'},
+                {title: 'Contact Us', url: 'mailto:hello@amet.finance'},
+                {title: 'FAQ', url: 'https://docs.amet.finance/v1/frequently-asked-questions-faqs'},
             ]
         }
     ]
