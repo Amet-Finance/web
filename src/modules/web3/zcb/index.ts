@@ -63,7 +63,8 @@ function issueBonds(bondInfo: BondInfo): string | undefined {
             investmentToken,
             investmentAmount,
             interestToken,
-            interestAmount
+            interestAmount,
+            `${investmentTokenInfo?.symbol}-${interestTokenInfo?.symbol} | Amet Finance`
         ).encodeABI();
     } catch (error: any) {
         console.log(`error`, error)

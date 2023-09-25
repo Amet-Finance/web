@@ -16,52 +16,26 @@ import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import {getTokensInfo} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
 import {RootState} from "@/store/redux/type";
+import Manage from "@/components/pages/bonds/pages/explore-id/components/bond-actions/manage";
+import Redeem from "@/components/pages/bonds/pages/explore-id/components/bond-actions/redeem";
+import Purchase from "@/components/pages/bonds/pages/explore-id/components/bond-actions/purchase";
+import ActionButtons from "@/components/pages/bonds/pages/explore-id/components/bond-actions/action-buttons";
 
-const Actions: { [key: string]: string } = {
+export const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
-    Redeem: 'redeem'
+    Redeem: 'redeem',
+    Manage: 'manage'
 }
 
-export default function BondActions({info, tokens}: any) {
+export default function BondActions({info, tokens}: { info: BondInfoDetailed, tokens: any }) {
     const [action, setAction] = useState(Actions.Purchase);
     const actionHandler = [action, setAction];
 
     return <>
         <div className={Styles.bondActions}>
-            <div className={Styles.sectionHorizontal}>
-                {
-                    Object.keys(Actions)
-                        .map((key: string) => <ActionButton name={key}
-                                                            info={info}
-                                                            actionHandler={actionHandler}
-                                                            key={key}/>)
-                }
-            </div>
-            <Action actionHandler={actionHandler} info={info} tokens={tokens}/>
+            <ActionButtons info={info} actionHandler={actionHandler}/>
+            <Action info={info} actionHandler={actionHandler} tokens={tokens}/>
         </div>
-    </>
-}
-
-function ActionButton({name, info, actionHandler}: any) {
-    const [action, setAction] = actionHandler;
-    const account = useSelector((item: RootState) => item.account);
-    const isSelected = Actions[name] === action;
-    const className = `${Styles.action} ${isSelected ? Styles.selectedAction : ""}`
-    const select = () => setAction(Actions[name])
-
-    const showName = () => {
-        let nameTmp = name;
-        if (Actions[name] === Actions.Redeem) {
-            const contractAddress = info._id?.toLowerCase() || ""
-            const balanceTokenIds = account.balance[contractAddress] || [];
-            nameTmp += `(${balanceTokenIds.length})`;
-        }
-
-        return nameTmp;
-    }
-
-    return <>
-        <span className={className} onClick={select}>{showName()}</span>
     </>
 }
 
@@ -75,257 +49,11 @@ function Action({actionHandler, info, tokens}: any) {
         case Actions.Redeem : {
             return <Redeem info={info} tokens={tokens}/>
         }
+        case Actions.Manage: {
+            return <Manage info={info} tokens={tokens}/>
+        }
         default: {
             return <></>
         }
     }
-}
-
-function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
-
-    const {
-        _id,
-        investmentTokenAmount,
-        total,
-        purchased,
-        investmentToken,
-        interestToken
-    } = info;
-
-    const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
-    const bondsLeft = Number(total) - Number(purchased);
-
-    const [effectRefresher, setEffectRefresher] = useState(0);
-    const [amount, setAmount] = useState(0);
-    const [allowance, setAllowance] = useState(0)
-    const account = useSelector((item: RootState) => item.account);
-    const {address} = account;
-
-    useEffect(() => {
-        getAllowance(interestToken, address, _id)
-            .then(response => setAllowance(response))
-            .catch(error => null)
-    }, [address, effectRefresher])
-
-
-    if (!investmentTokenInfo) {
-        return <>
-            <div className={Styles.loader}>
-                <Loading/>
-            </div>
-        </>;
-    }
-
-    const decimals = Number(investmentTokenInfo?.decimals) || 18
-
-    // console.log(`investmentTokenAmount, decimals`, investmentTokenAmount, decimals)
-    const investmentAmountClean = toBN(`${investmentTokenAmount}`).div(toBN(10).pow(toBN(decimals)));
-    const totalPrice = amount * investmentAmountClean.toNumber();
-
-    const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
-
-    const isApproval = totalPrice > allowanceDivided;
-
-    // const isApproval = false;
-
-    function onChange(event: Event | any) {
-        const {value, type} = event.target;
-        setAmount(Number(value) || 0);
-    }
-
-    async function submit() {
-        if (isApproval) {
-
-            const web3 = getWeb3Instance();
-            const {toBN} = web3.utils;
-
-            if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {
-                return;
-            }
-
-            const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.ApproveToken, {
-                contractAddress: investmentToken,
-                spender: _id,
-                value: toBN(amount).mul(toBN(investmentTokenAmount))
-            });
-            console.log(transaction)
-        } else {
-            const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
-                contractAddress: _id,
-                count: amount
-            });
-            await initBalance(account.address);
-            console.log(transaction);
-        }
-        setEffectRefresher(Math.random());
-
-    }
-
-    const SubmitButton = () => {
-        let title = "Purchase"
-        let className = `${Styles.submit}`;
-        let onClick = submit
-
-        if (Number(amount) > Number(bondsLeft)) {
-            title = `Not enough bonds left`
-            className += ` ${Styles.disable}`
-            onClick = async () => {
-            };
-        } else if (isApproval) {
-            title = `Approve ${investmentTokenInfo?.symbol}`
-        }
-
-        return <button className={className} onClick={onClick}>{title}</button>
-    }
-
-    return <>
-        <div className={Styles.section}>
-            <input className={Styles.input}
-                   type="number"
-                   onChange={onChange}
-                   placeholder="The amount of bonds you want to purchase"/>
-            <SubmitButton/>
-        </div>
-    </>
-}
-
-function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
-
-    const {_id, redeemLockPeriod} = info;
-    const [tokenIds, setTokenIds] = useState([] as any);
-    const [loading, setLoading] = useState(false);
-    const tokenHandlers = [tokenIds, setTokenIds]
-
-    const account = useSelector((item: RootState) => item.account);
-    const contractAddress = info._id?.toLowerCase() || ""
-    const balanceTokenIds = account.balance[contractAddress] || [];
-    const [holdings, setHoldings] = useState([])
-    // todo calculate as well the amount that is left there
-    //  so I won't be able to choose it if there's no secured redemption amount
-
-    //todo add here a loader
-    useEffect(() => {
-        setLoading(true);
-        getTokensInfo(contractAddress, balanceTokenIds)
-            .then(response => {
-                const utcTimestamp = Date.now() / 1000;
-                const tokensWithDates = response.map((date: number, index: number) => {
-                    const isValid = utcTimestamp - Number(redeemLockPeriod) > Number(date)
-                    const timeLeft = Number(date) + Number(redeemLockPeriod) - utcTimestamp
-                    return {
-                        id: balanceTokenIds[index],
-                        purchaseDate: Number(date),
-                        isValid,
-                        timeLeft: isValid ? "0" : formatTime(timeLeft)
-                    }
-                })
-
-                // console.log(tokensWithDates)
-                setHoldings(tokensWithDates);
-            })
-            .catch(error => console.log(`getTokensInfo`, error))
-            .finally(() => setLoading(false))
-    }, [account.address, account.balance[contractAddress]])
-
-    if (!holdings.length && !loading) {
-        return <>
-            <span>There are no bonds to redeem</span>
-        </>
-    }
-
-    const selectAll = () => {
-        // todo refactor this and use one loop
-        const tokenIdsLocal = holdings.filter((item: any) => item.isValid).map((item: any) => item.id);
-        setTokenIds(tokenIdsLocal);
-    }
-    const clearAll = () => setTokenIds([]);
-
-    async function submit() {
-        if (!tokenIds.length) {
-            toast.error("You did not select a bond");
-            return;
-        }
-
-        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.RedeemBonds, {
-            contractAddress: _id,
-            ids: tokenIds
-        });
-        setTimeout(() => {
-            initBalance(account.address);
-        }, 5000);
-        setTokenIds([]);
-        console.log(transaction)
-    }
-
-    const SubmitButton = () => {
-        let className = `${Styles.submit}`;
-        let onClick = submit;
-
-
-        if (!tokenIds.length) {
-            className += ` ${Styles.disable}`
-            onClick = async () => {
-            }
-        }
-
-        return <button className={className} onClick={onClick}>Redeem</button>
-    }
-
-    return <>
-        <div className={Styles.redeem}>
-            {
-                loading ?
-                    <>
-                        <div className={Styles.loader}>
-                            <Loading/>
-                        </div>
-                    </>
-                    :
-                    <>
-                        <div className={Styles.redeemActions}>
-                            <SelectAllSVG onClick={selectAll}/>
-                            <ClearSVG onClick={clearAll}/>
-                        </div>
-                        <div className={Styles.tokenIds}>
-                            {
-                                holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
-                                                                          tokenHandlers={tokenHandlers}
-                                                                          key={tokenInfo.id}/>)
-                            }
-                        </div>
-                        <SubmitButton/>
-                    </>
-            }
-        </div>
-    </>
-}
-
-function TokenId({tokenInfo, tokenHandlers}: any) {
-
-    const tokenId = tokenInfo.id;
-    const purchaseDate = tokenInfo.purchaseDate;
-    const {isValid, timeLeft} = tokenInfo;
-
-    // const isValid = purchaseDate * 1000;
-    const [tokenIds, setTokenIds] = tokenHandlers;
-    const tokenIndex = tokenIds.indexOf(tokenId);
-    const select = () => {
-        if (isSelected) {
-            const tmp = [...tokenIds];
-            tmp.splice(tokenIndex, 1);
-            setTokenIds(tmp);
-        } else {
-            setTokenIds([...tokenIds, tokenId])
-        }
-    }
-    const isSelected = tokenIndex !== -1;
-
-    const className = `${Styles.tokenId} ${isSelected && Styles.selectedToken} ${!isValid && Styles.disable}`
-    const title = !isValid ? `You can redeem the bond after ${timeLeft}` : `Select to redeem #${tokenId} Bond`
-    const onClick = isValid ? select : () => null;
-
-
-    return <>
-        <span className={className} onClick={onClick} title={title}>{tokenId}</span>
-    </>
 }
