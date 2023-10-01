@@ -4,8 +4,7 @@ import Image from "next/image";
 import {useRef} from "react";
 import BackgroundDocumentsSVG from "../../../../public/svg/background-documents";
 import Link from "next/link";
-import {openModal} from "@/store/redux/modal";
-import {ModalTypes} from "@/store/redux/modal/constants";
+import {join} from "@/modules/utils/styles";
 
 const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
@@ -38,10 +37,10 @@ export default function Home() {
                     <p className={Styles.paragraphText}>{Texts.pMain}</p>
                     <div className={Styles.actionButtons}>
                         <Link href='/bonds'>
-                            <button className={Styles.getStarted}>Get Started</button>
+                            <button className={Styles.btn}>Get Started</button>
                         </Link>
                         <Link href='https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-is-amet-finance'>
-                            <button className={Styles.connect}>Learn More</button>
+                            <button className={join([Styles.connect, Styles.btn])}>Learn More</button>
                         </Link>
                     </div>
                 </div>
@@ -55,7 +54,7 @@ export default function Home() {
             <div className={Styles.sections}>
                 {/*<p className={Styles.secondaryText}>Explore the on-chain vision</p>*/}
                 <div className={Styles.bondBackgroundImage}>
-                    <Image src={'./svg/Circle.svg'} alt={"C"} width={250} height={500}/>
+                    <Image src={'./svg/Circle.svg'} alt={"C"} fill/>
                 </div>
                 <div className={Styles.bondsSection} ref={bondsRef}>
                     <h1 className={staatliches.className}>BONDS</h1>
@@ -64,7 +63,9 @@ export default function Home() {
                         <p className={Styles.bondText}>{Texts.pBonds2}</p>
                     </div>
                     <div className={Styles.bondInfo}>
-                        <Image src={'./svg/Bond.svg'} alt={"Bond"} width={500} height={400}/>
+                        <div className={Styles.bondImage}>
+                            <Image src={'./svg/Bond.svg'} alt={"Bond"} fill/>
+                        </div>
                         <div className={Styles.bondInfoTexts}>
                             <div className={Styles.bondInfoText}>
                                 <h3>Decentralized Access</h3>

@@ -10,6 +10,9 @@ import * as Web3Service from "@/modules/web3";
 import {shorten} from "@/modules/web3/utils/address";
 import * as AccountSlice from "@/store/redux/account";
 import {RootState} from "@/store/redux/type";
+import {join} from "@/modules/utils/styles";
+import BurgerSVG from "../../../public/svg/burger";
+import XmarkSVG from "../../../public/svg/xmark";
 
 
 const navItems: any = [
@@ -46,7 +49,14 @@ export default function Navbar() {
     }, [])
 
     return <>
-        <nav className={Styles.container}>
+        <DesktopNav/>
+        <MobileNav/>
+    </>
+}
+
+function DesktopNav() {
+    return <>
+        <nav className={join([Styles.container, Styles.destkop])}>
             <div className={Styles.nav}>
                 <AmetLogo/>
                 <div className={Styles.navLinks}>
@@ -55,6 +65,37 @@ export default function Navbar() {
             </div>
             <WalletState/>
         </nav>
+    </>
+}
+
+function MobileNav() {
+    const [isVisible, setVisible] = useState(false);
+
+    const changeVisibility = () => setVisible(!isVisible)
+
+    return <>
+        <nav className={join([Styles.container, Styles.mobile])}>
+            <div className={Styles.nav}>
+                <AmetLogo/>
+            </div>
+            <div className={Styles.nav}>
+                {!isVisible ? <BurgerSVG onClick={changeVisibility}/> : <XmarkSVG onClick={changeVisibility}/>}
+            </div>
+            {
+                Boolean(isVisible) && <MobileLinks changeVisibility={changeVisibility}/>
+            }
+        </nav>
+    </>
+}
+
+function MobileLinks({changeVisibility}: any) {
+    return <>
+        <div className={Styles.mobileNav}>
+            <div className={Styles.mobileNavLinks}>
+                {navItems.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
+            </div>
+            <WalletState changeVisibility={changeVisibility}/>
+        </div>
     </>
 }
 
@@ -87,8 +128,13 @@ function NavLink({link}: any) {
 }
 
 
-function WalletState() {
+function WalletState({changeVisibility}: any) {
     const account = useSelector((item: RootState) => item.account);
+
+    const connect = () => {
+        openModal(ModalTypes.ConnectWallet);
+        if(changeVisibility) changeVisibility();
+    }
 
     if (account.address) {
         return <ConnectedState/>
@@ -97,7 +143,7 @@ function WalletState() {
     return <>
         <button
             className={Styles.connect}
-            onClick={() => openModal(ModalTypes.ConnectWallet)}>Connect
+            onClick={connect}>Connect
         </button>
     </>
 }

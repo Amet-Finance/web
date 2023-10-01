@@ -77,7 +77,7 @@ function TotalInfo({info, tokens}: { info: BondInfoDetailed, tokens: { [key: str
             </div>
 
             <div className={Styles.sectionHorizontal}>
-                <span>Bonds redemption secured percentage:</span>
+                <span>Percentage of Secured Bond Redemptions:</span>
                 {/*todo add amount as well*/}
                 <span className='secured'>{format(+redeemedPercentage.toFixed(2))}%</span>
             </div>

@@ -44,13 +44,13 @@ export default function ModalHandler() {
             onRequestClose={closeModal}
             contentLabel="Example Modal">
             <div className={inter.className}>
-                <ModalContent type={modalState.type}/>
+                <ModalContent type={modalState.type} additional={modalState.additional}/>
             </div>
         </Modal>
     </>
 }
 
-function ModalContent({type}: any) {
+function ModalContent({type, additional}: { type: string, additional: any }) {
     switch (type) {
         case ModalTypes.ConnectWallet: {
             return <ConnectWallet/>

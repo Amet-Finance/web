@@ -1,4 +1,4 @@
-function formatTime(seconds: number) {
+function formatTime(seconds: number, isShort?: boolean) {
     const years = Math.floor(seconds / 31536000);
     seconds -= years * 2592000;
 
@@ -16,29 +16,42 @@ function formatTime(seconds: number) {
 
     const timeSegments = [];
 
+    const shorten = (text: string) => {
+        if (isShort) {
+            return text.charAt(0) + "."
+        }
+        return text
+    }
+
     if (years > 0) {
-        timeSegments.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+        const text = shorten(years === 1 ? 'year' : 'years')
+        timeSegments.push(`${years} ${text}`);
     }
 
     if (months > 0) {
-        timeSegments.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+        const text = shorten(months === 1 ? 'month' : 'months')
+        timeSegments.push(`${months} ${text}`);
     }
 
     if (days > 0) {
-        timeSegments.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+        const text = shorten(days === 1 ? 'day' : 'days')
+        timeSegments.push(`${days} ${text}`);
     }
 
     if (hours > 0) {
-        timeSegments.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+        const text = shorten(hours === 1 ? 'hour' : 'hours')
+        timeSegments.push(`${hours} ${text}`);
     }
 
     if (minutes > 0) {
-        timeSegments.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+        const text = shorten(minutes === 1 ? 'minute' : 'minutes')
+        timeSegments.push(`${minutes} ${text}`);
     }
 
-    if (seconds > 0) {
-        timeSegments.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
-    }
+    // if (seconds > 0) { // todo maybe it's needed
+    //     const text = shorten(seconds === 1 ? 'second' : 'seconds')
+    //     timeSegments.push(`${seconds} ${text}`);
+    // }
 
     return timeSegments.join(' ');
 }

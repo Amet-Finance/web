@@ -37,6 +37,9 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
             .catch(error => null)
     }, [address, effectRefresher])
 
+    // console.log(`interestToken`, interestToken)
+    // console.log(`address`, address)
+    // console.log(`contract`, _id)
 
     if (!investmentTokenInfo) {
         return <>
@@ -53,7 +56,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     const totalPrice = amount * investmentAmountClean.toNumber();
 
     const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
-
+    console.log(`allowance`, allowance)
     const isApproval = totalPrice > allowanceDivided;
 
     // const isApproval = false;

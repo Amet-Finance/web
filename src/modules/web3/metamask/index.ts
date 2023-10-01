@@ -1,5 +1,6 @@
 import {CHAIN_INFO, DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 import {TransactionConfig} from "web3-core";
+import {isMobile} from "@/modules/utils/agent";
 
 function getProvider() {
     if (typeof window !== "undefined") {
@@ -8,6 +9,12 @@ function getProvider() {
 }
 
 async function connectWallet() {
+    const deeplink = 'https://metamask.app.link/dapp/amet.finance'
+    if (isMobile()) {
+        location.replace(deeplink);
+        return undefined;
+    }
+
     const provider = getProvider();
     if (!provider) {
         return;
@@ -45,7 +52,7 @@ async function switchChain() {
 
         await ethereum.request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: DEFAULT_CHAIN_ID }],
+            params: [{chainId: DEFAULT_CHAIN_ID}],
         });
     } catch (switchError: any) {
         console.error(`switchError`, switchError)

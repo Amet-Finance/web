@@ -6,7 +6,7 @@ import * as AccountSlice from "@/store/redux/account";
 import Image from "next/image";
 
 export default function ConnectWallet() {
-    const connect = () => Web3Service.connectWallet(WalletTypes.Metamask, closeModal);
+    const connect = () => Web3Service.connectWallet(WalletTypes.Metamask, closeModal)
 
     return <>
         <div className={Styles.container}>

@@ -8,6 +8,7 @@ import Link from "next/link";
 import {getWeb3Instance} from "@/modules/web3";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {formatTime} from "@/modules/utils/dates";
+import Bond from "@/components/pages/bonds/utils/bond";
 
 export default function Explore() {
     return <>
@@ -50,7 +51,7 @@ function BondsContainer() {
         <div className={Styles.bonds}>
             <Settings/>
             <div className={Styles.bondsContainer}>
-                {bonds.data.map((bond: BondInfo, index: number) => <Bond bond={bond} key={index}/>)}
+                {bonds.data.map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
             </div>
             <ShowMore/>
         </div>
@@ -85,27 +86,5 @@ function Settings() {
             }
             <SettingsSVG onClick={() => setOpen(!isOpen)}/>
         </div>
-    </>
-}
-
-function Bond({bond}: { bond: BondInfo }) {
-
-    return <>
-        <Link href={`/bonds/explore/${bond._id}`}>
-            <div className={Styles.bond}>
-                <div className={Styles.section}>
-                    <span>Total/Purchased/Redeemed:</span>
-                    <span>{bond.total}/{bond.purchased}/{bond.redeemed}</span>
-                </div>
-                <div className={Styles.section}>
-                    <span>Issuer:</span>
-                    <span className={Styles.text}>{shorten(`${bond.issuer}`, 10)}</span>
-                </div>
-                <div className={Styles.section}>
-                    <span>Redeem Lock period:</span>
-                    <span>{formatTime(Number(bond.redeemLockPeriod))}</span>
-                </div>
-            </div>
-        </Link>
     </>
 }

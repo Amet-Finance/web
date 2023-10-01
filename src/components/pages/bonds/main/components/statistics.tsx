@@ -34,6 +34,8 @@ export default function Statistics() {
         redeemed: 0
     } as { [key: string]: number })
 
+    const statisticsKeys = Object.keys(statistics)
+
     useEffect(() => {
         setLoading(true);
         CloudApi.getStats()
@@ -44,26 +46,27 @@ export default function Statistics() {
                 setLoading(false);
             })
             .catch(error => {
-                console.log(error)
+                console.log(error);
             })
     }, [])
 
     return <>
         <div className={Styles.stats}>
             {
-                Object.keys(statistics)
-                    .map((name: any) =>
-                        <Stat
-                            name={name}
-                            value={statistics[name]}
-                            isLoading={isLoading}
-                            key={name}/>)
+
+                statisticsKeys.map((name: any, index: number) =>
+                    <Stat
+                        name={name}
+                        value={statistics[name]}
+                        isLast={statisticsKeys.length - index - 1 == 0}
+                        isLoading={isLoading}
+                        key={name}/>)
             }
         </div>
     </>
 }
 
-function Stat({name, value, isLoading}: any) {
+function Stat({name, value, isLast, isLoading}: any) {
     const item = Keys[name];
 
     return <>
@@ -73,9 +76,10 @@ function Stat({name, value, isLoading}: any) {
                 :
                 <>
                     <span className={Styles.statMain}>{item?.value(value)}</span>
-                    <span className={Styles.statSec}>{item?.name}</span>
+                    <span className={Styles.gray}>{item?.name}</span>
                 </>
             }
         </div>
+        {!Boolean(isLast) && <div className={Styles.verticalLine}/>}
     </>
 }

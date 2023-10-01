@@ -20,9 +20,10 @@ export default function Footer() {
                         <TelegramSVG/>
                         <RedditSVG/>
                     </div>
-                    <span>&#169;2023 Amet Finance. All rights reserved.</span>
+                    <span className={Styles.desktop}>&#169;2023 Amet Finance. All rights reserved.</span>
                 </div>
                 <Links/>
+                <span className={Styles.mobile}>&#169;2023 Amet Finance. All rights reserved.</span>
             </div>
         </footer>
     </>

@@ -8,6 +8,7 @@ import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
 import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
+import {isMobile} from "@/modules/utils/agent";
 
 function getWeb3Instance() {
     const rpcs = RPC_BY_CHAINS[DEFAULT_CHAIN_ID];
