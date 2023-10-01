@@ -1,6 +1,7 @@
 import {useEffect, useRef} from "react";
 import {Chart, registerables} from "chart.js";
 import {join} from "@/modules/utils/styles";
+import {ChartOptions} from "chart.js/dist/types";
 
 type Arguments = {
     total: number;
@@ -23,16 +24,17 @@ export default function RoundProgress({total, purchased, redeemed}: Arguments) {
     useEffect(() => {
         if (!chartRef.current) return;
 
-        const options = {
+        const options: any = {
             datasets: {
                 doughnut: {
                     backgroundColor: "#9BD0F5",
                     borderColor: "transparent",
                     spacing: 0.5,
                     borderJoinStyle: "round",
-                    borderRadius: 10
-                }
+                    borderRadius: 10,
+                },
             },
+            cutout: "85%",
             plugins: {
                 legend: {
                     display: false
@@ -44,23 +46,22 @@ export default function RoundProgress({total, purchased, redeemed}: Arguments) {
                             console.log(context)
                             switch (label) {
                                 case DatasetLabels.Redeem: {
-                                    return redeemed;
+                                    return redeemed.toString();
                                 }
                                 case DatasetLabels.Purchased: {
-                                    return purchased;
+                                    return purchased.toString();
                                 }
                                 case DatasetLabels.Left: {
-                                    return left;
+                                    return left.toString();
                                 }
                                 default: {
-                                    return 0
+                                    return "0"
                                 }
                             }
                         }
                     }
                 }
-            },
-            cutout: "85%",
+            }
         }
 
         Chart.register(...registerables)
@@ -93,15 +94,15 @@ export default function RoundProgress({total, purchased, redeemed}: Arguments) {
                 <canvas ref={chartRef}/>
             </div>
             <div className='texts'>
-                    <div className={join(['purple', "point"])}/>
-                    <span>Purchased</span>
-                    <span>{purchased}</span>
-                    <div className={join(['purple1', "point"])}/>
-                    <span>Redeemed</span>
-                    <span>{redeemed}</span>
-                    <div className='point'/>
-                    <span>Bonds Left</span>
-                    <span>{left}</span>
+                <div className={join(['purple', "point"])}/>
+                <span>Purchased</span>
+                <span>{purchased}</span>
+                <div className={join(['purple1', "point"])}/>
+                <span>Redeemed</span>
+                <span>{redeemed}</span>
+                <div className='point'/>
+                <span>Bonds Left</span>
+                <span>{left}</span>
             </div>
         </div>
         <style jsx>{`
