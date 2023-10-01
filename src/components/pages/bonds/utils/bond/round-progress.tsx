@@ -111,11 +111,11 @@ export default function RoundProgress({total, purchased, redeemed}: Arguments) {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             padding: 1rem 1rem 1rem 1rem;
             gap: 1rem;
             width: 100%;
-            background: linear-gradient(to bottom, rgba(21, 21, 21, 0.33), #2D2D2D);
+            background-color: #0e0e0e;
             text-align: start;
           }
 

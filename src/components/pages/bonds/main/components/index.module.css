@@ -101,7 +101,7 @@
 .bonds {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    padding: 1rem 10rem;
+    padding: 1rem 8rem;
     gap: 2rem;
     width: 100%;
 }
@@ -111,4 +111,17 @@
     border: 1px solid #575757;
     border-radius: 0.25rem;
     cursor: pointer;
+}
+
+@media (max-width: 1440px) {
+    .bonds {
+        padding: 1rem 3rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .bonds {
+        grid-template-columns: repeat(1, 1fr);
+        padding: 1rem 3rem;
+    }
 }

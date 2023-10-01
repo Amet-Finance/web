@@ -56,7 +56,6 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     const totalPrice = amount * investmentAmountClean.toNumber();
 
     const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
-    console.log(`allowance`, allowance)
     const isApproval = totalPrice > allowanceDivided;
 
     // const isApproval = false;

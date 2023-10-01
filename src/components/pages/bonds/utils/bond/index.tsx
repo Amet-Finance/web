@@ -15,6 +15,9 @@ import {toast} from "react-toastify";
 import RoundProgressBar from "@/components/pages/bonds/utils/bond/round-progress";
 import {useState} from "react";
 import WarningSVG from "../../../../../../public/svg/warning";
+import InfoSVG from "../../../../../../public/svg/info";
+import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
+import {Router, useRouter} from "next/router";
 
 const {toBN} = getWeb3Instance().utils;
 
@@ -43,6 +46,7 @@ export default function Bond({info}: { info: BondGeneral }) {
         issuer
     } = info;
 
+    const router = useRouter();
     const interestIcon = getIcon(interestToken)
     const investmentIcon = getIcon(investmentToken)
 
@@ -78,8 +82,11 @@ export default function Bond({info}: { info: BondGeneral }) {
             .catch(() => toast.error("An error has occurred"))
     }
 
+    const stopPropagation = (event:any) => event.stopPropagation()
+
     return <>
-        <div className={Styles.container}>
+        <Link className={Styles.container} href={bondUrl}>
+
             <div className={Styles.section}>
                 <div className={Styles.section}>
                     <div className={Styles.icons}>
@@ -115,36 +122,42 @@ export default function Bond({info}: { info: BondGeneral }) {
                     <ThreeDotsSVG url={bondUrl}/>
                 </div>
             </div>
-            <Link href={`/bonds/explore/${_id}`}>
-                <div className={Styles.boxes}>
-                    <div className={Styles.box}>
-                        <InvestmentSVG/>
-                        <span className={Styles.gray}>Investment:</span>
-                        <div className={Styles.amountSection}>
-                            <span>{response.investment.amount} {response.investment.currency} </span>
-                            {Boolean(investment.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
-                        </div>
+            <div className={Styles.boxes}>
+                <div className={Styles.box}>
+                    <div className={Styles.info}>
+                        <InfoSVG info={InfoDetails.Investment}/>
                     </div>
-                    <div className={Styles.box}>
-                        <InterestSVG/>
-                        <span className={Styles.gray}>Interest:</span>
-                        <div className={Styles.amountSection}>
-                            <span>{response.interest.amount} {response.interest.currency} </span>
-                            {Boolean(interest.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
-                        </div>
+                    <InvestmentSVG/>
+                    <span className={Styles.gray}>Investment:</span>
+                    <div className={Styles.amountSection}>
+                        <span>{response.investment.amount} {response.investment.currency} </span>
+                        {Boolean(investment.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
                     </div>
-                    <div className={Styles.box}>
-                        <ClockSVG/>
-                        <span className={Styles.gray}>Redeem Lock period:</span>
-                        <span>{formatTime(Number(redeemLockPeriod), true)}</span>
-                    </div>
-                    <RoundProgressBar total={total} purchased={purchased} redeemed={redeemed}/>
                 </div>
-            </Link>
-
+                <div className={Styles.box}>
+                    <div className={Styles.info}>
+                        <InfoSVG info={InfoDetails.Interest}/>
+                    </div>
+                    <InterestSVG/>
+                    <span className={Styles.gray}>Interest:</span>
+                    <div className={Styles.amountSection}>
+                        <span>{response.interest.amount} {response.interest.currency} </span>
+                        {Boolean(interest.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
+                    </div>
+                </div>
+                <div className={Styles.box}>
+                    <div className={Styles.info}>
+                        <InfoSVG info={InfoDetails.RedeemLockPeriod}/>
+                    </div>
+                    <ClockSVG/>
+                    <span className={Styles.gray}>RLP:</span>
+                    <span>{formatTime(Number(redeemLockPeriod), true)}</span>
+                </div>
+                <RoundProgressBar total={total} purchased={purchased} redeemed={redeemed}/>
+            </div>
             <div className={Styles.section}>
                 <div className={Styles.section}>
-                    <p className={Styles.gray}>Issuer: <Link href={getExplorerAddress(issuer)} target="_blank">
+                    <p className={Styles.gray}>Issuer: <Link href={getExplorerAddress(issuer)} onClick={stopPropagation} target="_blank">
                         <u>{shorten(issuer, 5)}</u>
                     </Link></p>
                 </div>
@@ -152,7 +165,7 @@ export default function Bond({info}: { info: BondGeneral }) {
                 {/*    <span>Issued at</span>*/}
                 {/*</div>*/}
             </div>
-        </div>
+        </Link>
     </>
 }
 
@@ -160,7 +173,7 @@ function Img({src, alt, type, setter}: any) {
     const [srcC, setSrcC] = useState(src)
 
     return <>
-        <Image src={srcC} alt={alt} width={42} height={42} onError={() => {
+        <Image src={srcC} alt={alt} width={32} height={32} onError={() => {
             setSrcC('/svg/question.svg');
             setter({
                 isVerified: false
@@ -169,7 +182,7 @@ function Img({src, alt, type, setter}: any) {
     </>
 }
 
-function ThreeDotsSVG({url}: {url: string}) {
+function ThreeDotsSVG({url}: { url: string }) {
     const urls = {
         twitter: `https://twitter.com/share?text=Check out these exciting on-chain bonds on Amet Finance! 💰 &url=${url}&hashtags=DeFi,InvestmentOpportunities`
     }
