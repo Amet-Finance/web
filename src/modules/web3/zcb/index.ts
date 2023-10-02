@@ -1,5 +1,5 @@
-import ZCB_Issuer_ABI from './abi-jsons/ZCB_Issuer.json'
-import ZCB_ABI from './abi-jsons/ZCB_V1.json'
+import ZCB_Issuer_ABI from '../abi-jsons/ZCB_Issuer.json'
+import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
 import {getWeb3Instance} from "@/modules/web3";
 import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
@@ -22,7 +22,8 @@ async function getInfo(contractAddress: string): Promise<BondInfoDetailed> {
         investmentTokenAmount: info[6],
         interestToken: info[7],
         interestTokenAmount: info[8],
-        interestTokenBalance: await getTokenBalance(info[5], contractAddress)
+        interestTokenBalance: await getTokenBalance(info[5], contractAddress),
+        issuanceDate: Number(info[9])
     };
 }
 

@@ -9,7 +9,8 @@ type BondInfoDetailed = {
     investmentTokenAmount: string,
     interestToken: string,
     interestTokenAmount: number,
-    interestTokenBalance: string
+    interestTokenBalance: string,
+    issuanceDate: number
 }
 
 type TokenInfo = {
