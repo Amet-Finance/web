@@ -51,7 +51,8 @@ async function submitTransaction(type: string, txType: string, config: any) {
     const transactionConfig: TransactionConfig = {
         from: address,
         to: contractInfo.to,
-        data: contractInfo.data
+        data: contractInfo.data,
+        value: contractInfo.value || 0
     }
     switch (type) {
         case WalletTypes.Metamask: {
@@ -76,7 +77,8 @@ function getContractInfoByType(txType: string, config: any) {
         case TxTypes.IssueBond: {
             return {
                 to: ZCB_ISSUER_CONTRACT,
-                data: ZCB.issueBonds(config)
+                data: ZCB.issueBonds(config),
+                value: `0x16345785D8A0000`
             }
         }
         case TxTypes.ApproveToken: {
