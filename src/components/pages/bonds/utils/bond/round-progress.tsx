@@ -71,8 +71,8 @@ export default function RoundProgress({total, purchased, redeemed}: Arguments) {
                 datasets: [{
                     data: [redeemed, theUnredeemedAmount, left],
                     backgroundColor: [
-                        '#926AFF',
                         '#4F2AB6',
+                        '#926AFF',
                         '#fff',
                     ],
                 }],
