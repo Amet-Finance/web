@@ -69,6 +69,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: center;
     gap: 0.25rem;
     align-items: center;
 }
@@ -101,6 +102,7 @@
 .bonds {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
     padding: 1rem 8rem;
     gap: 2rem;
     width: 100%;
@@ -119,9 +121,28 @@
     }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .bonds {
         grid-template-columns: repeat(1, 1fr);
         padding: 1rem 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        max-width: 600px;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .bondsText {
+        padding: 0 1rem;
+    }
+
+    .bonds {
+        padding: 0;
     }
 }

@@ -17,8 +17,7 @@ import {useState} from "react";
 import WarningSVG from "../../../../../../public/svg/warning";
 import InfoSVG from "../../../../../../public/svg/info";
 import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
-import {Router, useRouter} from "next/router";
-import {join} from "@/modules/utils/styles";
+import {useRouter} from "next/router";
 import {stopPropagation} from "@/modules/utils/events";
 
 const {toBN} = getWeb3Instance().utils;
@@ -162,7 +161,7 @@ export default function Bond({info}: { info: BondGeneral }) {
                     <Issuer issuer={issuer}/>
                 </div>
                 <div className={Styles.section} title={new Date(issuanceDate * 1000).toString()}>
-                    <span className={Styles.gray}>{formatTime(daysAgo)} ago</span>
+                    <span className={Styles.gray}>{formatTime(daysAgo, true)} ago</span>
                 </div>
             </div>
         </Link>

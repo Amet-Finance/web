@@ -1,13 +1,10 @@
 import {useEffect, useState} from "react";
 import Styles from "@/components/pages/bonds/main/components/index.module.css";
 import Link from "next/link";
-import {getWeb3Instance} from "@/modules/web3";
 import * as CloudAPI from "@/modules/cloud-api";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
-
-const {toBN} = getWeb3Instance().utils;
 
 export default function BondsShowcase() {
     return <>
