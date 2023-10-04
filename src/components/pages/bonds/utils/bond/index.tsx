@@ -18,6 +18,8 @@ import WarningSVG from "../../../../../../public/svg/warning";
 import InfoSVG from "../../../../../../public/svg/info";
 import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
 import {Router, useRouter} from "next/router";
+import {join} from "@/modules/utils/styles";
+import {stopPropagation} from "@/modules/utils/events";
 
 const {toBN} = getWeb3Instance().utils;
 
@@ -43,7 +45,8 @@ export default function Bond({info}: { info: BondGeneral }) {
         investmentToken,
         interestToken,
         redeemLockPeriod,
-        issuer
+        issuer,
+        issuanceDate
     } = info;
 
     const router = useRouter();
@@ -75,14 +78,13 @@ export default function Bond({info}: { info: BondGeneral }) {
 
     const isWarning = !interest.isVerified || !investment.isVerified
     const bondUrl = `${window.location.origin}/bonds/explore/${_id}`
+    const daysAgo = (Date.now() / 1000) - issuanceDate
 
     const copyWholeURl = () => {
         return navigator.clipboard.writeText(bondUrl)
             .then(() => toast("URL successfully copied to your clipboard."))
             .catch(() => toast.error("An error has occurred"))
     }
-
-    const stopPropagation = (event: any) => event.stopPropagation()
 
     return <>
         <Link className={Styles.container} href={bondUrl}>
@@ -157,16 +159,23 @@ export default function Bond({info}: { info: BondGeneral }) {
             </div>
             <div className={Styles.section}>
                 <div className={Styles.section}>
-                    <p className={Styles.gray}>Issuer: <Link href={getExplorerAddress(issuer)} onClick={stopPropagation}
-                                                             target="_blank">
-                        <u>{shorten(issuer, 5)}</u>
-                    </Link></p>
+                    <Issuer issuer={issuer}/>
                 </div>
-                {/*<div className={Styles.section}>*/}
-                {/*    <span>Issued at</span>*/}
-                {/*</div>*/}
+                <div className={Styles.section} title={new Date(issuanceDate * 1000).toString()}>
+                    <span className={Styles.gray}>{formatTime(daysAgo)} ago</span>
+                </div>
             </div>
         </Link>
+    </>
+}
+
+function Issuer({issuer}: any) {
+    return <>
+        <p className={Styles.gray}>Issuer:&nbsp;
+            <Link href={getExplorerAddress(issuer)} onClick={stopPropagation} target="_blank">
+                <u>{shorten(issuer, 5)}</u>
+            </Link>
+        </p>
     </>
 }
 
@@ -199,7 +208,7 @@ function ThreeDotsSVG({url}: { url: string }) {
                          fill="white"/>
             </svg>
             <div className={Styles.threeDotBar}>
-                <Link className={Styles.sectionClose} href={urls.twitter} onClick={event => event.stopPropagation()}
+                <Link className={Styles.sectionClose} href={urls.twitter} onClick={stopPropagation}
                       target="_blank">
                     <svg width="13" height="14" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path

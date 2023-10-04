@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {stopPropagation} from "@/modules/utils/events";
 
 type InfoType = {
     info: {
@@ -10,7 +11,7 @@ type InfoType = {
 export default function InfoSVG({info}: InfoType) {
 
     return <>
-        <Link href={info.url} title={info.title} onClick={(event:any) => event.stopPropagation()} target="_blank" >
+        <Link href={info.url} title={info.title} onClick={stopPropagation} target="_blank" >
             <div className='container-info'>
                 <svg
                     width="20px"

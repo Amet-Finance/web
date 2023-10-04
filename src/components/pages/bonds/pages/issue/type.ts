@@ -13,6 +13,7 @@ type BondGeneral = {
     interestToken: string;
     interestTokenAmount: number;
     interestTokenInfo: TokenInfo;
+    issuanceDate: number
 }
 
 type BondInfo = {

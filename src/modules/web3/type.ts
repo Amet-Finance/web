@@ -10,6 +10,7 @@ type BondInfoDetailed = {
     interestToken: string,
     interestTokenAmount: number,
     interestTokenBalance: string,
+    feePercentage: number,
     issuanceDate: number
 }
 

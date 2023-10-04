@@ -112,6 +112,10 @@
     color: #888888;
 }
 
+.small {
+    font-size: 0.8125rem;
+}
+
 .threeDot {
     position: relative;
 }

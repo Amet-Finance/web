@@ -23,7 +23,8 @@ async function getInfo(contractAddress: string): Promise<BondInfoDetailed> {
         interestToken: info[7],
         interestTokenAmount: info[8],
         interestTokenBalance: await getTokenBalance(info[5], contractAddress),
-        issuanceDate: Number(info[9])
+        feePercentage: Number(info[9]),
+        issuanceDate: Number(info[10])
     };
 }
 
