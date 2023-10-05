@@ -91,7 +91,7 @@ function MobileNav() {
 function MobileLinks({changeVisibility}: any) {
     return <>
         <div className={Styles.mobileNav}>
-            <div className={Styles.mobileNavLinks}>
+            <div className={Styles.mobileNavLinks} onClick={changeVisibility}>
                 {navItems.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
             </div>
             <WalletState changeVisibility={changeVisibility}/>

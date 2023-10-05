@@ -5,6 +5,7 @@ import RedditSVG from "../../../public/svg/reddit";
 import TelegramSVG from "../../../public/svg/telegram";
 import AmetLogo from "../../../public/svg/amet-logo";
 import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 export default function Footer() {
     return <>
@@ -35,8 +36,8 @@ function Links() {
         {
             title: "About Us",
             attributes: [
-                {title: 'Terms Of Service', url: 'https://docs.amet.finance/v1/additional-materials/terms-of-service'},
-                {title: 'Privacy Policy', url: 'https://docs.amet.finance/v1/additional-materials/privacy-policy'},
+                {title: 'Terms Of Service', url: URLS.TermsOfService},
+                {title: 'Privacy Policy', url: URLS.PrivacyPolicy},
             ]
         },
         {

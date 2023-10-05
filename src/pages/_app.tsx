@@ -10,10 +10,14 @@ import Footer from "@/components/footer";
 import GoogleAnalytics from "@/components/headers/google-analytics";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {useEffect} from "react";
+import {openModal} from "@/store/redux/modal";
+import {ModalTypes} from "@/store/redux/modal/constants";
 
 const montserrat = Montserrat({ subsets: ['latin'] })
 
 export default function App({Component, pageProps}: AppProps) {
+
     return <>
         <Provider store={store}>
             <Headers/>

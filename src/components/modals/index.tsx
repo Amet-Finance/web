@@ -3,11 +3,11 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {closeModal} from "@/store/redux/modal";
 import Modal, {setAppElement} from "react-modal";
 import ConnectWallet from "@/components/modals/connect-wallet";
-import {Inter} from "next/font/google";
+import {Inter, Montserrat} from "next/font/google";
 import IssuedBondSuccessModal from "@/components/modals/issued-bond-success-modal";
 import {RootState} from "@/store/redux/type";
 
-const inter = Inter({subsets: ['latin']})
+const montserrat = Montserrat({ subsets: ['latin'] })
 export default function ModalHandler() {
     const modalState = useSelector((item: RootState) => item.modal)
     const isClosed = modalState.type === ModalTypes.None;
@@ -18,7 +18,7 @@ export default function ModalHandler() {
 
     const customStyles = {
         overlay: {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            backgroundColor: 'rgba(0, 0, 0, 0.87)'
         },
         content: {
             top: '50%',
@@ -28,9 +28,9 @@ export default function ModalHandler() {
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
             zIndex: "1000",
-            backgroundColor: "#000",
+            backgroundColor: "#0C0C0C",
             border: "none",
-            borderRadius: "0.25rem",
+            borderRadius: "1rem",
             color: "#fff"
         },
     };
@@ -43,7 +43,7 @@ export default function ModalHandler() {
             style={customStyles}
             onRequestClose={closeModal}
             contentLabel="Example Modal">
-            <div className={inter.className}>
+            <div className={montserrat.className}>
                 <ModalContent type={modalState.type} additional={modalState.additional}/>
             </div>
         </Modal>

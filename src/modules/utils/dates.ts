@@ -48,10 +48,10 @@ function formatTime(seconds: number, isShort?: boolean) {
         timeSegments.push(`${minutes} ${text}`);
     }
 
-    // if (seconds > 0) { // todo maybe it's needed
-    //     const text = shorten(seconds === 1 ? 'second' : 'seconds')
-    //     timeSegments.push(`${seconds} ${text}`);
-    // }
+    if (seconds > 0) {
+        const text = shorten(seconds === 1 ? 'second' : 'seconds')
+        timeSegments.push(`${Math.round(seconds)} ${text}`);
+    }
 
     return timeSegments.join(' ');
 }

@@ -1,25 +1,25 @@
 import Styles from './index.module.css';
 import SettingsSVG from "../../../../../../public/svg/settings";
 import {useEffect, useState} from "react";
-import * as CloudAPI from "@/modules/cloud-api";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {shorten} from "@/modules/web3/utils/address";
-import Link from "next/link";
-import {getWeb3Instance} from "@/modules/web3";
-import {BondInfoDetailed} from "@/modules/web3/type";
-import {formatTime} from "@/modules/utils/dates";
 import Bond from "@/components/pages/bonds/utils/bond";
+import {Staatliches} from "next/font/google";
+import {join} from "@/modules/utils/styles";
+import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
+
+const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
 export default function Explore() {
     return <>
         <div className={Styles.container}>
             <div className={Styles.texts}>
-                <h1>Explore On-Chain Bonds: Find, Filter, and Invest</h1>
+                <h1 className={join([Styles.headline, staatliches.className])}>
+                    Explore On-Chain <span className={Styles.secondary}>Bonds</span>: <br/> Find, Filter, and Invest
+                </h1>
+                <hr className={Styles.line}/>
                 <p className={Styles.secondary}>Discover a range of on-chain bonds through advanced filters and
                     intuitive search options.</p>
             </div>
-            <input type="text" placeholder='Search by Contract Address, Issuer, or Token Pair'
-                   className={Styles.search}/>
             <BondsContainer/>
         </div>
     </>
@@ -29,23 +29,19 @@ function BondsContainer() {
 
     const [bonds, setBonds] = useState({
         isLoading: false,
+        limit: 20,
+        skip: 0,
         data: [] as any
     })
 
+    const bondsHandler = [bonds, setBonds]
+
     useEffect(() => {
-        setBonds({
-            ...bonds,
-            isLoading: true
-        });
+        const interval = getBondsHandler(bondsHandler);
+        return () => {
+            clearInterval(interval)
+        }
 
-
-        CloudAPI.getBonds()
-            .then(res => {
-                setBonds({
-                    data: res,
-                    isLoading: false
-                })
-            })
     }, [])
     return <>
         <div className={Styles.bonds}>
@@ -53,7 +49,7 @@ function BondsContainer() {
             <div className={Styles.bondsContainer}>
                 {bonds.data.map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
             </div>
-            <ShowMore/>
+            {Boolean(bonds.data < bonds.limit) && <ShowMore/>}
         </div>
     </>
 }
@@ -74,10 +70,12 @@ function Settings() {
             {isOpen ?
                 <>
                     <div className={Styles.settingsContainer}>
-                        <select name="Currency" id="currency" className={Styles.select}>
-                            <option value="USDT">USDT</option>
-                            <option value="USDC">USDC</option>
-                        </select>
+                        <input type="text" placeholder='Search by Contract Address, Issuer, or Token Pair'
+                               className={Styles.search}/>
+                        {/*<select name="Currency" id="currency" className={Styles.select}>*/}
+                        {/*    <option value="USDT">USDT</option>*/}
+                        {/*    <option value="USDC">USDC</option>*/}
+                        {/*</select>*/}
                     </div>
                 </> :
                 <>

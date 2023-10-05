@@ -5,6 +5,7 @@ import * as CloudAPI from "@/modules/cloud-api";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
+import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 
 export default function BondsShowcase() {
     return <>
@@ -24,23 +25,19 @@ export default function BondsShowcase() {
 function BondsScreen() {
     const [bonds, setBonds] = useState({
         isLoading: false,
+        limit: 20,
+        skip: 0,
         data: [] as any
     })
 
+    const bondsHandler = [bonds, setBonds]
+
     useEffect(() => {
-        setBonds({
-            ...bonds,
-            isLoading: true
-        });
+        const interval = getBondsHandler(bondsHandler);
+        return () => {
+            clearInterval(interval)
+        }
 
-
-        CloudAPI.getBonds()
-            .then(res => {
-                setBonds({
-                    data: res,
-                    isLoading: false
-                })
-            })
     }, [])
 
     if (bonds.isLoading) {
