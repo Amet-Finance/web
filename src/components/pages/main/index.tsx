@@ -57,7 +57,7 @@ export default function Home() {
                     <Image src={'./svg/Circle.svg'} alt={"C"} fill/>
                 </div>
                 <div className={Styles.bondsSection} ref={bondsRef}>
-                    <h1 className={staatliches.className}>BONDS</h1>
+                    <h2 className={staatliches.className}>BONDS</h2>
                     <div className={Styles.bondTexts}>
                         <p className={Styles.bondText}>{Texts.pBonds1}</p>
                         <p className={Styles.bondText}>{Texts.pBonds2}</p>
