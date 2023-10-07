@@ -137,7 +137,7 @@
     color: #8F9190;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .boxes {
         display: grid;
         grid-template-columns: repeat(2, 1fr);

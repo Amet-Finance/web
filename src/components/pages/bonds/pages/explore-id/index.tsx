@@ -4,7 +4,6 @@ import BondActions from "@/components/pages/bonds/pages/explore-id/components/bo
 import {useEffect, useState} from "react";
 import {getTokenInfo} from "@/modules/web3/tokens";
 import {useSelector} from "react-redux";
-import {Account} from "@/store/redux/account/type";
 import {getInfo} from "@/modules/web3/zcb";
 import {TokenInfo} from "@/modules/web3/type";
 import {RootState} from "@/store/redux/type";

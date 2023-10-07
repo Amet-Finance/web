@@ -122,3 +122,15 @@
 .select option:hover {
     background-color: #f0f0f0;
 }
+
+@media (max-width: 1440px) {
+    .container {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 1400px) {
+    .bondsContainer {
+        grid-template-columns: 1fr;
+    }
+}

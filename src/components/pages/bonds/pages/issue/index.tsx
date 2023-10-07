@@ -1,6 +1,6 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
-import {ChangeEventHandler, EventHandler, useEffect, useState} from "react";
+import {ChangeEventHandler, EventHandler, useEffect, useRef, useState} from "react";
 import {formatTime} from "@/modules/utils/dates";
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenInfo} from "@/modules/web3/tokens";
@@ -372,6 +372,13 @@ function RedeemLockPeriod({bondsHandler}: any) {
         })
     }
 
+    const focusInnerInput = (event: Event | any) => {
+        const input = event.currentTarget.querySelector('input');
+        if (input) {
+            input.focus();
+        }
+    }
+
     useEffect(() => {
         const action = setTimeout(() => {
             let total = 0
@@ -395,22 +402,22 @@ function RedeemLockPeriod({bondsHandler}: any) {
         <div className={Styles.box}>
             <span>Redeem</span>
             <div className={Styles.section}>
-                <div className={Styles.timeBox}>
+                <div className={Styles.timeBox} onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Hour</span>
                     <input type="number" className={Styles.timeInput} id='hour' defaultValue={timer.hour}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox}>
+                <div className={Styles.timeBox} onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Day</span>
                     <input type="number" className={Styles.timeInput} id='day' defaultValue={timer.day}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox}>
+                <div className={Styles.timeBox} onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Month</span>
                     <input type="number" className={Styles.timeInput} id='month' defaultValue={timer.month}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox}>
+                <div className={Styles.timeBox} onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Year</span>
                     <input type="number" className={Styles.timeInput} id='year' defaultValue={timer.year}
                            onChange={change}/>

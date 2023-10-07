@@ -17,10 +17,9 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 const montserrat = Montserrat({ subsets: ['latin'] })
 
 export default function App({Component, pageProps}: AppProps) {
-
     return <>
         <Provider store={store}>
-            <Headers/>
+            <Headers name={Component.name}/>
             <main className={"main " + montserrat.className}>
                 <Navbar/>
                 <Component {...pageProps} />

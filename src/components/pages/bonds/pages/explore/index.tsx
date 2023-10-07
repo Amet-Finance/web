@@ -72,10 +72,6 @@ function Settings() {
                     <div className={Styles.settingsContainer}>
                         <input type="text" placeholder='Search by Contract Address, Issuer, or Token Pair'
                                className={Styles.search}/>
-                        {/*<select name="Currency" id="currency" className={Styles.select}>*/}
-                        {/*    <option value="USDT">USDT</option>*/}
-                        {/*    <option value="USDC">USDC</option>*/}
-                        {/*</select>*/}
                     </div>
                 </> :
                 <>
