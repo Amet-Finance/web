@@ -15,12 +15,13 @@ type BondInfoDetailed = {
 }
 
 type TokenInfo = {
-    name?: string,
-    symbol?: string,
-    decimals?: number,
+    contractAddress: string,
+    name: string,
+    symbol: string,
+    decimals: number,
     verified?: boolean,
     unidentified?: boolean,
-    icon?: string,
+    icon: string,
     balance?: number,
     balanceClean?: string,
     isLoading?: boolean

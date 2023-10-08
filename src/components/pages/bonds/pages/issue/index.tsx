@@ -1,8 +1,8 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
-import {ChangeEventHandler, EventHandler, useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {formatTime} from "@/modules/utils/dates";
-import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
+import {BondInfo, TokenDetails, Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenInfo} from "@/modules/web3/tokens";
 import {useSelector} from "react-redux";
 import Loading from "@/components/utils/loading";
@@ -11,7 +11,6 @@ import {CHAIN_INFO, TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {decode} from "@/modules/web3/zcb";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {TokenInfo} from "@/modules/web3/type";
 import {toast} from "react-toastify";
 import {format} from "@/modules/utils/numbers";
 import WarningSVG from "../../../../../../public/svg/warning";
@@ -23,6 +22,7 @@ import TypeSVG from "../../../../../../public/svg/type";
 import TotalSVG from "../../../../../../public/svg/total";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
+import {TokenInfo} from "@/modules/web3/type";
 
 const BondTokenInfo = {
     Investment: 'investmentToken',
@@ -36,7 +36,7 @@ export default function Issue() {
         total: 0,
         redeemLockPeriod: 0
     } as BondInfo);
-    const [tokens, setTokens] = useState({} as { [key: string]: TokenInfo })
+    const [tokens, setTokens] = useState({} as Tokens)
 
     const bondsHandler = [bondInfo, setBondInfo]
 
@@ -57,6 +57,16 @@ export default function Issue() {
             return;
         }
 
+
+        if (investmentTokenInfo?.unidentified) {
+            toast.error(`We could not identify Investment token`)
+            return;
+        }
+
+        if (interestTokenInfo?.unidentified) {
+            toast.error(`We could not identify Interest token`)
+            return;
+        }
 
         bondInfo.investmentTokenInfo = investmentTokenInfo;
         bondInfo.interestTokenInfo = interestTokenInfo;
@@ -91,10 +101,18 @@ export default function Issue() {
         }
 
         const contractAddress = contractAddressTmp.toLowerCase();
+        const token: TokenInfo = {
+            contractAddress: contractAddress,
+            isLoading: true,
+            name: "",
+            symbol: "",
+            decimals: 0,
+            icon: ""
+        }
 
         setTokens({
             ...tokens,
-            [contractAddress]: {isLoading: true}
+            [contractAddress]: token
         })
 
         const timer = setTimeout(async () => {
@@ -104,9 +122,8 @@ export default function Issue() {
             if (tokenInfo) {
                 tokensTmp[contractAddress] = tokenInfo
             } else {
-                tokensTmp[contractAddress] = {
-                    unidentified: true
-                }
+                token.unidentified = true
+                tokensTmp[contractAddress] = token
             }
 
             setTokens({
@@ -248,7 +265,7 @@ export default function Issue() {
     </>
 }
 
-function TokenDetails({tokenInfo, type, total}: TokenDetails) {
+function TokenDetails({tokenInfo, type, total}: any) {
 
     if (!tokenInfo) {
         return null;
@@ -267,6 +284,9 @@ function TokenDetails({tokenInfo, type, total}: TokenDetails) {
 
 function OperationDetails({tokenInfo, total, type}: TokenDetails) {
 
+    if (tokenInfo.unidentified) {
+        return null;
+    }
 
     const icon = tokenInfo?.icon || "";
     const name = tokenInfo?.name || ""
@@ -299,7 +319,7 @@ function OperationDetails({tokenInfo, total, type}: TokenDetails) {
             <InfoSVG info={info}/>
         </div>
         <div className={Styles.operationDetails}>
-            {!tokenInfo?.unidentified ? <Token token={token}/> : <NotIdentified token={token}/>}
+            {!tokenInfo?.unidentified ? <Token token={token}/> : <NotIdentified/>}
         </div>
     </>
 }
@@ -333,7 +353,7 @@ function Token({token}: any) {
     </>
 }
 
-function NotIdentified({token}: any) {
+function NotIdentified() {
 
     const account = useSelector((item: RootState) => item.account)
     const chainInfo = CHAIN_INFO[account.chain]

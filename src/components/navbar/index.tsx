@@ -43,6 +43,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const address = Web3Service.getWalletAddress();
+        address && AccountSlice.initWallet(address);
         if (address) {
             AccountSlice.initWallet(address);
         }

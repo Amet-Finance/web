@@ -44,23 +44,26 @@ function Links() {
             title: "Get Help",
             attributes: [
                 {title: 'Contact Us', url: 'mailto:hello@amet.finance'},
-                {title: 'FAQ', url: 'https://docs.amet.finance/v1/frequently-asked-questions-faqs'},
+                {title: 'FAQ', url: URLS.FAQ},
             ]
         }
     ]
 
+    function LinkComponent({item}: any) {
+        return <>
+            <div className={Styles.link} key={item.title}>
+                <span>{item.title}</span>
+                <div className={Styles.attributes}>
+                    {item.attributes.map((attribute: any, index: number) => <Attribute info={attribute} key={index}/>)}
+                </div>
+            </div>
+        </>
+    }
+
+
     return <>
         <div className={Styles.links}>
-            {links.map(item => {
-                return <>
-                    <div className={Styles.link} key={item.title}>
-                        <span>{item.title}</span>
-                        <div className={Styles.attributes}>
-                            {item.attributes.map((attribute, index) => <Attribute info={attribute} key={index}/>)}
-                        </div>
-                    </div>
-                </>
-            })}
+            {links.map(item => <LinkComponent item={item} key={item.title}/>)}
         </div>
     </>
 }
@@ -68,8 +71,8 @@ function Links() {
 function Attribute({info}: any) {
     const {title, url} = info;
     return <>
-        <Link href={url}>
-            <span className={Styles.secondaryText}>{title}</span>
+        <Link href={url} target="_blank" rel='noreferrer'>
+            <span className="text-g2">{title}</span>
         </Link>
     </>
 }

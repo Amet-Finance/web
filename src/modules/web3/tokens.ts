@@ -15,6 +15,7 @@ async function getTokenInfo(contractAddress: string, address?: string): Promise<
         const decimals = await contract.methods.decimals().call();
 
         const result: TokenInfo = {
+            contractAddress: contractAddress,
             name,
             symbol,
             decimals,

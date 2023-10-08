@@ -18,6 +18,7 @@ const InfoDetails: {
     }
 }
 
+
 export {
     InfoDetails
 }

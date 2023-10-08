@@ -154,7 +154,9 @@ export default function Bond({info}: { info: BondGeneral }) {
                     <span className={Styles.gray}>RLP:</span>
                     <span>{formatTime(Number(redeemLockPeriod), true)}</span>
                 </div>
-                <RoundProgressBar total={total} purchased={purchased} redeemed={redeemed}/>
+                <div className={Styles.box}>
+                    <RoundProgressBar total={total} purchased={purchased} redeemed={redeemed}/>
+                </div>
             </div>
             <div className={Styles.section}>
                 <div className={Styles.section}>

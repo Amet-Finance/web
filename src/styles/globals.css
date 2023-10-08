@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
     box-sizing: border-box;
     padding: 0;
@@ -31,4 +35,9 @@ a {
 
 input:focus {
     outline: none !important;
+}
+
+
+.bg-d-1 {
+    background-color: #090909
 }

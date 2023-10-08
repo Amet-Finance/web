@@ -17,22 +17,24 @@ type BondGeneral = {
 }
 
 type BondInfo = {
-    _id?: string;
-    issuer?: string;
-    total?: number;
+    _id: string;
+    issuer: string;
+    total: number;
     purchased: number;
     redeemed: number;
-    redeemLockPeriod?: number;
-    investmentToken?: string;
-    investmentTokenAmount?: number;
-    investmentTokenInfo?: TokenInfo|undefined;
-    interestToken?: string;
-    interestTokenAmount?: number;
-    interestTokenInfo?: TokenInfo|undefined;
+    redeemLockPeriod: number;
+    investmentToken: string;
+    investmentTokenAmount: number;
+    investmentTokenInfo?: TokenInfo | undefined;
+    interestToken: string;
+    interestTokenAmount: number;
+    interestTokenInfo?: TokenInfo | undefined;
 }
 
+type Tokens = { [contractAddress: string]: TokenInfo }
+
 type TokenDetails = {
-    tokenInfo: TokenInfo|undefined,
+    tokenInfo: TokenInfo,
     total: number,
     isLoading?: boolean,
     type: string
@@ -42,5 +44,6 @@ type TokenDetails = {
 export type  {
     BondGeneral,
     BondInfo,
-    TokenDetails
+    TokenDetails,
+    Tokens
 }
