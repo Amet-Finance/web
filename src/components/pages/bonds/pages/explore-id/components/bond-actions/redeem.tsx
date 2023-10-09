@@ -27,28 +27,38 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     // todo calculate as well the amount that is left there
     //  so I won't be able to choose it if there's no secured redemption amount
 
+    useEffect(() => {
+        setLoading(true)
+        initBalance(account.address)
+            .then(() => setLoading(false))
+    }, [])
+
     //todo add here a loader
     useEffect(() => {
-        setLoading(true);
-        getTokensInfo(contractAddress, balanceTokenIds)
-            .then(response => {
-                const utcTimestamp = Date.now() / 1000;
-                const tokensWithDates = response.map((date: number, index: number) => {
-                    const isValid = utcTimestamp - Number(redeemLockPeriod) > Number(date)
-                    const timeLeft = Number(date) + Number(redeemLockPeriod) - utcTimestamp
-                    return {
-                        id: balanceTokenIds[index],
-                        purchaseDate: Number(date),
-                        isValid,
-                        timeLeft: isValid ? "0" : formatTime(timeLeft)
-                    }
-                })
+        if(balanceTokenIds.length) {
+            if(!holdings.length) {
+                setLoading(true);
+            }
+            getTokensInfo(contractAddress, balanceTokenIds)
+                .then(response => {
+                    const utcTimestamp = Date.now() / 1000;
+                    const tokensWithDates = response.map((date: number, index: number) => {
+                        const isValid = utcTimestamp - Number(redeemLockPeriod) > Number(date)
+                        const timeLeft = Number(date) + Number(redeemLockPeriod) - utcTimestamp
+                        return {
+                            id: balanceTokenIds[index],
+                            purchaseDate: Number(date),
+                            isValid,
+                            timeLeft: isValid ? "0" : formatTime(timeLeft)
+                        }
+                    })
 
-                // console.log(tokensWithDates)
-                setHoldings(tokensWithDates);
-            })
-            .catch(error => console.log(`getTokensInfo`, error))
-            .finally(() => setLoading(false))
+                    // console.log(tokensWithDates)
+                    setHoldings(tokensWithDates);
+                })
+                .catch(error => console.log(`getTokensInfo`, error))
+                .finally(() => setLoading(false))
+        }
     }, [account.address, account.balance[contractAddress]])
 
     if (!holdings.length && !loading) {

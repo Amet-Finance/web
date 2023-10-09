@@ -10,6 +10,7 @@ import {toBN} from "web3-utils";
 import {getWeb3Instance, submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {initBalance} from "@/store/redux/account";
+import {sleep} from "@/modules/utils/dates";
 
 export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
 
@@ -41,9 +42,11 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     // console.log(`address`, address)
     // console.log(`contract`, _id)
 
+    console.log(`allowance`, allowance)
+
     if (!investmentTokenInfo) {
         return <>
-            <div className={Styles.loader}>
+            <div className='flex justify-center items-center w-full'>
                 <Loading/>
             </div>
         </>;
@@ -51,14 +54,11 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
 
     const decimals = Number(investmentTokenInfo?.decimals) || 18
 
-    // console.log(`investmentTokenAmount, decimals`, investmentTokenAmount, decimals)
     const investmentAmountClean = toBN(`${investmentTokenAmount}`).div(toBN(10).pow(toBN(decimals)));
     const totalPrice = amount * investmentAmountClean.toNumber();
 
     const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
     const isApproval = totalPrice > allowanceDivided;
-
-    // const isApproval = false;
 
     function onChange(event: Event | any) {
         const {value, type} = event.target;
@@ -89,6 +89,8 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
                 contractAddress: _id,
                 count: amount
             });
+
+            await sleep(4000);
             await initBalance(account.address);
             console.log(transaction);
         }

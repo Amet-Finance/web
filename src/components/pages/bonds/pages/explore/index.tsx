@@ -6,6 +6,7 @@ import Bond from "@/components/pages/bonds/utils/bond";
 import {Staatliches} from "next/font/google";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
@@ -37,7 +38,11 @@ function BondsContainer() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const interval = getBondsHandler(bondsHandler);
+        const interval = getBondsHandler(bondsHandler, {
+            skip: bonds.skip,
+            limit: bonds.limit,
+            chainId: DEFAULT_CHAIN_ID
+        });
         return () => {
             clearInterval(interval)
         }

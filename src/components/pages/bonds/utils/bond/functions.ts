@@ -1,6 +1,6 @@
 import * as CloudAPI from "@/modules/cloud-api";
 
-function getBondsHandler(bondsHandler: any) {
+function getBondsHandler(bondsHandler: any, config: any) {
     const [bonds, setBonds] = bondsHandler
 
     setBonds({
@@ -8,7 +8,7 @@ function getBondsHandler(bondsHandler: any) {
         isLoading: true
     })
 
-    CloudAPI.getBonds()
+    CloudAPI.getBonds(config)
         .then(response => setBonds({
             ...bonds,
             data: response,
@@ -18,7 +18,7 @@ function getBondsHandler(bondsHandler: any) {
 
     const interval = setInterval(() => {
 
-        CloudAPI.getBonds()
+        CloudAPI.getBonds(config)
             .then(response => setBonds({
                 ...bonds,
                 data: response,

@@ -3,13 +3,11 @@ import {API_URL} from "@/modules/cloud-api/constants";
 import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 
-async function getBonds(): Promise<BondGeneral[]> {
+async function getBonds(config: any): Promise<BondGeneral[]> {
     const bondsAPI = `${API_URL}/v1/contract`
     const {data} = await requestAPI({
         url: bondsAPI,
-        params: {
-            chainId: DEFAULT_CHAIN_ID
-        }
+        params: config
     });
     return data;
 }
@@ -17,10 +15,7 @@ async function getBonds(): Promise<BondGeneral[]> {
 async function getStats() {
     const statisticsAPI = `${API_URL}/v1/statistics`
     const {data} = await requestAPI({
-        url: statisticsAPI,
-        params: {
-            chainId: DEFAULT_CHAIN_ID
-        }
+        url: statisticsAPI
     });
     return data;
 }

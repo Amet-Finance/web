@@ -6,6 +6,7 @@ import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 export default function BondsShowcase() {
     return <>
@@ -33,7 +34,11 @@ function BondsScreen() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const interval = getBondsHandler(bondsHandler);
+        const interval = getBondsHandler(bondsHandler, {
+            skip: bonds.skip,
+            limit: bonds.limit,
+            chainId: DEFAULT_CHAIN_ID
+        });
         return () => {
             clearInterval(interval)
         }

@@ -29,7 +29,8 @@ module.exports = {
                 b1: "#0F0F0F"
             },
             borderColor: {
-                w1: "rgba(255, 255, 255, 0.1)"
+                w1: "rgba(255, 255, 255, 0.1)",
+                w5: "rgba(255, 255, 255, 0.5)"
             },
             minWidth: {
                 500: "500px"

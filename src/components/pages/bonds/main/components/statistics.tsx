@@ -34,7 +34,7 @@ export default function Statistics() {
         redeemed: 0
     } as { [key: string]: number })
 
-    const statisticsKeys = Object.keys(statistics)
+    const statisticsKeys = Object.keys(Keys)
 
     useEffect(() => {
         setLoading(true);
