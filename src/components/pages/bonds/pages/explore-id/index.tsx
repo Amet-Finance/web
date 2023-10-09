@@ -51,10 +51,12 @@ export default function ExploreId({props}: any) {
 
 
     return <>
-        <div
-            className="flex justify-around gap-5 min-h-screen xl:p-16 lg1:p-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start">
-            <BondDetails info={info} tokens={tokens}/>
-            <BondActions info={info} tokens={tokens}/>
-        </div>
+       <div className='flex items-center justify-center'>
+           <div
+               className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start">
+               <BondDetails info={info} tokens={tokens}/>
+               <BondActions info={info} tokens={tokens}/>
+           </div>
+       </div>
     </>
 }

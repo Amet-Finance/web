@@ -106,7 +106,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                     </>
                     :
                     <>
-                        <div className={Styles.redeemActions}>
+                        <div className="flex justify-between items-center gap-4">
                             <SelectAllSVG onClick={selectAll}/>
                             <ClearSVG onClick={clearAll}/>
                         </div>

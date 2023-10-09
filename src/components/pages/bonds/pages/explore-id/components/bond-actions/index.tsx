@@ -17,8 +17,9 @@ export default function BondActions({info, tokens}: { info: BondInfoDetailed, to
     const actionHandler = [action, setAction];
 
     return <>
-        <div className={Styles.bondActions}>
+        <div className="flex flex-col gap-5 bg-d-1 p-5 rounded-xl lg1:w-auto sm:w-full lg1:min-w-500">
             <ActionButtons info={info} actionHandler={actionHandler}/>
+            <div className="h-px w-full bg-g5"/>
             <Action info={info} actionHandler={actionHandler} tokens={tokens}/>
         </div>
     </>

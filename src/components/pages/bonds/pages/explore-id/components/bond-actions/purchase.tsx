@@ -95,10 +95,15 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
 
     const SubmitButton = () => {
         let title = "Purchase"
-        let className = `${Styles.submit}`;
+        let className = `bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black`;
         let onClick = submit
 
-        if (Number(amount) > Number(bondsLeft)) {
+        if (!Number(bondsLeft)) {
+            title = `Sold Out`
+            className += ` ${Styles.disable}`
+            onClick = async () => {
+            };
+        } else if (Number(amount) > Number(bondsLeft)) {
             title = `Not enough bonds left`
             className += ` ${Styles.disable}`
             onClick = async () => {
@@ -111,12 +116,16 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     }
 
     return <>
-        <div className={Styles.section}>
-            <input className={Styles.input}
-                   type="number"
-                   onChange={onChange}
-                   placeholder="The amount of bonds you want to purchase"/>
-            <SubmitButton/>
+        <div className="flex flex-col gap-4">
+            <input
+                className="bg-transparent placeholder:text-white text-white text-sm px-5 p-3 rounded border border-solid border-w1"
+                type="number"
+                onChange={onChange}
+                placeholder="The amount of bonds you want to purchase"/>
+            <div className='flex flex-col gap-2'>
+                <span className='text-xs text-g2'>You confirm that you have read and understood the Terms and Conditions.</span>
+                <SubmitButton/>
+            </div>
         </div>
     </>
 }

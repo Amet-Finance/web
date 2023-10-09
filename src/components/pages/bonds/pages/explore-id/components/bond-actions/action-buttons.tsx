@@ -6,7 +6,7 @@ import {Actions} from "@/components/pages/bonds/pages/explore-id/components/bond
 
 export default function ActionButtons({info, actionHandler}: any) {
     return <>
-        <div className={Styles.sectionHorizontal}>
+        <div className='flex gap-4 items-center'>
             {
                 Object.keys(Actions)
                     .map((key: string) => <ActionButton name={key}
@@ -22,7 +22,7 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
     const [action, setAction] = actionHandler;
     const account = useSelector((item: RootState) => item.account);
     const isSelected = Actions[name] === action;
-    const className = `${Styles.action} ${isSelected ? Styles.selectedAction : ""}`
+    const className = isSelected ? "text-white" : "text-g"
     const select = () => setAction(Actions[name])
 
     const showName = () => {
@@ -42,6 +42,6 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
     }
 
     return <>
-        <span className={className} onClick={select}>{showName()}</span>
+        <button className={className} onClick={select}>{showName()}</button>
     </>
 }

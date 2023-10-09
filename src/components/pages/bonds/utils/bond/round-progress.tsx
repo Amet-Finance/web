@@ -12,7 +12,7 @@ type Arguments = {
 export default function RoundProgress({total, purchased, redeemed, isHorizontal}: Arguments) {
     const left = total - purchased;
     const theUnredeemedAmount = purchased - redeemed;
-// todo write total inside the round https://www.youtube.com/watch?v=c2mzQKpd_DI
+    // todo write total inside the round https://www.youtube.com/watch?v=c2mzQKpd_DI
     const DatasetLabels = {
         Redeem: "Redeem",
         Purchased: 'Purchased',

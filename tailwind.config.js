@@ -1,11 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./app/**/*.{js,ts,jsx,tsx,mdx}",
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./components/**/*.{js,ts,jsx,tsx,mdx}",
-
-        // Or if using `src` directory:
         "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
@@ -18,22 +13,30 @@ module.exports = {
             'xl': '1280px',
             '2xl': '1536px',
         },
-        colors: {
-            g: "#929292",
-            g2: "#5B5B5B",
+        extend: {
+            colors: {
+                g: "#929292",
+                g2: "#5B5B5B",
 
-            "gl-1": "#27FFC0",
+                "gl-1": "#27FFC0",
 
 
-            'rl-1': "#FF0000"
-        },
-        backgroundColor: {
-            g5: "#303030",
+                'rl-1': "#FF0000"
+            },
+            backgroundColor: {
+                g5: "#303030",
 
-            b1: "#0F0F0F"
-        },
-        borderColor: {
-            w1: "rgba(255, 255, 255, 0.1)"
+                b1: "#0F0F0F"
+            },
+            borderColor: {
+                w1: "rgba(255, 255, 255, 0.1)"
+            },
+            minWidth: {
+                500: "500px"
+            },
+            fontSize: {
+                mm: "0.6rem"
+            }
         }
     },
     plugins: [],

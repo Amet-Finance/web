@@ -1,6 +1,6 @@
 export default function ClearSVG({onClick}: any) {
     return <>
-        <div className="container" onClick={onClick} title="Clear/Unselect all the elements">
+        <div className="flex cursor-pointer" onClick={onClick} title="Clear/Unselect all the elements">
             <svg
                 width="24px"
                 height="24px"

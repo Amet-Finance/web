@@ -54,7 +54,7 @@ function BondIssuerInfo({info}: any) {
     }
 
     return <>
-        <div className="grid md:grid-cols-2 gap-x-8 w-full">
+        <div className="grid md:grid-cols-2 gap-x-8 w-full md:text-base text-xs">
             <div className="flex items-center justify-between gap-2 w-full">
                 <span>Bond contract:</span>
                 <div className='flex items-center gap-2'>
@@ -158,7 +158,8 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
                         <span>{token.name}</span>
                         {
                             Boolean(hasBalance) &&
-                            <span className="text-g text-xs">Balance: {format(Number(token.balanceClean))} {token.symbol}</span>}
+                            <span
+                                className="text-g text-xs">Balance: {format(Number(token.balanceClean))} {token.symbol}</span>}
                     </div>
                 </div>
                 <TotalAmount/>
@@ -183,6 +184,8 @@ function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Token
     const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
     const redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
 
+    const percentageClass = redeemedPercentage < 30 ? "text-rl-1" : "text-gl-1";
+
     const infoSection = {
         title: "Get insights into the security aspects of this bond. Check the secured redemption percentage, issuer score, and more to make an informed decision",
         url: URLS.FAQ // todo update this
@@ -200,7 +203,7 @@ function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Token
             <div className="flex flex-col gap-1">
                 <div className='flex justify-between items-center gap-4'>
                     <span>Percentage Redemption:</span>
-                    <b className='text-gl-1'>{format(redeemedPercentage)}%</b>
+                    <b className={percentageClass}>{format(redeemedPercentage)}%</b>
                 </div>
                 <div className='flex justify-between items-center gap-4'>
                     <span>Issuer Score:</span>
