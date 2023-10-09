@@ -9,6 +9,8 @@ import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
 import {isMobile} from "@/modules/utils/agent";
+import * as Tokens from "./tokens";
+import {withdrawRemaining} from "@/modules/web3/zcb";
 
 function getWeb3Instance() {
     const rpcs = RPC_BY_CHAINS[DEFAULT_CHAIN_ID];
@@ -54,6 +56,7 @@ async function submitTransaction(type: string, txType: string, config: any) {
         data: contractInfo.data,
         value: contractInfo.value || 0
     }
+
     switch (type) {
         case WalletTypes.Metamask: {
             const txHash = await Metamask.submitTransaction(transactionConfig);
@@ -97,6 +100,18 @@ function getContractInfoByType(txType: string, config: any) {
             return {
                 to: config.contractAddress,
                 data: ZCB.redeem(config.contractAddress, config.ids)
+            }
+        }
+        case TxTypes.TransferERC20: {
+            return {
+                to: config.contractAddress,
+                data: Tokens.deposit(config.contractAddress, config.toAddress, config.amount)
+            }
+        }
+        case TxTypes.WithdrawRemaining: {
+            return {
+                to: config.contractAddress,
+                data: ZCB.withdrawRemaining(config.contractAddress)
             }
         }
         default: {

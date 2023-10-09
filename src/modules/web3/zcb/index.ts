@@ -33,7 +33,7 @@ async function getTokensInfo(contractAddress: string, tokenIds: number[]) {
         return;
     }
 
-    const web3 = getWeb3Instance()
+    const web3 = getWeb3Instance();
     const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
     return await contract.methods.getTokensPurchaseDates(tokenIds).call();
 }
@@ -96,6 +96,17 @@ function redeem(contractAddress: string, ids: string[]) {
     }
 }
 
+function withdrawRemaining(contractAddress: string) {
+    try {
+        const web3 = getWeb3Instance();
+
+        const contract = new web3.eth.Contract(ZCB_ABI as any, contractAddress);
+        return contract.methods.withdrawRemaining().encodeABI();
+    } catch (error: any) {
+        console.log(`error`, error)
+    }
+}
+
 function decode(transaction: TransactionReceipt): {} {
 
     const web3 = getWeb3Instance();
@@ -124,6 +135,7 @@ export {
     issueBonds,
     purchase,
     redeem,
+    withdrawRemaining,
     decode,
     getInfo,
     getTokensInfo

@@ -45,7 +45,9 @@ const TxTypes = {
     IssueBond: 'issue-bonds',
     ApproveToken: 'approve-token',
     PurchaseBonds: 'purchase-bonds',
-    RedeemBonds: 'redeem-bonds'
+    RedeemBonds: 'redeem-bonds',
+    TransferERC20: "transfer-erc20",
+    WithdrawRemaining: 'withdraw-remaining'
 }
 
 export {

@@ -42,8 +42,6 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     // console.log(`address`, address)
     // console.log(`contract`, _id)
 
-    console.log(`allowance`, allowance)
-
     if (!investmentTokenInfo) {
         return <>
             <div className='flex justify-center items-center w-full'>

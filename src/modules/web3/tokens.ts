@@ -3,6 +3,11 @@ import ERC20 from './abi-jsons/ERC20.json'
 import {TokenInfo} from "@/modules/web3/type";
 import {getIcon} from "@/modules/utils/images";
 
+function getTokenContract(address: string) {
+    const web3 = getWeb3Instance();
+    return new web3.eth.Contract(ERC20 as any, address);
+}
+
 async function getTokenInfo(contractAddress: string, address?: string): Promise<TokenInfo | undefined> {
     try {
         const web3 = getWeb3Instance();
@@ -54,15 +59,20 @@ async function getAllowance(tokenContractAddress?: string, address?: string, spe
 }
 
 function approve(tokenContractAddress: string, spender: string, value: number) {
-    const web3 = getWeb3Instance();
-    const contract = new web3.eth.Contract(ERC20 as any, tokenContractAddress);
-
+    const contract = getTokenContract(tokenContractAddress)
     return contract.methods.approve(spender, value).encodeABI()
 }
 
+function deposit(tokenContractAddress: string, toAddress: string, value: number) {
+    const contract = getTokenContract(tokenContractAddress)
+    return contract.methods.transfer(toAddress, value).encodeABI()
+}
+
 export {
+    getTokenContract,
     getTokenInfo,
     getAllowance,
     getTokenBalance,
-    approve
+    approve,
+    deposit
 }
