@@ -207,7 +207,7 @@ function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Token
                 </div>
                 <div className='flex justify-between items-center gap-4'>
                     <span>Issuer Score:</span>
-                    <b className='text-gl-1'>4.7</b>
+                    <b className='text-g'>?</b>
                 </div>
             </div>
 

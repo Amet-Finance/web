@@ -67,7 +67,6 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
 
     async function submit() {
         if (isApproval) {
-
             const web3 = getWeb3Instance();
             const {toBN} = web3.utils;
 
@@ -82,6 +81,10 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
             });
             console.log(transaction)
         } else {
+            if (!Number(amount) || !isFinite(amount)) {
+                return;
+            }
+
             const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
                 contractAddress: _id,
                 count: amount
@@ -89,6 +92,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
             await initBalance(account.address);
             console.log(transaction);
         }
+
         setEffectRefresher(Math.random());
 
     }
@@ -118,8 +122,9 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     return <>
         <div className="flex flex-col gap-4">
             <input
-                className="bg-transparent placeholder:text-white text-white text-sm px-5 p-3 rounded border border-solid border-w1"
+                className="bg-transparent placeholder:text-g text-white text-sm px-5 p-3 rounded border border-solid border-w1"
                 type="number"
+                disabled={!bondsLeft}
                 onChange={onChange}
                 placeholder="The amount of bonds you want to purchase"/>
             <div className='flex flex-col gap-2'>
