@@ -1,7 +1,11 @@
 import Head from "next/head";
 import {MetaConstants} from "@/components/headers/constants";
 
-export default function Headers({name}: {name: string}) {
+export default function Headers({name}: { name: string }) {
+
+    if (!name) {
+        return null
+    }
 
     const {title, description, ogImage} = MetaConstants[name] || MetaConstants["default"]
 
