@@ -1,5 +1,5 @@
 import {BondInfo, Tokens} from "@/components/pages/bonds/pages/issue/type";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {getAllowance} from "@/modules/web3/tokens";
@@ -18,28 +18,25 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
         investmentTokenAmount,
         total,
         purchased,
-        investmentToken,
-        interestToken
+        investmentToken
     } = info;
 
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
     const bondsLeft = Number(total) - Number(purchased);
 
     const [effectRefresher, setEffectRefresher] = useState(0);
+    const inputRef = useRef<any>();
     const [amount, setAmount] = useState(0);
     const [allowance, setAllowance] = useState(0)
     const account = useSelector((item: RootState) => item.account);
     const {address} = account;
 
     useEffect(() => {
-        getAllowance(interestToken, address, _id)
+        getAllowance(investmentToken, address, _id)
             .then(response => setAllowance(response))
             .catch(() => null)
-    }, [_id, interestToken, address, effectRefresher])
+    }, [_id, investmentToken, address, effectRefresher])
 
-    // console.log(`interestToken`, interestToken)
-    // console.log(`address`, address)
-    // console.log(`contract`, _id)
 
     if (!investmentTokenInfo) {
         return <>
@@ -94,7 +91,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
 
     }
 
-    const SubmitButton = () => {
+    function SubmitButton() {
         let title = "Purchase"
         let className = `bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black`;
         let onClick = submit
@@ -116,14 +113,40 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
         return <button className={className} onClick={onClick}>{title}</button>
     }
 
+    function setPercent(percent: number) {
+        const total = Math.floor((bondsLeft * percent) / 100)
+        inputRef.current.value = total
+        setAmount(total)
+    }
+
     return <>
         <div className="flex flex-col gap-4">
-            <input
-                className="bg-transparent placeholder:text-g text-white text-sm px-5 p-3 rounded border border-solid border-w1"
-                type="number"
-                disabled={!bondsLeft}
-                onChange={onChange}
-                placeholder="The amount of bonds you want to purchase"/>
+            <div className='flex flex-col gap-2'>
+                <input
+                    className="bg-transparent placeholder:text-g text-white text-sm px-5 p-3 rounded border border-solid border-w1"
+                    type="number"
+                    disabled={!bondsLeft}
+                    ref={inputRef}
+                    onChange={onChange}
+                    placeholder="The amount of bonds you want to purchase"/>
+                <div className='flex gap-2 items-center'>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm'
+                            onClick={() => setPercent(5)}>5%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm'
+                            onClick={() => setPercent(10)}>10%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm'
+                            onClick={() => setPercent(25)}>25%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm'
+                            onClick={() => setPercent(50)}>50%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm'
+                            onClick={() => setPercent(100)}>100%
+                    </button>
+                </div>
+            </div>
             <div className='flex flex-col gap-2'>
                 <span className='text-xs text-g2'>You confirm that you have read and understood the Terms and Conditions.</span>
                 <SubmitButton/>

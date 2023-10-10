@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useEffect} from "react";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
+import AmetLoadingFull from "@/components/utils/amet-loading-full";
 
 const montserrat = Montserrat({ subsets: ['latin'] })
 

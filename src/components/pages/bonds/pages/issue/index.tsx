@@ -271,10 +271,12 @@ function TokenDetails({tokenInfo, type, total}: any) {
         return null;
     }
 
+    const isLoading = tokenInfo?.isLoading && !tokenInfo.unidentified
+
     return <>
         <div className={Styles.tokenInfo}>
             {
-                tokenInfo?.isLoading ?
+                isLoading ?
                     <div className={Styles.loader}><Loading/></div> :
                     <OperationDetails tokenInfo={tokenInfo} total={total} type={type}/>
             }
@@ -283,10 +285,6 @@ function TokenDetails({tokenInfo, type, total}: any) {
 }
 
 function OperationDetails({tokenInfo, total, type}: TokenDetails) {
-
-    if (tokenInfo.unidentified) {
-        return null;
-    }
 
     const icon = tokenInfo?.icon || "";
     const name = tokenInfo?.name || ""
