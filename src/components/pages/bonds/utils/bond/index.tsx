@@ -19,8 +19,8 @@ import InfoSVG from "../../../../../../public/svg/info";
 import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
 import {useRouter} from "next/router";
 import {stopPropagation} from "@/modules/utils/events";
+import {toBN} from "@/modules/web3/util";
 
-const {toBN} = getWeb3Instance().utils;
 
 export default function Bond({info}: { info: BondGeneral }) {
 

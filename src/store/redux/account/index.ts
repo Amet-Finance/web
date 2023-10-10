@@ -6,7 +6,7 @@ import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 const emptyState: Account = {
     address: "",
-    chain: DEFAULT_CHAIN_ID,
+    chainId: DEFAULT_CHAIN_ID,
     balance: {}
 }
 
@@ -20,6 +20,9 @@ const counterSlice = createSlice({
         updateBalance: (state, {payload}) => {
             state.balance = payload
         },
+        switchChain: (state, {payload}) => {
+            state.chainId = payload
+        },
         disconnect: (state) => {
             state.address = "";
         }
@@ -28,7 +31,12 @@ const counterSlice = createSlice({
 
 const reducer = counterSlice.reducer;
 
-const {connect, updateBalance, disconnect} = counterSlice.actions;
+const {
+    connect,
+    updateBalance,
+    disconnect,
+    switchChain
+} = counterSlice.actions;
 
 function connectWallet(address: string) {
     store.dispatch(connect({
@@ -41,7 +49,7 @@ function disconnectWallet() {
 }
 
 async function initBalance(address: string) {
-    const balance = await CloudAPI.getBalance(address);
+    const balance = await CloudAPI.getBalance({address, chainId: DEFAULT_CHAIN_ID});
     if (balance) {
         delete balance._id;
         store.dispatch(updateBalance(balance))
@@ -53,11 +61,16 @@ async function initWallet(address: string) {
     await initBalance(address);
 }
 
+function changeChain(chainId: string) {
+    store.dispatch(switchChain(chainId))
+}
+
 export {
     counterSlice,
     reducer,
     initWallet,
     connectWallet,
     initBalance,
-    disconnectWallet
+    disconnectWallet,
+    changeChain
 }

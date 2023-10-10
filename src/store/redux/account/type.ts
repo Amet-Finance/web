@@ -1,6 +1,6 @@
 type Account = {
     address: string,
-    chain: string,
+    chainId: string,
     balance: { [key: string]: any[] }
 }
 

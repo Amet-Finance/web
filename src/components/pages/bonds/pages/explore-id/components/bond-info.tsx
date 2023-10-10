@@ -14,6 +14,8 @@ import InvestmentSVG from "../../../../../../../public/svg/investment";
 import InfoSVG from "../../../../../../../public/svg/info";
 import Loading from "@/components/utils/loading";
 import SecuritySVG from "../../../../../../../public/svg/security";
+import {getExplorerToken} from "@/modules/web3/utils/token";
+import {toBN} from "@/modules/web3/util";
 
 const BondTokens = {
     Interest: "interest",
@@ -112,10 +114,8 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
         return <div className="flex items-center justify-center w-full"><Loading/></div>;
     }
 
-    const {toBN} = getWeb3Instance().utils
-
-
     const isInterest = type === BondTokens.Interest
+    const tokenUrl = getExplorerToken(token.contractAddress);
     const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>
     const title = isInterest ? "Interest" : "Investment"
     const hasBalance = typeof token.balanceClean !== "undefined"
@@ -153,7 +153,9 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
             <Line/>
             <div className="flex justify-between items-center gap-2 w-full">
                 <div className="flex items-center gap-2">
-                    <Image src={token.icon} width={32} height={32} alt={token.name}/>
+                    <Link href={tokenUrl} target="_blank">
+                        <Image src={token.icon} width={32} height={32} alt={token.name}/>
+                    </Link>
                     <div className="flex flex-col">
                         <span>{token.name}</span>
                         {
@@ -171,7 +173,6 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
 function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Tokens }) {
     const {interestToken, interestTokenBalance} = info;
 
-    const {toBN} = getWeb3Instance().utils
 
     if (!tokens[interestToken] || tokens[interestToken].unidentified) {
         return null;

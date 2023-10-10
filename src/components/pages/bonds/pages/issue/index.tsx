@@ -356,7 +356,7 @@ function Token({token}: any) {
 function NotIdentified() {
 
     const account = useSelector((item: RootState) => item.account)
-    const chainInfo = CHAIN_INFO[account.chain]
+    const chainInfo = CHAIN_INFO[account.chainId]
 
     return <>
         <div className={Styles.tokenDetails}>

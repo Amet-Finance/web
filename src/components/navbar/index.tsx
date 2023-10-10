@@ -13,6 +13,9 @@ import {RootState} from "@/store/redux/type";
 import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
+import Image from "next/image";
+import {CHAIN_IDS, CHAIN_INFO} from "@/modules/web3/constants";
+import {changeChain} from "@/store/redux/account";
 
 
 const navItems: any = [
@@ -132,20 +135,22 @@ function NavLink({link}: any) {
 function WalletState({changeVisibility}: any) {
     const account = useSelector((item: RootState) => item.account);
 
+    return <>
+        <div className='relative flex items-center gap-2'>
+            <Chains/>
+            {account.address ? <ConnectedState/> : <ConnectButton changeVisibility={changeVisibility}/>}
+        </div>
+    </>
+}
+
+function ConnectButton({changeVisibility}: any) {
     const connect = () => {
         openModal(ModalTypes.ConnectWallet);
-        if(changeVisibility) changeVisibility();
-    }
-
-    if (account.address) {
-        return <ConnectedState/>
+        if (changeVisibility) changeVisibility();
     }
 
     return <>
-        <button
-            className={Styles.connect}
-            onClick={connect}>Connect
-        </button>
+        <button className={Styles.connect} onClick={connect}>Connect</button>
     </>
 }
 
@@ -167,6 +172,47 @@ function ConnectedState() {
                     <span className={Styles.disconnect} onClick={AccountSlice.disconnectWallet}>Disconnect</span>
                 </div>
             </>}
+        </div>
+    </>
+}
+
+function Chains() {
+    const [isOpen, setOpen] = useState(false)
+    const account = useSelector((item: RootState) => item.account);
+    const icon = `/svg/chains/${account.chainId}.svg`
+    const chainInfo = CHAIN_INFO[account.chainId]
+
+    const change = () => setOpen(!isOpen)
+
+    return <>
+        <div className='relative flex flex-col p-2'>
+            <Image src={icon} alt={chainInfo.chainName} width={30} height={30} className='cursor-pointer'
+                   onClick={change}/>
+            {isOpen && <ChainsDropDown change={change}/>}
+        </div>
+    </>
+}
+
+function ChainsDropDown({change}: any) {
+    return <>
+        <div className='absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-4 py-2 rounded z-40' onClick={change}>
+            {Object.values(CHAIN_IDS).map(chainId => <Chain chainId={chainId} key={chainId}/>)}
+        </div>
+    </>
+}
+
+function Chain({chainId}: { chainId: string }) {
+    const icon = `/svg/chains/${chainId}.svg`
+    const chainInfo = CHAIN_INFO[chainId]
+
+    const change = () => {
+        changeChain(chainId);
+    }
+
+    return <>
+        <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded' onClick={change}>
+            <Image src={icon} alt={chainInfo.chainName} width={30} height={30} className='cursor-pointer'/>
+            <span>{chainInfo.chainName}</span>
         </div>
     </>
 }

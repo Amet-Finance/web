@@ -1,18 +1,17 @@
-import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {TokenInfo} from "@/modules/web3/type";
+import {BondInfo, Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {getAllowance} from "@/modules/web3/tokens";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import Loading from "@/components/utils/loading";
-import {toBN} from "web3-utils";
-import {getWeb3Instance, submitTransaction} from "@/modules/web3";
+import {submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {initBalance} from "@/store/redux/account";
 import {sleep} from "@/modules/utils/dates";
+import {toBN} from "@/modules/web3/util";
 
-export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [key: string]: TokenInfo } }) {
+export default function Purchase({info, tokens}: { info: BondInfo, tokens: Tokens }) {
 
     const {
         _id,
@@ -35,8 +34,8 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     useEffect(() => {
         getAllowance(interestToken, address, _id)
             .then(response => setAllowance(response))
-            .catch(error => null)
-    }, [address, effectRefresher])
+            .catch(() => null)
+    }, [_id, interestToken, address, effectRefresher])
 
     // console.log(`interestToken`, interestToken)
     // console.log(`address`, address)
@@ -59,14 +58,12 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: { [ke
     const isApproval = totalPrice > allowanceDivided;
 
     function onChange(event: Event | any) {
-        const {value, type} = event.target;
+        const {value} = event.target;
         setAmount(Number(value) || 0);
     }
 
     async function submit() {
         if (isApproval) {
-            const web3 = getWeb3Instance();
-            const {toBN} = web3.utils;
 
             if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {
                 return;

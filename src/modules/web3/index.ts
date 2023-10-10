@@ -8,15 +8,13 @@ import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
 import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
-import {isMobile} from "@/modules/utils/agent";
 import * as Tokens from "./tokens";
-import {withdrawRemaining} from "@/modules/web3/zcb";
 
-function getWeb3Instance() {
-    const rpcs = RPC_BY_CHAINS[DEFAULT_CHAIN_ID];
-    const index = Math.floor(Math.random() * rpcs.length)
+function getWeb3Instance(chainId: string) {
 
-    return new Web3(rpcs[index]);
+    const RPCs = RPC_BY_CHAINS[chainId];
+    const index = Math.floor(Math.random() * RPCs.length)
+    return new Web3(RPCs[index]);
 }
 
 async function connectWallet(type: string, callback?: any) {
@@ -46,7 +44,6 @@ function getWalletAddress(): string | undefined {
 
 async function submitTransaction(type: string, txType: string, config: any) {
 
-    console.log(`config`, config)
     const address = await connectWallet(WalletTypes.Metamask)
     const contractInfo = getContractInfoByType(txType, config);
 
@@ -126,7 +123,7 @@ async function trackTransaction(txHash: string, recursionCount = 0): Promise<any
             // Throw error when 100sec passed
             return undefined;
         }
-        const web3 = getWeb3Instance();
+        const web3 = getWeb3Instance(DEFAULT_CHAIN_ID);
 
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
         const response = await web3.eth.getTransactionReceipt(txHash);

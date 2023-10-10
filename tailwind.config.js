@@ -26,7 +26,8 @@ module.exports = {
             backgroundColor: {
                 g5: "#303030",
 
-                b1: "#0F0F0F"
+                b1: "#0F0F0F",
+                b2: "#1B1B1B"
             },
             borderColor: {
                 w1: "rgba(255, 255, 255, 0.1)",

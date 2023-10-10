@@ -3,7 +3,7 @@ import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-ac
 import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import {RootState} from "@/store/redux/type";
-import {getTokensInfo} from "@/modules/web3/zcb";
+import {getTokensPurchaseDates} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import {submitTransaction} from "@/modules/web3";
@@ -39,7 +39,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             if(!holdings.length) {
                 setLoading(true);
             }
-            getTokensInfo(contractAddress, balanceTokenIds)
+            getTokensPurchaseDates(contractAddress, balanceTokenIds)
                 .then(response => {
                     const utcTimestamp = Date.now() / 1000;
                     const tokensWithDates = response.map((date: number, index: number) => {
@@ -56,7 +56,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                     // console.log(tokensWithDates)
                     setHoldings(tokensWithDates);
                 })
-                .catch(error => console.log(`getTokensInfo`, error))
+                .catch(error => console.log(`getTokensPurchaseDates`, error))
                 .finally(() => setLoading(false))
         }
     }, [account.address, account.balance[contractAddress]])

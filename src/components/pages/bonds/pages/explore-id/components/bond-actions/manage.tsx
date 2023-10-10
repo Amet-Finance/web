@@ -1,9 +1,10 @@
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import {useRef} from "react";
-import {getWeb3Instance, submitTransaction} from "@/modules/web3";
+import {submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
+import {toBN} from "@/modules/web3/util";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
@@ -13,8 +14,6 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
     const burnBonds = useRef(null)
 
     async function deposit() {
-        const {toBN} = getWeb3Instance().utils;
-
         const value = depositRef?.current?.value;
         if (!value) {
             return toast.error('Please fill the amount field');

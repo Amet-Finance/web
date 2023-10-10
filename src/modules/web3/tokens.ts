@@ -2,18 +2,17 @@ import {getWeb3Instance} from "@/modules/web3/index";
 import ERC20 from './abi-jsons/ERC20.json'
 import {TokenInfo} from "@/modules/web3/type";
 import {getIcon} from "@/modules/utils/images";
+import {toBN} from "@/modules/web3/util";
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
-function getTokenContract(address: string) {
-    const web3 = getWeb3Instance();
-    return new web3.eth.Contract(ERC20 as any, address);
+function getTokenContract(contractAddress: string) {
+    const web3 = getWeb3Instance(DEFAULT_CHAIN_ID);
+    return new web3.eth.Contract(ERC20 as any, contractAddress);
 }
 
 async function getTokenInfo(contractAddress: string, address?: string): Promise<TokenInfo | undefined> {
     try {
-        const web3 = getWeb3Instance();
-        const {toBN} = web3.utils;
-
-        const contract = new web3.eth.Contract(ERC20 as any, contractAddress);
+        const contract = getTokenContract(contractAddress)
 
         const name = await contract.methods.name().call();
         const symbol = await contract.methods.symbol().call();
@@ -41,20 +40,12 @@ async function getTokenInfo(contractAddress: string, address?: string): Promise<
 }
 
 async function getTokenBalance(contractAddress: string, address: string) {
-    const web3 = getWeb3Instance();
-
-    const contract = new web3.eth.Contract(ERC20 as any, contractAddress);
+    const contract = getTokenContract(contractAddress)
     return await contract.methods.balanceOf(address).call();
 }
 
-async function getAllowance(tokenContractAddress?: string, address?: string, spender?: string) {
-    if (!tokenContractAddress || !address || !spender) {
-        return 0;
-    }
-
-    const web3 = getWeb3Instance();
-    const contract = new web3.eth.Contract(ERC20 as any, tokenContractAddress);
-
+async function getAllowance(contractAddress: string, address: string, spender: string) {
+    const contract = getTokenContract(contractAddress)
     return await contract.methods.allowance(address, spender).call();
 }
 
@@ -63,8 +54,8 @@ function approve(tokenContractAddress: string, spender: string, value: number) {
     return contract.methods.approve(spender, value).encodeABI()
 }
 
-function deposit(tokenContractAddress: string, toAddress: string, value: number) {
-    const contract = getTokenContract(tokenContractAddress)
+function deposit(contractAddress: string, toAddress: string, value: number) {
+    const contract = getTokenContract(contractAddress)
     return contract.methods.transfer(toAddress, value).encodeABI()
 }
 
