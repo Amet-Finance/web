@@ -12,7 +12,7 @@ export default function BondsShowcase() {
     return <>
         <div className={Styles.actions}>
             <div className={Styles.actions}>
-                <h1>Explore New Bonds</h1>
+                <h2 className='text-3xl font-bold'>Explore New Bonds</h2>
                 <p className={join([Styles.bondsText, Styles.gray1])}>Stay ahead of the curve by exploring our freshly
                     launched bonds. <br/> These opportunities are your ticket to the forefront of decentralized finance
                     innovation.</p>
