@@ -1,6 +1,6 @@
 export default function SelectAllSVG({onClick}: any) {
     return <>
-        <div className='flex cursor-pointer' onClick={onClick} title="Select all the elements">
+        <button className='select' onClick={onClick} title="Select all the elements">
             <svg
                 width="24px"
                 height="24px"
@@ -12,13 +12,14 @@ export default function SelectAllSVG({onClick}: any) {
                           stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </g>
             </svg>
-        </div>
+        </button>
         <style jsx>{`
-          .container {
+          .select {
+            display: flex;
             cursor: pointer;
           }
 
-          .container:hover svg g path {
+          .select:hover svg g path {
             stroke: #00b76f;
           }
         `}</style>

@@ -63,7 +63,9 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     if (!holdings.length && !loading) {
         return <>
-            <span>There are no bonds to redeem</span>
+            <div className='flex items-center justify-center p-4'>
+                <span className='text-g'>There are no bonds to redeem</span>
+            </div>
         </>
     }
 
