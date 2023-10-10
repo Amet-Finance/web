@@ -7,7 +7,8 @@ export default function AddressPage(props: any) {
 export async function getServerSideProps({query}: any) {
     return {
         props: {
-            address: query.id
+            address: query.id,
+            pageId: "ExplorePage"
         }
     }
 }

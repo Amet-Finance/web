@@ -1,13 +1,9 @@
 import Head from "next/head";
 import {MetaConstants} from "@/components/headers/constants";
 
-export default function Headers({name}: { name: string }) {
+export default function Headers({id}: { id: string }) {
 
-    if (!name) {
-        return null
-    }
-
-    const {title, description, ogImage} = MetaConstants[name] || MetaConstants["default"]
+    const {title, description, ogImage} = MetaConstants[id] || MetaConstants["default"]
 
     const ogImg = ogImage || MetaConstants["default"].ogImage
 
@@ -23,8 +19,7 @@ export default function Headers({name}: { name: string }) {
             <meta name="author" content="Amet Finance"/>
 
             <meta property="og:title" content={title}/>
-            <meta property="og:description"
-                  content={description}/>
+            <meta property="og:description" content={description}/>
             <meta property="og:image" content={ogImg}/>
             <meta property="og:url" content="https://amet.finance"/>
 
