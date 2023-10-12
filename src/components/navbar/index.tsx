@@ -1,9 +1,8 @@
 import Styles from "./index.module.css";
 import Link from "next/link";
-import {openModal} from "@/store/redux/modal";
+import {closeModal, openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import AmetLogo from "../../../public/svg/amet-logo";
-import {Account} from "@/store/redux/account/type";
 import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import * as Web3Service from "@/modules/web3";
@@ -14,8 +13,7 @@ import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
-import {CHAIN_IDS, CHAIN_INFO} from "@/modules/web3/constants";
-import {changeChain} from "@/store/redux/account";
+import {CHAIN_IDS, CHAIN_INFO, DEFAULT_CHAIN_ID, WalletTypes} from "@/modules/web3/constants";
 
 
 const navItems: any = [
@@ -45,11 +43,11 @@ const navItems: any = [
 export default function Navbar() {
 
     useEffect(() => {
-        const address = Web3Service.getWalletAddress();
-        address && AccountSlice.initWallet(address);
-        if (address) {
-            AccountSlice.initWallet(address);
-        }
+        Web3Service.connectWallet({
+            type: WalletTypes.Metamask,
+            chainId: DEFAULT_CHAIN_ID,
+            hideError: true
+        })
     }, [])
 
     return <>
@@ -179,6 +177,7 @@ function ConnectedState() {
 function Chains() {
     const [isOpen, setOpen] = useState(false)
     const account = useSelector((item: RootState) => item.account);
+    // console.log(account)
     const icon = `/svg/chains/${account.chainId}.svg`
     const chainInfo = CHAIN_INFO[account.chainId]
 
@@ -186,7 +185,10 @@ function Chains() {
 
     return <>
         <div className='relative flex flex-col p-2'>
-            <Image src={icon} alt={chainInfo.chainName} width={30} height={30} className='cursor-pointer'
+            <Image src={icon}
+                   alt={chainInfo.chainName}
+                   width={30} height={30}
+                   className='cursor-pointer'
                    onClick={change}/>
             {isOpen && <ChainsDropDown change={change}/>}
         </div>
@@ -195,7 +197,8 @@ function Chains() {
 
 function ChainsDropDown({change}: any) {
     return <>
-        <div className='absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-4 py-2 rounded z-40' onClick={change}>
+        <div className='absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-4 py-2 rounded z-40'
+             onClick={change}>
             {Object.values(CHAIN_IDS).map(chainId => <Chain chainId={chainId} key={chainId}/>)}
         </div>
     </>
@@ -205,8 +208,13 @@ function Chain({chainId}: { chainId: string }) {
     const icon = `/svg/chains/${chainId}.svg`
     const chainInfo = CHAIN_INFO[chainId]
 
-    const change = () => {
-        changeChain(chainId);
+    function change() {
+        Web3Service.connectWallet({
+            type: WalletTypes.Metamask,
+            chainId,
+            requestChain: true,
+            hideError: true
+        })
     }
 
     return <>

@@ -1,12 +1,23 @@
 import {closeModal} from "@/store/redux/modal";
 import * as Web3Service from '../../modules/web3'
-import {WalletTypes} from "@/modules/web3/constants";
+import {DEFAULT_CHAIN_ID, WalletTypes} from "@/modules/web3/constants";
 import Image from "next/image";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
+import {toast} from "react-toastify";
 
 export default function ConnectWallet() {
-    const connect = () => Web3Service.connectWallet(WalletTypes.Metamask, closeModal)
+    function connect() {
+        Web3Service.connectWallet({
+            type: WalletTypes.Metamask,
+            chainId: DEFAULT_CHAIN_ID,
+            requestAccounts: true,
+            requestChain: true
+        })
+            .catch(error => {
+                return toast.error(error.message)
+            })
+    }
 
     return <>
         <div className="flex items-start gap-16">

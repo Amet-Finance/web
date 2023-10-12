@@ -36,6 +36,9 @@ module.exports = {
             minWidth: {
                 500: "500px"
             },
+            width: {
+                500: "500px"
+            },
             fontSize: {
                 mm: "0.6rem"
             }

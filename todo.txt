@@ -6,5 +6,6 @@
 
 // Contract issues
 1. Add owner changing
-2. (Selectable by the issuer)Add capitulation redeem logic which will redeem the bond with 25% of it's price, and show the metrics as well in the bond section
+2. (Selectable by the issuer)Add capitulation redeem logic which will redeem the bond with 25% of its price, and show the metrics as well in the bond section
 or maybe using the date estimate the interest amount, for example if it's 2 days left it can be 98% return
+3. Add max number of person purchase. for example one person can buy maximum of 50 bonds

@@ -9,6 +9,8 @@ import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
 import * as Tokens from "./tokens";
+import {ConnectWallet, SwitchChain} from "@/modules/web3/type";
+import {closeModal} from "@/store/redux/modal";
 
 function getWeb3Instance(chainId: string) {
 
@@ -17,34 +19,49 @@ function getWeb3Instance(chainId: string) {
     return new Web3(RPCs[index]);
 }
 
-async function connectWallet(type: string, callback?: any) {
-    let address = getWalletAddress();
+async function connectWallet(connectionConfig: ConnectWallet): Promise<string | undefined> {
+    const {type, requestAccounts, hideError, callback} = connectionConfig;
+    try {
 
-    switch (type) {
-        case WalletTypes.Metamask: {
-            address = await Metamask.connectWallet()
+        let address;
+        let chainId;
+
+        switch (type) {
+            case WalletTypes.Metamask: {
+                const result = await Metamask.connectWalletAndSwitchChain(connectionConfig)
+                address = result.address;
+                chainId = result.chainId;
+            }
+        }
+
+        if (!address) {
+            if (requestAccounts) {
+                toast.error(`Could not connect ${type} wallet`)
+            }
+            return;
+        }
+
+        if (callback) { // todo later can be deleted
+            callback();
+        }
+
+        closeModal()// todo think of the below chainId || Default/....
+        await AccountSlice.initiateWallet(address, chainId || DEFAULT_CHAIN_ID);
+        return address;
+    } catch (error: any) {
+        if (!hideError) {
+            throw Error(error)
         }
     }
-
-    if (!address) {
-        toast.error(`Could not connect ${type} wallet`)
-        return;
-    }
-
-    if (callback) {
-        callback();
-    }
-    await AccountSlice.initWallet(address);
-    return address;
-}
-
-function getWalletAddress(): string | undefined {
-    return Metamask.getWalletAddress();
 }
 
 async function submitTransaction(type: string, txType: string, config: any) {
 
-    const address = await connectWallet(WalletTypes.Metamask)
+    const address = await connectWallet({
+        type: WalletTypes.Metamask,
+        chainId: DEFAULT_CHAIN_ID,
+        requestAccounts: true
+    })
     const contractInfo = getContractInfoByType(txType, config);
 
     const transactionConfig: TransactionConfig = {
@@ -162,6 +179,5 @@ async function decodeTransactionLogs(transaction: TransactionReceipt) {
 export {
     getWeb3Instance,
     connectWallet,
-    getWalletAddress,
     submitTransaction
 }

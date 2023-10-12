@@ -8,7 +8,7 @@ import {formatTime} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import {submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
-import {initBalance} from "@/store/redux/account";
+import * as AccountSlice from "@/store/redux/account";
 import Loading from "@/components/utils/loading";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import ClearSVG from "../../../../../../../../public/svg/clear";
@@ -29,7 +29,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     useEffect(() => {
         setLoading(true)
-        initBalance(account.address)
+        AccountSlice.initBalance(account.address, account.chainId)
             .then(() => setLoading(false))
     }, [])
 
@@ -87,7 +87,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             ids: tokenIds
         });
         setTimeout(() => {
-            initBalance(account.address);
+            AccountSlice.initBalance(account.address, account.chainId);
         }, 5000);
         setTokenIds([]);
         console.log(transaction)

@@ -4,7 +4,7 @@ import {Provider} from "react-redux";
 import store from "@/store/store";
 import ModalHandler from "@/components/modals";
 import Headers from "@/components/headers";
-import { Montserrat } from 'next/font/google'
+import {Montserrat} from 'next/font/google'
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import GoogleAnalytics from "@/components/headers/google-analytics";
@@ -15,10 +15,9 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import AmetLoadingFull from "@/components/utils/amet-loading-full";
 
-const montserrat = Montserrat({ subsets: ['latin'] })
+const montserrat = Montserrat({subsets: ['latin']})
 
 export default function App({Component, pageProps}: AppProps) {
-
     return <>
         <Provider store={store}>
             <Headers id={pageProps.pageId}/>
@@ -28,7 +27,7 @@ export default function App({Component, pageProps}: AppProps) {
                 <Footer/>
             </main>
             <ModalHandler/>
-            <ToastContainer />
+            <ToastContainer/>
             <GoogleAnalytics/>
         </Provider>
     </>

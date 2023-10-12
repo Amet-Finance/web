@@ -7,23 +7,23 @@ export default function CongratulationsSVG() {
             </mask>
             <g mask="url(#mask0_274_904)">
                 <path d="M117.079 67.9889C103.391 60.7153 87.0918 63.3006 76.3164 73.2548L117.079 67.9889Z" fill="black"
-                      fill-opacity="0.04"/>
+                      fillOpacity="0.04"/>
                 <path d="M117.079 67.9889C103.391 60.7153 87.0918 63.3006 76.3164 73.2548" stroke="white"
-                      stroke-width="3.29023" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                      strokeWidth="3.29023" strokeMiterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M54.0114 12.1092C60.249 23.8473 58.2977 37.755 50.1602 47.2865L54.0114 12.1092Z" fill="black"
-                      fill-opacity="0.04"/>
+                      fillOpacity="0.04"/>
                 <path d="M54.0114 12.1092C60.249 23.8473 58.2977 37.755 50.1602 47.2865" stroke="white"
-                      stroke-width="3.29023" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                      strokeWidth="3.29023" strokeMiterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
                 <path
                     d="M87.6495 91.8516L7.16307 121.355C4.3474 122.387 1.61237 119.653 2.64457 116.837L32.1481 36.3503C33.0335 33.9349 36.1258 33.2532 37.9449 35.0722L88.9275 86.0551C90.7466 87.8742 90.0648 90.9662 87.6495 91.8516Z"
-                    fill="black" fill-opacity="0.04" stroke="white" stroke-width="3.29023" stroke-miterlimit="10"
-                    stroke-linecap="round" stroke-linejoin="round"/>
+                    fill="black" fillOpacity="0.04" stroke="white" stroke-width="3.29023" stroke-miterlimit="10"
+                    strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M26.4961 53.0282L41.0278 67.5599L26.4961 53.0282Z" fill="black" fill-opacity="0.04"/>
                 <path d="M26.4961 53.0282L41.0278 67.5599" stroke="white" stroke-width="3.29023" stroke-miterlimit="10"
-                      stroke-linecap="round" stroke-linejoin="round"/>
+                      strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M22.2988 65.005L58.9951 101.701L22.2988 65.005Z" fill="black" fill-opacity="0.04"/>
                 <path d="M22.2988 65.005L58.9951 101.701" stroke="white" stroke-width="3.29023" stroke-miterlimit="10"
-                      stroke-linecap="round" stroke-linejoin="round"/>
+                      strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M14.3203 86.4339L37.5647 109.678L14.3203 86.4339Z" fill="black" fill-opacity="0.04"/>
                 <path d="M14.3203 86.4339L37.5647 109.678" stroke="white" stroke-width="3.29023" stroke-miterlimit="10"
                       stroke-linecap="round" stroke-linejoin="round"/>

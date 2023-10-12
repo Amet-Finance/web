@@ -6,8 +6,9 @@ import ConnectWallet from "@/components/modals/connect-wallet";
 import {Inter, Montserrat} from "next/font/google";
 import IssuedBondSuccessModal from "@/components/modals/issued-bond-success-modal";
 import {RootState} from "@/store/redux/type";
+import Quiz from "@/components/modals/quiz";
 
-const montserrat = Montserrat({ subsets: ['latin'] })
+const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
     const modalState = useSelector((item: RootState) => item.modal)
     const isClosed = modalState.type === ModalTypes.None;
@@ -57,6 +58,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.IssuedBondSuccess: {
             return <IssuedBondSuccessModal/>
+        }
+        case ModalTypes.Quiz: {
+            return <Quiz/>
         }
     }
 }

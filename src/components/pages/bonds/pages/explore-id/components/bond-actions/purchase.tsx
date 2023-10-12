@@ -7,9 +7,11 @@ import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-ac
 import Loading from "@/components/utils/loading";
 import {submitTransaction} from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
-import {initBalance} from "@/store/redux/account";
+import * as AccountSlice from "@/store/redux/account";
 import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
+import {openModal} from "@/store/redux/modal";
+import {ModalTypes} from "@/store/redux/modal/constants";
 
 export default function Purchase({info, tokens}: { info: BondInfo, tokens: Tokens }) {
 
@@ -77,13 +79,18 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
                 return;
             }
 
+            if (!localStorage.getItem('quizPassed')) {
+                return openModal(ModalTypes.Quiz)
+            }
+
+
             const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
                 contractAddress: _id,
                 count: amount
             });
 
             await sleep(4000);
-            await initBalance(account.address);
+            await AccountSlice.initBalance(account.address, account.chainId);
             console.log(transaction);
         }
 
@@ -94,7 +101,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
     function SubmitButton() {
         let title = "Purchase"
         let className = `bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black`;
-        let onClick = submit
+        let onClick: any = submit
 
         if (!Number(bondsLeft)) {
             title = `Sold Out`

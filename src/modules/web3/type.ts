@@ -39,8 +39,24 @@ type Chain = {
     blockExplorerUrls: string[]
 }
 
+type SwitchChain = {
+    chainId: string
+    type: string
+}
+
+type ConnectWallet = {
+    type?: string;
+    chainId: string;
+    requestChain?: boolean;
+    requestAccounts?: boolean;
+    hideError?: boolean;
+    callback?: any;
+}
+
 export type {
     BondInfoDetailed,
     TokenInfo,
-    Chain
+    Chain,
+    SwitchChain,
+    ConnectWallet
 }
