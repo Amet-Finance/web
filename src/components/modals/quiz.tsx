@@ -84,7 +84,7 @@ function Questions({nextState}: any) {
                     text: "To exchange for pizza slices"
                 },
                 {
-                    text: "To receive the invested amount and interest",
+                    text: "To receive the interest amount",
                     isAnswer: true
                 },
                 {
