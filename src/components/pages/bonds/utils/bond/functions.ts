@@ -1,6 +1,12 @@
 import * as CloudAPI from "@/modules/cloud-api";
 
-function getBondsHandler(bondsHandler: any, config: any) {
+type Config = {
+    skip: number
+    limit: number
+    chainId: string
+}
+
+function getBondsHandler(bondsHandler: any, config: Config) {
     const [bonds, setBonds] = bondsHandler
 
     setBonds({
@@ -29,6 +35,6 @@ function getBondsHandler(bondsHandler: any, config: any) {
     return interval
 }
 
-export  {
+export {
     getBondsHandler
 }

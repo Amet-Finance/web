@@ -183,7 +183,8 @@ function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Token
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
     const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
     const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
-    const redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
+    let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
+    redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0
 
     const percentageClass = redeemedPercentage < 30 ? "text-rl-1" : "text-gl-1";
 

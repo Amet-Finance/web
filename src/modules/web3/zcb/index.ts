@@ -9,13 +9,13 @@ import {BondInfoDetailed} from "@/modules/web3/type";
 import {toBN} from "@/modules/web3/util";
 import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
-function getContract(contractAddress: string) {
-    const web3 = getWeb3Instance(DEFAULT_CHAIN_ID)
+function getContract(chainId: string, contractAddress: string) {
+    const web3 = getWeb3Instance(chainId)
     return new web3.eth.Contract(ZCB_ABI as any, contractAddress);
 }
 
-async function getInfo(contractAddress: string): Promise<BondInfoDetailed> {
-    const contract = getContract(contractAddress);
+async function getInfo(contractAddress: string, chainId: string): Promise<BondInfoDetailed> {
+    const contract = getContract(chainId, contractAddress);
     const info = await contract.methods.getInfo().call();
     return {
         _id: contractAddress,
@@ -35,7 +35,7 @@ async function getInfo(contractAddress: string): Promise<BondInfoDetailed> {
 }
 
 async function getTokensPurchaseDates(contractAddress: string, tokenIds: number[]) {
-    const contract = getContract(contractAddress);
+    const contract = getContract(DEFAULT_CHAIN_ID, contractAddress);
     return await contract.methods.getTokensPurchaseDates(tokenIds).call();
 }
 
@@ -82,7 +82,7 @@ function issueBonds(bondInfo: BondInfo): string | undefined {
 
 function purchase(contractAddress: string, count: number) {
     try {
-        const contract = getContract(contractAddress)
+        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
         return contract.methods.purchase(count).encodeABI();
     } catch (error: any) {
         console.log(`error`, error)
@@ -91,7 +91,7 @@ function purchase(contractAddress: string, count: number) {
 
 function redeem(contractAddress: string, ids: string[]) {
     try {
-        const contract = getContract(contractAddress)
+        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
         return contract.methods.redeem(ids).encodeABI();
     } catch (error: any) {
         console.log(`error`, error)
@@ -100,7 +100,7 @@ function redeem(contractAddress: string, ids: string[]) {
 
 function withdrawRemaining(contractAddress: string) {
     try {
-        const contract = getContract(contractAddress)
+        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
         return contract.methods.withdrawRemaining().encodeABI();
     } catch (error: any) {
         console.log(`error`, error)

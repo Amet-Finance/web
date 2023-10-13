@@ -6,7 +6,8 @@ import Bond from "@/components/pages/bonds/utils/bond";
 import {Staatliches} from "next/font/google";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
@@ -28,6 +29,7 @@ export default function Explore() {
 
 function BondsContainer() {
 
+    const account = useSelector((item: RootState) => item.account)
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 20,
@@ -38,16 +40,18 @@ function BondsContainer() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const interval = getBondsHandler(bondsHandler, {
+        const config = {
             skip: bonds.skip,
             limit: bonds.limit,
-            chainId: DEFAULT_CHAIN_ID
-        });
+            chainId: account.chainId
+        }
+        console.log(`config`, config)
+        const interval = getBondsHandler(bondsHandler, config);
         return () => {
             clearInterval(interval)
         }
 
-    }, [])
+    }, [bonds.limit, bonds.skip, account.chainId])
     return <>
         <div className={Styles.bonds}>
             <Settings/>

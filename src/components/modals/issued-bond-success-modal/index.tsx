@@ -5,6 +5,7 @@ import {RootState} from "@/store/redux/type";
 import CongratulationsSVG from "../../../../public/svg/congratulations";
 import XmarkSVG from "../../../../public/svg/xmark";
 import {closeModal} from "@/store/redux/modal";
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 export default function IssuedBondSuccessModal() {
     const modalState = useSelector((item: RootState) => item.modal)
@@ -14,7 +15,7 @@ export default function IssuedBondSuccessModal() {
     const transaction = additional?.transaction;
     const decoded = additional?.decoded
 
-    const url = `/bonds/explore/${decoded?.contractAddress}`
+    const url = `/bonds/explore/${decoded?.contractAddress}?chainId=${DEFAULT_CHAIN_ID}`
 
     return <>
         <div className={Styles.container}>

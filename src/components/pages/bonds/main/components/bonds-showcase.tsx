@@ -7,6 +7,8 @@ import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 export default function BondsShowcase() {
     return <>
@@ -24,6 +26,7 @@ export default function BondsShowcase() {
 }
 
 function BondsScreen() {
+    const account = useSelector((item: RootState) => item.account);
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 20,
@@ -34,19 +37,26 @@ function BondsScreen() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const interval = getBondsHandler(bondsHandler, {
+        const config = {
             skip: bonds.skip,
             limit: bonds.limit,
-            chainId: DEFAULT_CHAIN_ID
-        });
+            chainId: account.chainId
+        }
+        const interval = getBondsHandler(bondsHandler, config);
         return () => {
             clearInterval(interval)
         }
 
-    }, [])
+    }, [account.chainId, bonds.skip, bonds.limit])
 
     if (bonds.isLoading) {
         return <div className={Styles.loader}><Loading/></div>
+    }
+
+    if (!bonds?.data?.length) {
+        return <div className='flex justify-center items-center bg-g1 w-full h-52 rounded'>
+            <span className='text-4xl'>There are no bonds, yet!</span>
+        </div>
     }
 
     return <>

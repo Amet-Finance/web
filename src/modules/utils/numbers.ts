@@ -14,9 +14,7 @@ function format(number: number) {
     }
 
     // Combine the formatted integer part with the decimal part (if present)
-    const formattedNumber = parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
-
-    return formattedNumber;
+    return parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
 }
 
 export {

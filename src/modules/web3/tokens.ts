@@ -5,14 +5,14 @@ import {getIcon} from "@/modules/utils/images";
 import {toBN} from "@/modules/web3/util";
 import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
-function getTokenContract(contractAddress: string) {
-    const web3 = getWeb3Instance(DEFAULT_CHAIN_ID);
+function getTokenContract(chainId: string, contractAddress: string) {
+    const web3 = getWeb3Instance(chainId);
     return new web3.eth.Contract(ERC20 as any, contractAddress);
 }
 
 async function getTokenInfo(contractAddress: string, address?: string): Promise<TokenInfo | undefined> {
     try {
-        const contract = getTokenContract(contractAddress)
+        const contract = getTokenContract(DEFAULT_CHAIN_ID, contractAddress)
 
         const name = await contract.methods.name().call();
         const symbol = await contract.methods.symbol().call();
@@ -40,22 +40,22 @@ async function getTokenInfo(contractAddress: string, address?: string): Promise<
 }
 
 async function getTokenBalance(contractAddress: string, address: string) {
-    const contract = getTokenContract(contractAddress)
+    const contract = getTokenContract(DEFAULT_CHAIN_ID, contractAddress)
     return await contract.methods.balanceOf(address).call();
 }
 
 async function getAllowance(contractAddress: string, address: string, spender: string) {
-    const contract = getTokenContract(contractAddress)
+    const contract = getTokenContract(DEFAULT_CHAIN_ID, contractAddress)
     return await contract.methods.allowance(address, spender).call();
 }
 
 function approve(tokenContractAddress: string, spender: string, value: number) {
-    const contract = getTokenContract(tokenContractAddress)
+    const contract = getTokenContract(DEFAULT_CHAIN_ID, tokenContractAddress)
     return contract.methods.approve(spender, value).encodeABI()
 }
 
 function deposit(contractAddress: string, toAddress: string, value: number) {
-    const contract = getTokenContract(contractAddress)
+    const contract = getTokenContract(DEFAULT_CHAIN_ID, contractAddress)
     return contract.methods.transfer(toAddress, value).encodeABI()
 }
 

@@ -9,7 +9,7 @@ import {RootState} from "@/store/redux/type";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import AmetLoadingFull from "@/components/utils/amet-loading-full";
 
-export default function ExploreId({_id}: { _id: string }) {
+export default function ExploreId({_id, chainId}: { _id: string, chainId: string }) {
     const [info, setInfo] = useState({} as BondInfoDetailed);
     const [tokens, setTokens] = useState({} as { [key: string]: TokenInfo });
     const [isLoading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ export default function ExploreId({_id}: { _id: string }) {
     useEffect(() => {
 
         setLoading(true);
-        getInfo(_id)
+        getInfo(_id, chainId)
             .then(response => {
                 setInfo({...response})
                 setLoading(false)
@@ -28,7 +28,7 @@ export default function ExploreId({_id}: { _id: string }) {
             .catch(error => console.error(error))
 
         const interval = setInterval(() => {
-            getInfo(_id)
+            getInfo(_id, chainId)
                 .then(response => setInfo({...response}))
                 .catch(error => console.error(error));
         }, 3000)

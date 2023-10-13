@@ -20,6 +20,7 @@ import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
 import {useRouter} from "next/router";
 import {stopPropagation} from "@/modules/utils/events";
 import {toBN} from "@/modules/web3/util";
+import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
@@ -76,7 +77,7 @@ export default function Bond({info}: { info: BondGeneral }) {
     }
 
     const isWarning = !interest.isVerified || !investment.isVerified
-    const bondUrl = `${window.location.origin}/bonds/explore/${_id}`
+    const bondUrl = `${window.location.origin}/bonds/explore/${_id}?chainId=${DEFAULT_CHAIN_ID}`
     const daysAgo = (Date.now() / 1000) - issuanceDate
 
     const copyWholeURl = () => {
