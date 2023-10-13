@@ -96,11 +96,13 @@ export default function Issue() {
     }
 
     function getToken(contractAddressTmp?: string) {
-        if (!contractAddressTmp || tokens[contractAddressTmp.toLowerCase()]) {
+        const contractAddress = (contractAddressTmp || "").toLowerCase();
+        if (!contractAddress || tokens[contractAddress]?.unidentified) {
             return;
         }
 
-        const contractAddress = contractAddressTmp.toLowerCase();
+        console.log('Getting token info', contractAddress)
+
         const token: TokenInfo = {
             contractAddress: contractAddress,
             isLoading: true,

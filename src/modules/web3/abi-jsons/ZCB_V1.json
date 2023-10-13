@@ -37,9 +37,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint8",
+        "internalType": "uint16",
         "name": "_feePercentage",
-        "type": "uint8"
+        "type": "uint16"
       },
       {
         "internalType": "string",
@@ -229,6 +229,19 @@
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "AMET_VAULT",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -273,7 +286,7 @@
         "type": "uint256"
       }
     ],
-    "name": "burnUnpurchasedBonds",
+    "name": "burnUnsoldBonds",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -287,6 +300,19 @@
       }
     ],
     "name": "changeOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAddress",
+        "type": "address"
+      }
+    ],
+    "name": "changeVaultAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -360,9 +386,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint16",
         "name": "",
-        "type": "uint256"
+        "type": "uint16"
       },
       {
         "internalType": "uint256",

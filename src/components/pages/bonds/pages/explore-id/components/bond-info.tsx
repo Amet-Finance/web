@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import {getWeb3Instance} from "@/modules/web3";
 import {format} from "@/modules/utils/numbers";
 import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
 import CopySVG from "../../../../../../../public/svg/copy";
@@ -16,6 +15,8 @@ import Loading from "@/components/utils/loading";
 import SecuritySVG from "../../../../../../../public/svg/security";
 import {getExplorerToken} from "@/modules/web3/utils/token";
 import {toBN} from "@/modules/web3/util";
+import {CHAIN_INFO} from "@/modules/web3/constants";
+import {formatTime} from "@/modules/utils/dates";
 
 const BondTokens = {
     Interest: "interest",
@@ -45,23 +46,25 @@ export default function BondDetails({info, tokens}: { info: BondInfoDetailed, to
     </>
 }
 
-function BondIssuerInfo({info}: any) {
+function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
     const bondAddress = getExplorerAddress(info._id);
     const explorerAddress = getExplorerAddress(info.issuer);
+    const chainIcon = `/svg/chains/${info.chainId}.svg`
+    const chainInfo = CHAIN_INFO[info.chainId]
 
-    const copyAddress = (address: string) => {
+    async function copyAddress(address: string) {
         return navigator.clipboard.writeText(address)
             .then(() => toast("Address successfully copied to your clipboard."))
             .catch(() => toast.error("An error has occurred"))
     }
 
     return <>
-        <div className="grid md:grid-cols-2 gap-x-8 w-full md:text-base text-xs">
+        <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs">
             <div className="flex items-center justify-between gap-2 w-full">
                 <span>Bond contract:</span>
                 <div className='flex items-center gap-2'>
                     <Link href={bondAddress} target="_blank">
-                        <span className="text-g">{shorten(info._id)}</span>
+                        <span className="text-g text-sm">{shorten(info._id)}</span>
                     </Link>
                     <CopySVG onClick={() => copyAddress(info._id)}/>
                 </div>
@@ -70,7 +73,7 @@ function BondIssuerInfo({info}: any) {
                 <span>Type:</span>
                 <div className='flex items-center gap-2'>
                     <Link href={URLS.FAQ_WAB} target="_blank">
-                        <span className="text-g">ZCB(Zero Coupon Bond)</span>
+                        <span className="text-g text-sm">ZCB(Zero Coupon Bond)</span>
                     </Link>
                 </div>
             </div>
@@ -78,10 +81,21 @@ function BondIssuerInfo({info}: any) {
                 <span>Issuer:</span>
                 <div className='flex items-center gap-2'>
                     <Link href={explorerAddress} target="_blank">
-                        <span className="text-g">{shorten(info.issuer, 9)}</span>
+                        <span className="text-g text-sm">{shorten(info.issuer, 9)}</span>
                     </Link>
                     <CopySVG onClick={() => copyAddress(info.issuer)}/>
                 </div>
+            </div>
+            <div className="flex items-center justify-between gap-2 w-full">
+                <span>Chain:</span>
+                <div className='flex items-center gap-2'>
+                    <Image src={chainIcon} alt={chainInfo.chainName} width={24} height={24}/>
+                    <span className="text-g text-sm">{chainInfo.chainName}</span>
+                </div>
+            </div>
+            <div className="flex items-center justify-between gap-2 w-full">
+                <span>Redeem Lock Period:</span>
+                <span className="text-g text-sm">{formatTime(info.redeemLockPeriod)}</span>
             </div>
         </div>
     </>
@@ -157,7 +171,7 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
                         <Image src={token.icon} width={32} height={32} alt={token.name}/>
                     </Link>
                     <div className="flex flex-col">
-                        <span>{token.name}</span>
+                        <span className='text-sm font-bold'>{token.name}</span>
                         {
                             Boolean(hasBalance) &&
                             <span
@@ -204,11 +218,11 @@ function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Token
             </div>
             <div className="flex flex-col gap-1">
                 <div className='flex justify-between items-center gap-4'>
-                    <span>Percentage Redemption:</span>
+                    <span className='text-sm'>Percentage Redemption:</span>
                     <b className={percentageClass}>{format(redeemedPercentage)}%</b>
                 </div>
                 <div className='flex justify-between items-center gap-4'>
-                    <span>Issuer Score:</span>
+                    <span className='text-sm'>Issuer Score:</span>
                     <b className='text-g'>?</b>
                 </div>
             </div>

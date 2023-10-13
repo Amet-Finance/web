@@ -1,5 +1,6 @@
 type BondInfoDetailed = {
     _id: string,
+    chainId: string,
     issuer: string,
     total: number,
     purchased: number,

@@ -34,7 +34,7 @@ async function getTokenInfo(contractAddress: string, address?: string): Promise<
 
         return result;
     } catch (error) {
-        console.error(error)
+        console.error(`getTokenInfo`, error)
         return;
     }
 }

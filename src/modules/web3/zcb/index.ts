@@ -19,6 +19,7 @@ async function getInfo(contractAddress: string, chainId: string): Promise<BondIn
     const info = await contract.methods.getInfo().call();
     return {
         _id: contractAddress,
+        chainId: chainId,
         issuer: info[0],
         total: info[1],
         purchased: info[2],

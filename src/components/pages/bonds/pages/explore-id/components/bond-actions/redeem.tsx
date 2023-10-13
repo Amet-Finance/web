@@ -35,8 +35,8 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     //todo add here a loader
     useEffect(() => {
-        if(balanceTokenIds.length) {
-            if(!holdings.length) {
+        if (balanceTokenIds.length) {
+            if (!holdings.length) {
                 setLoading(true);
             }
             getTokensPurchaseDates(contractAddress, balanceTokenIds)
@@ -93,6 +93,13 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         console.log(transaction)
     }
 
+    function setPercent(percent: number) {
+        const validTokenIds = holdings.filter((item: any) => item.isValid)
+        const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
+        const tokenIds = Math.floor((tokenIdsLocal.length * percent)/ 100)
+        setTokenIds(tokenIdsLocal.slice(0, tokenIds));
+    }
+
     const SubmitButton = () => {
         let className = `${Styles.submit}`;
         let onClick = submit;
@@ -107,31 +114,43 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         return <button className={className} onClick={onClick}>Redeem</button>
     }
 
+    if (loading) {
+        return <>
+            <div className="flex justify-center items-center w-full"><Loading/></div>
+        </>
+    }
+
     return <>
-        <div className={Styles.redeem}>
-            {
-                loading ?
-                    <>
-                        <div className={Styles.loader}>
-                            <Loading/>
-                        </div>
-                    </>
-                    :
-                    <>
-                        <div className="flex justify-between items-center gap-4">
-                            <SelectAllSVG onClick={selectAll}/>
-                            <ClearSVG onClick={clearAll}/>
-                        </div>
-                        <div className={Styles.tokenIds}>
-                            {
-                                holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
-                                                                          tokenHandlers={tokenHandlers}
-                                                                          key={tokenInfo.id}/>)
-                            }
-                        </div>
-                        <SubmitButton/>
-                    </>
-            }
+        <div className="flex flex-col w-full gap-4">
+
+            <div className="flex justify-between items-center gap-2">
+                <div className='flex gap-2 items-center'>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                            onClick={() => setPercent(5)}>5%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                            onClick={() => setPercent(10)}>10%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                            onClick={() => setPercent(25)}>25%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                            onClick={() => setPercent(50)}>50%
+                    </button>
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                            onClick={() => setPercent(100)}>100%
+                    </button>
+                </div>
+                <ClearSVG onClick={clearAll}/>
+            </div>
+            <div className={Styles.tokenIds}>
+                {
+                    holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
+                                                              tokenHandlers={tokenHandlers}
+                                                              key={tokenInfo.id}/>)
+                }
+            </div>
+            <SubmitButton/>
         </div>
     </>
 }
