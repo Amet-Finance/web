@@ -6,7 +6,7 @@ import {RootState} from "@/store/redux/type";
 import {getTokensPurchaseDates} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
-import {submitTransaction} from "@/modules/web3";
+import * as Web3Service from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
 import Loading from "@/components/utils/loading";
@@ -82,7 +82,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             return;
         }
 
-        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.RedeemBonds, {
+        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.RedeemBonds, {
             contractAddress: _id,
             ids: tokenIds
         });

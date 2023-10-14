@@ -1,4 +1,5 @@
 import {Chain} from "@/modules/web3/type";
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const CHAIN_IDS = {
     Ethereum: "0x1",
@@ -70,5 +71,6 @@ export {
     CHAIN_INFO,
     RPC_BY_CHAINS,
     WalletTypes,
-    TxTypes
+    TxTypes,
+    ZERO_ADDRESS
 }

@@ -90,7 +90,7 @@ export default function Bond({info}: { info: BondGeneral }) {
 
     return <>
         <Link
-            className="flex flex-col rounded-lg px-4 py-2 bg-b3 border border-transparent gap-4 w-full hover:border-w1"
+            className="flex flex-col rounded-lg px-4 py-2 bg-b3 border border-transparent gap-4 hover:border-w1"
             href={bondUrl}>
 
             <div className="flex justify-between items-center">

@@ -2,12 +2,12 @@ import Styles from "./index.module.css";
 import Image from "next/image";
 import {useEffect, useState} from "react";
 import {formatTime} from "@/modules/utils/dates";
-import {BondInfo, TokenDetails, Tokens} from "@/components/pages/bonds/pages/issue/type";
+import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenInfo} from "@/modules/web3/tokens";
 import {useSelector} from "react-redux";
 import Loading from "@/components/utils/loading";
-import {submitTransaction} from "@/modules/web3";
-import {CHAIN_INFO, TxTypes, WalletTypes} from "@/modules/web3/constants";
+import * as Web3Service from "@/modules/web3";
+import {CHAIN_INFO, TxTypes, WalletTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {decode} from "@/modules/web3/zcb";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
@@ -32,16 +32,11 @@ const BondTokenInfo = {
 export default function Issue() {
 
     const account = useSelector((item: RootState) => item.account)
-    const [bondInfo, setBondInfo] = useState({
-        total: 0,
-        redeemLockPeriod: 0
-    } as BondInfo);
-    const [tokens, setTokens] = useState({} as Tokens)
+    const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
+    const [investmentTokenInfo, setInvestmentTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
+    const [interestTokenInfo, setInterestTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
     const bondsHandler = [bondInfo, setBondInfo]
-
-    const investmentTokenInfo = bondInfo.investmentToken ? tokens[bondInfo?.investmentToken?.toLowerCase() || ""] : undefined;
-    const interestTokenInfo = bondInfo.interestToken ? tokens[bondInfo?.interestToken?.toLowerCase() || ""] : undefined
 
     async function submit() {
         // todo add here the investmentTokenInfo and the interest one
@@ -72,7 +67,7 @@ export default function Issue() {
         bondInfo.interestTokenInfo = interestTokenInfo;
 
 
-        const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
+        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
         if (transaction) {
             const decoded = decode(transaction);
             return openModal(ModalTypes.IssuedBondSuccess, {
@@ -95,9 +90,13 @@ export default function Issue() {
         })
     }
 
-    function getToken(contractAddressTmp?: string) {
+    function getToken(type: string) {
+        const isInvestment = type === "investmentToken"
+        const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
+        const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
+
         const contractAddress = (contractAddressTmp || "").toLowerCase();
-        if (!contractAddress || tokens[contractAddress]?.unidentified) {
+        if (!contractAddress) {
             return;
         }
 
@@ -112,45 +111,29 @@ export default function Issue() {
             icon: ""
         }
 
-        setTokens({
-            ...tokens,
-            [contractAddress]: token
-        })
+        setToken({...token})
 
-        const timer = setTimeout(async () => {
+        const timer = setInterval(async () => {
+
             const tokenInfo = await getTokenInfo(contractAddress, account.address);
-            const tokensTmp = {...tokens};
-
             if (tokenInfo) {
-                tokensTmp[contractAddress] = tokenInfo
+                setToken({...tokenInfo})
             } else {
-                token.unidentified = true
-                tokensTmp[contractAddress] = token
+                setToken({...token, unidentified: true})
             }
-
-            setTokens({
-                ...tokensTmp
-            })
-
-        }, 1500);
+        }, 1000);
 
         return timer;
     }
 
     useEffect(() => {
-        const timer = getToken(bondInfo.interestToken);
-
-        return () => {
-            clearTimeout(timer);
-        };
+        const timer = getToken("interestToken");
+        return () => clearTimeout(timer)
     }, [bondInfo.interestToken])
 
     useEffect(() => {
-        const timer = getToken(bondInfo.investmentToken);
-
-        return () => {
-            clearTimeout(timer);
-        };
+        const timer = getToken("investmentToken");
+        return () => clearTimeout(timer)
     }, [bondInfo.investmentToken])
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
@@ -163,48 +146,52 @@ export default function Issue() {
             <div className={Styles.bondContainer}>
                 <div className={Styles.form}>
                     <div className={Styles.formTexts}>
-                        <h2>Begin Bond Creation</h2>
-                        <span className={Styles.gray}>Initiate the issuance of your bonds. Set investment token, total bonds, interest token, and redeem lock period to shape your financial strategy</span>
+                        <h2 className='text-2xl font-bold'>Begin Bond Creation</h2>
+                        <span className="text-g text-sm">Initiate the issuance of your bonds. Set investment token, total bonds, interest token, and redeem lock period to shape your financial strategy</span>
                         <div className={Styles.formLine}/>
                     </div>
 
-                    <div className={Styles.inputs}>
-                        <div className={Styles.box}>
+                    <div className="grid gap-4 w-full lg:grid-cols-2 sm:grid-cols-1">
+                        <div className="flex flex-col justify-between gap-2">
                             <span>Total</span>
-                            <input type="number" className={Styles.input}
+                            <input type="number"
+                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    autoFocus
                                    id='total'
                                    placeholder="Total bonds" onChange={onChange}/>
                         </div>
                         <RedeemLockPeriod bondsHandler={bondsHandler}/>
-
-                        <div className={Styles.box}>
+                        <div className="flex flex-col justify-between gap-2">
                             <span>Investment Token</span>
-                            <input type="text" className={Styles.input}
+                            <input type="text"
+                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="investmentToken"
                                    onChange={onChange}
                                    placeholder="Investment token contract address"/>
                         </div>
 
-                        <div className={Styles.box}>
+                        <div className="flex flex-col justify-between gap-2">
                             <span>Interest Token</span>
-                            <input type="text" className={Styles.input}
+                            <input type="text"
+                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="interestToken"
                                    onChange={onChange}
                                    placeholder="Interest token contract address"/>
                         </div>
 
-                        <div className={Styles.box}>
+                        <div className="flex flex-col justify-between gap-2">
                             <span>Investment Amount</span>
-                            <input type="number" className={Styles.input}
+                            <input type="number"
+                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="investmentTokenAmount"
                                    onChange={onChange}
                                    placeholder="Investment amount per bond"/>
                         </div>
 
-                        <div className={Styles.box}>
+                        <div className="flex flex-col justify-between gap-2">
                             <span>Interest Amount</span>
-                            <input type="number" className={Styles.input}
+                            <input type="number"
+                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="interestTokenAmount"
                                    onChange={onChange}
                                    placeholder="Interest amount per bond"/>
@@ -212,8 +199,8 @@ export default function Issue() {
 
                     </div>
 
-                    <div className={Styles.submitContainer}>
-                        <p className={Styles.gray1}>
+                    <div className="flex flex-col gap-2">
+                        <p className="text-g3 text-xs">
                             By issuing bond you agree with our&nbsp;
                             <Link href={URLS.PrivacyPolicy} target="_blank"><u>Privacy policy</u></Link>
                             &nbsp;and&nbsp;
@@ -224,8 +211,8 @@ export default function Issue() {
                 </div>
                 <div className={Styles.form}>
                     <div className={Styles.formTexts}>
-                        <h2>Review Bond Details</h2>
-                        <span className={Styles.gray}>Ensure accuracy and make any adjustments if needed.</span>
+                        <h2 className='text-2xl font-bold'>Review Bond Details</h2>
+                        <span className="text-g text-sm">Ensure accuracy and make any adjustments if needed.</span>
                         <div className={Styles.formLine}/>
                     </div>
 
@@ -235,30 +222,32 @@ export default function Issue() {
                                 <TotalSVG/>
                                 <span>Total:</span>
                             </div>
-                            <span>{bondInfo.total}</span>
+                            <span className='font-bold'>{bondInfo.total}</span>
                         </div>
                         <div className={Styles.assets}>
                             <div className={Styles.section}>
                                 <TypeSVG/>
                                 <span>Type:</span>
                             </div>
-                            <span>ZCB(Zero Coupon Bond)</span>
+                            <span className='font-bold'>ZCB(Zero Coupon Bond)</span>
                         </div>
                         <div className={Styles.assets}>
                             <div className={Styles.section}>
                                 <ClockSVG/>
-                                <span>R.L.P:</span>
+                                <span>Redeem Lock Period:</span>
                             </div>
-                            <span>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
+                            <span className='font-bold'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
                         </div>
                     </div>
 
-                    <TokenDetails type={BondTokenInfo.Investment}
-                                  total={totalRaised}
-                                  tokenInfo={investmentTokenInfo}/>
-                    <TokenDetails type={BondTokenInfo.Interest}
-                                  total={totalInterest}
-                                  tokenInfo={interestTokenInfo}/>
+                    <div className='flex flex-col gap-2 max-w-sm'>
+                        <TokenDetails type={BondTokenInfo.Investment}
+                                      total={totalRaised}
+                                      tokenInfo={investmentTokenInfo}/>
+                        <TokenDetails type={BondTokenInfo.Interest}
+                                      total={totalInterest}
+                                      tokenInfo={interestTokenInfo}/>
+                    </div>
 
 
                 </div>
@@ -267,16 +256,16 @@ export default function Issue() {
     </>
 }
 
-function TokenDetails({tokenInfo, type, total}: any) {
+function TokenDetails({tokenInfo, type, total}: { tokenInfo: TokenInfo, type: string, total: number }) {
 
-    if (!tokenInfo) {
+    if (!tokenInfo || tokenInfo.contractAddress === ZERO_ADDRESS) {
         return null;
     }
 
     const isLoading = tokenInfo?.isLoading && !tokenInfo.unidentified
 
     return <>
-        <div className={Styles.tokenInfo}>
+        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 max-w-lg">
             {
                 isLoading ?
                     <div className={Styles.loader}><Loading/></div> :
@@ -314,11 +303,11 @@ function OperationDetails({tokenInfo, total, type}: TokenDetails) {
     }
 
     return <>
-        <div className={Styles.tokenDetails}>
-            <span>{title}</span>
+        <div className="flex items-center gap-2">
+            <span className='font-bold'>{title}</span>
             <InfoSVG info={info}/>
         </div>
-        <div className={Styles.operationDetails}>
+        <div className="flex flex-col gap-2">
             {!tokenInfo?.unidentified ? <Token token={token}/> : <NotIdentified/>}
         </div>
     </>
@@ -335,10 +324,10 @@ function Token({token}: any) {
     const handleError = () => setWarning(true);
 
     return <>
-        <div className={Styles.tokenDetails}>
+        <div className="flex items-center gap-2">
             <div className={Styles.tokenDetails}>
-                <Image src={icon} alt={name} width={50} height={50} onError={handleError}/>
-                <div className={Styles.token}>
+                <Image src={icon} alt={name} width={32} height={32} onError={handleError}/>
+                <div className="flex flex-col">
                     <div className={Styles.tokenDetails}>
                         <p>{name}</p>
                         {isWarning && <WarningSVG/>}
@@ -349,7 +338,10 @@ function Token({token}: any) {
             </div>
         </div>
         <div className={Styles.formLine}/>
-        <p>{actionTitle}: <span className={totalClassName}><b>{sign}{format(total)} {symbol}</b></span></p>
+        <div className='flex items-center gap-2'>
+            <span className='font-bold'>{actionTitle}:</span>
+            <span className={totalClassName}><b>{sign}{format(total)} {symbol}</b></span>
+        </div>
     </>
 }
 
@@ -359,10 +351,10 @@ function NotIdentified() {
     const chainInfo = CHAIN_INFO[account.chainId]
 
     return <>
-        <div className={Styles.tokenDetails}>
-            <p>
-                <b>Could not identify the token, make sure the contract is correct for <span
-                    className={Styles.chainError}>{chainInfo.chainName} network</span></b>
+        <div className="flex items-center gap-4">
+            <p className='text-sm break-words'>
+                Could not identify the token, make sure the contract is correct for
+                <span className="text-rl-1 font-bold"> {chainInfo.chainName} network</span>
             </p>
             <WarningSVG/>
         </div>
@@ -419,25 +411,35 @@ function RedeemLockPeriod({bondsHandler}: any) {
     }, [timer])
 
     return <>
-        <div className={Styles.box}>
+        <div className="flex flex-col  gap-2 w-full">
             <span>Redeem</span>
-            <div className={Styles.section}>
-                <div className={Styles.timeBox} onClick={focusInnerInput}>
-                    <span className={Styles.gray1}>Hour</span>
-                    <input type="number" className={Styles.timeInput} id='hour' defaultValue={timer.hour}
+            <div className="flex items-center h-full gap-2">
+                <div
+                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                    onClick={focusInnerInput}>
+                    <span className="text-g3">Hour</span>
+                    <input type="number"
+                           className={Styles.timeInput}
+                           id='hour' defaultValue={timer.hour}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox} onClick={focusInnerInput}>
+                <div
+                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                    onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Day</span>
                     <input type="number" className={Styles.timeInput} id='day' defaultValue={timer.day}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox} onClick={focusInnerInput}>
+                <div
+                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                    onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Month</span>
                     <input type="number" className={Styles.timeInput} id='month' defaultValue={timer.month}
                            onChange={change}/>
                 </div>
-                <div className={Styles.timeBox} onClick={focusInnerInput}>
+                <div
+                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                    onClick={focusInnerInput}>
                     <span className={Styles.gray1}>Year</span>
                     <input type="number" className={Styles.timeInput} id='year' defaultValue={timer.year}
                            onChange={change}/>

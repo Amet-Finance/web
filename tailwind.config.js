@@ -17,6 +17,7 @@ module.exports = {
             colors: {
                 g: "#929292",
                 g2: "#5B5B5B",
+                g3: "#353535",
 
                 "gl-1": "#27FFC0",
 
@@ -28,7 +29,8 @@ module.exports = {
 
                 b1: "#0F0F0F",
                 b2: "#1B1B1B",
-                b3: "#090909"
+                b3: "#090909",
+                b4: "#111111"
             },
             borderColor: {
                 w1: "rgba(255, 255, 255, 0.1)",

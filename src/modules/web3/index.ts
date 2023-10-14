@@ -9,7 +9,7 @@ import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
 import * as Tokens from "./tokens";
-import {ConnectWallet, SwitchChain} from "@/modules/web3/type";
+import {ConnectWallet} from "@/modules/web3/type";
 import {closeModal} from "@/store/redux/modal";
 
 function getWeb3Instance(chainId: string) {
@@ -57,35 +57,41 @@ async function connectWallet(connectionConfig: ConnectWallet): Promise<string | 
 
 async function submitTransaction(type: string, txType: string, config: any) {
 
-    const address = await connectWallet({
-        type: WalletTypes.Metamask,
-        chainId: DEFAULT_CHAIN_ID,
-        requestAccounts: true
-    })
-    const contractInfo = getContractInfoByType(txType, config);
+    try {
+        const address = await connectWallet({
+            type: WalletTypes.Metamask,
+            chainId: DEFAULT_CHAIN_ID,
+            requestAccounts: true,
+            requestChain: true
+        })
 
-    const transactionConfig: TransactionConfig = {
-        from: address,
-        to: contractInfo.to,
-        data: contractInfo.data,
-        value: contractInfo.value || 0
-    }
+        const contractInfo = getContractInfoByType(txType, config);
 
-    switch (type) {
-        case WalletTypes.Metamask: {
-            const txHash = await Metamask.submitTransaction(transactionConfig);
-            if (txHash) {
-                const transaction = trackTransaction(txHash)
-                await toast.promise(transaction, {
-                    pending: "Transaction was submitted",
-                    error: "Transaction failed",
-                    success: "Transaction succeeded"
-                }, {
-                    draggable: true
-                });
-                return transaction.then(tx => tx);
+        const transactionConfig: TransactionConfig = {
+            from: address,
+            to: contractInfo.to,
+            data: contractInfo.data,
+            value: contractInfo.value || 0
+        }
+
+        switch (type) {
+            case WalletTypes.Metamask: {
+                const txHash = await Metamask.submitTransaction(transactionConfig);
+                if (txHash) {
+                    const transaction = trackTransaction(txHash)
+                    await toast.promise(transaction, {
+                        pending: "Transaction was submitted",
+                        error: "Transaction failed",
+                        success: "Transaction succeeded"
+                    }, {
+                        draggable: true
+                    });
+                    return transaction.then(tx => tx);
+                }
             }
         }
+    } catch (error: Error | any) {
+        toast.error(`Transaction submission failed: ${error.message}`)
     }
 }
 

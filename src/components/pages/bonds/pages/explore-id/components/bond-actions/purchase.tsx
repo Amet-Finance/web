@@ -5,7 +5,7 @@ import {RootState} from "@/store/redux/type";
 import {getAllowance} from "@/modules/web3/tokens";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import Loading from "@/components/utils/loading";
-import {submitTransaction} from "@/modules/web3";
+import * as Web3Service from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
 import {sleep} from "@/modules/utils/dates";
@@ -68,7 +68,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
                 return;
             }
 
-            const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.ApproveToken, {
+            const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.ApproveToken, {
                 contractAddress: investmentToken,
                 spender: _id,
                 value: toBN(amount).mul(toBN(investmentTokenAmount))
@@ -84,7 +84,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             }
 
 
-            const transaction = await submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
+            const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
                 contractAddress: _id,
                 count: amount
             });
