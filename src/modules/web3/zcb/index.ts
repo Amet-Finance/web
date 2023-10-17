@@ -17,21 +17,31 @@ function getContract(chainId: string, contractAddress: string) {
 async function getInfo(contractAddress: string, chainId: string): Promise<BondInfoDetailed> {
     const contract = getContract(chainId, contractAddress);
     const info = await contract.methods.getInfo().call();
+
+    const [
+        issuer, total,
+        purchased, redeemed,
+        redeemLockPeriod, investmentToken,
+        investmentTokenAmount, interestToken,
+        interestTokenAmount, feePercentage,
+        issuanceDate
+    ] = Object.values(info) as any;
+
     return {
         _id: contractAddress,
         chainId: chainId,
-        issuer: info[0],
-        total: info[1],
-        purchased: info[2],
-        redeemed: info[3],
-        redeemLockPeriod: info[4],
-        investmentToken: info[5],
-        investmentTokenAmount: info[6],
-        interestToken: info[7],
-        interestTokenAmount: info[8],
-        interestTokenBalance: await getTokenBalance(info[5], contractAddress),
-        feePercentage: Number(info[9]),
-        issuanceDate: Number(info[10])
+        issuer,
+        total,
+        purchased,
+        redeemed,
+        redeemLockPeriod,
+        investmentToken,
+        investmentTokenAmount,
+        interestToken,
+        interestTokenAmount,
+        interestTokenBalance: await getTokenBalance(interestToken, contractAddress),
+        feePercentage,
+        issuanceDate
     };
 }
 

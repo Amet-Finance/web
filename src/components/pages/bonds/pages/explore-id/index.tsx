@@ -39,6 +39,7 @@ export default function ExploreId({_id, chainId}: { _id: string, chainId: string
 
     }, [_id])
 
+
     useEffect(() => {
         const tokenContracts = [...Array.from(new Set([info.investmentToken, info.interestToken]))]
 

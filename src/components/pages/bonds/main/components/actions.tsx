@@ -13,7 +13,7 @@ export default function Actions() {
         <div className={Styles.container}>
             <div className={Styles.actions}>
                 <h1 className={join([staatliches.className, Styles.headline])}>
-                    Unlock <span className={Styles.gray}>Financial</span>
+                    Unlock <span className={Styles.gray}>Financial </span>
                     Possibilities <br/> with On-Chain Bonds</h1>
                 <div className={Styles.line}/>
                 <p className={Styles.gray1}>{texts.secondary}</p>
