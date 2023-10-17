@@ -5,6 +5,7 @@ import {useRef} from "react";
 import BackgroundDocumentsSVG from "../../../../public/svg/background-documents";
 import Link from "next/link";
 import {join} from "@/modules/utils/styles";
+import {URLS} from "@/modules/utils/urls";
 
 const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
@@ -39,8 +40,8 @@ export default function Home() {
                         <Link href='/bonds'>
                             <button className={Styles.btn}>Get Started</button>
                         </Link>
-                        <Link href='https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-is-amet-finance'>
-                            <button className={join([Styles.connect, Styles.btn])}>Learn More</button>
+                        <Link href={URLS.FAQ_WIAF} target="_blank">
+                            <button className={join([Styles.learnMore, Styles.btn])}>Learn More</button>
                         </Link>
                     </div>
                 </div>
@@ -58,7 +59,7 @@ export default function Home() {
                 </div>
                 <div className={Styles.bondsSection} ref={bondsRef}>
                     <h2 className={staatliches.className + " text-3xl"}>BONDS</h2>
-                    <div className={Styles.bondTexts}>
+                    <div className="flex justify-between w-full">
                         <p className={Styles.bondText}>{Texts.pBonds1}</p>
                         <p className={Styles.bondText}>{Texts.pBonds2}</p>
                     </div>
