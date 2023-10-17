@@ -1,3 +1,5 @@
+import {URLS} from "@/modules/utils/urls";
+
 type MetaInfo = {
     title: string,
     description: string,
@@ -32,7 +34,7 @@ const MetaConstants: { [key: string]: MetaInfo } = {
     default: {
         title: "Amet Finance - Empowering Your Financial Future in DeFi",
         description: "Unlock limitless opportunities with Amet Finance. Join us to explore on-chain bonds and embrace the decentralized future of finance.",
-        ogImage: "https://amet.finance/meta/og-image.jpg"
+        ogImage: URLS.OgImage
     }
 }
 

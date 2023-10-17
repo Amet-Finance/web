@@ -3,6 +3,8 @@ import {useEffect, useState} from "react";
 import {format} from "@/modules/utils/numbers";
 import Loading from "@/components/utils/loading";
 import * as CloudApi from "@/modules/cloud-api";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const Keys: { [key: string]: any } = {
     issued: {
@@ -25,7 +27,7 @@ const Keys: { [key: string]: any } = {
 
 export default function Statistics() {
 
-
+    const account = useSelector((item: RootState) => item.account);
     const [isLoading, setLoading] = useState(false);
     const [statistics, setStatistics] = useState({
         issued: 0,
@@ -38,7 +40,7 @@ export default function Statistics() {
 
     useEffect(() => {
         setLoading(true);
-        CloudApi.getStats()
+        CloudApi.getStats({chainId: account.chainId})
             .then(response => {
                 if (response) {
                     setStatistics(response)

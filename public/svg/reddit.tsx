@@ -1,10 +1,11 @@
 import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 export default function RedditSVG() {
     const color = "#7D7D7D"
 
     return <>
-        <Link href={"https://www.reddit.com/r/Amet_Finance/"} target="_blank" rel="noreferrer">
+        <Link href={URLS.Reddit} target="_blank" rel="noreferrer">
             <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
                  className='hover'>
                 <path

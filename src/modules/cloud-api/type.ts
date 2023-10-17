@@ -6,6 +6,10 @@ type BondsAPIParams = {
     chainId: string;
 }
 
+type StatsAPIParams = {
+    chainId: string
+}
+
 type BalanceAPIParams = {
     address: string;
     chainId: string
@@ -13,5 +17,6 @@ type BalanceAPIParams = {
 
 export type  {
     BondsAPIParams,
+    StatsAPIParams,
     BalanceAPIParams
 }

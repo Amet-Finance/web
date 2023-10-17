@@ -1,9 +1,10 @@
 import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 export default function DiscordSVG() {
     const color = "#7D7D7D"
     return <>
-        <Link href="https://discord.gg/JxWpBGP8vz" target="_blank" rel="noreferrer">
+        <Link href={URLS.Discord} target="_blank" rel="noreferrer">
             <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
                  className='hover'>
                 <path

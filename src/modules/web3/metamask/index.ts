@@ -4,6 +4,7 @@ import {isMobile} from "@/modules/utils/agent";
 import {ConnectWallet} from "@/modules/web3/type";
 import {toast} from "react-toastify";
 import provider from "react-redux/src/components/Provider";
+import {URLS} from "@/modules/utils/urls";
 
 function getProvider() {
     if (typeof window !== "undefined") {
@@ -30,9 +31,8 @@ async function connectWalletAndSwitchChain(config: ConnectWallet): Promise<{ add
 }
 
 async function connectWallet({requestAccounts}: ConnectWallet): Promise<string | undefined> {
-    const deeplink = 'https://metamask.app.link/dapp/amet.finance'
-    if (isMobile()) {
-        location.replace(deeplink);
+    if (isMobile() && requestAccounts) {
+        location.replace(URLS.MetamaskDeeplink);
         return undefined;
     }
 

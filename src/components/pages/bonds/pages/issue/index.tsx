@@ -287,7 +287,7 @@ function OperationDetails({tokenInfo, total, type}: TokenDetails) {
 
     const info = {
         title: "Learn more about Bonds",
-        url: "https://docs.amet.finance/v1/" // todo update here
+        url: URLS.Docs // todo update here
     }
 
 

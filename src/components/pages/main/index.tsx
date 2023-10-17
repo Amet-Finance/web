@@ -103,7 +103,7 @@ export default function Home() {
                         <span className={Styles.lowText}>Bond Redemption Rate</span>
                     </div>
                 </div>
-                <Link href='https://docs.amet.finance/v1/' target="_blank">
+                <Link href={URLS.Docs} target="_blank">
                     <div className={Styles.documentation}>
                         <h3 className={staatliches.className + " " + Styles.documentText}>DOCUMENTATION</h3>
                         <BackgroundDocumentsSVG/>

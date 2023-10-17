@@ -1,8 +1,9 @@
 import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 export default function TwitterSVG() {
     return <>
-       <Link href="https://twitter.com/amet_finance" target="_blank" rel="noreferrer">
+       <Link href={URLS.Twitter} target="_blank" rel="noreferrer">
            <svg
                width="32"
                height="32"
