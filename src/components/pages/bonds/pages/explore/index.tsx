@@ -45,7 +45,6 @@ function BondsContainer() {
             limit: bonds.limit,
             chainId: account.chainId
         }
-        console.log(`config`, config)
         const interval = getBondsHandler(bondsHandler, config);
         return () => {
             clearInterval(interval)

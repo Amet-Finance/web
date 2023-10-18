@@ -1,10 +1,9 @@
-import {CHAIN_INFO, DEFAULT_CHAIN_ID, WalletTypes} from "@/modules/web3/constants";
+import {CHAIN_INFO} from "@/modules/web3/constants";
 import {TransactionConfig} from "web3-core";
 import {isMobile} from "@/modules/utils/agent";
 import {ConnectWallet} from "@/modules/web3/type";
-import {toast} from "react-toastify";
-import provider from "react-redux/src/components/Provider";
 import {URLS} from "@/modules/utils/urls";
+import {toast} from "react-toastify";
 
 function getProvider() {
     if (typeof window !== "undefined") {
@@ -103,32 +102,19 @@ async function switchChain({chainId, requestChain}: ConnectWallet): Promise<stri
 
 async function submitTransaction(transactionConfig: TransactionConfig) {
     try {
+
         const ethereum = getProvider();
         if (!ethereum) {
+            toast.error("Metamask is not connected")
             return;
         }
 
-        const {address} = await connectWalletAndSwitchChain({
-            requestAccounts: true,
-            requestChain: true,
-            chainId: DEFAULT_CHAIN_ID
-        })
-
-        const transactionParameters = {
-            to: transactionConfig.to,
-            value: transactionConfig.value || "0",
-            from: address,
-            data: transactionConfig.data
-        };
-
-        console.log(`transactionParameters`, transactionParameters)
-
         const txHash = await ethereum.request({
             method: "eth_sendTransaction",
-            params: [transactionParameters],
+            params: [transactionConfig],
         });
 
-        console.log(txHash)
+        console.log(`txHash`, txHash)
         return txHash;
     } catch (error) {
         console.error(error);

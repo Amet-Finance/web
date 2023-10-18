@@ -1,4 +1,4 @@
-import {DEFAULT_CHAIN_ID, RPC_BY_CHAINS, TxTypes, WalletTypes} from "@/modules/web3/constants";
+import {RPC_BY_CHAINS, TxTypes, WalletTypes} from "@/modules/web3/constants";
 import * as Metamask from './metamask/index'
 import * as ZCB from "@/modules/web3/zcb";
 import * as TokensWeb3 from './tokens';
@@ -9,7 +9,7 @@ import {sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import * as AccountSlice from "@/store/redux/account";
 import * as Tokens from "./tokens";
-import {ConnectWallet} from "@/modules/web3/type";
+import {ConnectWallet, SubmitTransaction, TransactionTracking} from "@/modules/web3/type";
 import {closeModal} from "@/store/redux/modal";
 
 function getWeb3Instance(chainId: string) {
@@ -45,8 +45,8 @@ async function connectWallet(connectionConfig: ConnectWallet): Promise<string | 
             callback();
         }
 
-        closeModal()// todo think of the below chainId || Default/....
-        await AccountSlice.initiateWallet(address, chainId || DEFAULT_CHAIN_ID);
+        closeModal()
+        await AccountSlice.initiateWallet(address, chainId);
         return address;
     } catch (error: any) {
         if (!hideError) {
@@ -55,30 +55,34 @@ async function connectWallet(connectionConfig: ConnectWallet): Promise<string | 
     }
 }
 
-async function submitTransaction(type: string, txType: string, config: any) {
-
+async function submitTransaction(submitTransaction: SubmitTransaction) {
+    const {connectionConfig, txType, config} = submitTransaction
     try {
         const address = await connectWallet({
-            type: WalletTypes.Metamask,
-            chainId: DEFAULT_CHAIN_ID,
+            ...connectionConfig,
             requestAccounts: true,
             requestChain: true
         })
 
-        const contractInfo = getContractInfoByType(txType, config);
+        const contractInfo = getContractInfoByType({connectionConfig, txType, config});
 
-        const transactionConfig: TransactionConfig = {
+        const transaction: TransactionConfig = {
             from: address,
             to: contractInfo.to,
             data: contractInfo.data,
             value: contractInfo.value || 0
         }
 
-        switch (type) {
+        switch (connectionConfig.type) {
             case WalletTypes.Metamask: {
-                const txHash = await Metamask.submitTransaction(transactionConfig);
+                const txHash = await Metamask.submitTransaction(transaction);
                 if (txHash) {
-                    const transaction = trackTransaction(txHash)
+                    const transaction = trackTransaction({
+                        connectionConfig,
+                        txHash,
+                        txType,
+                        recursionCount: 0
+                    })
                     await toast.promise(transaction, {
                         pending: "Transaction was submitted",
                         error: "Transaction failed",
@@ -95,43 +99,46 @@ async function submitTransaction(type: string, txType: string, config: any) {
     }
 }
 
-function getContractInfoByType(txType: string, config: any) {
+function getContractInfoByType(submitTransaction: SubmitTransaction) {
+    const {connectionConfig, txType, config} = submitTransaction;
+    const {chainId} = connectionConfig;
+
     switch (txType) {
         case TxTypes.IssueBond: {
             return {
                 to: ZCB_ISSUER_CONTRACT,
-                data: ZCB.issueBonds(config),
-                value: `0x16345785D8A0000`
+                data: ZCB.issueBonds(chainId, config),
+                value: `0x16345785D8A0000` // 0.1 ETH todo update this
             }
         }
         case TxTypes.ApproveToken: {
             return {
                 to: config.contractAddress,
-                data: TokensWeb3.approve(config.contractAddress, config.spender, config.value)
+                data: TokensWeb3.approve(chainId, config.contractAddress, config.spender, config.value)
             }
         }
         case TxTypes.PurchaseBonds: {
             return {
                 to: config.contractAddress,
-                data: ZCB.purchase(config.contractAddress, config.count)
+                data: ZCB.purchase(chainId, config.contractAddress, config.count)
             }
         }
         case TxTypes.RedeemBonds: {
             return {
                 to: config.contractAddress,
-                data: ZCB.redeem(config.contractAddress, config.ids)
+                data: ZCB.redeem(chainId, config.contractAddress, config.ids)
             }
         }
         case TxTypes.TransferERC20: {
             return {
                 to: config.contractAddress,
-                data: Tokens.deposit(config.contractAddress, config.toAddress, config.amount)
+                data: Tokens.deposit(chainId, config.contractAddress, config.toAddress, config.amount)
             }
         }
         case TxTypes.WithdrawRemaining: {
             return {
                 to: config.contractAddress,
-                data: ZCB.withdrawRemaining(config.contractAddress)
+                data: ZCB.withdrawRemaining(chainId, config.contractAddress)
             }
         }
         default: {
@@ -140,18 +147,22 @@ function getContractInfoByType(txType: string, config: any) {
     }
 }
 
-async function trackTransaction(txHash: string, recursionCount = 0): Promise<any | undefined> {
+async function trackTransaction(trackingConfig: TransactionTracking): Promise<any | undefined> {
+    const {connectionConfig, txType, txHash, recursionCount} = trackingConfig;
+    const {chainId} = connectionConfig;
+
     try {
         if (recursionCount > 50) {
             // Throw error when 100sec passed
             return undefined;
         }
-        const web3 = getWeb3Instance(DEFAULT_CHAIN_ID);
+        const web3 = getWeb3Instance(chainId);
 
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
         const response = await web3.eth.getTransactionReceipt(txHash);
         if (!response) {
-            return await trackTransaction(txHash, recursionCount++);
+            trackingConfig.recursionCount++
+            return await trackTransaction(trackingConfig);
         }
 
         if (!response.status) {

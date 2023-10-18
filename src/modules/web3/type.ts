@@ -54,10 +54,25 @@ type ConnectWallet = {
     callback?: any;
 }
 
+type SubmitTransaction = {
+    connectionConfig: ConnectWallet,
+    txType: string,
+    config: any
+}
+
+type TransactionTracking = {
+    connectionConfig: ConnectWallet,
+    txHash: string
+    txType: string
+    recursionCount: number
+}
+
 export type {
     BondInfoDetailed,
     TokenInfo,
     Chain,
     SwitchChain,
-    ConnectWallet
+    ConnectWallet,
+    SubmitTransaction,
+    TransactionTracking
 }

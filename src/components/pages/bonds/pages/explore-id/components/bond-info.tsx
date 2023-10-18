@@ -17,6 +17,8 @@ import {getExplorerToken} from "@/modules/web3/utils/token";
 import {toBN} from "@/modules/web3/util";
 import {CHAIN_INFO} from "@/modules/web3/constants";
 import {formatTime} from "@/modules/utils/dates";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const BondTokens = {
     Interest: "interest",
@@ -47,8 +49,11 @@ export default function BondDetails({info, tokens}: { info: BondInfoDetailed, to
 }
 
 function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
-    const bondAddress = getExplorerAddress(info._id);
-    const explorerAddress = getExplorerAddress(info.issuer);
+    const account = useSelector((item: RootState) => item.account);
+    const {chainId} = account;
+
+    const bondAddress = getExplorerAddress(chainId, info._id);
+    const explorerAddress = getExplorerAddress(chainId, info.issuer);
     const chainIcon = `/svg/chains/${info.chainId}.svg`
     const chainInfo = CHAIN_INFO[info.chainId]
 
@@ -123,13 +128,13 @@ function Box({children}: any) {
 }
 
 function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: BondInfoDetailed }) {
-
+    const {chainId} = info
     if (!token) {
         return <div className="flex items-center justify-center w-full"><Loading/></div>;
     }
 
     const isInterest = type === BondTokens.Interest
-    const tokenUrl = getExplorerToken(token.contractAddress);
+    const tokenUrl = getExplorerToken(chainId, token.contractAddress);
     const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>
     const title = isInterest ? "Interest" : "Investment"
     const hasBalance = typeof token.balanceClean !== "undefined"

@@ -31,10 +31,10 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
     const [amount, setAmount] = useState(0);
     const [allowance, setAllowance] = useState(0)
     const account = useSelector((item: RootState) => item.account);
-    const {address} = account;
+    const {address, chainId} = account;
 
     useEffect(() => {
-        getAllowance(investmentToken, address, _id)
+        getAllowance(chainId, investmentToken, address, _id)
             .then(response => setAllowance(response))
             .catch(() => null)
     }, [_id, investmentToken, address, effectRefresher])
@@ -68,10 +68,19 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
                 return;
             }
 
-            const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.ApproveToken, {
-                contractAddress: investmentToken,
-                spender: _id,
-                value: toBN(amount).mul(toBN(investmentTokenAmount))
+            const transaction = await Web3Service.submitTransaction({
+                connectionConfig: {
+                    type: account.connection.type,
+                    chainId: account.chainId,
+                    requestChain: true,
+                    requestAccounts: true,
+                },
+                txType: TxTypes.ApproveToken,
+                config: {
+                    contractAddress: investmentToken,
+                    spender: _id,
+                    value: toBN(amount).mul(toBN(investmentTokenAmount))
+                }
             });
             console.log(transaction)
         } else {
@@ -84,9 +93,18 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             }
 
 
-            const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.PurchaseBonds, {
-                contractAddress: _id,
-                count: amount
+            const transaction = await Web3Service.submitTransaction({
+                connectionConfig: {
+                    type: account.connection.type,
+                    chainId: account.chainId,
+                    requestChain: true,
+                    requestAccounts: true,
+                },
+                txType: TxTypes.PurchaseBonds,
+                config: {
+                    contractAddress: _id,
+                    count: amount
+                }
             });
 
             await sleep(4000);

@@ -1,14 +1,13 @@
 import {useEffect, useState} from "react";
 import Styles from "@/components/pages/bonds/main/components/index.module.css";
 import Link from "next/link";
-import * as CloudAPI from "@/modules/cloud-api";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import {useRouter} from "next/router";
 
 export default function BondsShowcase() {
     return <>
@@ -42,6 +41,7 @@ function BondsScreen() {
             limit: bonds.limit,
             chainId: account.chainId
         }
+
         const interval = getBondsHandler(bondsHandler, config);
         return () => {
             clearInterval(interval)

@@ -1,11 +1,12 @@
 import Styles from './index.module.css';
-import TwitterSVG from "../../../public/svg/twitter";
-import DiscordSVG from "../../../public/svg/discord";
-import RedditSVG from "../../../public/svg/reddit";
-import TelegramSVG from "../../../public/svg/telegram";
+import TwitterSVG from "../../../public/svg/social/twitter";
+import DiscordSVG from "../../../public/svg/social/discord";
+import RedditSVG from "../../../public/svg/social/reddit";
+import TelegramSVG from "../../../public/svg/social/telegram";
 import AmetLogo from "../../../public/svg/amet-logo";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
+import LinkedInSVG from "../../../public/svg/social/linkedin";
 
 export default function Footer() {
     return <>
@@ -20,6 +21,7 @@ export default function Footer() {
                         <DiscordSVG/>
                         <TelegramSVG/>
                         <RedditSVG/>
+                        <LinkedInSVG/>
                     </div>
                     <span className={Styles.desktop}>&#169;2023 Amet Finance. All rights reserved.</span>
                 </div>

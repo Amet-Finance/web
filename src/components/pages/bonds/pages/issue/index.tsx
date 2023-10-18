@@ -7,7 +7,7 @@ import {getTokenInfo} from "@/modules/web3/tokens";
 import {useSelector} from "react-redux";
 import Loading from "@/components/utils/loading";
 import * as Web3Service from "@/modules/web3";
-import {CHAIN_INFO, TxTypes, WalletTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
+import {CHAIN_INFO, TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {decode} from "@/modules/web3/zcb";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
@@ -31,12 +31,19 @@ const BondTokenInfo = {
 
 export default function Issue() {
 
-    const account = useSelector((item: RootState) => item.account)
+    const account = useSelector((item: RootState) => item.account);
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
     const [investmentTokenInfo, setInvestmentTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
     const [interestTokenInfo, setInterestTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
     const bondsHandler = [bondInfo, setBondInfo]
+
+    const connectionConfig = {
+        type: account.connection.type,
+        chainId: account.chainId,
+        requestChain: true,
+        requestAccounts: true,
+    }
 
     async function submit() {
         // todo add here the investmentTokenInfo and the interest one
@@ -67,7 +74,11 @@ export default function Issue() {
         bondInfo.interestTokenInfo = interestTokenInfo;
 
 
-        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.IssueBond, bondInfo);
+        const transaction = await Web3Service.submitTransaction({
+            connectionConfig,
+            txType: TxTypes.IssueBond,
+            config: bondInfo
+        });
         if (transaction) {
             const decoded = decode(transaction);
             return openModal(ModalTypes.IssuedBondSuccess, {
@@ -90,7 +101,7 @@ export default function Issue() {
         })
     }
 
-    function getToken(type: string) {
+    function getToken(chainId: string, type: string) {
         const isInvestment = type === "investmentToken"
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
         const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
@@ -115,7 +126,7 @@ export default function Issue() {
 
         const timer = setInterval(async () => {
 
-            const tokenInfo = await getTokenInfo(contractAddress, account.address);
+            const tokenInfo = await getTokenInfo(chainId, contractAddress, account.address);
             if (tokenInfo) {
                 setToken({...tokenInfo})
             } else {
@@ -127,14 +138,14 @@ export default function Issue() {
     }
 
     useEffect(() => {
-        const timer = getToken("interestToken");
+        const timer = getToken(account.chainId, "interestToken");
         return () => clearTimeout(timer)
-    }, [bondInfo.interestToken])
+    }, [account.chainId, bondInfo.interestToken])
 
     useEffect(() => {
-        const timer = getToken("investmentToken");
+        const timer = getToken(account.chainId, "investmentToken");
         return () => clearTimeout(timer)
-    }, [bondInfo.investmentToken])
+    }, [account.chainId, bondInfo.investmentToken])
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
     const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
@@ -321,12 +332,22 @@ function Token({token}: any) {
     const sign = isInterest ? '-' : '+';
 
     const [isWarning, setWarning] = useState(false);
-    const handleError = () => setWarning(true);
+
+
+    function Img() {
+
+        const iconUrl = isWarning ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAA8lJREFUeF7t3bFtFUEUheF9NIAsKqAKJBeCkEgQIanrICVEJCQE7oOMDqiBBgBRAu9b6frq/c7Pzsy5/565a69nLz/fPPw54OfX98+gPo4PH5+Rfrv408NvWsLzV+9JfwkA8o/FAVACEEQlANk3Ly4BSgCisAQg++bFJUAJQBSWAGTfvLgEKAGIwhKA7JsXlwAlAFFYApB98+ISoAQgCksAsm9eXAKUAERhCUD2zYvHE+DHyzt6H+DW/54/jZACdAmA6RLa+AFg/q1XB8D6EtoCAsD8W68OgPUltAUEgPm3Xh0A60toCwgA82+9OgDWl9AWEADm33p1AKwvoS0gAMy/9eoAWF9CW0AAmH/r1QGwvoS2AAbg/vEFvQ+gE9D3Cb5+e2cOovrt6y90hWn/LgFA9TsCAE+4KAHshBD1rwSwACgBpvewegA7Y6kEKAF6ChAGagJrAoWfY3oLbQug8h01gdME1wTWBOI9bPJ6gHoAImg6QesBqHz1AONdbD1APQDewyavB6gHIILW9wAawXoHkftPQDztHzeB0wt4AjWkKUz7FwBUPhcHAL5S5SWYvUIABAARqD1UWwDZ7+ISoAQgikoAsm9eXAKUAERhCUD2zYtLgBKAKCwByL55cQlQAhCFJQDZNy8uAUoAorAEIPvmxeMJMH1c/LQBisD0/PWFkvHvBUwbGADDXwwJgNkTRkoAjIBpgNsChp8iAgA/+zZtIAbAMT3/EqAEIIbrAci+owTQU6qmIxTrHwABYAdV6q9y6wHqASjE6gHIvnqAoy2gLYDuoZrAfhVMAGkTRYMfbQFtAXhcvQK8/ilAF6A9iCbA9Px1/PGnAF1AANhx8wGAETANsI4fAAFwR98M0ghWgnV8rP/4MXnqXwmABGgBFGAdPwACoC1AGNA7sAQYPmhSiv9PGwD4TuC0gQEw/H8BAWCHPat/NYEYAVqAeoB6AEJQASwByP6aQP5zsBKsEYr17ylACxAAN94E6h1463q9gcZ7gFsvoK4/ANTB5foAWF5AnX4AqIPL9QGwvIA6/QBQB5frA2B5AXX6AaAOLtcHwPIC6vQDQB1crg+A5QXU6QeAOrhcHwDLC6jTDwB1cLk+AJYXUKfPANw/vqD/DZxegI4/rdcXanT+/O1gnYASrONP6wMA3wqeLqCOHwABoAyRvi2A7HNxCVACOEVwhRIAzDtDWgKUAGdwdPU1SoCrrTtHWAKUAOeQdOVVSoArjTtLVgKUAGexdNV1SoCrbDtPVAKUAOfRdMWVSoArTDtTUgKUAGfy9N/X+gt78wptEKuW+wAAAABJRU5ErkJggg==" : icon
+        const handleError = () => setWarning(true);
+
+        return <>
+            <Image src={iconUrl} alt={name} width={32} height={32} onError={handleError} className='rounded-full'/>
+        </>
+    }
 
     return <>
         <div className="flex items-center gap-2">
             <div className={Styles.tokenDetails}>
-                <Image src={icon} alt={name} width={32} height={32} onError={handleError}/>
+                <Img/>
                 <div className="flex flex-col">
                     <div className={Styles.tokenDetails}>
                         <p>{name}</p>

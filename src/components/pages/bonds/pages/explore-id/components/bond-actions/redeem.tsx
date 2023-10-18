@@ -27,6 +27,13 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     // todo calculate as well the amount that is left there
     //  so I won't be able to choose it if there's no secured redemption amount
 
+    const connectionConfig = {
+        type: account.connection.type,
+        chainId: account.chainId,
+        requestChain: true,
+        requestAccounts: true,
+    }
+
     useEffect(() => {
         setLoading(true)
         AccountSlice.initBalance(account.address, account.chainId)
@@ -39,7 +46,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             if (!holdings.length) {
                 setLoading(true);
             }
-            getTokensPurchaseDates(contractAddress, balanceTokenIds)
+            getTokensPurchaseDates(account.chainId, contractAddress, balanceTokenIds)
                 .then(response => {
                     const utcTimestamp = Date.now() / 1000;
                     const tokensWithDates = response.map((date: number, index: number) => {
@@ -59,7 +66,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                 .catch(error => console.log(`getTokensPurchaseDates`, error))
                 .finally(() => setLoading(false))
         }
-    }, [account.address, account.balance[contractAddress]])
+    }, [account.address, account.chainId, account.balance[contractAddress]])
 
     if (!holdings.length && !loading) {
         return <>
@@ -82,9 +89,13 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             return;
         }
 
-        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.RedeemBonds, {
-            contractAddress: _id,
-            ids: tokenIds
+        const transaction = await Web3Service.submitTransaction({
+            connectionConfig,
+            txType: TxTypes.RedeemBonds,
+            config: {
+                contractAddress: _id,
+                ids: tokenIds
+            }
         });
         setTimeout(() => {
             AccountSlice.initBalance(account.address, account.chainId);
@@ -96,7 +107,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     function setPercent(percent: number) {
         const validTokenIds = holdings.filter((item: any) => item.isValid)
         const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
-        const tokenIds = Math.floor((tokenIdsLocal.length * percent)/ 100)
+        const tokenIds = Math.floor((tokenIdsLocal.length * percent) / 100)
         setTokenIds(tokenIdsLocal.slice(0, tokenIds));
     }
 

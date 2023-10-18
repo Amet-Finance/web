@@ -11,6 +11,7 @@ const URLS = {
     Reddit: "https://www.reddit.com/r/Amet_Finance/",
     Telegram: "https://t.me/amet_finance",
     Twitter: "https://twitter.com/amet_finance",
+    LinkedIn: "https://www.linkedin.com/company/amet-finance"
 }
 
 export {

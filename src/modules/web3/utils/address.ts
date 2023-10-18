@@ -1,4 +1,4 @@
-import {CHAIN_INFO, DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
+import {CHAIN_INFO} from "@/modules/web3/constants";
 
 function shorten(address: string, length = 6) {
     if (address.length <= length) {
@@ -11,8 +11,8 @@ function shorten(address: string, length = 6) {
     return `${start}...${end}`;
 }
 
-function getExplorerAddress(address: string) {
-    return `${CHAIN_INFO[DEFAULT_CHAIN_ID].blockExplorerUrls[0]}/address/${address}`
+function getExplorerAddress(chainId: string, address: string) {
+    return `${CHAIN_INFO[chainId].blockExplorerUrls[0]}/address/${address}`
 }
 
 export {

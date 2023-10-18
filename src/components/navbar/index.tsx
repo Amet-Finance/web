@@ -13,7 +13,7 @@ import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
-import {CHAIN_IDS, CHAIN_INFO, DEFAULT_CHAIN_ID, WalletTypes} from "@/modules/web3/constants";
+import {CHAIN_IDS, CHAIN_INFO, WalletTypes} from "@/modules/web3/constants";
 import {URLS} from "@/modules/utils/urls";
 
 
@@ -46,7 +46,7 @@ export default function Navbar() {
     useEffect(() => {
         Web3Service.connectWallet({
             type: WalletTypes.Metamask,
-            chainId: DEFAULT_CHAIN_ID,
+            chainId: CHAIN_IDS.Mumbai,
             hideError: true
         })
     }, [])

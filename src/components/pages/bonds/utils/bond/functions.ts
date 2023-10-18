@@ -22,8 +22,7 @@ function getBondsHandler(bondsHandler: any, config: Config) {
         }))
 
 
-    const interval = setInterval(() => {
-
+    return setInterval(() => {
         CloudAPI.getBonds(config)
             .then(response => setBonds({
                 ...bonds,
@@ -31,8 +30,6 @@ function getBondsHandler(bondsHandler: any, config: Config) {
                 isLoading: false
             }))
     }, 3000)
-
-    return interval
 }
 
 export {

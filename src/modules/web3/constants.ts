@@ -54,8 +54,6 @@ const WalletTypes = {
     Metamask: 'metamask'
 }
 
-const DEFAULT_CHAIN_ID = CHAIN_IDS.Mumbai;
-
 const TxTypes = {
     IssueBond: 'issue-bonds',
     ApproveToken: 'approve-token',
@@ -66,7 +64,6 @@ const TxTypes = {
 }
 
 export {
-    DEFAULT_CHAIN_ID,
     CHAIN_IDS,
     CHAIN_INFO,
     RPC_BY_CHAINS,

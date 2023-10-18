@@ -1,7 +1,8 @@
 import {TokenInfo} from "@/modules/web3/type";
 
 type BondGeneral = {
-    _id?: string;
+    _id: string;
+    chainId: string;
     issuer: string;
     total: number;
     purchased: number;

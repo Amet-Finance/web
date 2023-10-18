@@ -1,4 +1,4 @@
-function formatTime(seconds: number, isShort?: boolean) {
+function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
     const years = Math.floor(seconds / 31536000);
     seconds -= years * 2592000;
 
@@ -48,7 +48,7 @@ function formatTime(seconds: number, isShort?: boolean) {
         timeSegments.push(`${minutes} ${text}`);
     }
 
-    if (seconds > 0) {
+    if (seconds > 0 && !hideSeconds) {
         const text = shorten(seconds === 1 ? 'second' : 'seconds')
         timeSegments.push(`${Math.round(seconds)} ${text}`);
     }

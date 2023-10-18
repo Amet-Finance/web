@@ -5,9 +5,19 @@ import * as Web3Service from "@/modules/web3";
 import {TxTypes, WalletTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {toBN} from "@/modules/web3/util";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
+    const account = useSelector((item: RootState) => item.account);
+
+    const connectionConfig = {
+        type: account.connection.type,
+        chainId: account.chainId,
+        requestChain: true,
+        requestAccounts: true,
+    }
     const depositRef = useRef<any>(null)
     const changeOwner = useRef(null)
     const issueBonds = useRef(null)
@@ -26,18 +36,28 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
         }
 
         const depositValue = toBN(value).mul(toBN(10).pow(toBN(interestToken.decimals)))
-
-        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.TransferERC20, {
+        const config = {
             contractAddress: interestToken.contractAddress,
             toAddress: info._id,
             amount: depositValue
-        });
+        }
+
+        const transaction = await Web3Service.submitTransaction({
+                connectionConfig,
+                txType: TxTypes.TransferERC20,
+                config: config
+            })
+        ;
         console.log(transaction)
     }
 
     async function withdrawRemaining() {
-        const transaction = await Web3Service.submitTransaction(WalletTypes.Metamask, TxTypes.WithdrawRemaining, {
-            contractAddress: info._id,
+        const transaction = await Web3Service.submitTransaction({
+            connectionConfig,
+            txType: TxTypes.WithdrawRemaining,
+            config: {
+                contractAddress: info._id,
+            }
         });
         console.log(transaction);
     }

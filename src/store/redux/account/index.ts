@@ -2,11 +2,14 @@ import {createSlice} from "@reduxjs/toolkit";
 import store from "@/store/store";
 import {Account} from "@/store/redux/account/type";
 import * as CloudAPI from "../../../modules/cloud-api/index"
-import {DEFAULT_CHAIN_ID, WalletTypes} from "@/modules/web3/constants";
+import {CHAIN_IDS, WalletTypes} from "@/modules/web3/constants";
 
 const emptyState: Account = {
     address: "",
-    chainId: DEFAULT_CHAIN_ID,
+    connection: {
+        type: WalletTypes.Metamask // todo update on connect
+    },
+    chainId: CHAIN_IDS.Mumbai, // todo change later
     balance: {}
 }
 
@@ -43,7 +46,8 @@ const {
 } = counterSlice.actions;
 
 
-async function initiateWallet(address: string, chainId: string) {
+async function initiateWallet(address: string, chainId?: string) {
+    chainId = chainId || CHAIN_IDS.Mumbai // todo update here
     store.dispatch(connectAndSwitch({address, chainId}))
 
     // API calls here

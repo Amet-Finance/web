@@ -16,24 +16,18 @@ import {useState} from "react";
 import WarningSVG from "../../../../../../public/svg/warning";
 import InfoSVG from "../../../../../../public/svg/info";
 import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
-import {useRouter} from "next/router";
 import {stopPropagation} from "@/modules/utils/events";
 import {toBN} from "@/modules/web3/util";
-import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
+import {useRouter} from "next/router";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
 
-
-    const [investment, setInvestment] = useState({
-        isVerified: true
-    })
-    const [interest, setInterest] = useState({
-        isVerified: true
-    })
-
     const {
         _id,
+        chainId,
         total,
         purchased,
         redeemed,
@@ -49,8 +43,15 @@ export default function Bond({info}: { info: BondGeneral }) {
     } = info;
 
     const router = useRouter();
-    const interestIcon = getIcon(interestToken)
-    const investmentIcon = getIcon(investmentToken)
+    const [investment, setInvestment] = useState({
+        isVerified: false
+    })
+    const [interest, setInterest] = useState({
+        isVerified: false
+    })
+
+    const interestIcon = getIcon(chainId, interestToken)
+    const investmentIcon = getIcon(chainId, investmentToken)
 
     const title = `${interestTokenInfo.symbol}-${investmentTokenInfo.symbol}`
     const response: any = {
@@ -76,11 +77,13 @@ export default function Bond({info}: { info: BondGeneral }) {
     }
 
     const isWarning = !interest.isVerified || !investment.isVerified
-    const bondUrl = `${window.location.origin}/bonds/explore/${_id}?chainId=${DEFAULT_CHAIN_ID}`
+    console.log(interest, investment);
+    const bondUrl = `${window.location.origin}/bonds/explore/${_id}?chainId=${chainId}`
     const daysAgo = (Date.now() / 1000) - issuanceDate
 
-    async function copyWholeURl() {
+    async function copyWholeURl(event: any) {
         try {
+            stopPropagation(event);
             await navigator.clipboard.writeText(bondUrl);
             return toast("URL successfully copied to your clipboard.");
         } catch (e) {
@@ -89,10 +92,9 @@ export default function Bond({info}: { info: BondGeneral }) {
     }
 
     return <>
-        <Link
-            className="flex flex-col rounded-lg px-4 py-2 bg-b3 border border-transparent gap-4 hover:border-w1"
-            href={bondUrl}>
 
+        <div className="flex flex-col rounded-lg px-4 py-2 bg-b3 border border-transparent gap-2 hover:border-w1"
+             onClick={() => router.push(bondUrl)}>
             <div className="flex justify-between items-center">
                 <div className="flex justify-between items-center">
                     <div className={Styles.icons}>
@@ -117,9 +119,7 @@ export default function Bond({info}: { info: BondGeneral }) {
                             <span className={Styles.type}>ZCB</span>
                         </div>
                         {Boolean(isWarning) && <>
-                            <div className={Styles.warning}>
-                                <span>Warning: Please proceed with caution</span>
-                            </div>
+                            <div className={Styles.warning}><span>Warning: Please proceed with caution</span></div>
                         </>}
                     </div>
                 </div>
@@ -174,17 +174,19 @@ export default function Bond({info}: { info: BondGeneral }) {
                     <Issuer issuer={issuer}/>
                 </div>
                 <div className={Styles.section} title={new Date(issuanceDate * 1000).toString()}>
-                    <span className={Styles.gray}>{formatTime(daysAgo, true)} ago</span>
+                    <span className={Styles.gray}>{formatTime(daysAgo, true, true)} ago</span>
                 </div>
             </div>
-        </Link>
+        </div>
     </>
 }
 
 function Issuer({issuer}: any) {
+    const account = useSelector((item: RootState) => item.account);
+    const {chainId} = account;
     return <>
         <p className={Styles.gray}>Issuer:&nbsp;
-            <Link href={getExplorerAddress(issuer)} onClick={stopPropagation} target="_blank">
+            <Link href={getExplorerAddress(chainId, issuer)} onClick={stopPropagation} target="_blank">
                 <u>{shorten(issuer, 5)}</u>
             </Link>
         </p>
@@ -194,13 +196,20 @@ function Issuer({issuer}: any) {
 function Img({src, alt, type, setter}: any) {
     const [srcC, setSrcC] = useState(src)
 
+    const handleError = () => {
+        setSrcC('/svg/question.svg');
+        setter({
+            isVerified: false
+        })
+    }
+
+    const handleSuccess = () => setter({isVerified: true})
+
     return <>
-        <Image src={srcC} alt={alt} width={32} height={32} onError={() => {
-            setSrcC('/svg/question.svg');
-            setter({
-                isVerified: false
-            })
-        }}/>
+        <Image src={srcC} alt={alt} width={32} height={32}
+               onError={handleError}
+               onLoad={handleSuccess}
+        />
     </>
 }
 

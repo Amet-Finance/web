@@ -7,14 +7,14 @@ import {TransactionReceipt} from "web3-core";
 import {getTokenBalance} from "@/modules/web3/tokens";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {toBN} from "@/modules/web3/util";
-import {DEFAULT_CHAIN_ID} from "@/modules/web3/constants";
+import {CHAIN_IDS} from "@/modules/web3/constants";
 
 function getContract(chainId: string, contractAddress: string) {
     const web3 = getWeb3Instance(chainId)
     return new web3.eth.Contract(ZCB_ABI as any, contractAddress);
 }
 
-async function getInfo(contractAddress: string, chainId: string): Promise<BondInfoDetailed> {
+async function getBondInfo(chainId: string, contractAddress: string): Promise<BondInfoDetailed> {
     const contract = getContract(chainId, contractAddress);
     const info = await contract.methods.getInfo().call();
 
@@ -29,7 +29,7 @@ async function getInfo(contractAddress: string, chainId: string): Promise<BondIn
 
     return {
         _id: contractAddress,
-        chainId: chainId,
+        chainId,
         issuer,
         total,
         purchased,
@@ -39,88 +39,70 @@ async function getInfo(contractAddress: string, chainId: string): Promise<BondIn
         investmentTokenAmount,
         interestToken,
         interestTokenAmount,
-        interestTokenBalance: await getTokenBalance(interestToken, contractAddress),
+        interestTokenBalance: await getTokenBalance(chainId, interestToken, contractAddress),
         feePercentage,
         issuanceDate
     };
 }
 
-async function getTokensPurchaseDates(contractAddress: string, tokenIds: number[]) {
-    const contract = getContract(DEFAULT_CHAIN_ID, contractAddress);
+async function getTokensPurchaseDates(chainId: string, contractAddress: string, tokenIds: number[]) {
+    const contract = getContract(chainId, contractAddress);
     return await contract.methods.getTokensPurchaseDates(tokenIds).call();
 }
 
-function issueBonds(bondInfo: BondInfo): string | undefined {
+function issueBonds(chainId: string, bondInfo: BondInfo): string | undefined {
+    const {
+        total,
+        redeemLockPeriod,
+        investmentToken,
+        interestTokenAmount,
+        interestToken,
+        investmentTokenAmount,
+        investmentTokenInfo,
+        interestTokenInfo
+    } = bondInfo;
 
-    try {
-        const {
-            total,
-            redeemLockPeriod,
-            investmentToken,
-            interestTokenAmount,
-            interestToken,
-            investmentTokenAmount,
-            investmentTokenInfo,
-            interestTokenInfo
-        } = bondInfo;
-
-        const isInvestInvalid = !investmentTokenInfo || typeof investmentTokenInfo.decimals === "undefined"
-        const isInterestInvalid = !interestTokenInfo || typeof interestTokenInfo.decimals === "undefined"
-        if (isInvestInvalid || isInterestInvalid) {
-            throw Error("Investment or Interest Token info is undefined")
-        }
-
-
-        const investmentAmount = toBN(Number(investmentTokenAmount)).mul(toBN(10).pow(toBN(Number(investmentTokenInfo.decimals))));
-        const interestAmount = toBN(Number(interestTokenAmount)).mul(toBN(10).pow(toBN(Number(interestTokenInfo.decimals))));
-
-        const web3 = getWeb3Instance(DEFAULT_CHAIN_ID)
-        const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACT);
-        return contract.methods.create(
-            total,
-            redeemLockPeriod,
-            investmentToken,
-            investmentAmount,
-            interestToken,
-            interestAmount,
-            `${investmentTokenInfo?.symbol}-${interestTokenInfo?.symbol} | Amet Finance`
-        ).encodeABI();
-    } catch (error: any) {
-        console.log(`error`, error)
+    const isInvestInvalid = !investmentTokenInfo || typeof investmentTokenInfo.decimals === "undefined"
+    const isInterestInvalid = !interestTokenInfo || typeof interestTokenInfo.decimals === "undefined"
+    if (isInvestInvalid || isInterestInvalid) {
+        throw Error("Investment or Interest Token info is undefined")
     }
 
+
+    const investmentAmount = toBN(Number(investmentTokenAmount)).mul(toBN(10).pow(toBN(Number(investmentTokenInfo.decimals))));
+    const interestAmount = toBN(Number(interestTokenAmount)).mul(toBN(10).pow(toBN(Number(interestTokenInfo.decimals))));
+
+    const web3 = getWeb3Instance(chainId)
+    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACT);
+    return contract.methods.create(
+        total,
+        redeemLockPeriod,
+        investmentToken,
+        investmentAmount,
+        interestToken,
+        interestAmount,
+        `${investmentTokenInfo?.symbol}-${interestTokenInfo?.symbol} | Amet Finance`
+    ).encodeABI();
 }
 
-function purchase(contractAddress: string, count: number) {
-    try {
-        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
-        return contract.methods.purchase(count).encodeABI();
-    } catch (error: any) {
-        console.log(`error`, error)
-    }
+function purchase(chainId: string, contractAddress: string, count: number) {
+    const contract = getContract(chainId, contractAddress)
+    return contract.methods.purchase(count).encodeABI();
 }
 
-function redeem(contractAddress: string, ids: string[]) {
-    try {
-        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
-        return contract.methods.redeem(ids).encodeABI();
-    } catch (error: any) {
-        console.log(`error`, error)
-    }
+function redeem(chainId: string, contractAddress: string, ids: string[]) {
+    const contract = getContract(chainId, contractAddress)
+    return contract.methods.redeem(ids).encodeABI();
 }
 
-function withdrawRemaining(contractAddress: string) {
-    try {
-        const contract = getContract(DEFAULT_CHAIN_ID, contractAddress)
-        return contract.methods.withdrawRemaining().encodeABI();
-    } catch (error: any) {
-        console.log(`error`, error)
-    }
+function withdrawRemaining(chainId: string, contractAddress: string) {
+    const contract = getContract(chainId, contractAddress)
+    return contract.methods.withdrawRemaining().encodeABI();
 }
 
 function decode(transaction: TransactionReceipt): {} {
 
-    const web3 = getWeb3Instance(DEFAULT_CHAIN_ID);
+    const web3 = getWeb3Instance(CHAIN_IDS.Mumbai); // todo here it is hardcoded
     const eventAbi: any = ZCB_Issuer_ABI.find((abi) => abi.name === "Create");
     const eventSignature = web3.eth.abi.encodeEventSignature(eventAbi);
 
@@ -148,6 +130,6 @@ export {
     redeem,
     withdrawRemaining,
     decode,
-    getInfo,
+    getBondInfo,
     getTokensPurchaseDates
 }
