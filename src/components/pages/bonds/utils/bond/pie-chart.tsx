@@ -50,7 +50,7 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
             id: "doghuntLabel",
             afterDatasetDraw(chart: Chart, args: { index: number; meta: ChartMeta }, options: any): boolean | void {
 
-                const {ctx, data, _active} = chart;
+                const {ctx, data, _active} = chart as any;
                 const xCoor = chart.getDatasetMeta(0).data[0].x
                 const yCoor = chart.getDatasetMeta(0).data[0].y
                 let text = `Total: ${total}`
