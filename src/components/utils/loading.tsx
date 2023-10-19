@@ -1,8 +1,8 @@
-export default function Loading({percent}: any) {
-
-    let witdthMain = 62 - ((62 * percent) / 100) || 0
-    let width = 52 - ((52 * percent) / 100) || 0
-    let border = 6 - ((6 * percent) / 100) || 0
+export default function Loading({percent}: { percent?: number }) {
+    percent = percent || 0;
+    let witdthMain = 62 - ((62 * percent) / 100)
+    let width = 52 - ((52 * percent) / 100)
+    let border = 6 - ((6 * percent) / 100)
 
     return <>
         <div className="lds-ring">
