@@ -17,6 +17,28 @@ function format(number: number) {
     return parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
 }
 
+function formatLargeNumber(number: number) {
+    const trillion = 1000000000000; // 1 trillion
+    const billion = 1000000000;  // 1 billion
+    const million = 1000000;  // 1 million
+    const thousand = 1000; // 1 thousand
+
+    if (number >= 10 * trillion) {
+        return (number / 10 * trillion).toFixed(1) + 'T';
+    } else if (number >= trillion) {
+        return (number / trillion).toFixed(1) + 'T';
+    } else if (number >= billion) {
+        return (number / billion).toFixed(1) + 'B';
+    } else if (number >= million) {
+        return (number / million).toFixed(1) + 'M';
+    } else if (number >= thousand) {
+        return (number / thousand).toFixed(1) + 'K';
+    } else {
+        return number.toString();
+    }
+}
+
 export {
-    format
+    format,
+    formatLargeNumber
 }

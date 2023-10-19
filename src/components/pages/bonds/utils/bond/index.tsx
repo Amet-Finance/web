@@ -14,33 +14,24 @@ import {toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 import Loading from "@/components/utils/loading";
 import axios from "axios";
+import {formatLargeNumber} from "@/modules/utils/numbers";
+import {shortenString} from "@/modules/utils/string";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
     const bondUrl = `${window.location.origin}/bonds/explore/${info._id}?chainId=${info.chainId}`
-
-    const updateTokenIfEmpty = (data: any) => {
-        if (!data) {
-            data = {
-                contractAddress: "",
-                decimals: 0,
-                icon: "",
-                name: "",
-                symbol: ""
-            }
-        }
-        return data
+    if (!info.investmentTokenInfo || !info.interestTokenInfo) {
+        return null;
     }
-
-    info.investmentTokenInfo = updateTokenIfEmpty(info.investmentTokenInfo)
-    info.interestTokenInfo = updateTokenIfEmpty(info.investmentTokenInfo)
-
+    
     return <>
         <Link href={bondUrl}>
             <div
                 className="flex flex-col justify-center
                 rounded-md px-5 py-3 gap-3 cursor-pointer
-                 bg-b3 border border-w1 hover:border-w2">
+                 bg-b3 border border-w1 hover:border-w2
+
+                 ">
                 <BondHeader bondInfo={info}/>
                 <BondDetails bondInfo={info}/>
                 <BondFooter bondInfo={info}/>
@@ -121,21 +112,23 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     const response: any = {}
 
     if (investmentTokenInfo) {
-        const isFake = !investmentTokenInfo.contractAddress;
+        const isFake = investmentTokenInfo.isFake;
         const amount = investmentTokenAmount || ""
         const decimals = investmentTokenInfo.decimals || ""
         response.investment = {
-            currency: isFake ? "?" : investmentTokenInfo.symbol,
-            amount: isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
+            currency: isFake ? "?" : shortenString(investmentTokenInfo.symbol, 5),
+            amount: isFake ? "?" : formatLargeNumber(Number(toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()))
         }
     }
     if (interestTokenInfo) {
-        const isFake = !interestTokenInfo.contractAddress;
+        const isFake = investmentTokenInfo.isFake;
         const amount = interestTokenAmount || ""
         const decimals = interestTokenInfo.decimals || ""
+
+        const price = isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
         response.interest = {
-            currency: isFake ? "?" : interestTokenInfo.symbol,
-            amount: isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
+            currency: isFake ? "?" : shortenString(interestTokenInfo.symbol, 5),
+            amount: isFake ? "?" : formatLargeNumber(Number(toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()))
         }
     }
 
@@ -148,7 +141,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     }
 
     return <>
-        <div className='flex md:gap-12 sm:gap-4 justify-between items-center'>
+        <div className='flex md:gap-12 sm:gap-4 justify-between items-center text-sm'>
             <div className='flex flex-col py-2 rounded-md'>
                 <SectionContainer>
                     <div className='flex items-center gap-1'>
@@ -173,9 +166,9 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                 <SectionContainer>
                     <div className='flex items-center gap-1'>
                         <ClockSVG/>
-                        <span className='text-g'>Lock Period:</span>
+                        <span className='text-g'>Period:</span>
                     </div>
-                    <span className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true)}</span>
+                    <span className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                 </SectionContainer>
             </div>
             <PieChart total={total} redeemed={redeemed} purchased={purchased}/>

@@ -34,13 +34,6 @@ a {
     color: #00b76f;
 }
 
-.main {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100vh;
-}
-
 input:focus {
     outline: none !important;
 }

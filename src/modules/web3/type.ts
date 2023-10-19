@@ -26,6 +26,7 @@ type TokenInfo = {
     balance?: number,
     balanceClean?: string,
     isLoading?: boolean
+    isFake?: boolean
 }
 
 type Chain = {
