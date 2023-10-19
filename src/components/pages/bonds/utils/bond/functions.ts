@@ -15,19 +15,18 @@ function getBondsHandler(bondsHandler: any, config: Config) {
     })
 
     CloudAPI.getBonds(config)
-        .then(response => setBonds({
+        .then(data => setBonds({
             ...bonds,
-            data: [...response, ...response, ...response, ...response],
+            data,
             isLoading: false
         }))
 
 
     return setInterval(() => {
         CloudAPI.getBonds(config)
-            .then(response => setBonds({
+            .then(data => setBonds({
                 ...bonds,
-                data: [...response, ...response, ...response, ...response],
-                isLoading: false
+                data
             }))
     }, 10000)
 }
