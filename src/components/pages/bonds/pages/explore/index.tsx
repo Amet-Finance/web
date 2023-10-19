@@ -54,7 +54,7 @@ function BondsContainer() {
     return <>
         <div className={Styles.bonds}>
             <Settings/>
-            <div className={Styles.bondsContainer}>
+            <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
                 {bonds.data.map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
             </div>
             {Boolean(bonds.data < bonds.limit) && <ShowMore/>}

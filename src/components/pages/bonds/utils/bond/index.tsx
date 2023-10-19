@@ -8,10 +8,12 @@ import ClockSVG from "../../../../../../public/svg/clock";
 import {formatTime, shortTime} from "@/modules/utils/dates";
 import Link from "next/link";
 import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {stopPropagation} from "@/modules/utils/events";
 import {toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
+import Loading from "@/components/utils/loading";
+import axios from "axios";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
@@ -33,7 +35,6 @@ export default function Bond({info}: { info: BondGeneral }) {
 
 function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
     const {
-        _id,
         chainId,
         interestTokenInfo,
         investmentTokenInfo,
@@ -63,15 +64,13 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                     <div className="flex justify-center items-center rounded-full">
                         <Img src={investmentIcon}
                              alt={investmentTokenInfo.symbol}
-                             type='investment'
-                             setter={setInvestment}/>
+                             handler={[investment, setInvestment]}/>
                     </div>
                     <div className="translate-x-[-30%] bg-black rounded-full px-0.5">
                         <div className="flex justify-center items-center">
                             <Img src={interestIcon}
                                  alt={interestTokenInfo.symbol}
-                                 type='interest'
-                                 setter={setInterest}/>
+                                 handler={[interest, setInterest]}/>
                         </div>
                     </div>
                 </div>
@@ -80,9 +79,9 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                         <span className="text-sm">{title}</span>
                         <span className={Styles.type}>ZCB</span>
                     </div>
-                    {Boolean(isWarning) && <>
-                        <div className={Styles.warning}><span>Warning: Please proceed with caution</span></div>
-                    </>}
+                    {Boolean(isWarning) &&
+                        <span className='text-red-700 text-xs text-start'>Warning: Please proceed with caution, Token is not verified</span>
+                    }
                 </div>
             </div>
         </div>
@@ -184,24 +183,36 @@ function BondFooter({bondInfo}: { bondInfo: BondGeneral }) {
     </>
 }
 
-function Img({src, alt, type, setter}: any) {
+function Img({src, alt, handler}: any) {
+
+    const [state, setter] = handler;
+    const [isLoading, setLoading] = useState(true)
     const [srcC, setSrcC] = useState(src)
 
     const handleError = () => {
-        setSrcC('/svg/question.svg');
         setter({
             isVerified: false
         })
     }
 
+
+    useEffect(() => {
+        axios.get(src)
+            .then(() => handleSuccess())
+            .catch(error => handleError())
+            .finally(() => setLoading(false))
+    }, []);
+
     const handleSuccess = () => setter({isVerified: true})
 
-    return <>
-        <Image src={srcC} alt={alt} width={26} height={26}
-               onError={handleError}
-               onLoad={handleSuccess}
-        />
-    </>
+    if (isLoading) {
+        return <Loading/>
+    }
+
+    return <>{
+        state.isVerified ?
+            <Image src={srcC} alt={alt} width={26} height={26} onError={handleError} onLoad={handleSuccess}/> :
+            <Image src="/svg/question.svg" alt={alt} width={26} height={26}/>}</>
 }
 
 function ThreeDotsSVG({url}: { url: string }) {
