@@ -21,7 +21,7 @@ export default function App({Component, pageProps}: AppProps) {
     return <>
         <Provider store={store}>
             <Headers id={pageProps.pageId}/>
-            <main className={"main "}>
+            <main className={"main " + montserrat.className}>
                 <Navbar/>
                 <Component {...pageProps} />
                 <Footer/>
