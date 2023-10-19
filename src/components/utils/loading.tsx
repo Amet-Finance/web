@@ -1,4 +1,9 @@
-export default function Loading(){
+export default function Loading({percent}: any) {
+
+    let witdthMain = 62 - ((62 * percent) / 100) || 0
+    let width = 52 - ((52 * percent) / 100) || 0
+    let border = 6 - ((6 * percent) / 100) || 0
+
     return <>
         <div className="lds-ring">
             <div></div>
@@ -10,18 +15,18 @@ export default function Loading(){
           .lds-ring {
             display: inline-block;
             position: relative;
-            width: 62px;
-            height: 62px;
+            width: ${witdthMain}px;
+            height: ${witdthMain}px;
           }
 
           .lds-ring div {
             box-sizing: border-box;
             display: block;
             position: absolute;
-            width: 52px;
-            height: 52px;
-            margin: 6px;
-            border: 6px solid #fff;
+            width: ${width}px;
+            height: ${width}px;
+            margin: ${border}px;
+            border: ${border}px solid #fff;
             border-radius: 50%;
             animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
             border-color: #fff transparent transparent transparent;

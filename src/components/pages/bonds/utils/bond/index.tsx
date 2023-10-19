@@ -138,7 +138,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                         <span className='text-g'>Investment:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
-                        <span className='text-sm  font-bold'>{response.investment.amount}</span>
+                        <span className='text-sm font-bold'>{response.investment.amount}</span>
                         <span className='text-sm font-bold'>{response.investment.currency}</span>
                     </div>
                 </SectionContainer>
@@ -206,7 +206,7 @@ function Img({src, alt, handler}: any) {
     const handleSuccess = () => setter({isVerified: true})
 
     if (isLoading) {
-        return <Loading/>
+        return <Loading percent={50}/>
     }
 
     return <>{
