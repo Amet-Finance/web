@@ -19,6 +19,22 @@ import axios from "axios";
 export default function Bond({info}: { info: BondGeneral }) {
     const bondUrl = `${window.location.origin}/bonds/explore/${info._id}?chainId=${info.chainId}`
 
+    const updateTokenIfEmpty = (data: any) => {
+        if (!data) {
+            data = {
+                contractAddress: "",
+                decimals: 0,
+                icon: "",
+                name: "",
+                symbol: ""
+            }
+        }
+        return data
+    }
+
+    info.investmentTokenInfo = updateTokenIfEmpty(info.investmentTokenInfo)
+    info.interestTokenInfo = updateTokenIfEmpty(info.investmentTokenInfo)
+
     return <>
         <Link href={bondUrl}>
             <div
@@ -52,7 +68,7 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
     const interestIcon = getIcon(chainId, interestToken)
     const investmentIcon = getIcon(chainId, investmentToken)
 
-    const title = `${interestTokenInfo.symbol}-${investmentTokenInfo.symbol}`
+    const title = `${interestTokenInfo?.symbol}-${investmentTokenInfo?.symbol}`
 
 
     const isWarning = !interest.isVerified || !investment.isVerified // todo update here
@@ -63,7 +79,7 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                 <div className="relative flex items-center">
                     <div className="flex justify-center items-center rounded-full">
                         <Img src={investmentIcon}
-                             alt={investmentTokenInfo.symbol}
+                             alt={investmentTokenInfo?.symbol}
                              handler={[investment, setInvestment]}/>
                     </div>
                     <div className="translate-x-[-30%] bg-black rounded-full px-0.5">
@@ -105,19 +121,21 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     const response: any = {}
 
     if (investmentTokenInfo) {
+        const isFake = !investmentTokenInfo.contractAddress;
         const amount = investmentTokenAmount || ""
         const decimals = investmentTokenInfo.decimals || ""
         response.investment = {
-            currency: investmentTokenInfo.symbol,
-            amount: toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
+            currency: isFake ? "?" : investmentTokenInfo.symbol,
+            amount: isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
         }
     }
     if (interestTokenInfo) {
+        const isFake = !interestTokenInfo.contractAddress;
         const amount = interestTokenAmount || ""
         const decimals = interestTokenInfo.decimals || ""
         response.interest = {
-            currency: interestTokenInfo.symbol,
-            amount: toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
+            currency: isFake ? "?" : interestTokenInfo.symbol,
+            amount: isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
         }
     }
 
