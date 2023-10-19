@@ -48,7 +48,7 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
 
         const doghuntLabel = {
             id: "doghuntLabel",
-            afterDatasetDraw(chart: Chart, args: { index: number; meta: ChartMeta }, options: O): boolean | void {
+            afterDatasetDraw(chart: Chart, args: { index: number; meta: ChartMeta }, options: any): boolean | void {
 
                 const {ctx, data, _active} = chart;
                 const xCoor = chart.getDatasetMeta(0).data[0].x
