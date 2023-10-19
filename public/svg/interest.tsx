@@ -1,6 +1,6 @@
 export default function InterestSVG() {
     return <>
-        <svg width="31" height="33" viewBox="0 0 31 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 31 33" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
                 d="M16.1203 16.5383C16.3255 16.6782 16.6293 16.6182 16.7673 16.4139L22.3643 8.13209C22.5088 7.91831 22.4534 7.62737 22.2405 7.48227C22.0277 7.33723 21.738 7.39275 21.5935 7.60666L15.9965 15.8885C15.852 16.1022 15.9074 16.3932 16.1203 16.5383Z"
                 fill="white"/>

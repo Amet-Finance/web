@@ -130,7 +130,7 @@
 .threeDotBar {
     position: absolute;
     display: none;
-    top: 100%;
+    top: 150%;
     left: 0;
     background-color: #242424;
     padding: 0.5rem 1rem;

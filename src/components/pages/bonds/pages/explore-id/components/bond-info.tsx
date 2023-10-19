@@ -36,8 +36,8 @@ export default function BondDetails({info, tokens}: { info: BondInfoDetailed, to
         <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl'>
             <h2 className="mb-4 text-3xl">Bond Details</h2>
             <BondIssuerInfo info={info}/>
-            <Line/>
-            <Description/>
+            {/*<Line/>*/}
+            {/*<Description/>*/}
             <div className="grid grid-cols-2 gap-3">
                 <Box><SecurityDetails info={info} tokens={tokens}/></Box>
                 <Box><RoundProgress total={total} purchased={purchased} redeemed={redeemed} isHorizontal={true}/></Box>

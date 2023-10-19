@@ -3,46 +3,44 @@ import Styles from "./index.module.css"
 import {getIcon} from "@/modules/utils/images";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import InvestmentSVG from "../../../../../../public/svg/investment";
-import VerifiedSVG from "../../../../../../public/svg/verified";
 import InterestSVG from "../../../../../../public/svg/interest";
 import ClockSVG from "../../../../../../public/svg/clock";
-import {formatTime} from "@/modules/utils/dates";
+import {formatTime, shortTime} from "@/modules/utils/dates";
 import Link from "next/link";
 import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
-import CopySVG from "../../../../../../public/svg/copy";
-import {toast} from "react-toastify";
-import RoundProgressBar from "@/components/pages/bonds/utils/bond/round-progress";
 import {useState} from "react";
-import WarningSVG from "../../../../../../public/svg/warning";
-import InfoSVG from "../../../../../../public/svg/info";
-import {InfoDetails} from "@/components/pages/bonds/utils/bond/constants";
 import {stopPropagation} from "@/modules/utils/events";
 import {toBN} from "@/modules/web3/util";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import {useRouter} from "next/router";
+import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
+    const bondUrl = `${window.location.origin}/bonds/explore/${info._id}?chainId=${info.chainId}`
 
+    return <>
+        <Link href={bondUrl}>
+            <div
+                className="flex flex-col justify-center
+                rounded-md px-5 py-3 gap-3 cursor-pointer
+                 bg-b3 border border-w1 hover:border-w2">
+                <BondHeader bondInfo={info}/>
+                <BondDetails bondInfo={info}/>
+                <BondFooter bondInfo={info}/>
+            </div>
+        </Link>
+    </>
+}
+
+function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
     const {
         _id,
         chainId,
-        total,
-        purchased,
-        redeemed,
         interestTokenInfo,
-        investmentTokenAmount,
-        interestTokenAmount,
         investmentTokenInfo,
         investmentToken,
         interestToken,
-        redeemLockPeriod,
-        issuer,
-        issuanceDate
-    } = info;
+    } = bondInfo;
 
-    const router = useRouter();
     const [investment, setInvestment] = useState({
         isVerified: false
     })
@@ -54,10 +52,58 @@ export default function Bond({info}: { info: BondGeneral }) {
     const investmentIcon = getIcon(chainId, investmentToken)
 
     const title = `${interestTokenInfo.symbol}-${investmentTokenInfo.symbol}`
-    const response: any = {
+
+
+    const isWarning = !interest.isVerified || !investment.isVerified // todo update here
+    return <>
+
+        <div className="flex justify-between items-center gap-10">
+            <div className="flex justify-between items-center">
+                <div className="relative flex items-center">
+                    <div className="flex justify-center items-center rounded-full">
+                        <Img src={investmentIcon}
+                             alt={investmentTokenInfo.symbol}
+                             type='investment'
+                             setter={setInvestment}/>
+                    </div>
+                    <div className="translate-x-[-30%] bg-black rounded-full px-0.5">
+                        <div className="flex justify-center items-center">
+                            <Img src={interestIcon}
+                                 alt={interestTokenInfo.symbol}
+                                 type='interest'
+                                 setter={setInterest}/>
+                        </div>
+                    </div>
+                </div>
+                <div className={Styles.sectionC}>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm">{title}</span>
+                        <span className={Styles.type}>ZCB</span>
+                    </div>
+                    {Boolean(isWarning) && <>
+                        <div className={Styles.warning}><span>Warning: Please proceed with caution</span></div>
+                    </>}
+                </div>
+            </div>
+        </div>
+    </>
+}
+
+function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
+
+
+    const {
         total,
         purchased,
-    }
+        redeemed,
+        interestTokenInfo,
+        investmentTokenAmount,
+        interestTokenAmount,
+        investmentTokenInfo,
+        redeemLockPeriod,
+    } = bondInfo;
+
+    const response: any = {}
 
     if (investmentTokenInfo) {
         const amount = investmentTokenAmount || ""
@@ -76,120 +122,65 @@ export default function Bond({info}: { info: BondGeneral }) {
         }
     }
 
-    const isWarning = !interest.isVerified || !investment.isVerified
-    console.log(interest, investment);
-    const bondUrl = `${window.location.origin}/bonds/explore/${_id}?chainId=${chainId}`
-    const daysAgo = (Date.now() / 1000) - issuanceDate
-
-    async function copyWholeURl(event: any) {
-        try {
-            stopPropagation(event);
-            await navigator.clipboard.writeText(bondUrl);
-            return toast("URL successfully copied to your clipboard.");
-        } catch (e) {
-            return toast.error("An error has occurred");
-        }
+    const SectionContainer = ({children}: any) => {
+        return <>
+            <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
+                {children}
+            </div>
+        </>
     }
 
     return <>
-
-        <div className="flex flex-col rounded-lg px-4 py-2 bg-b3 border border-transparent gap-2 hover:border-w1"
-             onClick={() => router.push(bondUrl)}>
-            <div className="flex justify-between items-center">
-                <div className="flex justify-between items-center">
-                    <div className={Styles.icons}>
-                        <div className={Styles.icon}>
-                            <Img src={investmentIcon}
-                                 alt={investmentTokenInfo.symbol}
-                                 type='investment'
-                                 setter={setInvestment}/>
-                        </div>
-                        <div className={Styles.iconInterest}>
-                            <div className={Styles.icon}>
-                                <Img src={interestIcon}
-                                     alt={interestTokenInfo.symbol}
-                                     type='interest'
-                                     setter={setInterest}/>
-                            </div>
-                        </div>
+        <div className='flex md:gap-12 sm:gap-4 justify-between items-center'>
+            <div className='flex flex-col py-2 rounded-md'>
+                <SectionContainer>
+                    <div className='flex items-center gap-1'>
+                        <InvestmentSVG/>
+                        <span className='text-g'>Investment:</span>
                     </div>
-                    <div className={Styles.sectionC}>
-                        <div className={Styles.sectionClose}>
-                            <span className={Styles.title}>{title}</span>
-                            <span className={Styles.type}>ZCB</span>
-                        </div>
-                        {Boolean(isWarning) && <>
-                            <div className={Styles.warning}><span>Warning: Please proceed with caution</span></div>
-                        </>}
+                    <div className='flex gap-1 items-center'>
+                        <span className='text-sm  font-bold'>{response.investment.amount}</span>
+                        <span className='text-sm font-bold'>{response.investment.currency}</span>
                     </div>
-                </div>
-                <div className={Styles.externals}>
-                    <CopySVG onClick={copyWholeURl}/>
-                    <ThreeDotsSVG url={bondUrl}/>
-                </div>
+                </SectionContainer>
+                <SectionContainer>
+                    <div className='flex items-center gap-1'>
+                        <InterestSVG/>
+                        <span className='text-g'>Interest:</span>
+                    </div>
+                    <div className='flex gap-1 items-center'>
+                        <span className='text-sm text-green-500 font-bold'>{response.interest.amount}</span>
+                        <span className='text-sm text-green-500 font-bold'>{response.interest.currency}</span>
+                    </div>
+                </SectionContainer>
+                <SectionContainer>
+                    <div className='flex items-center gap-1'>
+                        <ClockSVG/>
+                        <span className='text-g'>Lock Period:</span>
+                    </div>
+                    <span className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true)}</span>
+                </SectionContainer>
             </div>
-            <div className={Styles.boxes}>
-                <div className={Styles.box}>
-                    <div className={Styles.info}>
-                        <InfoSVG info={InfoDetails.Investment}/>
-                    </div>
-                    <InvestmentSVG/>
-                    <div className='flex flex-col gap-2'>
-                        <span className={Styles.gray}>Investment:</span>
-                        <div className={Styles.amountSection}>
-                            <span>{response.investment.amount} {response.investment.currency} </span>
-                            {Boolean(investment.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
-                        </div>
-                    </div>
-                </div>
-                <div className={Styles.box}>
-                    <div className={Styles.info}>
-                        <InfoSVG info={InfoDetails.Interest}/>
-                    </div>
-                    <InterestSVG/>
-                    <div className='flex flex-col gap-2'>
-                        <span className={Styles.gray}>Interest:</span>
-                        <div className={Styles.amountSection}>
-                            <span>{response.interest.amount} {response.interest.currency} </span>
-                            {Boolean(interest.isVerified) ? <VerifiedSVG/> : <WarningSVG/>}
-                        </div>
-                    </div>
-                </div>
-                <div className={Styles.box}>
-                    <div className={Styles.info}>
-                        <InfoSVG info={InfoDetails.RedeemLockPeriod}/>
-                    </div>
-                    <ClockSVG/>
-                    <div className='flex flex-col gap-2'>
-                        <span className={Styles.gray}>RLP:</span>
-                        <span>{formatTime(Number(redeemLockPeriod), true)}</span>
-                    </div>
-                </div>
-                <div className={Styles.box}>
-                    <RoundProgressBar total={total} purchased={purchased} redeemed={redeemed}/>
-                </div>
-            </div>
-            <div className={Styles.section}>
-                <div className={Styles.section}>
-                    <Issuer issuer={issuer}/>
-                </div>
-                <div className={Styles.section} title={new Date(issuanceDate * 1000).toString()}>
-                    <span className={Styles.gray}>{formatTime(daysAgo, true, true)} ago</span>
-                </div>
-            </div>
+            <PieChart total={total} redeemed={redeemed} purchased={purchased}/>
         </div>
     </>
 }
 
-function Issuer({issuer}: any) {
-    const account = useSelector((item: RootState) => item.account);
-    const {chainId} = account;
+function BondFooter({bondInfo}: { bondInfo: BondGeneral }) {
+
+    const {issuer, issuanceDate, chainId} = bondInfo;
+
     return <>
-        <p className={Styles.gray}>Issuer:&nbsp;
-            <Link href={getExplorerAddress(chainId, issuer)} onClick={stopPropagation} target="_blank">
-                <u>{shorten(issuer, 5)}</u>
-            </Link>
-        </p>
+        <div className="flex items-center justify-between">
+            <p className="text-xs text-g">Issuer:&nbsp;
+                <Link href={getExplorerAddress(chainId, issuer)} onClick={stopPropagation} target="_blank">
+                    <u>{shorten(issuer, 5)}</u>
+                </Link>
+            </p>
+            <div className={Styles.section} title={new Date(issuanceDate * 1000).toString()}>
+                <span className="text-xs text-g2">{shortTime(issuanceDate * 1000)}</span>
+            </div>
+        </div>
     </>
 }
 
@@ -206,7 +197,7 @@ function Img({src, alt, type, setter}: any) {
     const handleSuccess = () => setter({isVerified: true})
 
     return <>
-        <Image src={srcC} alt={alt} width={32} height={32}
+        <Image src={srcC} alt={alt} width={26} height={26}
                onError={handleError}
                onLoad={handleSuccess}
         />

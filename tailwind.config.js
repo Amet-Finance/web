@@ -7,10 +7,12 @@ module.exports = {
         screens: {
             // => @media (min-width: 320px) { ... }
             'sm': '320px',
+            'sm1': '544px',
             'md': '768px',
             'lg': '1024px',
             'lg1': '1152px',
             'xl': '1280px',
+            'xl1': '1440px',
             '2xl': '1536px',
         },
         extend: {
@@ -34,6 +36,9 @@ module.exports = {
             },
             borderColor: {
                 w1: "rgba(255, 255, 255, 0.1)",
+                w2: "rgba(255, 255, 255, 0.2)",
+                w3: "rgba(255, 255, 255, 0.3)",
+                w4: "rgba(255, 255, 255, 0.4)",
                 w5: "rgba(255, 255, 255, 0.5)"
             },
             minWidth: {

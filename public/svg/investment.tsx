@@ -1,6 +1,6 @@
 export default function InvestmentSVG() {
     return <>
-        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
             <mask id="mask0_185_4160" style={{maskType: "luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="34"
                   height="34">
                 <path d="M0 0H34V34H0V0Z" fill="white"/>

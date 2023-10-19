@@ -1,3 +1,7 @@
+function shortTime(time: number) {
+    return new Date(time).toDateString()
+}
+
 function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
     const years = Math.floor(seconds / 31536000);
     seconds -= years * 2592000;
@@ -63,4 +67,4 @@ async function sleep(ms: number): Promise<void> {
 }
 
 
-export {formatTime, sleep}
+export {formatTime, shortTime, sleep}

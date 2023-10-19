@@ -7,9 +7,10 @@ type Arguments = {
     purchased: number;
     redeemed: number;
     isHorizontal?: boolean;
+    hideText?: boolean;
 }
 
-export default function RoundProgress({total, purchased, redeemed, isHorizontal}: Arguments) {
+export default function RoundProgress({total, purchased, redeemed, isHorizontal, hideText}: Arguments) {
     const left = total - purchased;
     const theUnredeemedAmount = purchased - redeemed;
     // todo write total inside the round https://www.youtube.com/watch?v=c2mzQKpd_DI
@@ -126,7 +127,7 @@ export default function RoundProgress({total, purchased, redeemed, isHorizontal}
           }
 
           .texts {
-            display: grid;
+            display: ${hideText ? "none" : "grid"};
             grid-template-columns: repeat(3, auto);
             align-items: center;
             justify-content: center;

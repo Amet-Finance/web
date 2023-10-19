@@ -17,7 +17,7 @@ function getBondsHandler(bondsHandler: any, config: Config) {
     CloudAPI.getBonds(config)
         .then(response => setBonds({
             ...bonds,
-            data: response,
+            data: [...response, ...response, ...response, ...response],
             isLoading: false
         }))
 
@@ -26,10 +26,10 @@ function getBondsHandler(bondsHandler: any, config: Config) {
         CloudAPI.getBonds(config)
             .then(response => setBonds({
                 ...bonds,
-                data: response,
+                data: [...response, ...response, ...response, ...response],
                 isLoading: false
             }))
-    }, 3000)
+    }, 10000)
 }
 
 export {

@@ -1,7 +1,10 @@
 1. Add chain to the top
 2. Write gitbook about amet finance
 3. Background video with arithmetic equations. Ask Karen(with Artak).
-
+4. Show in bond detail section the unique holders percentage
+5. Pie chart change colors
+6. If less than 10% left make bond in fire(emoji)
+7. If all the bonds are sold, make some design(calm)
 
 
 // Contract issues
@@ -9,3 +12,4 @@
 2. (Selectable by the issuer)Add capitulation redeem logic which will redeem the bond with 25% of its price, and show the metrics as well in the bond section
 or maybe using the date estimate the interest amount, for example if it's 2 days left it can be 98% return
 3. Add max number of person purchase. for example one person can buy maximum of 50 bonds
+4. Add opportunity for Issuer to set maxPurchaseDate(till when the bond can be purchased)

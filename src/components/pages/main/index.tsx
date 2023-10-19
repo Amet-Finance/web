@@ -26,7 +26,7 @@ export default function Home() {
         <main className={Styles.container}>
             <div className={Styles.sections}>
                 <div className={Styles.firstImage}>
-                    <Image src={'./svg/Vector 1742.svg'} width={450} height={780} alt={"K"}/>
+                    <Image src={'./svg/VectorHash.svg'} width={450} height={780} alt={"K"}/>
                 </div>
                 <div className={Styles.firstSection}>
                     <h1 className={staatliches.className + " " + Styles.mainText}>

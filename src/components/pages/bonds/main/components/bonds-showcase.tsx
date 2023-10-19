@@ -26,6 +26,7 @@ export default function BondsShowcase() {
 
 function BondsScreen() {
     const account = useSelector((item: RootState) => item.account);
+    const {chainId} = account;
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 20,
@@ -33,13 +34,15 @@ function BondsScreen() {
         data: [] as any
     })
 
+    const {data, skip, limit, isLoading} = bonds
+
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
         const config = {
-            skip: bonds.skip,
-            limit: bonds.limit,
-            chainId: account.chainId
+            skip,
+            limit,
+            chainId
         }
 
         const interval = getBondsHandler(bondsHandler, config);
@@ -47,21 +50,21 @@ function BondsScreen() {
             clearInterval(interval)
         }
 
-    }, [account.chainId, bonds.skip, bonds.limit])
+    }, [chainId, skip, limit])
 
-    if (bonds.isLoading) {
+    if (isLoading) {
         return <div className={Styles.loader}><Loading/></div>
     }
 
-    if (!bonds?.data?.length) {
+    if (!data?.length) {
         return <div className='flex justify-center items-center bg-g1 w-full h-52 rounded'>
             <span className='text-4xl'>There are no bonds, yet!</span>
         </div>
     }
 
     return <>
-        <div className={Styles.bonds}>
-            {bonds.data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
+        <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
+            {data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
         </div>
     </>
 }
