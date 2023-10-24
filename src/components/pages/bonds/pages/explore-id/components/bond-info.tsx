@@ -24,7 +24,6 @@ import ClockSVG from "../../../../../../../public/svg/clock";
 import {useEffect, useState} from "react";
 import {shortenString} from "@/modules/utils/string";
 import axios from "axios";
-import {loadPostcssImport} from "tailwindcss/src/oxide/cli/build/deps";
 
 const BondTokens = {
     Interest: "interest",
