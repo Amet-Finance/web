@@ -7,12 +7,9 @@ import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {toast} from "react-toastify";
 import {URLS} from "@/modules/utils/urls";
-import RoundProgress from "@/components/pages/bonds/utils/bond/round-progress";
 import InterestSVG from "../../../../../../../public/svg/interest";
 import InvestmentSVG from "../../../../../../../public/svg/investment";
-import InfoSVG from "../../../../../../../public/svg/info";
 import Loading from "@/components/utils/loading";
-import SecuritySVG from "../../../../../../../public/svg/security";
 import {getExplorerToken} from "@/modules/web3/utils/token";
 import {toBN} from "@/modules/web3/util";
 import {CHAIN_INFO} from "@/modules/web3/constants";
@@ -32,6 +29,7 @@ const BondTokens = {
 
 export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
+    // todo add the warning case as well if it has error
     return <>
         <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl md:min-w-600 sm:w-full'>
             <h2 className="mb-4 text-3xl font-medium">Bond Details</h2>
@@ -273,6 +271,8 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
     const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
     const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
+
+    console.log(interestBalance.toString())
 
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0

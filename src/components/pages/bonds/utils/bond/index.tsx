@@ -65,8 +65,8 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
     const isWarning = !interest.isVerified || !investment.isVerified // todo update here
     return <>
 
-        <div className="flex justify-between items-center gap-10">
-            <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-10 w-full">
+            <div className="flex justify-between items-center w-full">
                 <div className="relative flex items-center">
                     <div className="flex justify-center items-center rounded-full">
                         <TokenImage src={investmentIcon}
@@ -81,13 +81,13 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                         </div>
                     </div>
                 </div>
-                <div className={Styles.sectionC}>
+                <div className="relative flex flex-col w-full">
                     <div className="flex items-center gap-2">
                         <span className="text-sm">{title}</span>
                         <span className={Styles.type}>ZCB</span>
                     </div>
                     {Boolean(isWarning) &&
-                        <span className='text-red-700 text-xs text-start'>Warning: Please proceed with caution, Token is not verified</span>
+                        <span className='text-red-700 text-xs text-start absolute top-full left-0 w-full'>Warning: Please proceed with caution.</span>
                     }
                 </div>
             </div>

@@ -8,6 +8,7 @@ import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {useRouter} from "next/router";
+import ArrowSVG from "../../../../../../public/svg/utils/arrow";
 
 export default function BondsShowcase() {
     return <>
@@ -19,7 +20,6 @@ export default function BondsShowcase() {
                     innovation.</p>
             </div>
             <BondsScreen/>
-            <ShowMore/>
         </div>
     </>
 }
@@ -29,7 +29,7 @@ function BondsScreen() {
     const {chainId} = account;
     const [bonds, setBonds] = useState({
         isLoading: false,
-        limit: 20,
+        limit: 6,
         skip: 0,
         data: [] as any
     })
@@ -63,18 +63,19 @@ function BondsScreen() {
     }
 
     return <>
-        <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
-            {data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
-        </div>
-    </>
-}
-
-function ShowMore() {
-    return <>
-        <Link href={`/bonds/explore`}>
-            <div className={Styles.showMore}>
-                <span>Explore more bonds</span>
+        <div className='relative p-4 pb-10'>
+            <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6  sm1:w-max sm:w-full">
+                {data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
             </div>
-        </Link>
+            <Link href={`/bonds/explore`}>
+                <div className='flex justify-center items-center w-full cursor-pointer'>
+                    <div className='flex gap-2 justify-center items-center z-10'>
+                        <span className='text-2xl font-bold'>Explore More Bonds</span>
+                        <ArrowSVG/>
+                    </div>
+                    <div className='absolute w-full h-44 blur-2xl bg-black left-0 top-[70%]'/>
+                </div>
+            </Link>
+        </div>
     </>
 }

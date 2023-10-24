@@ -85,7 +85,7 @@ export default function Home() {
                         <span className="text-xs text-g">Total Value Locked (TVL)</span>
                     </div>
                     <div className={Styles.stat}>
-                        <span className="font-bold text-4xl">2,451</span>
+                        <span className="font-bold text-4xl">2,500+</span>
                         <span className="text-xs text-g">Number of Active Users</span>
                     </div>
                     <div className={Styles.stat}>
