@@ -42,7 +42,8 @@ module.exports = {
                 w5: "rgba(255, 255, 255, 0.5)"
             },
             minWidth: {
-                500: "500px"
+                500: "500px",
+                600: "625px"
             },
             width: {
                 500: "500px"

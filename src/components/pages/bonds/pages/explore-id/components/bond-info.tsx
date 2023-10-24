@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import {format} from "@/modules/utils/numbers";
+import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {toast} from "react-toastify";
@@ -19,6 +19,12 @@ import {CHAIN_INFO} from "@/modules/web3/constants";
 import {formatTime} from "@/modules/utils/dates";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
+import ClockSVG from "../../../../../../../public/svg/clock";
+import {useEffect, useState} from "react";
+import {shortenString} from "@/modules/utils/string";
+import axios from "axios";
+import {loadPostcssImport} from "tailwindcss/src/oxide/cli/build/deps";
 
 const BondTokens = {
     Interest: "interest",
@@ -27,31 +33,39 @@ const BondTokens = {
 
 export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
-    const {total, purchased, redeemed, investmentToken, interestToken} = info
-
-    const investmentTokenInfo = tokens[investmentToken]
-    const interestTokenInfo = tokens[interestToken]
-
     return <>
-        <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl'>
-            <h2 className="mb-4 text-3xl">Bond Details</h2>
+        <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl min-w-600'>
+            <h2 className="mb-4 text-3xl font-medium">Bond Details</h2>
             <BondIssuerInfo info={info}/>
-            {/*<Line/>*/}
-            {/*<Description/>*/}
-            <div className="grid grid-cols-2 gap-3">
-                <Box><SecurityDetails info={info} tokens={tokens}/></Box>
-                <Box><RoundProgress total={total} purchased={purchased} redeemed={redeemed} isHorizontal={true}/></Box>
-                <Box><TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/></Box>
-                <Box><TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/></Box>
-            </div>
+            <Line/>
+            <GeneralInfo info={info} tokens={tokens}/>
+            <Line/>
+            <Security info={info} tokens={tokens}/>
         </div>
     </>
 }
 
 function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
+
+
+    const [isClosed, setClosed] = useState(false);
+    const openOrClose = () => setClosed(!isClosed);
+
+    return <>
+        <div className='flex flex-col gap-4 w-full'>
+            <div className='flex justify-between items-center w-full'>
+                <span className='text-xl'>Contract information:</span>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'
+                        onClick={openOrClose}>{isClosed ? "+" : "-"}</button>
+            </div>
+            {!isClosed && <BondIssuerInfoDetails info={info}/>}
+        </div>
+    </>
+}
+
+function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
     const account = useSelector((item: RootState) => item.account);
     const {chainId} = account;
-
     const bondAddress = getExplorerAddress(chainId, info._id);
     const explorerAddress = getExplorerAddress(chainId, info.issuer);
     const chainIcon = `/svg/chains/${info.chainId}.svg`
@@ -63,8 +77,9 @@ function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
             .catch(() => toast.error("An error has occurred"))
     }
 
+
     return <>
-        <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs">
+        <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs p-4 py-1">
             <div className="flex items-center justify-between gap-2 w-full">
                 <span>Bond contract:</span>
                 <div className='flex items-center gap-2'>
@@ -98,10 +113,6 @@ function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
                     <span className="text-g text-sm">{chainInfo.chainName}</span>
                 </div>
             </div>
-            <div className="flex items-center justify-between gap-2 w-full">
-                <span>Redeem Lock Period:</span>
-                <span className="text-g text-sm">{formatTime(info.redeemLockPeriod)}</span>
-            </div>
         </div>
     </>
 }
@@ -110,34 +121,64 @@ function Line() {
     return <div className="h-px w-full bg-g5"/>
 }
 
-function Description() {
+
+function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+
+
+    const [isClosed, setClosed] = useState(false);
+    const openOrClose = () => setClosed(!isClosed)
+
+
     return <>
-        <div className="flex justify-between items-center w-full">
-            <h3>Description</h3>
-            <h3>+</h3>
+        <div className='flex flex-col gap-4 w-full'>
+            <div className='flex justify-between items-center w-full'>
+                <span className='text-xl'>General Information:</span>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'
+                        onClick={openOrClose}>{isClosed ? "+" : "-"}</button>
+            </div>
+            {!isClosed && <GeneralInfoDetails info={info} tokens={tokens}/>}
         </div>
     </>
 }
 
-function Box({children}: any) {
+function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+    const {total, purchased, redeemed, redeemLockPeriod, investmentToken, interestToken} = info;
+
+    const investmentTokenInfo = tokens[investmentToken]
+    const interestTokenInfo = tokens[interestToken]
+    const isLoading = !investmentTokenInfo || !interestTokenInfo
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center w-full"><Loading percent={-50}/></div>
+    }
+
     return <>
-        <div className="md:py-4 md:px-8 md:text-base py-2 px-4 rounded-lg border border-solid border-w1 bg-b1 text-xs">
-            {children}
+        <div className='flex gap-2 items-center justify-between w-full p-4 py-1'>
+            <div className='flex flex-col gap-0.5 w-full'>
+                <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
+                <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
+                <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
+                    <div className='flex items-center gap-1'>
+                        <ClockSVG/>
+                        <span className='text-g'>Period:</span>
+                    </div>
+                    <span
+                        className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
+                </div>
+            </div>
+            <PieChart total={total} purchased={purchased} redeemed={redeemed}/>
         </div>
     </>
 }
 
 function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: BondInfoDetailed }) {
     const {chainId} = info
-    if (!token) {
-        return <div className="flex items-center justify-center w-full"><Loading/></div>;
-    }
 
     const isInterest = type === BondTokens.Interest
+    const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>;
     const tokenUrl = getExplorerToken(chainId, token.contractAddress);
-    const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>
-    const title = isInterest ? "Interest" : "Investment"
     const hasBalance = typeof token.balanceClean !== "undefined"
+    const title = isInterest ? "Interest" : "Investment"
 
     const infoSection = {
         title: isInterest ? "Explore the interest terms for this bond. Find out how the interest is calculated, the token you'll receive, and other details" : "Learn about the investment requirements for this bond. Discover how much you need to invest, which token to use, and more",
@@ -153,85 +194,155 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
             toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals))) :
             toBN(info.investmentTokenAmount).div(toBN(10).pow(toBN(token.decimals)))).toNumber()
 
-        const className = isInterest ? "text-gl-1" : "text-rl-1"
+        const className = isInterest ? "text-green-500" : ""
 
         return <>
-            <b className={className}>{format(amount)}</b>
+            <Link href={tokenUrl} target="_blank">
+                <div className='flex justify-end gap-2 items-center w-full cursor-pointer'>
+                    <div className='flex gap-0.5 items-center'>
+                        <span className={className + " text-sm font-bold"}
+                              title={format(amount)}>{formatLargeNumber(amount)}</span>
+                        <span className={className + " text-sm font-bold"}>{shortenString(token?.symbol, 4)}</span>
+                    </div>
+                    <div className='flex justify-end'>
+                        <TokenImage src={token.icon} alt={token.name}/>
+                    </div>
+                </div>
+            </Link>
         </>
     }
 
     return <>
-        <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center gap-2 w-full">
-                <div className="flex items-center gap-2">
-                    {Icon}
-                    <span>{title}</span>
-                </div>
-                <InfoSVG info={infoSection}/>
+        <div className='flex items-center justify-between px-0 py-1 w-full'>
+            <div className='flex items-center gap-1'>
+                {Icon}
+                <span className='text-g'>{title}:</span>
             </div>
-            <Line/>
-            <div className="flex justify-between items-center gap-2 w-full">
-                <div className="flex items-center gap-2">
-                    <Link href={tokenUrl} target="_blank">
-                        <Image src={token.icon} width={32} height={32} alt={token.name}/>
-                    </Link>
-                    <div className="flex flex-col">
-                        <span className='text-sm font-bold'>{token.name}</span>
-                        {
-                            Boolean(hasBalance) &&
-                            <span
-                                className="text-g text-xs">Balance: {format(Number(token.balanceClean))} {token.symbol}</span>}
-                    </div>
-                </div>
-                <TotalAmount/>
-            </div>
+            <TotalAmount/>
         </div>
     </>
 }
 
-function SecurityDetails({tokens, info}: { info: BondInfoDetailed, tokens: Tokens }) {
-    const {interestToken, interestTokenBalance} = info;
+function Security({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+    const [isClosed, setClosed] = useState(false);
+    const openOrClose = () => setClosed(!isClosed)
 
 
-    if (!tokens[interestToken] || tokens[interestToken].unidentified) {
-        return null;
+    return <>
+        <div className='flex flex-col gap-4 w-full'>
+            <div className='flex justify-between items-center w-full'>
+                <span className='text-xl'>Security Details:</span>
+                <span className='cursor-pointer text-3xl text-g hover:text-white'
+                      onClick={openOrClose}>{isClosed ? "+" : "-"}</span>
+            </div>
+            {!isClosed && <SecurityDetails info={info} tokens={tokens}/>}
+        </div>
+    </>
+}
+
+function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+
+    const {
+        interestToken,
+        purchased,
+        redeemed,
+        interestTokenBalance,
+        interestTokenAmount,
+        investmentToken,
+        investmentTokenAmount
+    } = info;
+
+
+    const interestTokenInfo = tokens[interestToken];
+    const investmentTokenInfo = tokens[investmentToken];
+
+    const isInterestNotFetched = !interestTokenInfo || interestTokenInfo.unidentified
+    const isInvestmentNotFetched = !investmentTokenInfo || investmentTokenInfo.unidentified
+
+    if (isInterestNotFetched || isInvestmentNotFetched) {
+        return <div className='flex justify-center items-center w-full'><Loading percent={-50}/></div>;
     }
 
-    const decimals = tokens[interestToken].decimals || 18
+    const decimals = interestTokenInfo.decimals || 18
+
+    const purchasePrice = toBN(investmentTokenAmount).div(toBN(10).pow(toBN(investmentTokenInfo.decimals)))
+    const redeemPrice = toBN(interestTokenAmount).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
+
+    const totalPurchased = purchased * purchasePrice.toNumber();
+    const totalRedeemed = redeemed * redeemPrice.toNumber();
 
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
     const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
     const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
+
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0
 
-    const percentageClass = redeemedPercentage < 30 ? "text-rl-1" : "text-gl-1";
-
-    const infoSection = {
-        title: "Get insights into the security aspects of this bond. Check the secured redemption percentage, issuer score, and more to make an informed decision",
-        url: URLS.FAQ // todo update this
+    const percentageClass = () => {
+        if (redeemedPercentage === 0) {
+            return "text-red-500"
+        } else if (redeemedPercentage <= 25) {
+            return "text-orange-700"
+        } else if (redeemedPercentage <= 50) {
+            return "text-orange-500"
+        } else if (redeemedPercentage <= 75) {
+            return "text-yellow-500"
+        } else if (redeemedPercentage <= 100) {
+            return "text-green-500"
+        }else {
+            return "text-green-500"
+        }
     }
 
     return <>
-        <div className="flex flex-col justify-between gap-6">
-            <div className="flex justify-between items-center gap-2 w-full">
-                <div className="flex items-center gap-2">
-                    <SecuritySVG/>
-                    <span>Security Details</span>
-                </div>
-                <InfoSVG info={infoSection}/>
+        <div className='grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs p-4 py-1'>
+            <div className='flex items-center justify-between w-full'>
+                <span className='text-g'>Secured Percentage:</span>
+                <span className={percentageClass() + " text-sm font-bold"}>{redeemedPercentage.toFixed(2)}%</span>
             </div>
-            <div className="flex flex-col gap-1">
-                <div className='flex justify-between items-center gap-4'>
-                    <span className='text-sm'>Percentage Redemption:</span>
-                    <b className={percentageClass}>{format(redeemedPercentage)}%</b>
-                </div>
-                <div className='flex justify-between items-center gap-4'>
-                    <span className='text-sm'>Issuer Score:</span>
-                    <b className='text-g'>?</b>
-                </div>
+            <div className='flex items-center justify-between w-full'>
+                <span className='text-g'>Issuer Score:</span>
+                <span className='text-sm font-bold'>SOON</span>
+            </div>
+            <div className='flex items-center justify-between w-full'>
+                <span className='text-g'>Total Purchased:</span>
+                <span
+                    className='text-sm font-bold'>{formatLargeNumber(totalPurchased)} {investmentTokenInfo.symbol}</span>
+            </div>
+            <div className='flex items-center justify-between w-full'>
+                <span className='text-g'>Total Redeemed:</span>
+                <span className='text-sm font-bold'>{formatLargeNumber(totalRedeemed)} {interestTokenInfo.symbol}</span>
             </div>
 
         </div>
     </>
+}
+
+
+function TokenImage({src, alt, handler}: any) {
+
+    const [isVerified, setVerified] = useState(true);
+    const [isLoading, setLoading] = useState(true)
+    const [srcC, setSrcC] = useState(src)
+
+    const handleError = () => setVerified(false)
+
+
+    useEffect(() => {
+        axios.get(src)
+            .then(() => handleSuccess())
+            .catch(() => handleError())
+            .finally(() => setLoading(false))
+    }, [src]);
+
+    const handleSuccess = () => setVerified(true)
+
+    // if (isLoading) {
+    //     return <Loading percent={50}/>
+    // }
+
+    return <>{
+        isVerified ?
+            <Image src={srcC} alt={alt} width={26} height={26} onError={handleError} onLoad={handleSuccess}/> :
+            <Image src="/svg/question.svg" alt={alt} width={26} height={26}/>}</>
 }

@@ -31,8 +31,6 @@ function formatLargeNumber(number: number) {
         return (number / billion).toFixed(1) + 'B';
     } else if (number >= million) {
         return (number / million).toFixed(1) + 'M';
-    } else if (number >= thousand) {
-        return (number / thousand).toFixed(1) + 'K';
     } else {
         return number.toString();
     }

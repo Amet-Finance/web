@@ -3,20 +3,18 @@ import SettingsSVG from "../../../../../../public/svg/settings";
 import {useEffect, useState} from "react";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
-import {Staatliches} from "next/font/google";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 
-const staatliches = Staatliches({subsets: ['latin'], weight: "400"})
 
 export default function Explore() {
     return <>
         <div className={Styles.container}>
             <div className={Styles.texts}>
-                <h1 className={join([Styles.headline, staatliches.className])}>
-                    Explore On-Chain <span className={Styles.secondary}>Bonds</span>: <br/> Find, Filter, and Invest
+                <h1 className={join([Styles.headline, "font-bold"])}>
+                    Explore <span className="text-black bg-white px-1">On-Chain Bonds:</span><br/> Find, Filter, and Invest
                 </h1>
                 <hr className={Styles.line}/>
                 <p className={Styles.secondary}>Discover a range of on-chain bonds through advanced filters and

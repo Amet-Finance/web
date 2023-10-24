@@ -12,6 +12,8 @@ import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
+import {toast} from "react-toastify";
+import {format} from "@/modules/utils/numbers";
 
 export default function Purchase({info, tokens}: { info: BondInfo, tokens: Tokens }) {
 
@@ -92,7 +94,6 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
                 return openModal(ModalTypes.Quiz)
             }
 
-
             const transaction = await Web3Service.submitTransaction({
                 connectionConfig: {
                     type: account.connection.type,
@@ -113,12 +114,14 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
         }
 
         setEffectRefresher(Math.random());
-
     }
 
     function SubmitButton() {
         let title = "Purchase"
-        let className = `bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black`;
+        let totalAmount = totalPrice;
+        let totalAmountText = ''
+        let totalAmountStyle = ''
+        let className = `flex items-center justify-center gap-2 bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black font-medium`;
         let onClick: any = submit
 
         if (!Number(bondsLeft)) {
@@ -132,10 +135,21 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             onClick = async () => {
             };
         } else if (isApproval) {
-            title = `Approve ${investmentTokenInfo?.symbol}`
+            title = `Approve`
+            totalAmountStyle = "text-red-500 font-medium"
+            totalAmountText = `( ${format(totalPrice)} ${investmentTokenInfo?.symbol} )`
+        } else if (totalAmount) {
+            totalAmountStyle = "text-red-500 font-medium"
+            totalAmountText = `( -${format(totalPrice)} ${investmentTokenInfo?.symbol} )`
         }
 
-        return <button className={className} onClick={onClick}>{title}</button>
+
+        return <>
+            <button className={className} onClick={onClick}>
+                {title}
+                {Boolean(totalAmount) && <span className={totalAmountStyle}>{totalAmountText}</span>}
+            </button>
+        </>
     }
 
     function setPercent(percent: number) {
@@ -148,7 +162,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
         <div className="flex flex-col gap-4">
             <div className='flex flex-col gap-2'>
                 <input
-                    className="bg-transparent placeholder:text-g text-white text-sm px-5 p-3 rounded border border-solid border-w1"
+                    className="bg-transparent placeholder:text-g text-white text-sm px-5 p-2.5 rounded border border-solid border-w1"
                     type="number"
                     disabled={!bondsLeft}
                     ref={inputRef}

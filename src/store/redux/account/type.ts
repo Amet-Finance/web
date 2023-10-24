@@ -4,7 +4,7 @@ type Account = {
     },
     address: string,
     chainId: string,
-    balance: { [key: string]: any[] }
+    balance: { [contractAddress: string]: any[] } // tokenId[]
 }
 
 export type {

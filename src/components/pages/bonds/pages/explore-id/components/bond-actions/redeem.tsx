@@ -1,7 +1,7 @@
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import {useSelector} from "react-redux";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {RootState} from "@/store/redux/type";
 import {getTokensPurchaseDates} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
@@ -12,35 +12,36 @@ import * as AccountSlice from "@/store/redux/account";
 import Loading from "@/components/utils/loading";
 import SelectAllSVG from "../../../../../../../../public/svg/select-all";
 import ClearSVG from "../../../../../../../../public/svg/clear";
+import {nop} from "@/modules/utils/function";
+import {toBN} from "@/modules/web3/util";
+import {format} from "@/modules/utils/numbers";
 
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
-    const {_id, redeemLockPeriod} = info;
-    const [tokenIds, setTokenIds] = useState([] as any);
-    const [loading, setLoading] = useState(false);
-    const tokenHandlers = [tokenIds, setTokenIds]
-
+    const {_id, redeemLockPeriod, chainId} = info;
     const account = useSelector((item: RootState) => item.account);
+
+    const inputRef = useRef<any>(null)
+    const [tokenIds, setTokenIds] = useState([] as any);
+    const [amount, setAmount] = useState(0);
+    const [loading, setLoading] = useState(false);
+
     const contractAddress = info._id?.toLowerCase() || ""
     const balanceTokenIds = account.balance[contractAddress] || [];
-    const [holdings, setHoldings] = useState([])
-    // todo calculate as well the amount that is left there
-    //  so I won't be able to choose it if there's no secured redemption amount
 
-    const connectionConfig = {
-        type: account.connection.type,
-        chainId: account.chainId,
-        requestChain: true,
-        requestAccounts: true,
-    }
+    const [holdings, setHoldings] = useState([])
+    const validTokenIds = holdings.filter((item: any) => item.isValid);
+    const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
+
 
     useEffect(() => {
-        setLoading(true)
-        AccountSlice.initBalance(account.address, account.chainId)
-            .then(() => setLoading(false))
-    }, [])
+        AccountSlice.initBalance(account.address, chainId);
+        const interval = setInterval(() => AccountSlice.initBalance(account.address, chainId), 10000);
+        return () => clearInterval(interval);
 
-    //todo add here a loader
+    }, [chainId])
+
+
     useEffect(() => {
         if (balanceTokenIds.length) {
             if (!holdings.length) {
@@ -60,7 +61,6 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                         }
                     })
 
-                    // console.log(tokensWithDates)
                     setHoldings(tokensWithDates);
                 })
                 .catch(error => console.log(`getTokensPurchaseDates`, error))
@@ -68,29 +68,27 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         }
     }, [account.address, account.chainId, account.balance[contractAddress]])
 
-    if (!holdings.length && !loading) {
-        return <>
-            <div className='flex items-center justify-center p-4'>
-                <span className='text-g'>There are no bonds to redeem</span>
-            </div>
-        </>
-    }
 
-    const selectAll = () => {
-        // todo refactor this and use one loop
-        const tokenIdsLocal = holdings.filter((item: any) => item.isValid).map((item: any) => item.id);
-        setTokenIds(tokenIdsLocal);
+    const onChange = (event: any) => {
+        const amountLocal = Number(event.target.value)
+        setTokenIds(tokenIdsLocal.slice(0, amountLocal));
+        setAmount(amountLocal);
     }
-    const clearAll = () => setTokenIds([]);
 
     async function submit() {
+
         if (!tokenIds.length) {
             toast.error("You did not select a bond");
             return;
         }
 
-        const transaction = await Web3Service.submitTransaction({
-            connectionConfig,
+        await Web3Service.submitTransaction({
+            connectionConfig: {
+                type: account.connection.type,
+                chainId: chainId,
+                requestChain: true,
+                requestAccounts: true,
+            },
             txType: TxTypes.RedeemBonds,
             config: {
                 contractAddress: _id,
@@ -98,43 +96,77 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             }
         });
         setTimeout(() => {
-            AccountSlice.initBalance(account.address, account.chainId);
+            AccountSlice.initBalance(account.address, chainId);
         }, 5000);
         setTokenIds([]);
-        console.log(transaction)
+        setAmount(0);
+        inputRef.current.value = "";
     }
 
     function setPercent(percent: number) {
-        const validTokenIds = holdings.filter((item: any) => item.isValid)
-        const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
         const tokenIds = Math.floor((tokenIdsLocal.length * percent) / 100)
+        inputRef.current.value = tokenIds;
+
+        setAmount(tokenIds)
         setTokenIds(tokenIdsLocal.slice(0, tokenIds));
     }
 
     const SubmitButton = () => {
-        let className = `${Styles.submit}`;
-        let onClick = submit;
+        const validTokens = holdings.filter((item: any) => item.isValid);
+        let title = "Redeem";
+        let className = `flex justify-center items-center gap-2 bg-transparent text-white  px-5 p-3 rounded border border-solid border-w1 hover:bg-white hover:text-black font-medium`;
+        let totalAmountStyle = ""
+        let totalAmountText = ""
+        let onClick: any = submit;
 
+        const token = tokens[info.interestToken]
+        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(token.decimals))).toNumber()
+        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals))).toNumber()
+        const totalTokens = tokenIds.length * redeemAmount
 
-        if (!tokenIds.length) {
+        if (!amount || !isFinite(amount)) {
+            onClick = nop
+        } else if (amount > validTokens.length) {
             className += ` ${Styles.disable}`
-            onClick = async () => {
-            }
+            onClick = nop
+            title = "Max bonds reached"
+        } else if (balance < totalTokens) {
+            className += ` ${Styles.disable}`
+            onClick = nop
+            title = "Not enough liquidity"
+        } else if (tokenIds.length) {
+            const total = tokenIds.length * redeemAmount;
+            totalAmountStyle = "text-green-500 font-medium"
+            totalAmountText = `( +${format(total)} ${token?.symbol} )`
         }
 
-        return <button className={className} onClick={onClick}>Redeem</button>
+        return <button className={className} onClick={onClick}>
+            {title}
+            {totalAmountText && <span className={totalAmountStyle}>{totalAmountText}</span>}
+        </button>
     }
 
     if (loading) {
+        return <div className="flex justify-center items-center w-full"><Loading percent={-25}/></div>
+    }
+
+    if (!holdings.length) {
         return <>
-            <div className="flex justify-center items-center w-full"><Loading/></div>
+            <div className='flex items-center justify-center p-4'>
+                <span className='text-g'>There are no bonds to redeem</span>
+            </div>
         </>
     }
 
     return <>
         <div className="flex flex-col w-full gap-4">
-
-            <div className="flex justify-between items-center gap-2">
+            <div className='flex flex-col gap-2'>
+                <input
+                    className="bg-transparent placeholder:text-g text-white text-sm px-5 p-2.5 rounded border border-solid border-w1"
+                    type="number"
+                    onChange={onChange}
+                    ref={inputRef}
+                    placeholder="The amount of bonds you want to redeem"/>
                 <div className='flex gap-2 items-center'>
                     <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
                             onClick={() => setPercent(5)}>5%
@@ -152,46 +184,11 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                             onClick={() => setPercent(100)}>100%
                     </button>
                 </div>
-                <ClearSVG onClick={clearAll}/>
             </div>
-            <div className={Styles.tokenIds}>
-                {
-                    holdings.map((tokenInfo: any) => <TokenId tokenInfo={tokenInfo}
-                                                              tokenHandlers={tokenHandlers}
-                                                              key={tokenInfo.id}/>)
-                }
+            <div className='flex flex-col gap-2'>
+                <span className='text-xs text-g2'>You confirm that you have read and understood the Terms and Conditions.</span>
+                <SubmitButton/>
             </div>
-            <SubmitButton/>
         </div>
-    </>
-}
-
-function TokenId({tokenInfo, tokenHandlers}: any) {
-
-    const tokenId = tokenInfo.id;
-    const purchaseDate = tokenInfo.purchaseDate;
-    const {isValid, timeLeft} = tokenInfo;
-
-    // const isValid = purchaseDate * 1000;
-    const [tokenIds, setTokenIds] = tokenHandlers;
-    const tokenIndex = tokenIds.indexOf(tokenId);
-    const select = () => {
-        if (isSelected) {
-            const tmp = [...tokenIds];
-            tmp.splice(tokenIndex, 1);
-            setTokenIds(tmp);
-        } else {
-            setTokenIds([...tokenIds, tokenId])
-        }
-    }
-    const isSelected = tokenIndex !== -1;
-
-    const className = `${Styles.tokenId} ${isSelected && Styles.selectedToken} ${!isValid && Styles.disable}`
-    const title = !isValid ? `You can redeem the bond after ${timeLeft}` : `Select to redeem #${tokenId} Bond`
-    const onClick = isValid ? select : () => null;
-
-
-    return <>
-        <span className={className} onClick={onClick} title={title}>{tokenId}</span>
     </>
 }

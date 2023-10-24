@@ -15,6 +15,8 @@ async function connectWalletAndSwitchChain(config: ConnectWallet): Promise<{ add
     const address = await connectWallet(config);
     const chainId = await switchChain(config)
 
+    // todo listen to address and chain changes and update accordingly
+
     if (!address) {
         throw Error('Wallet address is undefined')
     }

@@ -1,6 +1,6 @@
 export default function BackgroundDocumentsSVG() {
     return <>
-        <svg  viewBox="0 0 1920 445" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 1920 445" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="1919" y="1" width="443" height="1918" transform="rotate(90 1919 1)" stroke="#252525"
                   strokeOpacity="0.5" strokeWidth="2"/>
             <path

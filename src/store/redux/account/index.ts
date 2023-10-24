@@ -10,7 +10,7 @@ const emptyState: Account = {
         type: WalletTypes.Metamask // todo update on connect
     },
     chainId: CHAIN_IDS.Mumbai, // todo change later
-    balance: {}
+    balance: {} // serepate by chains
 }
 
 const counterSlice = createSlice({

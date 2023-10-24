@@ -23,7 +23,7 @@ export default function Bond({info}: { info: BondGeneral }) {
     if (!info.investmentTokenInfo || !info.interestTokenInfo) {
         return null;
     }
-    
+
     return <>
         <Link href={bondUrl}>
             <div
@@ -50,10 +50,10 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
     } = bondInfo;
 
     const [investment, setInvestment] = useState({
-        isVerified: false
+        isVerified: true
     })
     const [interest, setInterest] = useState({
-        isVerified: false
+        isVerified: true
     })
 
     const interestIcon = getIcon(chainId, interestToken)
@@ -69,13 +69,13 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
             <div className="flex justify-between items-center">
                 <div className="relative flex items-center">
                     <div className="flex justify-center items-center rounded-full">
-                        <Img src={investmentIcon}
+                        <TokenImage src={investmentIcon}
                              alt={investmentTokenInfo?.symbol}
                              handler={[investment, setInvestment]}/>
                     </div>
                     <div className="translate-x-[-30%] bg-black rounded-full px-0.5">
                         <div className="flex justify-center items-center">
-                            <Img src={interestIcon}
+                            <TokenImage src={interestIcon}
                                  alt={interestTokenInfo.symbol}
                                  handler={[interest, setInterest]}/>
                         </div>
@@ -194,7 +194,7 @@ function BondFooter({bondInfo}: { bondInfo: BondGeneral }) {
     </>
 }
 
-function Img({src, alt, handler}: any) {
+function TokenImage({src, alt, handler}: any) {
 
     const [state, setter] = handler;
     const [isLoading, setLoading] = useState(true)
@@ -210,7 +210,7 @@ function Img({src, alt, handler}: any) {
     useEffect(() => {
         axios.get(src)
             .then(() => handleSuccess())
-            .catch(error => handleError())
+            .catch(() => handleError())
             .finally(() => setLoading(false))
     }, []);
 

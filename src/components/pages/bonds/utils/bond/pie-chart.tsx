@@ -35,7 +35,7 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
                     borderRadius: 5,
                 },
             },
-            cutout: "90%",
+            cutout: "88%",
             plugins: {
                 legend: {
                     display: false
@@ -125,29 +125,14 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
             justify-content: center;
             align-items: center;
             border-radius: 0.5rem;
+            cursor: pointer;
             width: 100%;
-            height: 100%;
           }
 
           .canvas {
             width: 100px;
             height: 100px;
           }
-
-          //
-          //@media (max-width: 768px) {
-          //  .canvas {
-          //    width: 52px;
-          //    height: 52px;
-          //  }
-          //}
-          //
-          //@media (max-width: 500px) {
-          //  .container {
-          //    flex-direction: column;
-          //    gap: 0.5rem;
-          //  }
-          //} 
 
         `}</style>
     </>
