@@ -33,7 +33,7 @@ const BondTokens = {
 export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
     return <>
-        <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl min-w-600'>
+        <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl md:min-w-600 sm:w-full'>
             <h2 className="mb-4 text-3xl font-medium">Bond Details</h2>
             <BondIssuerInfo info={info}/>
             <Line/>
@@ -152,7 +152,7 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
     }
 
     return <>
-        <div className='flex gap-2 items-center justify-between w-full p-4 py-1'>
+        <div className='flex md:flex-row sm:flex-col gap-2 items-center justify-between w-full p-4 py-1'>
             <div className='flex flex-col gap-0.5 w-full'>
                 <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
                 <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
