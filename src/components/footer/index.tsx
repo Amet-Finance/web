@@ -10,7 +10,7 @@ import LinkedInSVG from "../../../public/svg/social/linkedin";
 
 export default function Footer() {
     return <>
-        <footer className={Styles.container}>
+        <footer className={Styles.container + " z-20 bg-black"}>
             <div className={Styles.border}/>
             <div className={Styles.sections}>
                 <div className={Styles.mainSection}>

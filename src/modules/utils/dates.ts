@@ -52,7 +52,7 @@ function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
         timeSegments.push(`${minutes} ${text}`);
     }
 
-    if (seconds > 0 && !hideSeconds) {
+    if (seconds > 0 && (!hideSeconds || timeSegments.length === 0)) {
         const text = shorten(seconds === 1 ? 'second' : 'seconds')
         timeSegments.push(`${Math.round(seconds)} ${text}`);
     }

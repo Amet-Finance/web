@@ -14,7 +14,8 @@ export default function Explore() {
         <div className={Styles.container}>
             <div className={Styles.texts}>
                 <h1 className={join([Styles.headline, "font-bold"])}>
-                    Explore <span className="text-black bg-white px-1">On-Chain Bonds:</span><br/> Find, Filter, and Invest
+                    Explore <span className="text-black bg-white px-1">On-Chain Bonds:</span><br/> Find, Filter, and
+                    Invest
                 </h1>
                 <hr className={Styles.line}/>
                 <p className={Styles.secondary}>Discover a range of on-chain bonds through advanced filters and

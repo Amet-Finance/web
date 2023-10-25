@@ -124,6 +124,7 @@ function getContractInfoByType(submitTransaction: SubmitTransaction) {
             }
         }
         case TxTypes.RedeemBonds: {
+            console.log(config)
             return {
                 to: config.contractAddress,
                 data: ZCB.redeem(chainId, config.contractAddress, config.ids)

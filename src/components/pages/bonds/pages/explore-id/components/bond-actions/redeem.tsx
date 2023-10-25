@@ -120,9 +120,9 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         let onClick: any = submit;
 
         const token = tokens[info.interestToken]
-        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(token.decimals))).toNumber()
-        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals))).toNumber()
-        const totalTokens = tokenIds.length * redeemAmount
+        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(token.decimals)))
+        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals)))
+        const totalTokens = toBN(tokenIds.length).mul(redeemAmount)
 
         if (!amount || !isFinite(amount)) {
             onClick = nop
@@ -130,12 +130,12 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             className += ` ${Styles.disable}`
             onClick = nop
             title = "Max bonds reached"
-        } else if (balance < totalTokens) {
+        } else if (balance.lt(totalTokens)) {
             className += ` ${Styles.disable}`
             onClick = nop
             title = "Not enough liquidity"
         } else if (tokenIds.length) {
-            const total = tokenIds.length * redeemAmount;
+            const total = toBN(tokenIds.length).mul(redeemAmount).toNumber();
             totalAmountStyle = "text-green-500 font-medium"
             totalAmountText = `( +${format(total)} ${token?.symbol} )`
         }

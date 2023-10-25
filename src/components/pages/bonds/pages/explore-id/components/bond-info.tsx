@@ -272,8 +272,6 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
     const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
 
-    console.log(interestBalance.toString())
-
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0
 

@@ -67,13 +67,13 @@ function BondsScreen() {
             <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6  sm1:w-max sm:w-full">
                 {data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
             </div>
-            <Link href={`/bonds/explore`}>
-                <div className='flex justify-center items-center w-full cursor-pointer'>
-                    <div className='flex gap-2 justify-center items-center z-10'>
+            <Link href={`/bonds/explore`} className='w-full'>
+                <div className='flex justify-center items-center cursor-pointer w-full left-0 lg:top-[90%] md:top-[97%] sm:top-[97%]'>
+                    <div className='flex gap-2 justify-center items-end z-10 w-full blur-0'>
                         <span className='text-2xl font-bold'>Explore More Bonds</span>
                         <ArrowSVG/>
                     </div>
-                    <div className='absolute w-full h-44 blur-2xl bg-black left-0 top-[70%]'/>
+                    <div className='absolute blur-2xl bg-black  w-full h-32'/>
                 </div>
             </Link>
         </div>
