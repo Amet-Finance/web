@@ -156,7 +156,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                 <SectionContainer>
                     <div className='flex items-center gap-1'>
                         <InterestSVG/>
-                        <span className='text-g'>Interest:</span>
+                        <span className='text-g whitespace-nowrap'>Total Return:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
                         <span className='text-sm text-green-500 font-bold'>{response.interest.amount}</span>
@@ -166,7 +166,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                 <SectionContainer>
                     <div className='flex items-center gap-1'>
                         <ClockSVG/>
-                        <span className='text-g'>Period:</span>
+                        <span className='text-g whitespace-nowrap'>Lock Period:</span>
                     </div>
                     <span className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                 </SectionContainer>

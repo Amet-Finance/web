@@ -5,7 +5,7 @@ export default function DiscordSVG() {
     const color = "#7D7D7D"
     return <>
         <Link href={URLS.Discord} target="_blank" rel="noreferrer">
-        <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
+        <svg width="26" height="26" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
              className='hover'>
             <path
                 d="M12.1003 15.0233V15.0127C10.8756 15.0127 9.88721 16.0252 9.88721 17.2696C9.88721 18.514 10.8756 19.5266 12.1003 19.5266C13.3251 19.5266 14.3135 18.5141 14.3135 17.2802C14.3135 16.0356 13.3143 15.0233 12.1003 15.0233Z"

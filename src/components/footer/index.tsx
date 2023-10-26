@@ -10,23 +10,22 @@ import LinkedInSVG from "../../../public/svg/social/linkedin";
 
 export default function Footer() {
     return <>
-        <footer className={Styles.container + " z-20 bg-black"}>
-            <div className={Styles.border}/>
-            <div className={Styles.sections}>
-                <div className={Styles.mainSection}>
+        <footer className="flex flex-col items-center z-20 bg-black">
+            <div className='w-full h-px bg-b2'/>
+            <div className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between py-4 px-16 w-full">
+                <div className='flex flex-col md:items-start sm:items-center gap-2'>
                     <AmetLogo/>
-                    <span className={Styles.secondaryText}>Managed by Amet Finance</span>
-                    <div className={Styles.socials}>
+                    <div className='flex gap-3.5 w-full'>
                         <TwitterSVG/>
                         <DiscordSVG/>
                         <TelegramSVG/>
                         <RedditSVG/>
                         <LinkedInSVG/>
                     </div>
-                    <span className={Styles.desktop}>&#169;2023 Amet Finance. All rights reserved.</span>
+                    <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
                 </div>
                 <Links/>
-                <span className={Styles.mobile}>&#169;2023 Amet Finance. All rights reserved.</span>
+                <span className="text-g2 md:hidden sm:flex">&#169; 2023 Amet Finance. All rights reserved.</span>
             </div>
         </footer>
     </>

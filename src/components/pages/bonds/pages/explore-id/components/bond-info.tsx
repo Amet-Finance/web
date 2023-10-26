@@ -175,7 +175,7 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
     const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>;
     const tokenUrl = getExplorerToken(chainId, token.contractAddress);
     const hasBalance = typeof token.balanceClean !== "undefined"
-    const title = isInterest ? "Interest" : "Investment"
+    const title = isInterest ? "Total Return" : "Investment"
 
     const infoSection = {
         title: isInterest ? "Explore the interest terms for this bond. Find out how the interest is calculated, the token you'll receive, and other details" : "Learn about the investment requirements for this bond. Discover how much you need to invest, which token to use, and more",
