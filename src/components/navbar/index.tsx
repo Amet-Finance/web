@@ -198,7 +198,10 @@ function Chains() {
 
 function ChainsDropDown({change}: any) {
     return <>
-        <div className='absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-4 py-2 rounded z-40'
+        <div className='
+        absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-3 py-1 rounded z-40 h-28 overflow-x-auto
+        md:left-auto sm:left-0
+        '
              onClick={change}>
             {Object.values(CHAIN_IDS).map(chainId => <Chain chainId={chainId} key={chainId}/>)}
         </div>
