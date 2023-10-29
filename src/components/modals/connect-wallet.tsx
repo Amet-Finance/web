@@ -5,12 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {toast} from "react-toastify";
+import {useRouter} from "next/router";
 
 export default function ConnectWallet() {
+
+    const router = useRouter();
+
+    console.log()
     function connect() {
         Web3Service.connectWallet({
             type: WalletTypes.Metamask,
-            chainId: CHAIN_IDS.Mumbai,
+            chainId: router.query.chainId?.toString() || CHAIN_IDS.Mumbai,
             requestAccounts: true,
             requestChain: true
         })

@@ -5,11 +5,22 @@ async function requestAPI({url, params, headers}: any) {
         const response = await axios.get(url, {params, headers})
         return response.data;
     } catch (error) {
+        console.log(`error`, error)
+        return undefined;
+    }
+}
+
+async function postAPI({url, body, params, headers}: any) {
+    try {
+        const response = await axios.post(url, body, {params, headers})
+        return response.data;
+    } catch (error) {
         console.log(error)
-        return {data: undefined}
+        return undefined;
     }
 }
 
 export {
-    requestAPI
+    requestAPI,
+    postAPI
 }

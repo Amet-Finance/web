@@ -12,10 +12,10 @@ import ArrowSVG from "../../../../../../public/svg/utils/arrow";
 
 export default function BondsShowcase() {
     return <>
-        <div className={Styles.actions}>
-            <div className={Styles.actions}>
+        <div className="relative flex flex-col items-center gap-4 w-full text-center">
+            <div className="relative flex flex-col items-center gap-3 w-full text-center">
                 <h2 className='text-3xl font-bold'>Explore New Bonds</h2>
-                <p className={join([Styles.bondsText, Styles.gray1])}>Stay ahead of the curve by exploring our freshly
+                <p className="text-g px-4">Stay ahead of the curve by exploring our freshly
                     launched bonds. <br/> These opportunities are your ticket to the forefront of decentralized finance
                     innovation.</p>
             </div>
@@ -68,7 +68,8 @@ function BondsScreen() {
                 {data.map((item: any, index: number) => <Bond info={item} key={index}/>)}
             </div>
             <Link href={`/bonds/explore`} className='w-full'>
-                <div className='flex justify-center items-center cursor-pointer w-full left-0 lg:top-[90%] md:top-[97%] sm:top-[97%]'>
+                <div
+                    className='flex justify-center items-center cursor-pointer w-full left-0 lg:top-[90%] md:top-[97%] sm:top-[97%]'>
                     <div className='flex gap-2 justify-center items-end z-10 w-full blur-0'>
                         <span className='text-2xl font-bold'>Explore More Bonds</span>
                         <ArrowSVG/>

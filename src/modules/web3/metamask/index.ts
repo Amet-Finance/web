@@ -12,9 +12,13 @@ function getProvider() {
 }
 
 async function connectWalletAndSwitchChain(config: ConnectWallet): Promise<{ address: string, chainId: string }> {
+    const ethereum = getProvider()
+
     const address = await connectWallet(config);
     const chainId = await switchChain(config)
 
+    // ethereum.on('chainChanged', () => window.location.reload());
+    // ethereum.on('accountsChanged', handler: (chainId: string) => void);
     // todo listen to address and chain changes and update accordingly
 
     if (!address) {
@@ -32,13 +36,13 @@ async function connectWalletAndSwitchChain(config: ConnectWallet): Promise<{ add
 }
 
 async function connectWallet({requestAccounts}: ConnectWallet): Promise<string | undefined> {
-    if (isMobile() && requestAccounts) {
-        location.replace(URLS.MetamaskDeeplink);
-        return undefined;
-    }
-
     const provider = getProvider();
     if (!provider) {
+        if (isMobile() && requestAccounts) {
+            location.replace(URLS.MetamaskDeeplink);
+            return undefined;
+        }
+
         if (requestAccounts) {
             throw Error("Metamask was not found")
         }
@@ -124,10 +128,27 @@ async function submitTransaction(transactionConfig: TransactionConfig) {
     }
 }
 
+async function getSignature(address: string) {
+    const message = `Please sign this message to confirm your action on Amet Finance. Make sure to review the details before proceeding. Thank you for using Amet Finance!\n\nNonce: ${Date.now()}`;
+    const ethereum = getProvider();
+
+
+    const signature = await ethereum.request({
+        method: "personal_sign",
+        params: [message, address],
+    });
+
+    return {
+        signature,
+        message
+    }
+}
+
 export {
     connectWalletAndSwitchChain,
     connectWallet,
     getChain,
     switchChain,
-    submitTransaction
+    submitTransaction,
+    getSignature
 }

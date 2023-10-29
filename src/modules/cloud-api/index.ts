@@ -1,4 +1,4 @@
-import {requestAPI} from "@/modules/cloud-api/util";
+import {postAPI, requestAPI} from "@/modules/cloud-api/util";
 import {API_URL} from "@/modules/cloud-api/constants";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import {BalanceAPIParams, BondsAPIParams, StatsAPIParams} from "@/modules/cloud-api/type";
@@ -29,9 +29,28 @@ async function getBalance({address, chainId}: BalanceAPIParams) {
     });
     return data;
 }
+// todo add types for this
+async function getAddress({address}: any) {
+    const addressAPI = `${API_URL}/v1/address`
+    return await requestAPI({
+        url: addressAPI,
+        params: {address}
+    });
+}
+
+async function updateAddress({params, body}: any) {
+    const addressAPI = `${API_URL}/v1/address`
+    return await postAPI({
+        url: addressAPI,
+        body,
+        params
+    });
+}
 
 export {
     getBonds,
     getStats,
-    getBalance
+    getBalance,
+    getAddress,
+    updateAddress
 }

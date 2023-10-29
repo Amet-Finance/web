@@ -164,7 +164,7 @@ function ConnectedState() {
         <div className={Styles.addressContainer}>
             <span className={addressStyles} onClick={enable}>{shorten(account.address)}</span>
             {isEnabled && <>
-                <div className={dropStyles} onClick={enable}>
+                <div className={dropStyles + " bg-black"} onClick={enable}>
                     <Link href={`/address/${account.address}`}>
                         <span>My Account</span>
                     </Link>

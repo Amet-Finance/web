@@ -16,10 +16,10 @@ export default function Footer() {
                 <div className='flex flex-col md:items-start sm:items-center gap-2'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>
-                        <TwitterSVG/>
+                        <TwitterSVG url={URLS.Twitter}/>
                         <DiscordSVG/>
-                        <TelegramSVG/>
-                        <RedditSVG/>
+                        <TelegramSVG url={URLS.Telegram}/>
+                        <RedditSVG url={URLS.Reddit}/>
                         <LinkedInSVG/>
                     </div>
                     <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>

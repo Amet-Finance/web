@@ -46,7 +46,6 @@ export default function Issue() {
     }
 
     async function submit() {
-        // todo add here the investmentTokenInfo and the interest one
         if (
             !bondInfo.investmentToken ||
             !bondInfo.interestToken ||

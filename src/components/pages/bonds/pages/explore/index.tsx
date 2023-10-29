@@ -1,7 +1,7 @@
 import Styles from './index.module.css';
 import SettingsSVG from "../../../../../../public/svg/settings";
 import {useEffect, useState} from "react";
-import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
+import {BondGeneral, BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
@@ -29,14 +29,41 @@ export default function Explore() {
 function BondsContainer() {
 
     const account = useSelector((item: RootState) => item.account)
+    const [search, setSearch] = useState({
+        text: ""
+    });
     const [bonds, setBonds] = useState({
         isLoading: false,
-        limit: 20,
+        limit: 100,
         skip: 0,
-        data: [] as any
+        data: [] as BondGeneral[]
     })
 
+    const onChange = (event: any) => setSearch({
+        ...search,
+        [event.target.id]: event.target.value
+    });
     const bondsHandler = [bonds, setBonds]
+
+    const bondsFiltered = () => {
+        return bonds.data.filter(item => {
+            const {interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
+            const searchExists = search.text
+            if (Boolean(searchExists)) {
+                const regex = new RegExp(search.text, 'i')
+                const toTest = [interestTokenInfo.symbol, investmentTokenInfo.symbol, issuer, _id]
+
+                for (const type of toTest) {
+                    if (regex.test(type)) {
+                        return true
+                    }
+                }
+                return false
+            } else {
+                return true
+            }
+        })
+    }
 
     useEffect(() => {
         const config = {
@@ -49,43 +76,27 @@ function BondsContainer() {
             clearInterval(interval)
         }
 
-    }, [bonds.limit, bonds.skip, account.chainId])
+    }, [bonds.limit, bonds.skip, account.chainId]);
+
+
     return <>
         <div className={Styles.bonds}>
-            <Settings/>
-            <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
-                {bonds.data.map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
+            <div className='flex items-start'>
+                <input type="text"
+                       className="placeholder:text-g2 px-4 py-2 bg-transparent border border-w1 border-solid rounded text-white w-52 text-sm "
+                       placeholder='Contract address, Token Symbol or Issuer address'
+                       id='text'
+                       onChange={onChange}
+                />
             </div>
-            {Boolean(bonds.data < bonds.limit) && <ShowMore/>}
-        </div>
-    </>
-}
-
-function ShowMore() {
-    return <>
-        <div className={Styles.showMore}>
-            <span>Show More...</span>
-        </div>
-    </>
-}
-
-function Settings() {
-    const [isOpen, setOpen] = useState(false);
-
-    return <>
-        <div className={Styles.settings}>
-            {isOpen ?
-                <>
-                    <div className={Styles.settingsContainer}>
-                        <input type="text" placeholder='Search by Contract Address, Issuer, or Token Pair'
-                               className={Styles.search}/>
-                    </div>
-                </> :
-                <>
-                    <span/>
-                </>
-            }
-            <SettingsSVG onClick={() => setOpen(!isOpen)}/>
+            <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
+                {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
+            </div>
+            {/*<div className='flex gap-4'>*/}
+            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>1</span>*/}
+            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>2</span>*/}
+            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>3</span>*/}
+            {/*</div>*/}
         </div>
     </>
 }

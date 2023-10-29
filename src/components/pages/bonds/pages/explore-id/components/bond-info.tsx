@@ -21,6 +21,8 @@ import ClockSVG from "../../../../../../../public/svg/clock";
 import {useEffect, useState} from "react";
 import {shortenString} from "@/modules/utils/string";
 import axios from "axios";
+import {copyAddress} from "@/modules/utils/address";
+import {requestAPI} from "@/modules/cloud-api/util";
 
 const BondTokens = {
     Interest: "interest",
@@ -29,7 +31,6 @@ const BondTokens = {
 
 export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
-    // todo add the warning case as well if it has error
     return <>
         <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl md:min-w-600 sm:w-full'>
             <h2 className="mb-4 text-3xl font-medium">Bond Details</h2>
@@ -65,14 +66,9 @@ function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
     const {chainId} = account;
     const bondAddress = getExplorerAddress(chainId, info._id);
     const explorerAddress = getExplorerAddress(chainId, info.issuer);
+    const localAddress = `/address/${info.issuer}`
     const chainIcon = `/svg/chains/${info.chainId}.svg`
     const chainInfo = CHAIN_INFO[info.chainId]
-
-    async function copyAddress(address: string) {
-        return navigator.clipboard.writeText(address)
-            .then(() => toast("Address successfully copied to your clipboard."))
-            .catch(() => toast.error("An error has occurred"))
-    }
 
 
     return <>
@@ -97,7 +93,7 @@ function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
             <div className="flex items-center justify-between gap-2 w-full">
                 <span>Issuer:</span>
                 <div className='flex items-center gap-2'>
-                    <Link href={explorerAddress} target="_blank">
+                    <Link href={localAddress} target="_blank">
                         <span className="text-g text-sm">{shorten(info.issuer, 9)}</span>
                     </Link>
                     <CopySVG onClick={() => copyAddress(info.issuer)}/>
@@ -139,31 +135,41 @@ function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: Tokens })
 }
 
 function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+    const [isWarning, setWarning] = useState(false);
     const {total, purchased, redeemed, redeemLockPeriod, investmentToken, interestToken} = info;
 
     const investmentTokenInfo = tokens[investmentToken]
     const interestTokenInfo = tokens[interestToken]
     const isLoading = !investmentTokenInfo || !interestTokenInfo
 
+    useEffect(() => {
+        if (investmentTokenInfo?.icon) requestAPI({url: investmentTokenInfo.icon}).then((data) => setWarning(!Boolean(data)))
+        if (interestTokenInfo?.icon) requestAPI({url: interestTokenInfo.icon}).then((data) => setWarning(!Boolean(data)))
+    }, [investmentTokenInfo?.icon, interestTokenInfo?.icon])
+
+
     if (isLoading) {
         return <div className="flex items-center justify-center w-full"><Loading percent={-50}/></div>
     }
 
     return <>
-        <div className='flex md:flex-row sm:flex-col gap-2 items-center justify-between w-full p-4 py-1'>
-            <div className='flex flex-col gap-0.5 w-full'>
-                <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
-                <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
-                <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
-                    <div className='flex items-center gap-1'>
-                        <ClockSVG/>
-                        <span className='text-g'>Period:</span>
+        <div className='flex flex-col gap-2 w-full'>
+            {isWarning && <span className='text-xs text-red-700'>Warning: Please proceed with caution. The Token is not verified.</span>}
+            <div className='flex md:flex-row sm:flex-col gap-2 items-center justify-between w-full p-4 py-1'>
+                <div className='flex flex-col gap-0.5 w-full'>
+                    <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
+                    <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
+                    <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
+                        <div className='flex items-center gap-1'>
+                            <ClockSVG/>
+                            <span className='text-g'>Period:</span>
+                        </div>
+                        <span
+                            className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                     </div>
-                    <span
-                        className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                 </div>
+                <PieChart total={total} purchased={purchased} redeemed={redeemed}/>
             </div>
-            <PieChart total={total} purchased={purchased} redeemed={redeemed}/>
         </div>
     </>
 }
@@ -286,7 +292,7 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
             return "text-yellow-500"
         } else if (redeemedPercentage <= 100) {
             return "text-green-500"
-        }else {
+        } else {
             return "text-green-500"
         }
     }
@@ -324,7 +330,6 @@ function TokenImage({src, alt, handler}: any) {
 
     const handleError = () => setVerified(false)
 
-
     useEffect(() => {
         axios.get(src)
             .then(() => handleSuccess())
@@ -334,12 +339,15 @@ function TokenImage({src, alt, handler}: any) {
 
     const handleSuccess = () => setVerified(true)
 
-    // if (isLoading) {
-    //     return <Loading percent={50}/>
-    // }
-
     return <>{
-        isVerified ?
-            <Image src={srcC} alt={alt} width={26} height={26} onError={handleError} onLoad={handleSuccess}/> :
-            <Image src="/svg/question.svg" alt={alt} width={26} height={26}/>}</>
+        <Image src={src} alt={alt} width={26} height={26}
+               onLoadStart={(event) => {
+                   event.target.src = "/svg/question.svg"
+               }}
+               onError={
+                   (event) => {
+                       event.target.src = "/svg/question.svg"
+                   }
+               }/>
+    }</>
 }

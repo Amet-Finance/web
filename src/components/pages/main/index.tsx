@@ -17,8 +17,8 @@ const Texts = {
 }
 
 export default function Home() {
-    const bondsRef = useRef(null) as any
-    const scrollToView = () => bondsRef.current.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"})
+    const bondsRef = useRef<any>(null);
+    const scrollToView = () => bondsRef.current.scrollIntoView({behavior: "smooth", block: "end", inline: "end"})
 
     return <>
         <main className="relative flex flex-col min-h-screen md:pt-20 sm:pt-10 gap-20">
@@ -43,7 +43,7 @@ export default function Home() {
                         </Link>
                     </div>
                 </div>
-                <div className={Styles.sectionDown} onClick={scrollToView}>
+                <div className={Styles.sectionDown + " animate-bounce"} onClick={scrollToView}>
                     <div className={Styles.hz}/>
                     <div className={Styles.cl}>
                         <span>B</span>
@@ -81,7 +81,7 @@ export default function Home() {
             <div className={Styles.statsAndDocs}>
                 <div className={Styles.statistics}>
                     <div className={Styles.stat}>
-                        <span className="font-bold text-4xl">$35K</span>
+                        <span className="font-bold text-4xl">$100K+</span>
                         <span className="text-xs text-g">Total Value Locked (TVL)</span>
                     </div>
                     <div className={Styles.stat}>

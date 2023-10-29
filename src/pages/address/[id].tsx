@@ -1,7 +1,8 @@
+import AddressId from "@/components/pages/address/address-id";
 
-export default function AddressPage(props: any) {
+export default function AddressPage({address}: any) {
 
-    return <><span>Welcome {props.address}</span></>
+    return <><AddressId address={address}/></>
 }
 
 export async function getServerSideProps({query}: any) {

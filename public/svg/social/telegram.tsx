@@ -1,9 +1,8 @@
 import Link from "next/link";
-import {URLS} from "@/modules/utils/urls";
 
-export default function TelegramSVG() {
+export default function TelegramSVG({url}: {url: string}) {
     return <>
-        <Link href={URLS.Telegram} target="_blank" rel="noreferrer">
+        <Link href={url} target="_blank" rel="noreferrer">
             <svg width="26" height="26" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
                  className='hover'>
                 <path

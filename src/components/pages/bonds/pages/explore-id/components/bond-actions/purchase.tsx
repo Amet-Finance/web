@@ -14,11 +14,13 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {toast} from "react-toastify";
 import {format} from "@/modules/utils/numbers";
+import {BondInfoDetailed} from "@/modules/web3/type";
 
-export default function Purchase({info, tokens}: { info: BondInfo, tokens: Tokens }) {
+export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
     const {
         _id,
+        chainId,
         investmentTokenAmount,
         total,
         purchased,
@@ -33,7 +35,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
     const [amount, setAmount] = useState(0);
     const [allowance, setAllowance] = useState(0)
     const account = useSelector((item: RootState) => item.account);
-    const {address, chainId} = account;
+    const {address} = account;
 
     useEffect(() => {
         getAllowance(chainId, investmentToken, address, _id)
@@ -49,6 +51,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             </div>
         </>;
     }
+
 
     const decimals = Number(investmentTokenInfo?.decimals) || 18
 
@@ -73,7 +76,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             const transaction = await Web3Service.submitTransaction({
                 connectionConfig: {
                     type: account.connection.type,
-                    chainId: account.chainId,
+                    chainId: chainId,
                     requestChain: true,
                     requestAccounts: true,
                 },
@@ -97,7 +100,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             const transaction = await Web3Service.submitTransaction({
                 connectionConfig: {
                     type: account.connection.type,
-                    chainId: account.chainId,
+                    chainId: chainId,
                     requestChain: true,
                     requestAccounts: true,
                 },
@@ -109,7 +112,7 @@ export default function Purchase({info, tokens}: { info: BondInfo, tokens: Token
             });
 
             await sleep(4000);
-            await AccountSlice.initBalance(account.address, account.chainId);
+            await AccountSlice.initBalance(account.address, chainId);
             console.log(transaction);
         }
 

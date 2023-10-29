@@ -95,7 +95,8 @@ async function submitTransaction(submitTransaction: SubmitTransaction) {
             }
         }
     } catch (error: Error | any) {
-        toast.error(`Transaction submission failed: ${error.message}`)
+        const errorMessage = typeof error.message === "string" ? error.message : "";
+        toast.error(`Transaction submission failed: ${errorMessage}`)
     }
 }
 
