@@ -1,6 +1,6 @@
 import {CHAIN_INFO} from "@/modules/web3/constants";
 
-function shorten(address: string, length = 6) {
+function shorten(address: string|any, length = 6) {
     if (address.length <= length) {
         return address;
     }
