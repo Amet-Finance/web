@@ -70,6 +70,12 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                     data: ZCB.issueMoreBonds(chain, config.contractAddress, config.amount)
                 }
             }
+            case TxTypes.BurnUnsoldBonds: {
+                return {
+                    to: config.contractAddress,
+                    data: ZCB.burnUnsoldBonds(chain, config.contractAddress, config.amount)
+                }
+            }
             default: {
                 throw Error("Invalid type")
             }

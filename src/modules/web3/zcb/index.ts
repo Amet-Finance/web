@@ -112,6 +112,11 @@ function issueMoreBonds(chain: Chain, contractAddress: string, amount: number) {
     return contract.methods.issueBonds(amount).encodeABI();
 }
 
+function burnUnsoldBonds(chain: Chain, contractAddress: string, amount: number) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.burnUnsoldBonds(amount).encodeABI();
+}
+
 function decode(transaction: TransactionReceipt): {} {
 
     const web3 = getWeb3Instance(defaultChain); // todo here it is hardcoded
@@ -137,11 +142,13 @@ function decode(transaction: TransactionReceipt): {} {
 }
 
 export {
+
     issueBonds,
     purchase,
     redeem,
     changeOwner,
     withdrawRemaining,
+    burnUnsoldBonds,
     issueMoreBonds,
     decode,
     getBondInfo,

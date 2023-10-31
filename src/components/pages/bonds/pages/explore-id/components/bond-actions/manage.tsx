@@ -11,13 +11,9 @@ import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
-    const issueBonds = useRef(null)
-    const burnBonds = useRef(null)
-
-
     return <>
         <div className="flex flex-col gap-4 text-sm">
-            <WithdrawRemaining bondInfo={info}/>
+            <WithdrawRemaining bondInfo={info} tokens={tokens}/>
             <Deposit bondInfo={info} tokens={tokens}/>
             <ChangeOwner bondInfo={info}/>
             <IssueBonds bondInfo={info}/>
@@ -73,17 +69,18 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
                    placeholder="Enter deposit amount to increase Secured Percentage"
                    onChange={changeAmount}/>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 hover:bg-white hover:text-black"
+                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={deposit}>Deposit {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
 }
 
-function WithdrawRemaining({bondInfo}: { bondInfo: BondInfoDetailed }) {
+function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Tokens }) {
 
-    const {_id, chainId} = bondInfo;
+    const {_id, chainId, interestToken} = bondInfo;
     const chain = getChain(chainId);
 
+    const interestTokenInfo = tokens[interestToken]
     const config = {contractAddress: _id,}
     const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
@@ -104,9 +101,9 @@ function WithdrawRemaining({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     return <>
         <button
-            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap"
+            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center"
             onClick={withdrawRemaining}>
-            Withdraw Remaining {isLoading && <Loading percent={70}/>}
+            Withdraw Remaining {interestTokenInfo?.symbol} {isLoading && <Loading percent={70}/>}
         </button>
     </>
 }
@@ -146,9 +143,11 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     return <>
         <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
-            <input type="text" className='px-2 w-full bg-transparent' onChange={onChange}/>
+            <input type="text" className='px-2 w-full bg-transparent' onChange={onChange}
+                   placeholder='Enter the new owner address'
+            />
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black"
+                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={changeOwner}>Change Owner {isLoading && <Loading percent={70}/>}
             </button>
         </div>
@@ -190,21 +189,21 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     return <>
         <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
-            <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent'/>
+            <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent' placeholder='The amount of bonds you want to issue'/>
             <button
-                className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-white"
+                className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={issueMoreBonds}>Issue bonds {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
 }
 
 function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
-    const {_id, chainId, interestToken} = bondInfo;
+    const {_id, chainId} = bondInfo;
     const [amount, setAmount] = useState(0)
     const chain = getChain(chainId);
 
     const config = {
-        contractAddress: interestToken,
+        contractAddress: _id,
         amount
     }
     const contractInfo = getContractInfoByType(chain, TxTypes.BurnUnsoldBonds, config)
@@ -236,7 +235,7 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                    placeholder="The amount of bonds you want to burn"
                    onChange={changeAmount}/>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black"
+                className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={burnUnsoldBonds}>Burn Unsold Bonds {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
