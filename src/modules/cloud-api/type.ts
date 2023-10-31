@@ -3,7 +3,7 @@ import {getBalance} from "@/modules/cloud-api/index";
 type BondsAPIParams = {
     skip: number;
     limit: number;
-    chainId: string;
+    chainId?: string
 }
 
 type StatsAPIParams = {

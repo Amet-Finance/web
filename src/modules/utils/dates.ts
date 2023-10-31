@@ -1,22 +1,29 @@
+const minuteInSec = 60
+const hourInSec = 60 * minuteInSec
+const dayInSec = 24 * hourInSec
+const monthInSec = 30 * dayInSec
+const yearInSec = 365 * dayInSec
+
 function shortTime(time: number) {
     return new Date(time).toDateString()
 }
 
 function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
-    const years = Math.floor(seconds / 31536000);
-    seconds -= years * 2592000;
 
-    const months = Math.floor(seconds / 2592000);
-    seconds -= months * 2592000;
+    const years = Math.floor(seconds / yearInSec);
+    seconds -= years * yearInSec;
 
-    const days = Math.floor(seconds / 86400);
-    seconds -= days * 86400;
+    const months = Math.floor(seconds / monthInSec);
+    seconds -= months * monthInSec;
 
-    const hours = Math.floor(seconds / 3600);
-    seconds -= hours * 3600;
+    const days = Math.floor(seconds / dayInSec);
+    seconds -= days * dayInSec;
 
-    const minutes = Math.floor(seconds / 60);
-    seconds -= minutes * 60;
+    const hours = Math.floor(seconds / hourInSec);
+    seconds -= hours * hourInSec;
+
+    const minutes = Math.floor(seconds / minuteInSec);
+    seconds -= minutes * minuteInSec;
 
     const timeSegments = [];
 
@@ -67,4 +74,11 @@ async function sleep(ms: number): Promise<void> {
 }
 
 
-export {formatTime, shortTime, sleep}
+export {
+    minuteInSec,
+    hourInSec,
+    dayInSec,
+    monthInSec,
+    yearInSec,
+    formatTime, shortTime, sleep
+}

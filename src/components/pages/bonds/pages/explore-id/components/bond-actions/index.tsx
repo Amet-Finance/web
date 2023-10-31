@@ -1,5 +1,4 @@
 import {useState} from "react";
-import Styles from "./index.module.css";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import Manage from "@/components/pages/bonds/pages/explore-id/components/bond-actions/manage";
 import Redeem from "@/components/pages/bonds/pages/explore-id/components/bond-actions/redeem";

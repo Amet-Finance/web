@@ -3,26 +3,22 @@ import Link from "next/link";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
-import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
 import CopySVG from "../../../../../../../public/svg/copy";
-import {toast} from "react-toastify";
 import {URLS} from "@/modules/utils/urls";
 import InterestSVG from "../../../../../../../public/svg/interest";
 import InvestmentSVG from "../../../../../../../public/svg/investment";
 import Loading from "@/components/utils/loading";
-import {getExplorerToken} from "@/modules/web3/utils/token";
-import {toBN} from "@/modules/web3/util";
-import {CHAIN_INFO} from "@/modules/web3/constants";
+import {getExplorer, shorten, toBN} from "@/modules/web3/util";
 import {formatTime} from "@/modules/utils/dates";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 import ClockSVG from "../../../../../../../public/svg/clock";
 import {useEffect, useState} from "react";
 import {shortenString} from "@/modules/utils/string";
-import axios from "axios";
 import {copyAddress} from "@/modules/utils/address";
 import {requestAPI} from "@/modules/cloud-api/util";
+import {getChainIcon} from "@/modules/utils/wallet-connect";
+import {useNetwork} from "wagmi";
+
 
 const BondTokens = {
     Interest: "interest",
@@ -62,13 +58,11 @@ function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
 }
 
 function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
-    const account = useSelector((item: RootState) => item.account);
-    const {chainId} = account;
-    const bondAddress = getExplorerAddress(chainId, info._id);
-    const explorerAddress = getExplorerAddress(chainId, info.issuer);
+    const {chain} = useNetwork();
+
+    const bondAddress = getExplorer(chain?.id, "address", info._id);
     const localAddress = `/address/${info.issuer}`
-    const chainIcon = `/svg/chains/${info.chainId}.svg`
-    const chainInfo = CHAIN_INFO[info.chainId]
+    const chainIcon = getChainIcon(chain?.id)
 
 
     return <>
@@ -102,8 +96,8 @@ function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
             <div className="flex items-center justify-between gap-2 w-full">
                 <span>Chain:</span>
                 <div className='flex items-center gap-2'>
-                    <Image src={chainIcon} alt={chainInfo.chainName} width={24} height={24}/>
-                    <span className="text-g text-sm">{chainInfo.chainName}</span>
+                    <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
+                    <span className="text-g text-sm">{chain?.name}</span>
                 </div>
             </div>
         </div>
@@ -179,14 +173,9 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
 
     const isInterest = type === BondTokens.Interest
     const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>;
-    const tokenUrl = getExplorerToken(chainId, token.contractAddress);
+    const tokenUrl = getExplorer(chainId, "token", token.contractAddress);
     const hasBalance = typeof token.balanceClean !== "undefined"
     const title = isInterest ? "Total Return" : "Investment"
-
-    const infoSection = {
-        title: isInterest ? "Explore the interest terms for this bond. Find out how the interest is calculated, the token you'll receive, and other details" : "Learn about the investment requirements for this bond. Discover how much you need to invest, which token to use, and more",
-        url: URLS.FAQ
-    }
 
     const TotalAmount = () => {
         if (!token?.decimals) {
@@ -322,30 +311,17 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
 }
 
 
-function TokenImage({src, alt, handler}: any) {
-
-    const [isVerified, setVerified] = useState(true);
-    const [isLoading, setLoading] = useState(true)
-    const [srcC, setSrcC] = useState(src)
-
-    const handleError = () => setVerified(false)
-
-    useEffect(() => {
-        axios.get(src)
-            .then(() => handleSuccess())
-            .catch(() => handleError())
-            .finally(() => setLoading(false))
-    }, [src]);
-
-    const handleSuccess = () => setVerified(true)
+function TokenImage({src, alt}: any) {
 
     return <>{
         <Image src={src} alt={alt} width={26} height={26}
                onLoadStart={(event) => {
+                   // @ts-ignore
                    event.target.src = "/svg/question.svg"
                }}
                onError={
                    (event) => {
+                       // @ts-ignore
                        event.target.src = "/svg/question.svg"
                    }
                }/>

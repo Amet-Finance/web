@@ -20,8 +20,8 @@ const montserrat = Montserrat({subsets: ['latin']})
 export default function App({Component, pageProps}: AppProps) {
 
     return <>
-        <Provider store={store}>
-            <WagmiConfig config={wagmiConfig}>
+        <WagmiConfig config={wagmiConfig}>
+            <Provider store={store}>
                 <Headers id={pageProps.pageId}/>
                 <main className={"flex flex-col justify-between min-h-screen " + montserrat.className}>
                     <Navbar/>
@@ -31,7 +31,7 @@ export default function App({Component, pageProps}: AppProps) {
                 <ModalHandler/>
                 <ToastContainer/>
                 <GoogleAnalytics/>
-            </WagmiConfig>
-        </Provider>
+            </Provider>
+        </WagmiConfig>
     </>
 }

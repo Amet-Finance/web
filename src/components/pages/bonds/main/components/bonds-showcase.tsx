@@ -2,13 +2,10 @@ import {useEffect, useState} from "react";
 import Styles from "@/components/pages/bonds/main/components/index.module.css";
 import Link from "next/link";
 import Bond from "@/components/pages/bonds/utils/bond";
-import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import {useRouter} from "next/router";
 import ArrowSVG from "../../../../../../public/svg/utils/arrow";
+import {useNetwork} from "wagmi";
 
 export default function BondsShowcase() {
     return <>
@@ -25,8 +22,9 @@ export default function BondsShowcase() {
 }
 
 function BondsScreen() {
-    const account = useSelector((item: RootState) => item.account);
-    const {chainId} = account;
+
+    const {chain} = useNetwork();
+
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 6,
@@ -42,7 +40,7 @@ function BondsScreen() {
         const config = {
             skip,
             limit,
-            chainId
+            chainId: "0x" + chain?.id.toString(16)
         }
 
         const interval = getBondsHandler(bondsHandler, config);
@@ -50,7 +48,7 @@ function BondsScreen() {
             clearInterval(interval)
         }
 
-    }, [chainId, skip, limit])
+    }, [chain?.id, skip, limit])
 
     if (isLoading) {
         return <div className={Styles.loader}><Loading/></div>

@@ -1,25 +1,42 @@
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react';
-import {polygonMumbai, mainnet} from 'wagmi/chains';
+import {polygonMumbai, mainnet, polygon, bsc} from 'wagmi/chains';
 
 const projectId = '777e05ce479a4c4b6e33deaed761ef5b'
 
 const metadata = {
-    name: 'Web3Modal',
-    description: 'Web3Modal Example',
-    url: 'https://web3modal.com',
-    icons: ['https://avatars.githubusercontent.com/u/37784886']
+    name: 'Amet Finance',
+    description: 'Easily issue on-chain bonds with Amet Finance. Customize your bond and join the world of decentralized finance.',
+    url: 'https://amet.finance',
+    icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const chains = [mainnet, polygonMumbai]
-const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata})
+const CHAINS = [mainnet, polygonMumbai, polygon, bsc]
+const defaultChain = polygonMumbai;
+const wagmiConfig = defaultWagmiConfig({
+    chains: CHAINS,
+    projectId,
+    metadata
+})
 
 // 3. Create modal
 createWeb3Modal({
-    wagmiConfig, projectId, chains,
-    defaultChain: polygonMumbai,
-    themeMode: "dark"
+    wagmiConfig, projectId,
+    chains: CHAINS,
+    defaultChain,
+    themeMode: "dark",
+    // chainImages: {
+    //     [mainnet.id]: `https://amet.finance/svg/chains/0x${mainnet.id.toString(16)}.svg`,
+    //     [polygonMumbai.id]: `https://amet.finance/svg/chains/0x${polygonMumbai.id.toString(16)}.svg`
+    // }
 })
 
-export  {
-    wagmiConfig
+function getChainIcon(chainId: string | number | undefined) {
+    return `/svg/chains/${chainId}.svg`;
+}
+
+export {
+    wagmiConfig,
+    CHAINS,
+    defaultChain,
+    getChainIcon
 }

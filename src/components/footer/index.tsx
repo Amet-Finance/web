@@ -7,6 +7,7 @@ import AmetLogo from "../../../public/svg/amet-logo";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import LinkedInSVG from "../../../public/svg/social/linkedin";
+import MediumSVG from "../../../public/svg/social/medium";
 
 export default function Footer() {
     return <>
@@ -21,11 +22,12 @@ export default function Footer() {
                         <TelegramSVG url={URLS.Telegram}/>
                         <RedditSVG url={URLS.Reddit}/>
                         <LinkedInSVG/>
+                        <MediumSVG url={URLS.Medium}/>
                     </div>
                     <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
                 </div>
                 <Links/>
-                <span className="text-g2 md:hidden sm:flex">&#169; 2023 Amet Finance. All rights reserved.</span>
+                <span className="text-g2 text-center whitespace-nowrap md:hidden sm:flex">&#169; 2023 Amet Finance. All rights reserved.</span>
             </div>
         </footer>
     </>

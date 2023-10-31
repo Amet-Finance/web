@@ -1,7 +1,4 @@
-import {getExplorerAddress, shorten} from "@/modules/web3/utils/address";
 import Link from "next/link";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import CopySVG from "../../../../../public/svg/copy";
 import {copyAddress} from "@/modules/utils/address";
 import TwitterSVG from "../../../../../public/svg/social/twitter";
@@ -9,29 +6,37 @@ import RedditSVG from "../../../../../public/svg/social/reddit";
 import TelegramSVG from "../../../../../public/svg/social/telegram";
 import {useEffect, useState} from "react";
 import * as CloudAPI from "@/modules/cloud-api";
-import {getSignature} from "@/modules/web3/metamask";
 import {getIpfsData} from "@/modules/cloud-api/ipfs";
 import {format} from "@/modules/utils/numbers";
+import {useAccount, useNetwork, useSignMessage} from "wagmi";
+import {AccountParams} from "@/components/pages/address/address-id/type";
+import {getExplorer, shorten} from "@/modules/web3/util";
 
 
-export default function AddressId({address}: any) {
+export default function AddressId({address}: {address: string}) {
 
-    const account = useSelector((item: RootState) => item.account);
-    const [accountInfo, setAccountInfo] = useState({
-        twitter: "",
-        telegram: "",
-        reddit: ""
-    })
+    const account = useAccount();
+    const network = useNetwork();
 
+    const [accountInfo, setAccountInfo] = useState<AccountParams>({})
     const [changeInfo, setChangeInfo] = useState({} as any)
+    const [isTheSameAddress, setTheSameAddress] = useState(false);
 
 
     const [isEdit, setEdit] = useState(false);
     const [refresh, setRefresh] = useState(0)
 
-    const isTheSameAddress = account?.address.toLowerCase() === address?.toLowerCase()
-    const addressExplorer = getExplorerAddress(account.chainId, address);
+    const addressExplorer = getExplorer(network.chain?.id, "address", address);
 
+    useEffect(() => {
+        if (account.address) {
+            setTheSameAddress(account.address.toLowerCase() === address.toLowerCase())
+        }
+    }, [account.address]);
+
+
+    const message = `Please sign this message to confirm your action on Amet Finance. Make sure to review the details before proceeding. Thank you for using Amet Finance!\n\nNonce: ${Date.now()}`
+    const {signMessageAsync} = useSignMessage({message})
     useEffect(() => { // todo fix this mess
         CloudAPI.getAddress({address})
             .then(responseAPI => {
@@ -48,7 +53,8 @@ export default function AddressId({address}: any) {
     }, [refresh])
 
     async function saveChanges() {
-        const {signature, message} = await getSignature(account.address)
+        const signature = await signMessageAsync();
+
         const params = {
             address: account.address,
             message,
@@ -100,11 +106,13 @@ export default function AddressId({address}: any) {
                     <div className='flex items-center gap-2 w-full'>
                         {
                             isEdit ? <>
-                                <button className='w-full p-2 border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white'
-                                        onClick={saveChanges}>Save
+                                <button
+                                    className='w-full p-2 border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white'
+                                    onClick={saveChanges}>Save
                                 </button>
-                                <button className='w-full p-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white'
-                                        onClick={discard}>Discard
+                                <button
+                                    className='w-full p-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white'
+                                    onClick={discard}>Discard
                                 </button>
                             </> : <>
                                 <button className='w-full p-2 border border-w2 rounded hover:bg-white hover:text-black'

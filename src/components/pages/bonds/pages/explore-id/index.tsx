@@ -7,10 +7,11 @@ import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
 import {RootState} from "@/store/redux/type";
 import AmetLoadingFull from "@/components/utils/amet-loading-full";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
+import {Chain, useAccount, useNetwork} from "wagmi";
 
 export default function ExploreId({_id, chainId}: { _id: string, chainId: string }) {
-    const account = useSelector((item: RootState) => item.account);
-    const {address} = account;
+    const {address} = useAccount()
+    const {chain} = useNetwork();
 
     const [bondInfo, setBondInfo] = useState({} as BondInfoDetailed);
 
@@ -18,19 +19,19 @@ export default function ExploreId({_id, chainId}: { _id: string, chainId: string
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
-        const interval = getBondInfo(chainId, _id, setLoading, setBondInfo)
+        const interval = getBondInfo(chain, _id, setLoading, setBondInfo)
         return () => {
             clearInterval(interval)
         }
-    }, [chainId, _id])
-
+    }, [address, chainId, _id, chain])
 
     useEffect(() => {
+        if (!chain) return;
         const tokenContracts = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))]
 
         const promises: Promise<TokenInfo | undefined>[] = []
         tokenContracts.forEach(contractAddress => {
-            const promise = getTokenInfo(chainId, contractAddress, address)
+            const promise = getTokenInfo(chain, contractAddress, address)
             promises.push(promise)
         })
 
@@ -45,7 +46,7 @@ export default function ExploreId({_id, chainId}: { _id: string, chainId: string
 
                 setTokens(tokensTmp)
             })
-    }, [address, bondInfo.investmentToken, bondInfo.interestToken])
+    }, [address, bondInfo.investmentToken, bondInfo.interestToken, chain])
 
     if (isLoading) {
         return <AmetLoadingFull/>
@@ -62,9 +63,12 @@ export default function ExploreId({_id, chainId}: { _id: string, chainId: string
     </>
 }
 
-function getBondInfo(chainId: string, _id: string, setLoading: any, setBondInfo: any) {
+function getBondInfo(chain: Chain | undefined, _id: string, setLoading: any, setBondInfo: any) {
+    if (!chain) {
+        return;
+    }
     setLoading(true);
-    Web3ZCB.getBondInfo(chainId, _id)
+    Web3ZCB.getBondInfo(chain, _id)
         .then(response => {
             setBondInfo({...response})
             setLoading(false)
@@ -72,7 +76,7 @@ function getBondInfo(chainId: string, _id: string, setLoading: any, setBondInfo:
         .catch(error => console.error(error))
 
     return setInterval(() => {
-        Web3ZCB.getBondInfo(chainId, _id)
+        Web3ZCB.getBondInfo(chain, _id)
             .then(response => setBondInfo({...response}))
             .catch(error => console.error(error));
     }, 3000);

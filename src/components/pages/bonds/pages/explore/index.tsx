@@ -1,5 +1,4 @@
 import Styles from './index.module.css';
-import SettingsSVG from "../../../../../../public/svg/settings";
 import {useEffect, useState} from "react";
 import {BondGeneral, BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
