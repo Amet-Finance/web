@@ -1,9 +1,9 @@
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {getUtils, toBN} from "@/modules/web3/util";
-import {useNetwork, useSendTransaction} from "wagmi";
+import {useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
@@ -189,7 +189,8 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     return <>
         <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
-            <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent' placeholder='The amount of bonds you want to issue'/>
+            <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent'
+                   placeholder='The amount of bonds you want to issue'/>
             <button
                 className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={issueMoreBonds}>Issue bonds {isLoading && <Loading percent={70}/>}</button>

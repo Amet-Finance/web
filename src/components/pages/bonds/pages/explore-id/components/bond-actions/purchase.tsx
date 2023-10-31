@@ -1,11 +1,8 @@
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {useEffect, useRef, useState} from "react";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import {getAllowance} from "@/modules/web3/tokens";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import Loading from "@/components/utils/loading";
-import * as Web3Service from "@/modules/web3";
 import {TxTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
 import {sleep} from "@/modules/utils/dates";
@@ -14,10 +11,10 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {format} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
-import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
-import {toast} from "react-toastify";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
@@ -31,6 +28,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     } = info;
 
     const {address} = useAccount()
+    const {open} = useWeb3Modal()
     const chain = getChain(chainId)
 
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
@@ -90,6 +88,10 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
 
     async function submit() {
         try {
+            if (!address) {
+                return open()
+            }
+
             if (isApproval) {
 
                 if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {

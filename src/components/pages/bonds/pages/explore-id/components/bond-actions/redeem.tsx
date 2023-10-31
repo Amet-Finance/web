@@ -15,12 +15,14 @@ import {format} from "@/modules/utils/numbers";
 import {useAccount, useSendTransaction} from "wagmi";
 import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
     const {_id, redeemLockPeriod, chainId} = info;
     const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
+    const {open} = useWeb3Modal()
 
     const inputRef = useRef<any>(null)
     const [tokenIds, setTokenIds] = useState([] as any);
@@ -93,6 +95,10 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     async function submit() {
 
         try {
+            if (!address) {
+                return open();
+            }
+
             if (!tokenIds.length) {
                 toast.error("You did not select a bond");
                 return;

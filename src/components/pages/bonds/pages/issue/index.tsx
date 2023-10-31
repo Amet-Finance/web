@@ -21,6 +21,7 @@ import Link from "next/link";
 import {TokenInfo} from "@/modules/web3/type";
 import {Chain, useAccount, useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 const BondTokenInfo = {
     Investment: 'investmentToken',
@@ -31,6 +32,7 @@ export default function Issue() {
 
     const account = useAccount();
     const {chain} = useNetwork();
+    const {open} = useWeb3Modal()
 
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
@@ -41,7 +43,7 @@ export default function Issue() {
 
     const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, bondInfo)
 
-    const {isLoading,sendTransactionAsync} = useSendTransaction({
+    const {isLoading, sendTransactionAsync} = useSendTransaction({
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0) || undefined,
         data: contractInfo.data,
@@ -59,19 +61,21 @@ export default function Issue() {
                 !bondInfo.investmentTokenAmount ||
                 !bondInfo.interestTokenAmount
             ) {
-                toast.error(`Please fill all the empty inputs`)
-                return;
+                return toast.error(`Please fill all the empty inputs`)
             }
 
 
             if (investmentTokenInfo?.unidentified) {
-                toast.error(`We could not identify Investment token`)
-                return;
+                return toast.error(`We could not identify the Investment token`)
             }
 
             if (interestTokenInfo?.unidentified) {
-                toast.error(`We could not identify Interest token`)
+                toast.error(`We could not identify the Interest token`)
                 return;
+            }
+
+            if (!account.address) {
+                return open()
             }
 
             bondInfo.investmentTokenInfo = investmentTokenInfo;
