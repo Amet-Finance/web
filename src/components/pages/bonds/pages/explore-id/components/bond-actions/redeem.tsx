@@ -19,7 +19,7 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
     const {_id, redeemLockPeriod, chainId} = info;
-    const account = useSelector((item: RootState) => item.account);
+    const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
 
     const inputRef = useRef<any>(null)
@@ -28,7 +28,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const [loading, setLoading] = useState(false);
 
     const contractAddress = info._id?.toLowerCase() || ""
-    const balanceTokenIds = account.balance[contractAddress] || [];
+    const balanceTokenIds = balance[contractAddress] || [];
 
     const [holdings, setHoldings] = useState([])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
@@ -81,7 +81,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                 .catch(error => console.log(`getTokensPurchaseDates`, error))
                 .finally(() => setLoading(false))
         }
-    }, [address, account.balance[contractAddress]])
+    }, [address, balance?.[contractAddress]])
 
 
     const onChange = (event: any) => {

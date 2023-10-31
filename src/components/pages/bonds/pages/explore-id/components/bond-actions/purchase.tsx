@@ -32,6 +32,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
 
     const {address} = useAccount()
     const chain = CHAINS.find(item => item.id === chainId);
+
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
     const bondsLeft = Number(total) - Number(purchased);
 
@@ -41,7 +42,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const [allowance, setAllowance] = useState(0)
 
     useEffect(() => {
-        if (chain) {
+        if (chain && address) {
             getAllowance(chain, investmentToken, address, _id)
                 .then(response => setAllowance(response))
                 .catch(() => null)

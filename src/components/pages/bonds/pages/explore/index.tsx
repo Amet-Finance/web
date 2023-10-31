@@ -4,8 +4,7 @@ import {BondGeneral, BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
+import {useNetwork} from "wagmi";
 
 
 export default function Explore() {
@@ -27,7 +26,9 @@ export default function Explore() {
 
 function BondsContainer() {
 
-    const account = useSelector((item: RootState) => item.account)
+    const {chain} = useNetwork();
+    const chainHexValue = `0x${chain?.id.toString(16)}`
+
     const [search, setSearch] = useState({
         text: ""
     });
@@ -42,7 +43,6 @@ function BondsContainer() {
         ...search,
         [event.target.id]: event.target.value
     });
-    const bondsHandler = [bonds, setBonds]
 
     const bondsFiltered = () => {
         return bonds.data.filter(item => {
@@ -68,14 +68,14 @@ function BondsContainer() {
         const config = {
             skip: bonds.skip,
             limit: bonds.limit,
-            chainId: account.chainId
+            chainId: chainHexValue
         }
-        const interval = getBondsHandler(bondsHandler, config);
+        const interval = getBondsHandler([bonds, setBonds], config);
         return () => {
             clearInterval(interval)
         }
 
-    }, [bonds.limit, bonds.skip, account.chainId]);
+    }, [bonds.limit, bonds.skip, chainHexValue]);
 
 
     return <>

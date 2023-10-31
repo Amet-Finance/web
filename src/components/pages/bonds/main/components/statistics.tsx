@@ -5,6 +5,7 @@ import Loading from "@/components/utils/loading";
 import * as CloudApi from "@/modules/cloud-api";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import {useNetwork} from "wagmi";
 
 const Keys: { [key: string]: any } = {
     issued: {
@@ -27,7 +28,9 @@ const Keys: { [key: string]: any } = {
 
 export default function Statistics() {
 
-    const account = useSelector((item: RootState) => item.account);
+    const {chain} = useNetwork();
+    const chainHexValue = `0x${chain?.id.toString(16)}`
+
     const [isLoading, setLoading] = useState(false);
     const [statistics, setStatistics] = useState({
         issued: 0,
@@ -40,7 +43,7 @@ export default function Statistics() {
 
     useEffect(() => {
         setLoading(true);
-        CloudApi.getStats({chainId: account.chainId})
+        CloudApi.getStats({chainId: chainHexValue})
             .then(response => {
                 if (response) {
                     setStatistics(response)
@@ -50,7 +53,7 @@ export default function Statistics() {
             .catch(error => {
                 console.log(error);
             })
-    }, [])
+    }, [chainHexValue])
 
     return <>
         <div className={Styles.stats}>

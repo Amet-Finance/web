@@ -1,4 +1,3 @@
-import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
@@ -21,7 +20,7 @@ export default function ActionButtons({info, actionHandler}: any) {
 
 function ActionButton({name, info, actionHandler}: { name: string, info: BondInfoDetailed, actionHandler: any }) {
     const [action, setAction] = actionHandler;
-    const account = useSelector((item: RootState) => item.account);
+    const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount()
     const isSelected = Actions[name] === action;
     const className = isSelected ? "text-white" : "text-g"
@@ -31,7 +30,7 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
         let nameTmp = name;
         if (Actions[name] === Actions.Redeem) {
             const contractAddress = info._id?.toLowerCase() || ""
-            const balanceTokenIds = account.balance[contractAddress] || [];
+            const balanceTokenIds = balance[contractAddress] || [];
             nameTmp += `(${balanceTokenIds.length})`;
         }
 
