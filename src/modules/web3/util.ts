@@ -1,5 +1,5 @@
 import {getWeb3Instance} from "@/modules/web3/index";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
 import {CHAINS} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
 
@@ -14,8 +14,7 @@ function toBN(value: number | string) {
 
 
 function getExplorer(chainId: number | undefined, type: ExplorerTypes, value: string) {
-    chainId = chainId || defaultChain.id
-    const chain = CHAINS.find(item => item.id === chainId);
+    const chain = getChain(chainId || defaultChain.id)
 
     switch (type) {
         case "token": {

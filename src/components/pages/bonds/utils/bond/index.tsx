@@ -40,7 +40,7 @@ export default function Bond({info}: { info: BondGeneral }) {
 }
 
 function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
-    const {chain} = useNetwork()
+
     const {
         chainId,
         interestTokenInfo,
@@ -56,8 +56,8 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
         isVerified: true
     })
 
-    const interestIcon = getIcon(chain?.id, interestToken)
-    const investmentIcon = getIcon(chain?.id, investmentToken)
+    const interestIcon = getIcon(Number(chainId), interestToken)
+    const investmentIcon = getIcon(Number(chainId), investmentToken)
 
     const title = `${interestTokenInfo?.symbol}-${investmentTokenInfo?.symbol}`
 
@@ -178,9 +178,8 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
 
 function BondFooter({bondInfo}: { bondInfo: BondGeneral }) {
 
-
     const {issuer, issuanceDate, chainId} = bondInfo;
-    const addressExplorer = getExplorer(Number(chainId), "address", issuer)
+    const addressExplorer = `/address/${issuer}`
 
     return <>
         <div className="flex items-center justify-between">

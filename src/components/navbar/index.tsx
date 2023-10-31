@@ -14,6 +14,7 @@ import {CHAINS, defaultChain, getChainIcon} from "@/modules/utils/wallet-connect
 import {useSwitchNetwork} from 'wagmi'
 import {NAV_ITEMS} from "@/components/navbar/constants";
 import {shorten} from "@/modules/web3/util";
+import Loading from "@/components/utils/loading";
 
 
 export default function Navbar() {
@@ -169,7 +170,7 @@ function Chains() {
     const chain = network.chain || defaultChain;
 
     if (isConnecting || isReconnecting) {
-        return null;
+        return <Loading percent={50}/>;
     }
 
 

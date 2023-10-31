@@ -13,7 +13,7 @@ import {nop} from "@/modules/utils/function";
 import {toBN} from "@/modules/web3/util";
 import {format} from "@/modules/utils/numbers";
 import {useAccount, useSendTransaction} from "wagmi";
-import {CHAINS} from "@/modules/utils/wallet-connect";
+import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
@@ -34,7 +34,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
 
-    const chain = CHAINS.find(item => item.id === chainId)
+    const chain = getChain(chainId);
     const chainIdHex = "0x" + chainId.toString(16)
 
 

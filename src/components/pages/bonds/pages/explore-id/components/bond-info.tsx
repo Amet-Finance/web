@@ -16,8 +16,7 @@ import {useEffect, useState} from "react";
 import {shortenString} from "@/modules/utils/string";
 import {copyAddress} from "@/modules/utils/address";
 import {requestAPI} from "@/modules/cloud-api/util";
-import {getChainIcon} from "@/modules/utils/wallet-connect";
-import {useNetwork} from "wagmi";
+import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 
 
 const BondTokens = {
@@ -58,7 +57,7 @@ function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
 }
 
 function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
-    const {chain} = useNetwork();
+    const chain = getChain(info.chainId);
 
     const bondAddress = getExplorer(chain?.id, "address", info._id);
     const localAddress = `/address/${info.issuer}`

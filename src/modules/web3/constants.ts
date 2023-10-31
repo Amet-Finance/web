@@ -10,7 +10,8 @@ const TxTypes = {
     TransferERC20: "transfer-erc20",
     WithdrawRemaining: 'withdraw-remaining',
     ChangeOwner: 'change-owner',
-    IssueMoreBonds: 'issue-more-bonds'
+    IssueMoreBonds: 'issue-more-bonds',
+    BurnUnsoldBonds: 'burn-unsold-bonds'
 }
 
 const TransactionMessages = {

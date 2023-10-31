@@ -34,9 +34,14 @@ function getChainIcon(chainId: string | number | undefined) {
     return `/svg/chains/${chainId}.svg`;
 }
 
+function getChain(chainId: string|number) {
+    return CHAINS.find(item => item.id === Number(chainId))
+}
+
 export {
     wagmiConfig,
     CHAINS,
     defaultChain,
-    getChainIcon
+    getChainIcon,
+    getChain
 }

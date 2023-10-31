@@ -8,10 +8,11 @@ import {RootState} from "@/store/redux/type";
 import AmetLoadingFull from "@/components/utils/amet-loading-full";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
 import {Chain, useAccount, useNetwork} from "wagmi";
+import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
 
 export default function ExploreId({_id, chainId}: { _id: string, chainId: string }) {
     const {address} = useAccount()
-    const {chain} = useNetwork();
+    const chain = getChain(chainId)
 
     const [bondInfo, setBondInfo] = useState({} as BondInfoDetailed);
 

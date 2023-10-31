@@ -5,6 +5,7 @@ import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {useNetwork} from "wagmi";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 
 export default function Explore() {
@@ -27,11 +28,9 @@ export default function Explore() {
 function BondsContainer() {
 
     const {chain} = useNetwork();
-    const chainHexValue = `0x${chain?.id.toString(16)}`
+    const chainHex = chain ? `0x${chain?.id.toString(16)}` : `0x${defaultChain.id.toString(16)}`
 
-    const [search, setSearch] = useState({
-        text: ""
-    });
+    const [search, setSearch] = useState({text: ""});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,
@@ -68,14 +67,14 @@ function BondsContainer() {
         const config = {
             skip: bonds.skip,
             limit: bonds.limit,
-            chainId: chainHexValue
+            chainId: chainHex
         }
         const interval = getBondsHandler([bonds, setBonds], config);
         return () => {
             clearInterval(interval)
         }
 
-    }, [bonds.limit, bonds.skip, chainHexValue]);
+    }, [bonds.limit, bonds.skip, chainHex]);
 
 
     return <>
@@ -91,11 +90,6 @@ function BondsContainer() {
             <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
                 {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
             </div>
-            {/*<div className='flex gap-4'>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>1</span>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>2</span>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>3</span>*/}
-            {/*</div>*/}
         </div>
     </>
 }

@@ -6,6 +6,7 @@ import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import ArrowSVG from "../../../../../../public/svg/utils/arrow";
 import {useNetwork} from "wagmi";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 export default function BondsShowcase() {
     return <>
@@ -24,6 +25,7 @@ export default function BondsShowcase() {
 function BondsScreen() {
 
     const {chain} = useNetwork();
+    const chainHex = chain ? `0x${chain?.id.toString(16)}` : `0x${defaultChain.id.toString(16)}`
 
     const [bonds, setBonds] = useState({
         isLoading: false,
@@ -40,7 +42,7 @@ function BondsScreen() {
         const config = {
             skip,
             limit,
-            chainId: "0x" + chain?.id.toString(16)
+            chainId: chainHex
         }
 
         const interval = getBondsHandler(bondsHandler, config);
@@ -48,7 +50,7 @@ function BondsScreen() {
             clearInterval(interval)
         }
 
-    }, [chain?.id, skip, limit])
+    }, [chainHex, skip, limit])
 
     if (isLoading) {
         return <div className={Styles.loader}><Loading/></div>

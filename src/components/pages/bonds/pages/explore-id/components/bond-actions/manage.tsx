@@ -7,6 +7,7 @@ import {useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
+import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
@@ -20,10 +21,7 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
             <Deposit bondInfo={info} tokens={tokens}/>
             <ChangeOwner bondInfo={info}/>
             <IssueBonds bondInfo={info}/>
-            <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
-                <input type="number" ref={burnBonds} className='px-2 w-full bg-transparent'/>
-                <button className="px-2 py-1 border border-l-2 border-w1">Burn bonds</button>
-            </div>
+            <BurnUnsoldBonds bondInfo={info}/>
         </div>
     </>
 }
@@ -31,11 +29,11 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
 
 function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Tokens }) {
 
-    const {_id, interestToken} = bondInfo;
-    const {chain} = useNetwork();
+    const {_id, chainId, interestToken} = bondInfo;
     const [amount, setAmount] = useState(0)
 
     const interestTokenInfo = tokens[interestToken]
+    const chain = getChain(chainId);
 
     const config = {
         contractAddress: interestToken,
@@ -47,6 +45,7 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0) || undefined,
         data: contractInfo.data,
+        chainId
     })
 
     const changeAmount = (event: any) => setAmount(event.target.value)
@@ -82,8 +81,8 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
 
 function WithdrawRemaining({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
-    const {_id, interestToken} = bondInfo;
-    const {chain} = useNetwork();
+    const {_id, chainId} = bondInfo;
+    const chain = getChain(chainId);
 
     const config = {contractAddress: _id,}
     const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
@@ -91,6 +90,7 @@ function WithdrawRemaining({bondInfo}: { bondInfo: BondInfoDetailed }) {
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0) || undefined,
         data: contractInfo.data,
+        chainId
     })
 
     async function withdrawRemaining() {
@@ -113,8 +113,8 @@ function WithdrawRemaining({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
 function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
-    const {_id, interestToken} = bondInfo;
-    const {chain} = useNetwork();
+    const {_id, chainId} = bondInfo;
+    const chain = getChain(chainId);
     const [newAddress, setChangeAddress] = useState("")
 
 
@@ -127,6 +127,7 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0) || undefined,
         data: contractInfo.data,
+        chainId
     })
 
     const onChange = (event: any) => setChangeAddress(event.target.value)
@@ -156,8 +157,8 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
 function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
-    const {_id} = bondInfo;
-    const {chain} = useNetwork();
+    const {_id, chainId} = bondInfo;
+    const chain = getChain(chainId);
     const [amount, setAmount] = useState(0)
 
 
@@ -169,6 +170,7 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0) || undefined,
         data: contractInfo.data,
+        chainId
     })
 
     const changeAmount = (event: any) => setAmount(event.target.value)
@@ -189,8 +191,53 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
     return <>
         <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
             <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent'/>
-            <button className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-white"
-                    onClick={issueMoreBonds}>Issue bonds {isLoading && <Loading percent={70}/>}</button>
+            <button
+                className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-white"
+                onClick={issueMoreBonds}>Issue bonds {isLoading && <Loading percent={70}/>}</button>
+        </div>
+    </>
+}
+
+function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
+    const {_id, chainId, interestToken} = bondInfo;
+    const [amount, setAmount] = useState(0)
+    const chain = getChain(chainId);
+
+    const config = {
+        contractAddress: interestToken,
+        amount
+    }
+    const contractInfo = getContractInfoByType(chain, TxTypes.BurnUnsoldBonds, config)
+    const {isLoading, sendTransactionAsync, data} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+        chainId
+    })
+
+    const changeAmount = (event: any) => setAmount(event.target.value)
+
+    async function burnUnsoldBonds() {
+        try {
+            if (!amount) {
+                return toast.error('Please fill the amount field!');
+            }
+
+            const response = await sendTransactionAsync();
+            await trackTransaction(chain, response.hash)
+        } catch (error) {
+
+        }
+    }
+
+    return <>
+        <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
+            <input type="number" className='px-2 w-full bg-transparent text-g'
+                   placeholder="The amount of bonds you want to burn"
+                   onChange={changeAmount}/>
+            <button
+                className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black"
+                onClick={burnUnsoldBonds}>Burn Unsold Bonds {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
 }

@@ -14,7 +14,7 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {format} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
-import {CHAINS} from "@/modules/utils/wallet-connect";
+import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {toast} from "react-toastify";
@@ -31,7 +31,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     } = info;
 
     const {address} = useAccount()
-    const chain = CHAINS.find(item => item.id === chainId);
+    const chain = getChain(chainId)
 
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
     const bondsLeft = Number(total) - Number(purchased);

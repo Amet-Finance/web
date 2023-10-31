@@ -11,12 +11,12 @@ import {format} from "@/modules/utils/numbers";
 import {useAccount, useNetwork, useSignMessage} from "wagmi";
 import {AccountParams} from "@/components/pages/address/address-id/type";
 import {getExplorer, shorten} from "@/modules/web3/util";
+import {mainnet} from "wagmi/chains";
 
 
 export default function AddressId({address}: {address: string}) {
 
     const account = useAccount();
-    const network = useNetwork();
 
     const [accountInfo, setAccountInfo] = useState<AccountParams>({})
     const [changeInfo, setChangeInfo] = useState({} as any)
@@ -26,7 +26,7 @@ export default function AddressId({address}: {address: string}) {
     const [isEdit, setEdit] = useState(false);
     const [refresh, setRefresh] = useState(0)
 
-    const addressExplorer = getExplorer(network.chain?.id, "address", address);
+    const addressExplorer = getExplorer(mainnet.id, "address", address);
 
     useEffect(() => {
         if (account.address) {
