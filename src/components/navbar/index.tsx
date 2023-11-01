@@ -22,9 +22,8 @@ export default function Navbar() {
     const {chain} = useNetwork();
 
     useEffect(() => {
-        if (address) {
-            const chainIdHex = `0x${chain?.id.toString(16)}`
-            AccountSlice.initBalance(address, chainIdHex)
+        if (address && chain?.id) {
+            AccountSlice.initBalance(address, chain?.id)
         }
     }, [address, chain]);
 
@@ -149,7 +148,8 @@ function ConnectedState() {
 
     return <>
         <div className={Styles.addressContainer}>
-            <button className='border border-w1 rounded px-8 py-3 cursor-pointer m-0' onClick={enable}>{shorten(address)}</button>
+            <button className='border border-w1 rounded px-8 py-3 cursor-pointer m-0'
+                    onClick={enable}>{shorten(address)}</button>
             {isEnabled && <>
                 <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
                     <Link href={`/address/${address}`}>
@@ -192,7 +192,7 @@ function ChainsDropDown({change}: any) {
     return <>
         <div className='
         absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-3 py-1 rounded z-40 h-28 overflow-x-auto
-        md:left-auto sm:left-0
+        md:left-auto sm:left-0 border border-w1
         '
              onClick={change}>
             {CHAINS.map(chain => <Chain chain={chain} key={chain.id}/>)}

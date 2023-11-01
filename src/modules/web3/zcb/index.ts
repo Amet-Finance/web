@@ -9,7 +9,7 @@ import {BondInfoDetailed} from "@/modules/web3/type";
 import {toBN} from "@/modules/web3/util";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import {Chain} from "wagmi";
-import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/constants";
+import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 
 function getContract(chain: Chain, contractAddress: string) {
     const web3 = getWeb3Instance(chain)
@@ -75,7 +75,7 @@ function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
     const interestAmount = toBN(Number(interestTokenAmount)).mul(toBN(10).pow(toBN(Number(interestTokenInfo.decimals))));
 
     const web3 = getWeb3Instance(chain)
-    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACT);
+    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);
     return contract.methods.create(
         total,
         redeemLockPeriod,

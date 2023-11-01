@@ -11,53 +11,26 @@ const counterSlice = createSlice({
     name: "account",
     initialState: {...emptyState},
     reducers: {
-        // connect: (state, {payload}) => {
-        //     state.address = payload;
-        // },
-        // connectAndSwitch: (state, {payload}) => {
-        //     state.address = payload.address;
-        //     state.chainId = payload.chainId;
-        // },
         updateBalance: (state, {payload}) => {
-            state.balance = payload
+            const {balance, chainId} = payload;
+            state.balance[chainId] = balance;
         },
-        // switchChain: (state, {payload}) => {
-        //     state.chainId = payload
-        // },
-        // disconnect: (state) => {
-        //     state.address = "";
-        // }
     },
 });
 
 const reducer = counterSlice.reducer;
 
 const {
-    // connect,
     updateBalance,
-    // disconnect,
-    // connectAndSwitch
 } = counterSlice.actions;
 
 
-// async function initiateWallet(address: string, chainId?: string) {
-//     chainId = chainId || CHAIN_IDS.Mumbai // todo update here
-//     store.dispatch(connectAndSwitch({address, chainId}))
-//
-//     // API calls here
-//     await initBalance(address, chainId);
-// }
-//
-// function disconnectWallet() {
-//     return store.dispatch(disconnect())
-// }
-
-async function initBalance(address: string | undefined, chainId: string) {
+async function initBalance(address: string | undefined, chainId: number) {
     if (address) {
         const balance = await CloudAPI.getBalance({address, chainId});
         if (balance) {
             delete balance._id;
-            store.dispatch(updateBalance(balance))
+            store.dispatch(updateBalance({balance, chainId}))
         }
     }
 }
@@ -65,7 +38,5 @@ async function initBalance(address: string | undefined, chainId: string) {
 export {
     counterSlice,
     reducer,
-    // initiateWallet,
     initBalance,
-    // disconnectWallet
 }

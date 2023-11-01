@@ -25,7 +25,7 @@ export default function BondsShowcase() {
 function BondsScreen() {
 
     const {chain} = useNetwork();
-    const chainHex = chain ? `0x${chain?.id.toString(16)}` : `0x${defaultChain.id.toString(16)}`
+    const chainId = chain?.id || defaultChain.id
 
     const [bonds, setBonds] = useState({
         isLoading: false,
@@ -39,18 +39,9 @@ function BondsScreen() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const config = {
-            skip,
-            limit,
-            chainId: chainHex
-        }
-
-        const interval = getBondsHandler(bondsHandler, config);
-        return () => {
-            clearInterval(interval)
-        }
-
-    }, [chainHex, skip, limit])
+        const interval = getBondsHandler(bondsHandler, {skip, limit, chainId});
+        return () => clearInterval(interval);
+    }, [chainId, skip, limit])
 
     if (isLoading) {
         return <div className={Styles.loader}><Loading/></div>

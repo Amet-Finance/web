@@ -28,7 +28,7 @@ export default function Explore() {
 function BondsContainer() {
 
     const {chain} = useNetwork();
-    const chainHex = chain ? `0x${chain?.id.toString(16)}` : `0x${defaultChain.id.toString(16)}`
+    const chainId = chain?.id || defaultChain.id
 
     const [search, setSearch] = useState({text: ""});
     const [bonds, setBonds] = useState({
@@ -38,13 +38,15 @@ function BondsContainer() {
         data: [] as BondGeneral[]
     })
 
+    const {data, skip, limit, isLoading} = bonds
+
     const onChange = (event: any) => setSearch({
         ...search,
         [event.target.id]: event.target.value
     });
 
     const bondsFiltered = () => {
-        return bonds.data.filter(item => {
+        return data.filter(item => {
             const {interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
             const searchExists = search.text
             if (Boolean(searchExists)) {
@@ -64,17 +66,13 @@ function BondsContainer() {
     }
 
     useEffect(() => {
-        const config = {
-            skip: bonds.skip,
-            limit: bonds.limit,
-            chainId: chainHex
-        }
-        const interval = getBondsHandler([bonds, setBonds], config);
-        return () => {
-            clearInterval(interval)
-        }
-
-    }, [bonds.limit, bonds.skip, chainHex]);
+        const interval = getBondsHandler([bonds, setBonds], {
+            skip,
+            limit,
+            chainId
+        });
+        return () => clearInterval(interval);
+    }, [limit, skip, chainId]);
 
 
     return <>

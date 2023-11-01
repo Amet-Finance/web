@@ -1,4 +1,4 @@
-import {TransactionMessages, TxTypes, ZCB_ISSUER_CONTRACT} from "@/modules/web3/constants";
+import {TransactionMessages, TxTypes, ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import * as ZCB from "@/modules/web3/zcb";
 import * as TokensWeb3 from './tokens';
 import Web3 from "web3";
@@ -23,7 +23,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
         switch (txType) {
             case TxTypes.IssueBond: {
                 return {
-                    to: ZCB_ISSUER_CONTRACT,
+                    to: ZCB_ISSUER_CONTRACTS[chain.id],
                     data: ZCB.issueBonds(chain, config),
                     value: `0x16345785D8A0000` // 0.1 ETH todo update this
                 }
@@ -127,8 +127,10 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 
 async function decodeTransactionLogs(transaction: TransactionReceipt) {
 
-    switch (transaction.to) {
-        case ZCB_ISSUER_CONTRACT: {
+    const isZcbIssuer = Object.values(ZCB_ISSUER_CONTRACTS).some(address => address.toLowerCase() === transaction.to.toLowerCase())
+
+    switch (true) {
+        case isZcbIssuer: {
             const decoded = ZCB.decode(transaction);
             return {
                 transaction,

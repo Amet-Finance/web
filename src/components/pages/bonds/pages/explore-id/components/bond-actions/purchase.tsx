@@ -112,7 +112,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
                 const response = await sendTransactionAsync();
                 await trackTransaction(chain, response.hash)
                 await sleep(4000);
-                await AccountSlice.initBalance(address, chainId.toString());
+                await AccountSlice.initBalance(address, chainId);
             }
 
             setEffectRefresher(Math.random());

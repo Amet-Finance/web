@@ -22,6 +22,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const {_id, redeemLockPeriod, chainId} = info;
     const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
+    const chain = getChain(chainId);
     const {open} = useWeb3Modal()
 
     const inputRef = useRef<any>(null)
@@ -30,14 +31,12 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const [loading, setLoading] = useState(false);
 
     const contractAddress = info._id?.toLowerCase() || ""
-    const balanceTokenIds = balance[contractAddress] || [];
+    const balanceTokenIds = balance[info.chainId]?.[contractAddress] || [];
 
     const [holdings, setHoldings] = useState([])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
 
-    const chain = getChain(chainId);
-    const chainIdHex = "0x" + chainId.toString(16)
 
 
     const contractInfo = getContractInfoByType(chain, TxTypes.RedeemBonds, {
@@ -52,11 +51,12 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     })
 
     useEffect(() => {
-        AccountSlice.initBalance(address, chainIdHex);
-        const interval = setInterval(() => AccountSlice.initBalance(address, chainIdHex), 10000);
-        return () => clearInterval(interval);
-
-    }, [chainId])
+        if (address && chainId) {
+            AccountSlice.initBalance(address, chainId);
+            const interval = setInterval(() => AccountSlice.initBalance(address, chainId), 10000);
+            return () => clearInterval(interval);
+        }
+    }, [address, chainId])
 
 
     useEffect(() => {
@@ -83,8 +83,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                 .catch(error => console.log(`getTokensPurchaseDates`, error))
                 .finally(() => setLoading(false))
         }
-    }, [address, balance?.[contractAddress]])
-
+    }, [address, balanceTokenIds])
 
     const onChange = (event: any) => {
         const amountLocal = Number(event.target.value)

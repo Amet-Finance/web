@@ -1,5 +1,9 @@
 type Account = {
-    balance: { [contractAddress: string]: any[] } // tokenId[]
+    balance: {
+        [chainId: number]: {
+            [contractAddress: string]: any[] // tokenId[]
+        }
+    }
 }
 
 export type {

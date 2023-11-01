@@ -1,6 +1,11 @@
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
-const ZCB_ISSUER_CONTRACT = '0xfa8c2f92b55cd2aaeac869587f8d333c7565e90a'
+import {bscTestnet, polygonMumbai} from "wagmi/chains";
 
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
+
+const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
+    [polygonMumbai.id]: "0x8F0A753b24b77AA8C1D9d56324e0abA14b900C16",
+    [bscTestnet.id]: ""
+}
 
 const TxTypes = {
     IssueBond: 'issue-bonds',
@@ -21,7 +26,7 @@ const TransactionMessages = {
 }
 
 export {
-    ZCB_ISSUER_CONTRACT,
+    ZCB_ISSUER_CONTRACTS,
     ZERO_ADDRESS,
     TxTypes,
     TransactionMessages
