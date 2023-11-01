@@ -6,6 +6,7 @@ export default function MediumSVG({url}: { url: string }) {
         <Link href={url} target="_blank" rel="noreferrer">
             <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
+                    className='firstOne'
                     d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
                     fill="#7D7D7D"/>
                 <path
@@ -21,11 +22,11 @@ export default function MediumSVG({url}: { url: string }) {
 
         </Link>
         <style jsx>{`
-          .hover {
+          svg {
             cursor: pointer;
           }
 
-          .hover:hover path {
+          svg:hover .firstOne {
             fill: #fff;
           }
         `}</style>

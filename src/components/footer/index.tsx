@@ -8,12 +8,14 @@ import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import LinkedInSVG from "../../../public/svg/social/linkedin";
 import MediumSVG from "../../../public/svg/social/medium";
+import GithubSVG from "../../../public/svg/social/github";
 
 export default function Footer() {
     return <>
         <footer className="flex flex-col items-center z-20 bg-black">
             <div className='w-full h-px bg-b2'/>
-            <div className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between py-4 px-16 w-full">
+            <div
+                className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between py-4 px-16 w-full">
                 <div className='flex flex-col md:items-start sm:items-center gap-2'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>
@@ -23,6 +25,7 @@ export default function Footer() {
                         <RedditSVG url={URLS.Reddit}/>
                         <LinkedInSVG/>
                         <MediumSVG url={URLS.Medium}/>
+                        <GithubSVG url={URLS.Github}/>
                     </div>
                     <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
                 </div>
