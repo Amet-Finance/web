@@ -28,7 +28,7 @@ export default function Bond({info}: { info: BondGeneral }) {
         <Link href={bondUrl}>
             <div
                 className="flex flex-col justify-center
-                rounded-md px-5 py-3 gap-3 cursor-pointer
+                rounded-md px-5 py-3 gap-2 cursor-pointer
                  bg-b3 border border-w1 hover:border-w2
                  ">
                 <BondHeader bondInfo={info}/>
@@ -42,6 +42,9 @@ export default function Bond({info}: { info: BondGeneral }) {
 function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
 
     const {
+        total,
+        purchased,
+        redeemed,
         chainId,
         interestTokenInfo,
         investmentTokenInfo,
@@ -49,6 +52,7 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
         interestToken,
     } = bondInfo;
 
+    const isSold = total - purchased === 0
     const [investment, setInvestment] = useState({
         isVerified: true
     })
@@ -91,6 +95,7 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                     }
                 </div>
             </div>
+            {isSold && <span className='whitespace-nowrap px-2 bg-white text-black rounded-sm font-medium text-sm'>SOLD OUT</span>}
         </div>
     </>
 }

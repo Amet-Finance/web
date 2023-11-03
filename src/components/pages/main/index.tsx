@@ -18,7 +18,6 @@ const Texts = {
 
 export default function Home() {
     const bondsRef = useRef<any>(null);
-    const statsAndDocs = useRef<any>(null)
     const scrollToView = () => bondsRef.current.scrollIntoView({behavior: "smooth", block: "start", inline: "start"})
 
     return <>
@@ -79,7 +78,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            <div className={Styles.statsAndDocs} ref={statsAndDocs}>
+            <div className={Styles.statsAndDocs}>
                 <div className={Styles.statistics}>
                     <div className={Styles.stat}>
                         <span className="font-bold text-4xl">$100K+</span>

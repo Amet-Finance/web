@@ -1,14 +1,12 @@
 import BondActions from "@/components/pages/bonds/pages/explore-id/components/bond-actions";
 import {useEffect, useState} from "react";
 import {getTokenInfo} from "@/modules/web3/tokens";
-import {useSelector} from "react-redux";
 import * as Web3ZCB from "@/modules/web3/zcb";
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import {RootState} from "@/store/redux/type";
 import AmetLoadingFull from "@/components/utils/amet-loading-full";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
-import {Chain, useAccount, useNetwork} from "wagmi";
-import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {Chain, useAccount} from "wagmi";
+import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function ExploreId({_id, chainId}: { _id: string, chainId: string }) {
     const {address} = useAccount()

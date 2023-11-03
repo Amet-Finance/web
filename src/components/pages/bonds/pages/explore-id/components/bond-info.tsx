@@ -136,8 +136,16 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
     const isLoading = !investmentTokenInfo || !interestTokenInfo
 
     useEffect(() => {
-        if (investmentTokenInfo?.icon) requestAPI({url: investmentTokenInfo.icon}).then((data) => setWarning(!Boolean(data)))
-        if (interestTokenInfo?.icon) requestAPI({url: interestTokenInfo.icon}).then((data) => setWarning(!Boolean(data)))
+        if (investmentTokenInfo?.icon) {
+            requestAPI({url: investmentTokenInfo.icon}).then((data) => {
+                if (!data) setWarning(true)
+            })
+        }
+        if (interestTokenInfo?.icon) {
+            requestAPI({url: interestTokenInfo.icon}).then((data) => {
+                if (!data) setWarning(true)
+            })
+        }
     }, [investmentTokenInfo?.icon, interestTokenInfo?.icon])
 
 
