@@ -19,7 +19,7 @@ const Texts = {
 export default function Home() {
     const bondsRef = useRef<any>(null);
     const statsAndDocs = useRef<any>(null)
-    const scrollToView = () => statsAndDocs.current.scrollIntoView({behavior: "smooth", block: "end", inline: "end"})
+    const scrollToView = () => bondsRef.current.scrollIntoView({behavior: "smooth", block: "start", inline: "start"})
 
     return <>
         <main className="relative flex flex-col min-h-screen md:pt-20 sm:pt-10 gap-20">
