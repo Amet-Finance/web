@@ -3,7 +3,7 @@ import {bscTestnet, polygonMumbai} from "wagmi/chains";
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    [polygonMumbai.id]: "0x8F0A753b24b77AA8C1D9d56324e0abA14b900C16",
+    [polygonMumbai.id]: "0x0203E584Bb1EA7985CC0Ba847c0ec169Fbc7A2E6",
     [bscTestnet.id]: ""
 }
 

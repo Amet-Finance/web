@@ -2,6 +2,8 @@ type BondsAPIParams = {
     skip: number;
     limit: number;
     chainId: number;
+    issuer?: string;
+    _id?: string[];
 }
 
 type StatsAPIParams = {
