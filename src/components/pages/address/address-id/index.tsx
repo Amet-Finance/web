@@ -82,8 +82,8 @@ export default function AddressId({address}: { address: string }) {
 
                 <div className='flex flex-col items-start gap-4 w-full'>
                     <div className='flex items-center justify-between w-full'>
-                        <Image src={makeBlockie(address)} alt={address} width={82} height={82}
-                               className='rounded-full border border-w1'/>
+                        <Image src={makeBlockie(address)} alt={address} width={102} height={102}
+                               className='rounded-full border-4 border-white '/>
                     </div>
 
                     <div className='grid grid-cols-2 items-center gap-y-2 font-medium w-full'>
