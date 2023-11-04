@@ -166,7 +166,7 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
                             <span className='text-g'>Period:</span>
                         </div>
                         <span
-                            className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
+                            className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                     </div>
                 </div>
                 <PieChart total={total} purchased={purchased} redeemed={redeemed}/>

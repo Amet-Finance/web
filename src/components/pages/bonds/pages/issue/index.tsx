@@ -262,7 +262,7 @@ export default function Issue() {
                                 <ClockSVG/>
                                 <span>Redeem Lock Period:</span>
                             </div>
-                            <span className='font-bold'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
+                            <span className='font-bold whitespace-nowrap'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
                         </div>
                     </div>
 

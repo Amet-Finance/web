@@ -6,6 +6,7 @@ import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {useNetwork} from "wagmi";
 import {defaultChain} from "@/modules/utils/wallet-connect";
+import Loading from "@/components/utils/loading";
 
 
 export default function Explore() {
@@ -85,9 +86,17 @@ function BondsContainer() {
                        onChange={onChange}
                 />
             </div>
-            <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
-                {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
-            </div>
+            {
+                isLoading ?
+                    <><div className='flex items-center justify-center w-full h-56'><Loading percent={-50}/></div></> :
+                    <>
+                        <div
+                            className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
+                            {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any}
+                                                                                          key={index}/>)}
+                        </div>
+                    </>
+            }
         </div>
     </>
 }

@@ -271,7 +271,7 @@ function BondsScreen({isLoading, contracts}: { isLoading: boolean, contracts: Bo
     return <>
         {contracts.length ?
             <>
-                <div className="grid xl1:grid-cols-2 xl:grid-cols-1 gap-4 pt-6">
+                <div className="grid xl1:grid-cols-2 xl:grid-cols-1 gap-4 pt-6 w-max">
                     {contracts.map((item: any, index: number) => <Bond info={item} key={index}/>)}
                 </div>
             </> : <>

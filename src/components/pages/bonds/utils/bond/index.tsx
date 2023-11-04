@@ -139,7 +139,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
 
     const SectionContainer = ({children}: any) => {
         return <>
-            <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
+            <div className='flex items-center justify-between md:gap-12 sm:gap-4 px-0 py-1'>
                 {children}
             </div>
         </>
@@ -173,7 +173,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                         <ClockSVG/>
                         <span className='text-g whitespace-nowrap'>Lock Period:</span>
                     </div>
-                    <span className='text-sm font-bold'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
+                    <span className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                 </SectionContainer>
             </div>
             <PieChart total={total} redeemed={redeemed} purchased={purchased}/>
