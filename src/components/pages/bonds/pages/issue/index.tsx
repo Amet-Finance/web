@@ -1,21 +1,17 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
 import {useEffect, useState} from "react";
-import {formatTime} from "@/modules/utils/dates";
+import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenInfo} from "@/modules/web3/tokens";
-import {useSelector} from "react-redux";
 import Loading from "@/components/utils/loading";
-import * as Web3Service from "@/modules/web3";
-import {CHAIN_INFO, TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
-import {decode} from "@/modules/web3/zcb";
+import {TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {toast} from "react-toastify";
 import {format} from "@/modules/utils/numbers";
 import WarningSVG from "../../../../../../public/svg/warning";
 import InfoSVG from "../../../../../../public/svg/info";
-import {RootState} from "@/store/redux/type";
 import ClockSVG from "../../../../../../public/svg/clock";
 import {join} from "@/modules/utils/styles";
 import TypeSVG from "../../../../../../public/svg/type";
@@ -23,6 +19,9 @@ import TotalSVG from "../../../../../../public/svg/total";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
 import {TokenInfo} from "@/modules/web3/type";
+import {Chain, useAccount, useNetwork, useSendTransaction} from "wagmi";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 const BondTokenInfo = {
     Investment: 'investmentToken',
@@ -31,60 +30,75 @@ const BondTokenInfo = {
 
 export default function Issue() {
 
-    const account = useSelector((item: RootState) => item.account);
+    const account = useAccount();
+    const {chain} = useNetwork();
+    const {open} = useWeb3Modal()
+
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
     const [investmentTokenInfo, setInvestmentTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
     const [interestTokenInfo, setInterestTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
     const bondsHandler = [bondInfo, setBondInfo]
 
-    const connectionConfig = {
-        type: account.connection.type,
-        chainId: account.chainId,
-        requestChain: true,
-        requestAccounts: true,
-    }
+
+    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, bondInfo)
+
+    const {isLoading, sendTransactionAsync} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+    })
+
 
     async function submit() {
-        if (
-            !bondInfo.investmentToken ||
-            !bondInfo.interestToken ||
-            !bondInfo.total ||
-            !bondInfo.redeemLockPeriod ||
-            !bondInfo.investmentTokenAmount ||
-            !bondInfo.interestTokenAmount
-        ) {
-            toast.error(`Please fill all the empty inputs`)
-            return;
-        }
+        try {
+
+            if (
+                !bondInfo.investmentToken ||
+                !bondInfo.interestToken ||
+                !bondInfo.total ||
+                !bondInfo.redeemLockPeriod ||
+                !bondInfo.investmentTokenAmount ||
+                !bondInfo.interestTokenAmount
+            ) {
+                return toast.error(`Please fill all the empty inputs`)
+            }
 
 
-        if (investmentTokenInfo?.unidentified) {
-            toast.error(`We could not identify Investment token`)
-            return;
-        }
+            if (investmentTokenInfo?.unidentified) {
+                return toast.error(`We could not identify the Investment token`)
+            }
 
-        if (interestTokenInfo?.unidentified) {
-            toast.error(`We could not identify Interest token`)
-            return;
-        }
+            if (interestTokenInfo?.unidentified) {
+                toast.error(`We could not identify the Interest token`)
+                return;
+            }
 
-        bondInfo.investmentTokenInfo = investmentTokenInfo;
-        bondInfo.interestTokenInfo = interestTokenInfo;
+            if (!account.address) {
+                return open()
+            }
+
+            bondInfo.investmentTokenInfo = investmentTokenInfo;
+            bondInfo.interestTokenInfo = interestTokenInfo;
 
 
-        const transaction = await Web3Service.submitTransaction({
-            connectionConfig,
-            txType: TxTypes.IssueBond,
-            config: bondInfo
-        });
-        if (transaction) {
-            const decoded = decode(transaction);
-            return openModal(ModalTypes.IssuedBondSuccess, {
-                bondInfo,
-                transaction,
-                decoded
-            })
+            const response = await sendTransactionAsync?.()
+            if (response?.hash && chain) {
+                const txResponse = await trackTransaction(chain, response?.hash)
+                if (txResponse) {
+                    const {transaction, decoded} = txResponse
+                    console.log(`transaction`, transaction);
+                    return openModal(ModalTypes.IssuedBondSuccess, {
+                        bondInfo,
+                        transaction,
+                        decoded
+                    })
+                }
+
+            }
+
+        } catch (error: any) {
+            // toast.error(error.message)
         }
     }
 
@@ -100,13 +114,13 @@ export default function Issue() {
         })
     }
 
-    function getToken(chainId: string, type: string) {
+    function getToken(chain: Chain | undefined, type: string) {
         const isInvestment = type === "investmentToken"
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
         const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
 
         const contractAddress = (contractAddressTmp || "").toLowerCase();
-        if (!contractAddress) {
+        if (!contractAddress || !chain) {
             return;
         }
 
@@ -125,7 +139,7 @@ export default function Issue() {
 
         const timer = setInterval(async () => {
 
-            const tokenInfo = await getTokenInfo(chainId, contractAddress, account.address);
+            const tokenInfo = await getTokenInfo(chain, contractAddress, account.address);
             if (tokenInfo) {
                 setToken({...tokenInfo})
             } else {
@@ -137,14 +151,14 @@ export default function Issue() {
     }
 
     useEffect(() => {
-        const timer = getToken(account.chainId, "interestToken");
+        const timer = getToken(chain, "interestToken");
         return () => clearTimeout(timer)
-    }, [account.chainId, bondInfo.interestToken])
+    }, [chain, account.address, bondInfo.interestToken])
 
     useEffect(() => {
-        const timer = getToken(account.chainId, "investmentToken");
+        const timer = getToken(chain, "investmentToken");
         return () => clearTimeout(timer)
-    }, [account.chainId, bondInfo.investmentToken])
+    }, [chain, account.address, bondInfo.investmentToken])
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
     const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
@@ -216,7 +230,9 @@ export default function Issue() {
                             &nbsp;and&nbsp;
                             <Link href={URLS.TermsOfService} target="_blank"><u>Terms of use.</u></Link>
                         </p>
-                        <button className={Styles.submit} onClick={submit}>Issue bonds</button>
+                        <button className={Styles.submit + " flex items-center justify-center gap-2"}
+                                onClick={submit}> {isLoading && <Loading percent={70}/>} Issue bonds
+                        </button>
                     </div>
                 </div>
                 <div className={Styles.form}>
@@ -366,15 +382,13 @@ function Token({token}: any) {
 }
 
 function NotIdentified() {
-
-    const account = useSelector((item: RootState) => item.account)
-    const chainInfo = CHAIN_INFO[account.chainId]
+    const {chain} = useNetwork()
 
     return <>
         <div className="flex items-center gap-4">
             <p className='text-sm break-words'>
                 Could not identify the token, make sure the contract is correct for
-                <span className="text-rl-1 font-bold"> {chainInfo.chainName} network</span>
+                <span className="text-rl-1 font-bold"> {chain?.name} network</span>
             </p>
             <WarningSVG/>
         </div>
@@ -384,11 +398,6 @@ function NotIdentified() {
 
 function RedeemLockPeriod({bondsHandler}: any) {
     const [bondInfo, setBondsInfo] = bondsHandler;
-
-    const hourInSec = 60 * 60
-    const dayInSec = 24 * hourInSec
-    const monthInSec = 30 * dayInSec
-    const yearInSec = 365 * dayInSec
 
     const [timer, setTimer] = useState({
         hour: 0,
@@ -414,10 +423,10 @@ function RedeemLockPeriod({bondsHandler}: any) {
     useEffect(() => {
         const action = setTimeout(() => {
             let total = 0
-            total += timer.hour * hourInSec
-            total += timer.day * dayInSec
-            total += timer.month * monthInSec
-            total += timer.year * yearInSec
+            total += (timer.hour || 0) * hourInSec
+            total += (timer.day || 0) * dayInSec
+            total += (timer.month || 0) * monthInSec
+            total += (timer.year || 0) * yearInSec
 
             setBondsInfo({
                 ...bondInfo,
@@ -429,6 +438,8 @@ function RedeemLockPeriod({bondsHandler}: any) {
             clearTimeout(action)
         }
     }, [timer])
+
+    console.log(bondInfo.redeemLockPeriod / 60 / 60 / 365 + "hour")
 
     return <>
         <div className="flex flex-col  gap-2 w-full">

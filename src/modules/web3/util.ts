@@ -1,15 +1,46 @@
 import {getWeb3Instance} from "@/modules/web3/index";
-import {CHAIN_IDS} from "@/modules/web3/constants";
+import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
+import {CHAINS} from "@/modules/utils/wallet-connect";
+import {ExplorerTypes} from "@/modules/web3/type";
+
 
 function getUtils() {
-    return getWeb3Instance(CHAIN_IDS.Mumbai).utils
+    return getWeb3Instance(defaultChain).utils
 }
 
 function toBN(value: number | string) {
     return getUtils().toBN(value)
 }
 
-export  {
+
+function getExplorer(chainId: number | undefined, type: ExplorerTypes, value: string) {
+    const chain = getChain(chainId || defaultChain.id)
+
+    switch (type) {
+        case "token": {
+            return `${chain?.blockExplorers?.default.url}/token/${value}`
+        }
+        case "address" : {
+            return `${chain?.blockExplorers?.default.url}/address/${value}`
+        }
+    }
+}
+
+function shorten(address: string | any, length = 6) {
+    if (!address || address.length <= length) {
+        return address;
+    }
+
+    const start = address.substring(0, length);
+    const end = address.substring(address.length - length);
+
+    return `${start}...${end}`;
+}
+
+
+export {
     getUtils,
-    toBN
+    toBN,
+    getExplorer,
+    shorten
 }

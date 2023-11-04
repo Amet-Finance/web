@@ -1,21 +1,23 @@
 import ZCB_Issuer_ABI from '../abi-jsons/ZCB_Issuer.json'
 import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
 import {getWeb3Instance} from "@/modules/web3";
-import {ZCB_ISSUER_CONTRACT} from "@/modules/web3/zcb/constants";
+
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {TransactionReceipt} from "web3-core";
 import {getTokenBalance} from "@/modules/web3/tokens";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {toBN} from "@/modules/web3/util";
-import {CHAIN_IDS} from "@/modules/web3/constants";
+import {defaultChain} from "@/modules/utils/wallet-connect";
+import {Chain} from "wagmi";
+import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 
-function getContract(chainId: string, contractAddress: string) {
-    const web3 = getWeb3Instance(chainId)
+function getContract(chain: Chain, contractAddress: string) {
+    const web3 = getWeb3Instance(chain)
     return new web3.eth.Contract(ZCB_ABI as any, contractAddress);
 }
 
-async function getBondInfo(chainId: string, contractAddress: string): Promise<BondInfoDetailed> {
-    const contract = getContract(chainId, contractAddress);
+async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondInfoDetailed> {
+    const contract = getContract(chain, contractAddress);
     const info = await contract.methods.getInfo().call();
 
     const [
@@ -29,7 +31,7 @@ async function getBondInfo(chainId: string, contractAddress: string): Promise<Bo
 
     return {
         _id: contractAddress,
-        chainId,
+        chainId: chain.id,
         issuer,
         total,
         purchased,
@@ -39,18 +41,18 @@ async function getBondInfo(chainId: string, contractAddress: string): Promise<Bo
         investmentTokenAmount,
         interestToken,
         interestTokenAmount,
-        interestTokenBalance: await getTokenBalance(chainId, interestToken, contractAddress),
+        interestTokenBalance: await getTokenBalance(chain, interestToken, contractAddress),
         feePercentage,
         issuanceDate
     };
 }
 
-async function getTokensPurchaseDates(chainId: string, contractAddress: string, tokenIds: number[]) {
-    const contract = getContract(chainId, contractAddress);
+async function getTokensPurchaseDates(chain: any, contractAddress: string, tokenIds: number[]) {
+    const contract = getContract(chain, contractAddress);
     return await contract.methods.getTokensPurchaseDates(tokenIds).call();
 }
 
-function issueBonds(chainId: string, bondInfo: BondInfo): string | undefined {
+function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
     const {
         total,
         redeemLockPeriod,
@@ -72,8 +74,8 @@ function issueBonds(chainId: string, bondInfo: BondInfo): string | undefined {
     const investmentAmount = toBN(Number(investmentTokenAmount)).mul(toBN(10).pow(toBN(Number(investmentTokenInfo.decimals))));
     const interestAmount = toBN(Number(interestTokenAmount)).mul(toBN(10).pow(toBN(Number(interestTokenInfo.decimals))));
 
-    const web3 = getWeb3Instance(chainId)
-    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACT);
+    const web3 = getWeb3Instance(chain)
+    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);
     return contract.methods.create(
         total,
         redeemLockPeriod,
@@ -85,24 +87,39 @@ function issueBonds(chainId: string, bondInfo: BondInfo): string | undefined {
     ).encodeABI();
 }
 
-function purchase(chainId: string, contractAddress: string, count: number) {
-    const contract = getContract(chainId, contractAddress)
+function purchase(chain: Chain, contractAddress: string, count: number) {
+    const contract = getContract(chain, contractAddress)
     return contract.methods.purchase(count).encodeABI();
 }
 
-function redeem(chainId: string, contractAddress: string, ids: string[]) {
-    const contract = getContract(chainId, contractAddress)
-    return contract.methods.redeem(ids).encodeABI();
+function redeem(chain: Chain, contractAddress: string, tokenIds: string[]) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.redeem(tokenIds).encodeABI();
 }
 
-function withdrawRemaining(chainId: string, contractAddress: string) {
-    const contract = getContract(chainId, contractAddress)
+function withdrawRemaining(chain: Chain, contractAddress: string) {
+    const contract = getContract(chain, contractAddress)
     return contract.methods.withdrawRemaining().encodeABI();
+}
+
+function changeOwner(chain: Chain, contractAddress: string, newAddress: string) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.changeOwner(newAddress).encodeABI();
+}
+
+function issueMoreBonds(chain: Chain, contractAddress: string, amount: number) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.issueBonds(amount).encodeABI();
+}
+
+function burnUnsoldBonds(chain: Chain, contractAddress: string, amount: number) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.burnUnsoldBonds(amount).encodeABI();
 }
 
 function decode(transaction: TransactionReceipt): {} {
 
-    const web3 = getWeb3Instance(CHAIN_IDS.Mumbai); // todo here it is hardcoded
+    const web3 = getWeb3Instance(defaultChain); // todo here it is hardcoded
     const eventAbi: any = ZCB_Issuer_ABI.find((abi) => abi.name === "Create");
     const eventSignature = web3.eth.abi.encodeEventSignature(eventAbi);
 
@@ -125,10 +142,14 @@ function decode(transaction: TransactionReceipt): {} {
 }
 
 export {
+
     issueBonds,
     purchase,
     redeem,
+    changeOwner,
     withdrawRemaining,
+    burnUnsoldBonds,
+    issueMoreBonds,
     decode,
     getBondInfo,
     getTokensPurchaseDates

@@ -6,20 +6,24 @@ import {RootState} from "@/store/redux/type";
 import {getTokensPurchaseDates} from "@/modules/web3/zcb";
 import {formatTime} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
-import * as Web3Service from "@/modules/web3";
-import {TxTypes, WalletTypes} from "@/modules/web3/constants";
+import {TxTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
 import Loading from "@/components/utils/loading";
-import SelectAllSVG from "../../../../../../../../public/svg/select-all";
-import ClearSVG from "../../../../../../../../public/svg/clear";
 import {nop} from "@/modules/utils/function";
 import {toBN} from "@/modules/web3/util";
 import {format} from "@/modules/utils/numbers";
+import {useAccount, useSendTransaction} from "wagmi";
+import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
 
     const {_id, redeemLockPeriod, chainId} = info;
-    const account = useSelector((item: RootState) => item.account);
+    const {balance} = useSelector((item: RootState) => item.account);
+    const {address} = useAccount();
+    const chain = getChain(chainId);
+    const {open} = useWeb3Modal()
 
     const inputRef = useRef<any>(null)
     const [tokenIds, setTokenIds] = useState([] as any);
@@ -27,19 +31,32 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const [loading, setLoading] = useState(false);
 
     const contractAddress = info._id?.toLowerCase() || ""
-    const balanceTokenIds = account.balance[contractAddress] || [];
+    const balanceTokenIds = balance[info.chainId]?.[contractAddress] || [];
 
     const [holdings, setHoldings] = useState([])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
 
 
-    useEffect(() => {
-        AccountSlice.initBalance(account.address, chainId);
-        const interval = setInterval(() => AccountSlice.initBalance(account.address, chainId), 10000);
-        return () => clearInterval(interval);
 
-    }, [chainId])
+    const contractInfo = getContractInfoByType(chain, TxTypes.RedeemBonds, {
+        contractAddress: _id,
+        tokenIds
+    })
+
+    const {isLoading, sendTransactionAsync} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+    })
+
+    useEffect(() => {
+        if (address && chainId) {
+            AccountSlice.initBalance(address, chainId);
+            const interval = setInterval(() => AccountSlice.initBalance(address, chainId), 10000);
+            return () => clearInterval(interval);
+        }
+    }, [address, chainId])
 
 
     useEffect(() => {
@@ -47,7 +64,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             if (!holdings.length) {
                 setLoading(true);
             }
-            getTokensPurchaseDates(account.chainId, contractAddress, balanceTokenIds)
+            getTokensPurchaseDates(chain, contractAddress, balanceTokenIds)
                 .then(response => {
                     const utcTimestamp = Date.now() / 1000;
                     const tokensWithDates = response.map((date: number, index: number) => {
@@ -66,8 +83,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                 .catch(error => console.log(`getTokensPurchaseDates`, error))
                 .finally(() => setLoading(false))
         }
-    }, [account.address, account.chainId, account.balance[contractAddress]])
-
+    }, [address, balanceTokenIds])
 
     const onChange = (event: any) => {
         const amountLocal = Number(event.target.value)
@@ -77,30 +93,25 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     async function submit() {
 
-        if (!tokenIds.length) {
-            toast.error("You did not select a bond");
-            return;
-        }
-
-        await Web3Service.submitTransaction({
-            connectionConfig: {
-                type: account.connection.type,
-                chainId: chainId,
-                requestChain: true,
-                requestAccounts: true,
-            },
-            txType: TxTypes.RedeemBonds,
-            config: {
-                contractAddress: _id,
-                ids: tokenIds
+        try {
+            if (!address) {
+                return open();
             }
-        });
-        setTimeout(() => {
-            AccountSlice.initBalance(account.address, chainId);
-        }, 5000);
-        setTokenIds([]);
-        setAmount(0);
-        inputRef.current.value = "";
+
+            if (!tokenIds.length) {
+                toast.error("You did not select a bond");
+                return;
+            }
+
+            const response = await sendTransactionAsync();
+            await trackTransaction(chain, response.hash);
+
+            setTokenIds([]);
+            setAmount(0);
+            inputRef.current.value = "";
+        } catch (error: any) {
+
+        }
     }
 
     function setPercent(percent: number) {
@@ -141,6 +152,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         }
 
         return <button className={className} onClick={onClick}>
+            {isLoading && <Loading percent={70}/>}
             {title}
             {totalAmountText && <span className={totalAmountStyle}>{totalAmountText}</span>}
         </button>

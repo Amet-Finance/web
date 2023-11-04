@@ -1,20 +1,20 @@
-import {BondInfo, Tokens} from "@/components/pages/bonds/pages/issue/type";
+import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {useEffect, useRef, useState} from "react";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import {getAllowance} from "@/modules/web3/tokens";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import Loading from "@/components/utils/loading";
-import * as Web3Service from "@/modules/web3";
-import {TxTypes, WalletTypes} from "@/modules/web3/constants";
+import {TxTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
 import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {toast} from "react-toastify";
 import {format} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
+import {getChain} from "@/modules/utils/wallet-connect";
+import {useAccount, useSendTransaction} from "wagmi";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
@@ -27,6 +27,10 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         investmentToken
     } = info;
 
+    const {address} = useAccount()
+    const {open} = useWeb3Modal()
+    const chain = getChain(chainId)
+
     const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
     const bondsLeft = Number(total) - Number(purchased);
 
@@ -34,23 +38,14 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const inputRef = useRef<any>();
     const [amount, setAmount] = useState(0);
     const [allowance, setAllowance] = useState(0)
-    const account = useSelector((item: RootState) => item.account);
-    const {address} = account;
 
     useEffect(() => {
-        getAllowance(chainId, investmentToken, address, _id)
-            .then(response => setAllowance(response))
-            .catch(() => null)
-    }, [_id, investmentToken, address, effectRefresher])
-
-
-    if (!investmentTokenInfo) {
-        return <>
-            <div className='flex justify-center items-center w-full'>
-                <Loading/>
-            </div>
-        </>;
-    }
+        if (chain && address) {
+            getAllowance(chain, investmentToken, address, _id)
+                .then(response => setAllowance(response))
+                .catch(() => null)
+        }
+    }, [chain, _id, investmentToken, address, effectRefresher])
 
 
     const decimals = Number(investmentTokenInfo?.decimals) || 18
@@ -61,62 +56,69 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
     const isApproval = totalPrice > allowanceDivided;
 
-    function onChange(event: Event | any) {
-        const {value} = event.target;
-        setAmount(Number(value) || 0);
+    const onChange = (event: any) => setAmount(Number(event.target.value) || 0);
+
+
+    const txType = isApproval ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
+    const config = isApproval ? {
+        contractAddress: investmentToken,
+        spender: _id,
+        value: toBN(amount).mul(toBN(investmentTokenAmount))
+    } : {
+        contractAddress: _id,
+        count: amount
+    }
+
+    const contractInfo = getContractInfoByType(chain, txType, config)
+    const {isLoading, sendTransactionAsync, status} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+    })
+
+    console.log(status)
+
+    if (!investmentTokenInfo) {
+        return <>
+            <div className='flex justify-center items-center w-full'>
+                <Loading/>
+            </div>
+        </>;
     }
 
     async function submit() {
-        if (isApproval) {
-
-            if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {
-                return;
+        try {
+            if (!address) {
+                return open()
             }
 
-            const transaction = await Web3Service.submitTransaction({
-                connectionConfig: {
-                    type: account.connection.type,
-                    chainId: chainId,
-                    requestChain: true,
-                    requestAccounts: true,
-                },
-                txType: TxTypes.ApproveToken,
-                config: {
-                    contractAddress: investmentToken,
-                    spender: _id,
-                    value: toBN(amount).mul(toBN(investmentTokenAmount))
+            if (isApproval) {
+
+                if (!investmentTokenInfo?.decimals || !investmentTokenAmount) {
+                    return;
                 }
-            });
-            console.log(transaction)
-        } else {
-            if (!Number(amount) || !isFinite(amount)) {
-                return;
-            }
 
-            if (!localStorage.getItem('quizPassed')) {
-                return openModal(ModalTypes.Quiz)
-            }
-
-            const transaction = await Web3Service.submitTransaction({
-                connectionConfig: {
-                    type: account.connection.type,
-                    chainId: chainId,
-                    requestChain: true,
-                    requestAccounts: true,
-                },
-                txType: TxTypes.PurchaseBonds,
-                config: {
-                    contractAddress: _id,
-                    count: amount
+                const response = await sendTransactionAsync();
+                await trackTransaction(chain, response.hash)
+            } else {
+                if (!Number(amount) || !isFinite(amount)) {
+                    return;
                 }
-            });
 
-            await sleep(4000);
-            await AccountSlice.initBalance(account.address, chainId);
-            console.log(transaction);
+                if (!localStorage.getItem('quizPassed')) {
+                    return openModal(ModalTypes.Quiz)
+                }
+
+                const response = await sendTransactionAsync();
+                await trackTransaction(chain, response.hash)
+                await sleep(4000);
+                await AccountSlice.initBalance(address, chainId);
+            }
+
+            setEffectRefresher(Math.random());
+        } catch (error: any) {
+
         }
-
-        setEffectRefresher(Math.random());
     }
 
     function SubmitButton() {
@@ -149,6 +151,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
 
         return <>
             <button className={className} onClick={onClick}>
+                {isLoading && <Loading percent={70}/>}
                 {title}
                 {Boolean(totalAmount) && <span className={totalAmountStyle}>{totalAmountText}</span>}
             </button>

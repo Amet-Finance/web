@@ -1,6 +1,7 @@
 import {useEffect, useRef} from "react";
 import {Chart, ChartMeta, registerables} from "chart.js";
 import {join} from "@/modules/utils/styles";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
 type Arguments = {
     total: number;
@@ -81,7 +82,7 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
                 ctx.fillText(headline, xCoor, yCoor - 8)
                 ctx.font = "bold 1rem sans-serif"
                 ctx.fillStyle = "rgba(255,255,255,1)";
-                ctx.fillText(value, xCoor, yCoor + 8)
+                ctx.fillText(formatLargeNumber(value), xCoor, yCoor + 8)
             }
         }
 

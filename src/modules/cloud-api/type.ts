@@ -1,18 +1,18 @@
-import {getBalance} from "@/modules/cloud-api/index";
-
 type BondsAPIParams = {
     skip: number;
     limit: number;
-    chainId: string;
+    chainId: number;
+    issuer?: string;
+    _id?: string[];
 }
 
 type StatsAPIParams = {
-    chainId: string
+    chainId: number;
 }
 
 type BalanceAPIParams = {
     address: string;
-    chainId: string
+    chainId: number;
 }
 
 export type  {

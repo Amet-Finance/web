@@ -1,6 +1,6 @@
 type BondInfoDetailed = {
     _id: string,
-    chainId: string,
+    chainId: number,
     issuer: string,
     total: number,
     purchased: number,
@@ -29,51 +29,11 @@ type TokenInfo = {
     isFake?: boolean
 }
 
-type Chain = {
-    chainId: string,
-    chainName: string,
-    rpcUrls: string[],
-    nativeCurrency: {
-        "name": string,
-        "symbol": string,
-        "decimals": number
-    },
-    blockExplorerUrls: string[]
-}
 
-type SwitchChain = {
-    chainId: string
-    type: string
-}
-
-type ConnectWallet = {
-    type?: string;
-    chainId: string;
-    requestChain?: boolean;
-    requestAccounts?: boolean;
-    hideError?: boolean;
-    callback?: any;
-}
-
-type SubmitTransaction = {
-    connectionConfig: ConnectWallet,
-    txType: string,
-    config: any
-}
-
-type TransactionTracking = {
-    connectionConfig: ConnectWallet,
-    txHash: string
-    txType: string
-    recursionCount: number
-}
+type ExplorerTypes = "token" | "address"
 
 export type {
     BondInfoDetailed,
     TokenInfo,
-    Chain,
-    SwitchChain,
-    ConnectWallet,
-    SubmitTransaction,
-    TransactionTracking
+    ExplorerTypes
 }

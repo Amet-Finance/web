@@ -137,21 +137,20 @@
 
 .addressDropDown {
     position: absolute;
-    top: 150%;
+    top: 99%;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 2rem;
-    border: 1px solid #424242;
     z-index: 100;
 }
 
 .address {
     border: 1px solid #424242;
-    padding: 0.75rem 2rem;
-    border-radius: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.25rem;
     cursor: pointer;
 }
 
@@ -166,10 +165,6 @@
 .enabledAddress {
     border-radius: 0.5rem 0.5rem 0 0;
     border-bottom: rgba(255, 255, 255, 0);
-}
-
-.enabledDrop {
-    border-radius: 0 0 0.5rem 0.5rem;
 }
 
 .disconnect {
