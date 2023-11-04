@@ -2,13 +2,11 @@ import {useEffect, useState} from "react";
 import Styles from "@/components/pages/bonds/main/components/index.module.css";
 import Link from "next/link";
 import Bond from "@/components/pages/bonds/utils/bond";
-import {join} from "@/modules/utils/styles";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import {useRouter} from "next/router";
 import ArrowSVG from "../../../../../../public/svg/utils/arrow";
+import {useNetwork} from "wagmi";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 export default function BondsShowcase() {
     return <>
@@ -25,8 +23,10 @@ export default function BondsShowcase() {
 }
 
 function BondsScreen() {
-    const account = useSelector((item: RootState) => item.account);
-    const {chainId} = account;
+
+    const {chain} = useNetwork();
+    const chainId = chain?.id || defaultChain.id
+
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 6,
@@ -39,17 +39,8 @@ function BondsScreen() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const config = {
-            skip,
-            limit,
-            chainId
-        }
-
-        const interval = getBondsHandler(bondsHandler, config);
-        return () => {
-            clearInterval(interval)
-        }
-
+        const interval = getBondsHandler(bondsHandler, {skip, limit, chainId});
+        return () => clearInterval(interval);
     }, [chainId, skip, limit])
 
     if (isLoading) {

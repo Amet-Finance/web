@@ -5,19 +5,20 @@ import {RootState} from "@/store/redux/type";
 import CongratulationsSVG from "../../../../public/svg/congratulations";
 import XmarkSVG from "../../../../public/svg/xmark";
 import {closeModal} from "@/store/redux/modal";
+import {useNetwork} from "wagmi";
 
 export default function IssuedBondSuccessModal() {
-    const account = useSelector((item: RootState) => item.account);
+    const {chain} = useNetwork()
     const modalState = useSelector((item: RootState) => item.modal)
 
-    const {chainId} = account;
+
     const additional = modalState.additional;
 
     const bondInfo = additional?.bondInfo
     const transaction = additional?.transaction;
     const decoded = additional?.decoded
 
-    const url = `/bonds/explore/${decoded?.contractAddress}?chainId=${chainId}`
+    const url = `/bonds/explore/${decoded?.contractAddress}?chainId=${"0x" + chain?.id.toString(16)}`
 
     return <>
         <div className={Styles.container}>

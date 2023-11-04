@@ -1,12 +1,11 @@
 import Styles from './index.module.css';
-import SettingsSVG from "../../../../../../public/svg/settings";
 import {useEffect, useState} from "react";
 import {BondGeneral, BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
+import {useNetwork} from "wagmi";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 
 export default function Explore() {
@@ -28,10 +27,10 @@ export default function Explore() {
 
 function BondsContainer() {
 
-    const account = useSelector((item: RootState) => item.account)
-    const [search, setSearch] = useState({
-        text: ""
-    });
+    const {chain} = useNetwork();
+    const chainId = chain?.id || defaultChain.id
+
+    const [search, setSearch] = useState({text: ""});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,
@@ -39,14 +38,15 @@ function BondsContainer() {
         data: [] as BondGeneral[]
     })
 
+    const {data, skip, limit, isLoading} = bonds
+
     const onChange = (event: any) => setSearch({
         ...search,
         [event.target.id]: event.target.value
     });
-    const bondsHandler = [bonds, setBonds]
 
     const bondsFiltered = () => {
-        return bonds.data.filter(item => {
+        return data.filter(item => {
             const {interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
             const searchExists = search.text
             if (Boolean(searchExists)) {
@@ -66,17 +66,13 @@ function BondsContainer() {
     }
 
     useEffect(() => {
-        const config = {
-            skip: bonds.skip,
-            limit: bonds.limit,
-            chainId: account.chainId
-        }
-        const interval = getBondsHandler(bondsHandler, config);
-        return () => {
-            clearInterval(interval)
-        }
-
-    }, [bonds.limit, bonds.skip, account.chainId]);
+        const interval = getBondsHandler([bonds, setBonds], {
+            skip,
+            limit,
+            chainId
+        });
+        return () => clearInterval(interval);
+    }, [limit, skip, chainId]);
 
 
     return <>
@@ -92,11 +88,6 @@ function BondsContainer() {
             <div className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
                 {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any} key={index}/>)}
             </div>
-            {/*<div className='flex gap-4'>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>1</span>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>2</span>*/}
-            {/*    <span className='cursor-pointer px-2.5 p-1 border border-w1 text-center'>3</span>*/}
-            {/*</div>*/}
         </div>
     </>
 }

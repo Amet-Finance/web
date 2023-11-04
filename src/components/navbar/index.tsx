@@ -1,55 +1,31 @@
 import Styles from "./index.module.css";
 import Link from "next/link";
-import {closeModal, openModal} from "@/store/redux/modal";
-import {ModalTypes} from "@/store/redux/modal/constants";
 import AmetLogo from "../../../public/svg/amet-logo";
-import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import * as Web3Service from "@/modules/web3";
-import {shorten} from "@/modules/web3/utils/address";
 import * as AccountSlice from "@/store/redux/account";
-import {RootState} from "@/store/redux/type";
 import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
-import {CHAIN_IDS, CHAIN_INFO, WalletTypes} from "@/modules/web3/constants";
-import {URLS} from "@/modules/utils/urls";
+import {useWeb3Modal} from '@web3modal/wagmi/react'
 
-
-const navItems: any = [
-    {
-        title: "Bonds",
-        defaultUrl: "/bonds",
-        links: [
-            {
-                url: '/bonds/issue',
-                name: "Issue"
-            },
-            {
-                url: '/bonds/explore',
-                name: "Explore"
-            },
-
-        ]
-    },
-    {
-        title: "Documentation",
-        defaultUrl: URLS.Docs,
-        defaultTarget: "_blank"
-    }
-]
+import {useAccount, useDisconnect, useNetwork} from "wagmi";
+import {CHAINS, defaultChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {useSwitchNetwork} from 'wagmi'
+import {NAV_ITEMS} from "@/components/navbar/constants";
+import {shorten} from "@/modules/web3/util";
+import Loading from "@/components/utils/loading";
 
 
 export default function Navbar() {
+    const {address} = useAccount();
+    const {chain} = useNetwork();
 
     useEffect(() => {
-        Web3Service.connectWallet({
-            type: WalletTypes.Metamask,
-            chainId: CHAIN_IDS.Mumbai,
-            hideError: true
-        })
-    }, [])
+        if (address && chain?.id) {
+            AccountSlice.initBalance(address, chain?.id)
+        }
+    }, [address, chain]);
 
     return <>
         <DesktopNav/>
@@ -63,7 +39,7 @@ function DesktopNav() {
             <div className={Styles.nav}>
                 <AmetLogo/>
                 <div className={Styles.navLinks}>
-                    {navItems.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
+                    {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
                 </div>
             </div>
             <WalletState/>
@@ -95,7 +71,7 @@ function MobileLinks({changeVisibility}: any) {
     return <>
         <div className={Styles.mobileNav}>
             <div className={Styles.mobileNavLinks} onClick={changeVisibility}>
-                {navItems.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
+                {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
             </div>
             <WalletState changeVisibility={changeVisibility}/>
         </div>
@@ -132,21 +108,29 @@ function NavLink({link}: any) {
 
 
 function WalletState({changeVisibility}: any) {
-    const account = useSelector((item: RootState) => item.account);
+    const account = useAccount()
+    const [address, setAddress] = useState<string | undefined>('')
+    useEffect(() => {
+        setAddress(account.address)
+    }, [account.address, account.isConnected]);
 
     return <>
         <div className='relative flex items-center gap-2'>
             <Chains/>
-            {account.address ? <ConnectedState/> : <ConnectButton changeVisibility={changeVisibility}/>}
+            {address ? <ConnectedState/> : <ConnectButton changeVisibility={changeVisibility}/>}
         </div>
     </>
 }
 
 function ConnectButton({changeVisibility}: any) {
-    const connect = () => {
-        openModal(ModalTypes.ConnectWallet);
+    const {open} = useWeb3Modal()
+
+
+    async function connect() {
+        await open();
         if (changeVisibility) changeVisibility();
     }
+
 
     return <>
         <button className={Styles.connect} onClick={connect}>Connect</button>
@@ -154,21 +138,24 @@ function ConnectButton({changeVisibility}: any) {
 }
 
 function ConnectedState() {
+    const {address} = useAccount()
+    const {disconnect} = useDisconnect()
     const [isEnabled, setEnabled] = useState(false);
-    const account = useSelector((item: RootState) => item.account);
-    const enable = () => setEnabled(!isEnabled);
-    const addressStyles = `${Styles.address} ${!isEnabled && Styles.addressBorder} ${isEnabled && Styles.enabledAddress}`
+    const enable = () => setEnabled(!isEnabled)
+
+
     const dropStyles = `${Styles.addressDropDown} ${isEnabled && Styles.enabledDrop}`
 
     return <>
         <div className={Styles.addressContainer}>
-            <span className={addressStyles} onClick={enable}>{shorten(account.address)}</span>
+            <button className='border border-w1 rounded px-8 py-3 cursor-pointer m-0'
+                    onClick={enable}>{shorten(address)}</button>
             {isEnabled && <>
-                <div className={dropStyles + " bg-black"} onClick={enable}>
-                    <Link href={`/address/${account.address}`}>
-                        <span>My Account</span>
+                <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
+                    <Link href={`/address/${address}`}>
+                        <span>Dashboard</span>
                     </Link>
-                    <span className={Styles.disconnect} onClick={AccountSlice.disconnectWallet}>Disconnect</span>
+                    <span className={Styles.disconnect} onClick={() => disconnect?.()}>Disconnect</span>
                 </div>
             </>}
         </div>
@@ -177,17 +164,22 @@ function ConnectedState() {
 
 function Chains() {
     const [isOpen, setOpen] = useState(false)
-    const account = useSelector((item: RootState) => item.account);
-    // console.log(account)
-    const icon = `/svg/chains/${account.chainId}.svg`
-    const chainInfo = CHAIN_INFO[account.chainId]
+
+    const {isConnecting, isReconnecting} = useAccount();
+    const network = useNetwork();
+    const chain = network.chain || defaultChain;
+
+    if (isConnecting || isReconnecting) {
+        return <Loading percent={50}/>;
+    }
+
 
     const change = () => setOpen(!isOpen)
 
     return <>
         <div className='relative flex flex-col p-2'>
-            <Image src={icon}
-                   alt={chainInfo.chainName}
+            <Image src={getChainIcon(chain.id)}
+                   alt={chain?.name}
                    width={30} height={30}
                    className='cursor-pointer'
                    onClick={change}/>
@@ -200,31 +192,32 @@ function ChainsDropDown({change}: any) {
     return <>
         <div className='
         absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-3 py-1 rounded z-40 h-28 overflow-x-auto
-        md:left-auto sm:left-0
+        md:left-auto sm:left-0 border border-w1
         '
              onClick={change}>
-            {Object.values(CHAIN_IDS).map(chainId => <Chain chainId={chainId} key={chainId}/>)}
+            {CHAINS.map(chain => <Chain chain={chain} key={chain.id}/>)}
         </div>
     </>
 }
 
-function Chain({chainId}: { chainId: string }) {
-    const icon = `/svg/chains/${chainId}.svg`
-    const chainInfo = CHAIN_INFO[chainId]
+function Chain({chain}: any) {
+    const {open} = useWeb3Modal()
+    const {address, isConnected} = useAccount()
+    const {switchNetwork} = useSwitchNetwork()
 
-    function change() {
-        Web3Service.connectWallet({
-            type: WalletTypes.Metamask,
-            chainId,
-            requestChain: true,
-            hideError: true
-        })
+
+    async function change() {
+        if (!address) {
+            await open({view: "Connect"})
+        } else {
+            switchNetwork?.(chain.id)
+        }
     }
 
     return <>
         <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded' onClick={change}>
-            <Image src={icon} alt={chainInfo.chainName} width={30} height={30} className='cursor-pointer'/>
-            <span>{chainInfo.chainName}</span>
+            <Image src={getChainIcon(chain.id)} alt={chain.name} width={30} height={30} className='cursor-pointer'/>
+            <span>{chain.name}</span>
         </div>
     </>
 }

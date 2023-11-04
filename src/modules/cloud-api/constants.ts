@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_LOCAL_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL //NEXT_PUBLIC_API_LOCAL_URL
 const IPFS_URL = process.env.NEXT_PUBLIC_IPFS_URL
 
 export {
