@@ -10,7 +10,7 @@ export default function Headers({id}: { id: string }) {
     return <>
         <Head>
             <title>{title}</title>
-            <link rel="shortcut icon" href="/favicon.ico?version=3"/>
+            <link rel="shortcut icon" href="/favicon.ico?version=5"/>
 
             <meta charSet="UTF-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
