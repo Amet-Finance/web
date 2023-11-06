@@ -1,3 +1,11 @@
+type IssuerContractInfo = {
+    issuanceFeeForUI: string,
+    creationFee: number,
+    creationFeeHex: string,
+    creationFeePercentage: number,
+    isPaused: boolean
+}
+
 type BondInfoDetailed = {
     _id: string,
     chainId: number,
@@ -33,6 +41,7 @@ type TokenInfo = {
 type ExplorerTypes = "token" | "address"
 
 export type {
+    IssuerContractInfo,
     BondInfoDetailed,
     TokenInfo,
     ExplorerTypes

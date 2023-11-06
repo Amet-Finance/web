@@ -193,7 +193,7 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                    placeholder='The amount of bonds you want to issue'/>
             <button
                 className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
-                onClick={issueMoreBonds}>Issue bonds {isLoading && <Loading percent={70}/>}</button>
+                onClick={issueMoreBonds}>Issue More bonds</button>
         </div>
     </>
 }

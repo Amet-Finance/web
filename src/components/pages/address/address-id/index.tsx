@@ -234,7 +234,11 @@ function Contracts({address}: { address: string }) {
         if (type === Types.Issued) {
             params.issuer = address
         } else if (type === Types.Purchased) {
-            params._id = Object.keys(balance);
+            const balanceContracts = Object.keys(balance);
+            if (!balanceContracts?.length) {
+                return setContracts([]);
+            }
+            params._id = balanceContracts
         }
 
         setLoading(true)

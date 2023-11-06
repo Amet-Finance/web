@@ -5,7 +5,7 @@ import {getWeb3Instance} from "@/modules/web3";
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {TransactionReceipt} from "web3-core";
 import {getTokenBalance} from "@/modules/web3/tokens";
-import {BondInfoDetailed} from "@/modules/web3/type";
+import {BondInfoDetailed, IssuerContractInfo} from "@/modules/web3/type";
 import {toBN} from "@/modules/web3/util";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import {Chain} from "wagmi";
@@ -14,6 +14,26 @@ import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 function getContract(chain: Chain, contractAddress: string) {
     const web3 = getWeb3Instance(chain)
     return new web3.eth.Contract(ZCB_ABI as any, contractAddress);
+}
+
+async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfo> {
+    const web3 = getWeb3Instance(chain)
+    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);
+
+    const creationFee = await contract.methods.creationFee().call();
+    const creationFeePercentage = await contract.methods.creationFeePercentage().call();
+    const isPaused = await contract.methods.isPaused().call()
+
+    const normalizedAmount = Number(creationFee) / 10 ** chain.nativeCurrency.decimals
+    const issuanceFeeForUI = `${normalizedAmount} ${chain.nativeCurrency.symbol}`
+
+    return {
+        issuanceFeeForUI,
+        creationFee: Number(creationFee),
+        creationFeeHex: `0x${Number(creationFee).toString(16)}`,
+        creationFeePercentage: Number(creationFeePercentage),
+        isPaused
+    }
 }
 
 async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondInfoDetailed> {
@@ -142,7 +162,7 @@ function decode(transaction: TransactionReceipt): {} {
 }
 
 export {
-
+    getIssuerContractInfo,
     issueBonds,
     purchase,
     redeem,

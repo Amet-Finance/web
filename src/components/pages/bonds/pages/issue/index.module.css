@@ -71,21 +71,6 @@
     color: #353535;
 }
 
-.submit {
-    padding: 0.75rem 2rem;
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: rgba(255, 255, 255, 0.5);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    width: 100%;
-}
-
-.submit:hover {
-    border: 1px solid rgba(255, 255, 255, 0.75);
-    background-color: white;
-    color: black;
-}
 
 
 .assets {

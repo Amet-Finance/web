@@ -221,8 +221,7 @@ function Finish() {
                 </div>
             </div>
             <span className='text-2xl font-bold'>Congratulations!</span>
-            <span
-                className='text-sm text-g'>{`You've successfully completed the Amet Finance Knowledge Check! You've demonstrated your understanding of our platform and are now ready to engage with confidence in the world of on-chain bonds.`}</span>
+            <span className='text-sm text-g'>{`You've successfully completed the Amet Finance Knowledge Check!`}</span>
         </div>
     </>
 }

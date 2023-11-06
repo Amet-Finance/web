@@ -18,7 +18,7 @@ export default function IssuedBondSuccessModal() {
     const transaction = additional?.transaction;
     const decoded = additional?.decoded
 
-    const url = `/bonds/explore/${decoded?.contractAddress}?chainId=${"0x" + chain?.id.toString(16)}`
+    const url = `/bonds/explore/${decoded?.contractAddress}?chainId=${chain?.id}`
 
     return <>
         <div className={Styles.container}>

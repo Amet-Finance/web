@@ -38,7 +38,8 @@ type TokenDetails = {
     tokenInfo: TokenInfo,
     total: number,
     isLoading?: boolean,
-    type: string
+    type: string,
+    additionalInfo: any
 }
 
 

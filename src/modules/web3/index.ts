@@ -9,6 +9,7 @@ import * as Tokens from "./tokens";
 import {Chain} from "wagmi";
 import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
+import {getIssuerContractInfo} from "@/modules/web3/zcb";
 
 function getWeb3Instance(chain: Chain) {
     const RPCs = chain.rpcUrls.public.http;
@@ -24,8 +25,8 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.IssueBond: {
                 return {
                     to: ZCB_ISSUER_CONTRACTS[chain.id],
-                    data: ZCB.issueBonds(chain, config),
-                    value: `0x16345785D8A0000` // 0.1 ETH todo update this
+                    data: ZCB.issueBonds(chain, config.bondInfo),
+                    value: config.additionalInfo.creationFeeHex
                 }
             }
             case TxTypes.ApproveToken: {
@@ -81,7 +82,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             }
         }
     } catch (error) {
-        console.log(`getContractInfoByType`, error)
+        // console.log(`getContractInfoByType`, error)
         return {
             to: "",
             value: 0,
@@ -99,7 +100,10 @@ async function trackTransaction(chain: Chain | undefined, txHash: string | undef
     }
 }
 
-async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCount = 0): Promise<{ transaction: TransactionReceipt, decoded?: any } | undefined> {
+async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCount = 0): Promise<{
+    transaction: TransactionReceipt,
+    decoded?: any
+} | undefined> {
     try {
         // Throw error when 100sec passed
         if (recursionCount > 50) {

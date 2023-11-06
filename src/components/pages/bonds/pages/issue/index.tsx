@@ -18,10 +18,12 @@ import TypeSVG from "../../../../../../public/svg/type";
 import TotalSVG from "../../../../../../public/svg/total";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
-import {TokenInfo} from "@/modules/web3/type";
+import {IssuerContractInfo, TokenInfo} from "@/modules/web3/type";
 import {Chain, useAccount, useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {toBN} from "@/modules/web3/util";
+import {getIssuerContractInfo} from "@/modules/web3/zcb";
 
 const BondTokenInfo = {
     Investment: 'investmentToken',
@@ -34,6 +36,7 @@ export default function Issue() {
     const {chain} = useNetwork();
     const {open} = useWeb3Modal()
 
+    const [additionalInfo, setAdditionalInfo] = useState({} as IssuerContractInfo)
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
     const [investmentTokenInfo, setInvestmentTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
@@ -41,7 +44,7 @@ export default function Issue() {
     const bondsHandler = [bondInfo, setBondInfo]
 
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, bondInfo)
+    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, {bondInfo, additionalInfo})
 
     const {isLoading, sendTransactionAsync} = useSendTransaction({
         to: contractInfo.to,
@@ -52,6 +55,10 @@ export default function Issue() {
 
     async function submit() {
         try {
+
+            if (additionalInfo.isPaused) {
+                return toast.error("Issuing is paused at the moment")
+            }
 
             if (
                 !bondInfo.investmentToken ||
@@ -87,7 +94,6 @@ export default function Issue() {
                 const txResponse = await trackTransaction(chain, response?.hash)
                 if (txResponse) {
                     const {transaction, decoded} = txResponse
-                    console.log(`transaction`, transaction);
                     return openModal(ModalTypes.IssuedBondSuccess, {
                         bondInfo,
                         transaction,
@@ -151,6 +157,17 @@ export default function Issue() {
     }
 
     useEffect(() => {
+        if (chain) {
+            getIssuerContractInfo(chain)
+                .then(response => {
+                    if (response) {
+                        setAdditionalInfo({...additionalInfo, ...response})
+                    }
+                });
+        }
+    }, [chain])
+
+    useEffect(() => {
         const timer = getToken(chain, "interestToken");
         return () => clearTimeout(timer)
     }, [chain, account.address, bondInfo.interestToken])
@@ -160,9 +177,9 @@ export default function Issue() {
         return () => clearTimeout(timer)
     }, [chain, account.address, bondInfo.investmentToken])
 
+
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
     const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
-
 
     return <>
         <main className={Styles.container}>
@@ -230,8 +247,11 @@ export default function Issue() {
                             &nbsp;and&nbsp;
                             <Link href={URLS.TermsOfService} target="_blank"><u>Terms of use.</u></Link>
                         </p>
-                        <button className={Styles.submit + " flex items-center justify-center gap-2"}
-                                onClick={submit}> {isLoading && <Loading percent={70}/>} Issue bonds
+                        <button
+                            className="flex justify-center gap-2 items-center border border-w1 py-3 p-4 w-full font-medium rounded hover:bg-white hover:text-black"
+                            onClick={submit}> {isLoading && <Loading percent={70}/>} Issue bonds
+                            {Boolean(additionalInfo.issuanceFeeForUI) &&
+                                <span className='text-red-500'>({additionalInfo.issuanceFeeForUI})</span>}
                         </button>
                     </div>
                 </div>
@@ -262,15 +282,18 @@ export default function Issue() {
                                 <ClockSVG/>
                                 <span>Redeem Lock Period:</span>
                             </div>
-                            <span className='font-bold whitespace-nowrap'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
+                            <span
+                                className='font-bold whitespace-nowrap'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
                         </div>
                     </div>
 
                     <div className='flex flex-col gap-2 max-w-sm'>
                         <TokenDetails type={BondTokenInfo.Investment}
+                                      additionalInfo={additionalInfo}
                                       total={totalRaised}
                                       tokenInfo={investmentTokenInfo}/>
                         <TokenDetails type={BondTokenInfo.Interest}
+                                      additionalInfo={additionalInfo}
                                       total={totalInterest}
                                       tokenInfo={interestTokenInfo}/>
                     </div>
@@ -282,7 +305,12 @@ export default function Issue() {
     </>
 }
 
-function TokenDetails({tokenInfo, type, total}: { tokenInfo: TokenInfo, type: string, total: number }) {
+function TokenDetails({tokenInfo, type, total, additionalInfo}: {
+    tokenInfo: TokenInfo,
+    type: string,
+    total: number,
+    additionalInfo: any
+}) {
 
     if (!tokenInfo || tokenInfo.contractAddress === ZERO_ADDRESS) {
         return null;
@@ -295,13 +323,13 @@ function TokenDetails({tokenInfo, type, total}: { tokenInfo: TokenInfo, type: st
             {
                 isLoading ?
                     <div className={Styles.loader}><Loading/></div> :
-                    <OperationDetails tokenInfo={tokenInfo} total={total} type={type}/>
+                    <OperationDetails tokenInfo={tokenInfo} total={total} type={type} additionalInfo={additionalInfo}/>
             }
         </div>
     </>
 }
 
-function OperationDetails({tokenInfo, total, type}: TokenDetails) {
+function OperationDetails({tokenInfo, total, type, additionalInfo}: TokenDetails) {
 
     const icon = tokenInfo?.icon || "";
     const name = tokenInfo?.name || ""
@@ -309,7 +337,7 @@ function OperationDetails({tokenInfo, total, type}: TokenDetails) {
     const balance = tokenInfo?.balance;
     const balanceClean = tokenInfo?.balanceClean;
     const title = type === BondTokenInfo.Interest ? "Interest" : "Investment"
-    const actionTitle = type === BondTokenInfo.Interest ? "Total Interest" : "Total Investment"
+    const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
 
     const info = {
         title: "Learn more about Bonds",
@@ -334,17 +362,19 @@ function OperationDetails({tokenInfo, total, type}: TokenDetails) {
             <InfoSVG info={info}/>
         </div>
         <div className="flex flex-col gap-2">
-            {!tokenInfo?.unidentified ? <Token token={token}/> : <NotIdentified/>}
+            {!tokenInfo?.unidentified ? <Token token={token} additionalInfo={additionalInfo}/> : <NotIdentified/>}
         </div>
     </>
 }
 
-function Token({token}: any) {
+function Token({token, additionalInfo}: { token: any, additionalInfo: IssuerContractInfo }) {
     const {name, icon, balanceClean, symbol, actionTitle, total, type} = token;
 
     const isInterest = type === BondTokenInfo.Interest
     const totalClassName = isInterest ? Styles.interestTotal : Styles.investmentTotal;
     const sign = isInterest ? '-' : '+';
+    const normalizedCreationFee = additionalInfo.creationFeePercentage / 100
+    const totalReceived = isInterest ? total : (total - (total * normalizedCreationFee) / 100)
 
     const [isWarning, setWarning] = useState(false);
 
@@ -374,9 +404,13 @@ function Token({token}: any) {
             </div>
         </div>
         <div className={Styles.formLine}/>
-        <div className='flex items-center gap-2'>
-            <span className='font-bold'>{actionTitle}:</span>
-            <span className={totalClassName}><b>{sign}{format(total)} {symbol}</b></span>
+        <div className='flex flex-col gap-0.5'>
+            <div className='flex items-center gap-2'>
+                <span className='font-bold'>{actionTitle}:</span>
+                <span className={totalClassName}><b>{sign}{format(totalReceived)} {symbol}</b></span>
+            </div>
+            {!isInterest &&
+                <span className='text-xs text-g'>We charge {normalizedCreationFee}% on every purchased bond.</span>}
         </div>
     </>
 }
@@ -439,7 +473,6 @@ function RedeemLockPeriod({bondsHandler}: any) {
         }
     }, [timer])
 
-    console.log(bondInfo.redeemLockPeriod / 60 / 60 / 365 + "hour")
 
     return <>
         <div className="flex flex-col  gap-2 w-full">

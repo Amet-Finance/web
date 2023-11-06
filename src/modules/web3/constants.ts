@@ -1,9 +1,11 @@
-import {bscTestnet, polygonMumbai} from "wagmi/chains";
+import {bscTestnet, mainnet, polygonMumbai} from "wagmi/chains";
+import {Chain} from "wagmi";
+import {toBN} from "@/modules/web3/util";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    [polygonMumbai.id]: "0x0203E584Bb1EA7985CC0Ba847c0ec169Fbc7A2E6",
+    [polygonMumbai.id]: "0xE19D98DE9608853947fDa06b54c268A2d83B4AF3",
     [bscTestnet.id]: ""
 }
 
