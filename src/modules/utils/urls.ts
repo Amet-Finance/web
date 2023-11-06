@@ -7,6 +7,8 @@ const URLS = {
     FAQ: "https://docs.amet.finance/v1/frequently-asked-questions-faqs",
     FAQ_WIAF: "https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-is-amet-finance",
     FAQ_WAB: "https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-are-bonds",
+    FAQ_IOB: "https://docs.amet.finance/v1/getting-started/issuing-on-chain-bonds",
+    FAQ_ZCB: "https://docs.amet.finance/v1/zero-coupon-bond/zero-coupon-bonds-zcb-on-amet-finance",
 
     Docs: "https://docs.amet.finance/v1/",
     Discord: "https://discord.gg/JxWpBGP8vz",

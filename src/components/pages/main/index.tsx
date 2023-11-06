@@ -113,7 +113,7 @@ export default function Home() {
 
 
 function FAQ() {
-    const [selectedId, selectId] = useState<number>(1);
+    const [selectedId, selectId] = useState(1);
     const questions = [
         {
             title: "What are On-Chain Bonds?",

@@ -24,10 +24,49 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {toBN} from "@/modules/web3/util";
 import {getIssuerContractInfo} from "@/modules/web3/zcb";
+import InfoBox from "@/components/utils/info-box";
 
 const BondTokenInfo = {
     Investment: 'investmentToken',
     Interest: 'interestToken'
+}
+
+const InfoSections = {
+    Total: {
+        text: "The total number of bonds to issue",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    Investment: {
+        text: "The contract address of the investment token.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    Interest: {
+        text: "The contract address of the interest token.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    InvestmentAmount: {
+        text: "The price per bond in the investment token.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    InterestAmount: {
+        text: "The total return per bond in the interest token.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    Redeem: {
+        text: "The duration after which bonds can be redeemed.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    Type: {
+        text: "The bond type. Zero Coupon Bonds (ZCB) have no periodic interest payments; interest is paid at bond redemption.",
+        link: URLS.FAQ_ZCB,
+        isBlank: true
+    }
 }
 
 export default function Issue() {
@@ -194,7 +233,9 @@ export default function Issue() {
 
                     <div className="grid gap-4 w-full lg:grid-cols-2 sm:grid-cols-1">
                         <div className="flex flex-col justify-between gap-2">
-                            <span>Total</span>
+                            <InfoBox info={InfoSections.Total}>
+                                <span>Total</span>
+                            </InfoBox>
                             <input type="number"
                                    className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    autoFocus
@@ -203,7 +244,9 @@ export default function Issue() {
                         </div>
                         <RedeemLockPeriod bondsHandler={bondsHandler}/>
                         <div className="flex flex-col justify-between gap-2">
-                            <span>Investment Token</span>
+                            <InfoBox info={InfoSections.Investment}>
+                                <span>Investment Token</span>
+                            </InfoBox>
                             <input type="text"
                                    className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="investmentToken"
@@ -212,7 +255,9 @@ export default function Issue() {
                         </div>
 
                         <div className="flex flex-col justify-between gap-2">
-                            <span>Interest Token</span>
+                            <InfoBox info={InfoSections.Interest}>
+                                <span>Interest Token</span>
+                            </InfoBox>
                             <input type="text"
                                    className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="interestToken"
@@ -221,7 +266,9 @@ export default function Issue() {
                         </div>
 
                         <div className="flex flex-col justify-between gap-2">
-                            <span>Investment Amount</span>
+                            <InfoBox info={InfoSections.InvestmentAmount}>
+                                <span>Investment Amount</span>
+                            </InfoBox>
                             <input type="number"
                                    className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="investmentTokenAmount"
@@ -230,7 +277,9 @@ export default function Issue() {
                         </div>
 
                         <div className="flex flex-col justify-between gap-2">
-                            <span>Interest Amount</span>
+                            <InfoBox info={InfoSections.InterestAmount}>
+                                <span className='w-max'>Interest Amount</span>
+                            </InfoBox>
                             <input type="number"
                                    className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
                                    id="interestTokenAmount"
@@ -275,7 +324,9 @@ export default function Issue() {
                                 <TypeSVG/>
                                 <span>Type:</span>
                             </div>
-                            <span className='font-bold'>ZCB(Zero Coupon Bond)</span>
+                            <InfoBox info={InfoSections.Type}>
+                                <p className='font-bold text-end w-full'>ZCB(Zero Coupon Bond)</p>
+                            </InfoBox>
                         </div>
                         <div className={Styles.assets}>
                             <div className={Styles.section}>
@@ -476,7 +527,9 @@ function RedeemLockPeriod({bondsHandler}: any) {
 
     return <>
         <div className="flex flex-col  gap-2 w-full">
-            <span>Redeem</span>
+            <InfoBox info={InfoSections.Redeem}>
+                <span>Redeem</span>
+            </InfoBox>
             <div className="flex items-center h-full gap-2">
                 <div
                     className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
