@@ -33,7 +33,7 @@ export default function Home() {
                         In DeFI
                     </h1>
                     <div className="h-px md:w-1/5 sm:w-full bg-white"/>
-                    <p className="text-g max-w-[45%]">{Texts.pMain}</p>
+                    <p className="text-g md:max-w-[45%] sm:max-w-full">{Texts.pMain}</p>
                     <div className="flex md:flex-row sm:flex-col items-center gap-8 w-full">
                         <Link href='/bonds' className='md:w-max sm:w-full'>
                             <button className={join([Styles.btn, "w-full"])}>Get Started</button>
