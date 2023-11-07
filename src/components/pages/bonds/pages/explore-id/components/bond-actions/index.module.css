@@ -27,9 +27,6 @@
     text-align: center;
 }
 
-.action:hover {
-    /*background-color: #00b76f;*/
-}
 
 .selectedAction {
     background-color: #00b76f;

@@ -15,6 +15,7 @@ import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {redeem} from "@/modules/web3/zcb";
 
 export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
 
@@ -55,6 +56,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
 
     const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
     const isApproval = totalPrice > allowanceDivided;
+    const isSold = total - purchased === 0
 
     const onChange = (event: any) => setAmount(Number(event.target.value) || 0);
 
@@ -77,6 +79,16 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     })
 
     console.log(status)
+
+    if (isSold) { // todo handle this p element case
+        return <>
+            <div className='flex flex-col gap-2 justify-center items-center w-full py-5 rounded cursor-pointer w-full'>
+                <span className='font-bold text-5xl'>SOLD OUT</span>
+                <p className='text-g text-sm text-center'>All available bonds for this offering have been
+                    purchased.<br/> Keep an eye out for new bond opportunities!</p>
+            </div>
+        </>
+    }
 
     if (!investmentTokenInfo) {
         return <>
@@ -130,12 +142,12 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         let onClick: any = submit
 
         if (!Number(bondsLeft)) {
-            title = `Sold Out`
+            title = `SOLD OUT`
             className += ` ${Styles.disable}`
             onClick = async () => {
             };
         } else if (Number(amount) > Number(bondsLeft)) {
-            title = `Not enough bonds left`
+            title = `Not Enough Bonds`
             className += ` ${Styles.disable}`
             onClick = async () => {
             };

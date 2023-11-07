@@ -1,14 +1,20 @@
 import SettingsSVG from "../../../public/svg/settings";
 import {useEffect, useState} from "react";
+import {requestAPI} from "@/modules/cloud-api/util";
+import {useAccount, useNetwork} from "wagmi";
 
 export default function SwapPage() {
 
+    const {chain} = useNetwork();
+    const {address} = useAccount();
     const [from, setFrom] = useState({
         amount: 0
     })
-    const [to, setTo] = useState({
-        amount: 0
-    })
+    const [result, setResult] = useState({})
+
+    const amountIn = from.amount * 1000000000000000000
+    const tokenIn = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase()
+    const tokenOut = "0xdac17f958d2ee523a2206206994597c13d831ec7".toLowerCase()
 
     function onChange(event: any) {
         const {id, value} = event.target;
@@ -24,10 +30,7 @@ export default function SwapPage() {
 
         } else {
             if (id.endsWith('Amount')) {
-                setTo({
-                    ...to,
-                    amount: Number(value) || 0
-                })
+
             } else {
 
             }
@@ -37,16 +40,30 @@ export default function SwapPage() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const toAmount = from.amount * 4000
 
-            setTo({
-                ...to,
-                amount: toAmount
+            requestAPI({
+                url: `https://aggregator-api.kyberswap.com/${chain?.name.toLowerCase()}/route/encode`,
+                params: {
+                    tokenIn,
+                    tokenOut,
+                    amountIn,
+                    to: address
+                },
+                headers: {
+                    "Accept-Version": "Latest"
+                }
+            }).then(data => {
+                setResult(data);
             })
-        }, 300)
+        }, 5000)
 
         return () => clearInterval(interval)
     }, [from]);
+
+    console.log(`result`, result);
+
+    const outputTokenDecimals = result?.tokens?.[tokenOut].decimals
+    const output = result?.outputAmount / 10 ** outputTokenDecimals
 
     return <>
         <div className='flex items-center justify-center w-full'>
@@ -74,8 +91,8 @@ export default function SwapPage() {
                     <span className='text-xl'>You Receive</span>
                     <div className='flex justify-between items-center'>
                         <div className='flex flex-col'>
-                            <span>{to.amount}</span>
-                            <span className='text-g2'>~$4,307</span>
+                            <span>{output}</span>
+                            <span className='text-g2'>~${result?.receivedUsd?.toFixed(2)}</span>
                         </div>
                         <div className='flex border border-solid border-w1 p-2 rounded bg-b2'>
                             <span>DAI</span>

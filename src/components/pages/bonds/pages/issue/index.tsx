@@ -5,7 +5,7 @@ import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenInfo} from "@/modules/web3/tokens";
 import Loading from "@/components/utils/loading";
-import {TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
+import {TxTypes, ZCB_ISSUER_CONTRACTS, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {toast} from "react-toastify";
@@ -196,7 +196,7 @@ export default function Issue() {
     }
 
     useEffect(() => {
-        if (chain) {
+        if (chain && ZCB_ISSUER_CONTRACTS[chain.id]) {
             getIssuerContractInfo(chain)
                 .then(response => {
                     if (response) {

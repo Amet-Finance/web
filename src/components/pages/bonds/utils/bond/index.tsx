@@ -9,31 +9,41 @@ import {formatTime, shortTime} from "@/modules/utils/dates";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import {stopPropagation} from "@/modules/utils/events";
-import {getExplorer, shorten, toBN} from "@/modules/web3/util";
+import {shorten, toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 import Loading from "@/components/utils/loading";
 import axios from "axios";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {shortenString} from "@/modules/utils/string";
-import {useNetwork} from "wagmi";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
+    const {total, purchased} = info;
     const bondUrl = `${window.location.origin}/bonds/explore/${info._id}?chainId=${info.chainId}`
     if (!info.investmentTokenInfo || !info.interestTokenInfo) {
         return null;
     }
 
+    const isSold = total - purchased === 0
+
     return <>
         <Link href={bondUrl}>
             <div
-                className="flex flex-col justify-center
+                className="relative flex flex-col justify-center
                 rounded-md px-5 py-3 gap-2 cursor-pointer
                  bg-b3 border border-w1 hover:border-w2
+                 group
                  ">
                 <BondHeader bondInfo={info}/>
                 <BondDetails bondInfo={info}/>
                 <BondFooter bondInfo={info}/>
+                {isSold && <>
+                    <div
+                        className='group-hover:opacity-100 opacity-0  absolute w-full h-full bg-bt9-5 top-0 left-0 rounded-md soldOut flex gap-2 justify-center items-center flex-col z-50'>
+                        <span className='font-bold text-5xl'>SOLD OUT</span>
+                        <span className='text-sm text-g'>Explore Bond Details!</span>
+                    </div>
+                </>}
             </div>
         </Link>
     </>
@@ -52,7 +62,6 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
         interestToken,
     } = bondInfo;
 
-    const isSold = total - purchased === 0
     const [investment, setInvestment] = useState({
         isVerified: true
     })
@@ -95,7 +104,6 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                     }
                 </div>
             </div>
-            {isSold && <span className='whitespace-nowrap px-2 bg-white text-black rounded-sm font-medium text-sm'>SOLD OUT</span>}
         </div>
     </>
 }
@@ -173,7 +181,8 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                         <ClockSVG/>
                         <span className='text-g whitespace-nowrap'>Lock Period:</span>
                     </div>
-                    <span className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
+                    <span
+                        className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
                 </SectionContainer>
             </div>
             <PieChart total={total} redeemed={redeemed} purchased={purchased}/>
