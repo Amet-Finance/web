@@ -50,7 +50,7 @@ async function updateAddress({params, body}: any) {
 }
 
 async function getTokens({params}: {
-    params: { chainId: number, contractAddresses: string[], returnBalance?: boolean, address: string }
+    params: { chainId: number, contractAddresses: string[] }
 }): Promise<TokensResponse> {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
