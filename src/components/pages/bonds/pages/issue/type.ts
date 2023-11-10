@@ -1,4 +1,5 @@
-import {TokenInfo} from "@/modules/web3/type";
+import {TokenInfo, TokenResponseDetailed} from "@/modules/web3/type";
+import {TokenResponse} from "@/modules/cloud-api/type";
 
 type BondGeneral = {
     _id: string;
@@ -10,10 +11,10 @@ type BondGeneral = {
     redeemLockPeriod: number;
     investmentToken: string;
     investmentTokenAmount: number;
-    investmentTokenInfo: TokenInfo;
+    investmentTokenInfo: TokenResponse;
     interestToken: string;
     interestTokenAmount: number;
-    interestTokenInfo: TokenInfo;
+    interestTokenInfo: TokenResponse;
     issuanceDate: number
 }
 
@@ -26,16 +27,16 @@ type BondInfo = {
     redeemLockPeriod: number;
     investmentToken: string;
     investmentTokenAmount: number;
-    investmentTokenInfo?: TokenInfo | undefined;
+    investmentTokenInfo?: TokenResponseDetailed | undefined;
     interestToken: string;
     interestTokenAmount: number;
-    interestTokenInfo?: TokenInfo | undefined;
+    interestTokenInfo?: TokenResponseDetailed | undefined;
 }
 
 type Tokens = { [contractAddress: string]: TokenInfo }
 
 type TokenDetails = {
-    tokenInfo: TokenInfo,
+    tokenInfo: TokenResponseDetailed,
     total: number,
     isLoading?: boolean,
     type: string,

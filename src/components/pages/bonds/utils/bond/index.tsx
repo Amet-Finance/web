@@ -125,7 +125,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     const response: any = {}
 
     if (investmentTokenInfo) {
-        const isFake = investmentTokenInfo.isFake;
+        const isFake = !investmentTokenInfo.isVerified;
         const amount = investmentTokenAmount || ""
         const decimals = investmentTokenInfo.decimals || ""
         response.investment = {
@@ -134,7 +134,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
         }
     }
     if (interestTokenInfo) {
-        const isFake = investmentTokenInfo.isFake;
+        const isFake = !investmentTokenInfo.isVerified;
         const amount = interestTokenAmount || ""
         const decimals = interestTokenInfo.decimals || ""
 

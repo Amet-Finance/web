@@ -93,9 +93,9 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
                 datasets: [{
                     data: [redeemed, theUnredeemedAmount, left],
                     backgroundColor: [
-                        '#4F2AB6',
-                        '#926AFF',
+                        '#22c55e',
                         '#fff',
+                        '#393939',
                     ]
                 }],
                 labels: [DatasetLabels.Redeem, DatasetLabels.Purchased, DatasetLabels.Left]

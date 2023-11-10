@@ -3,46 +3,50 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {Actions} from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index";
 import {useAccount} from "wagmi";
+import {useEffect, useState} from "react";
 
 export default function ActionButtons({info, actionHandler}: any) {
     return <>
         <div className='flex gap-4 items-center'>
             {
-                Object.keys(Actions)
-                    .map((key: string) => <ActionButton name={key}
-                                                        info={info}
-                                                        actionHandler={actionHandler}
-                                                        key={key}/>)
+                Object.keys(Actions).map((key: string) => <ActionButton name={key}
+                                                                        info={info}
+                                                                        actionHandler={actionHandler}
+                                                                        key={key}/>)
             }
         </div>
     </>
 }
 
 function ActionButton({name, info, actionHandler}: { name: string, info: BondInfoDetailed, actionHandler: any }) {
+    const {_id, chainId, issuer} = info;
+
     const [action, setAction] = actionHandler;
-    const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
+    const {balance} = useSelector((item: RootState) => item.account);
+    const [buttonText, setButtonText] = useState(name)
+
+    const isIssuer = issuer.toLowerCase() === address?.toLowerCase()
     const isSelected = Actions[name] === action;
     const className = isSelected ? "text-white" : "text-g"
+
     const select = () => setAction(Actions[name])
 
-    const showName = () => {
-        let nameTmp = name;
+    useEffect(() => {
         if (Actions[name] === Actions.Redeem) {
-            const contractAddress = info._id?.toLowerCase() || ""
-            const balanceTokenIds = balance[info.chainId]?.[contractAddress] || [];
-            nameTmp += `(${balanceTokenIds.length})`;
+            const contractAddress = _id.toLowerCase() || ""
+            const balanceTokenIds = balance[chainId]?.[contractAddress] || [];
+            const nameTmp = name + `(${balanceTokenIds.length})`;
+            setButtonText(nameTmp)
         }
+    }, [balance, _id, chainId, name])
 
-        return nameTmp;
-    }
 
-    const isIssuer = info.issuer.toLowerCase() === address?.toLowerCase()
-    if (Actions[name] === Actions.Manage && !isIssuer) {
+    if (Actions[name] === Actions.Manage && !isIssuer && address) {
         return null;
     }
 
     return <>
-        <button className={className} onClick={select}>{showName()}</button>
+        <button className={className} onClick={select}>{buttonText}</button>
     </>
 }

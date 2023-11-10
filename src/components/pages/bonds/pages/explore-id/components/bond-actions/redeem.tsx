@@ -13,13 +13,14 @@ import {nop} from "@/modules/utils/function";
 import {toBN} from "@/modules/web3/util";
 import {format} from "@/modules/utils/numbers";
 import {useAccount, useSendTransaction} from "wagmi";
-import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {TokensResponse} from "@/modules/cloud-api/type";
 
-export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
+export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
-    const {_id, redeemLockPeriod, chainId} = info;
+    const {_id, redeemLockPeriod, chainId, interestToken} = info;
     const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
     const chain = getChain(chainId);
@@ -30,13 +31,13 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const [amount, setAmount] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const contractAddress = info._id?.toLowerCase() || ""
-    const balanceTokenIds = balance[info.chainId]?.[contractAddress] || [];
+    const contractAddress = _id.toLowerCase() || ""
+    const balanceTokenIds = balance[chainId]?.[contractAddress] || [];
+    const interestTokenInfo = tokens[interestToken.toLowerCase()]
 
     const [holdings, setHoldings] = useState([])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
-
 
 
     const contractInfo = getContractInfoByType(chain, TxTypes.RedeemBonds, {
@@ -99,8 +100,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             }
 
             if (!tokenIds.length) {
-                toast.error("You did not select a bond");
-                return;
+                return toast.error("You did not select a bond");
             }
 
             const response = await sendTransactionAsync();
@@ -130,9 +130,9 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         let totalAmountText = ""
         let onClick: any = submit;
 
-        const token = tokens[info.interestToken]
-        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(token.decimals)))
-        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals)))
+
+        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
+        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
         const totalTokens = toBN(tokenIds.length).mul(redeemAmount)
 
         if (!amount || !isFinite(amount)) {
@@ -148,7 +148,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         } else if (tokenIds.length) {
             const total = toBN(tokenIds.length).mul(redeemAmount).toNumber();
             totalAmountStyle = "text-green-500 font-medium"
-            totalAmountText = `( +${format(total)} ${token?.symbol} )`
+            totalAmountText = `( +${format(total)} ${interestTokenInfo.symbol} )`
         }
 
         return <button className={className} onClick={onClick}>
@@ -158,7 +158,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         </button>
     }
 
-    if (loading) {
+    if (loading || !interestTokenInfo) {
         return <div className="flex justify-center items-center w-full"><Loading percent={-25}/></div>
     }
 

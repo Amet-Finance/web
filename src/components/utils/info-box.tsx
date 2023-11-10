@@ -20,7 +20,7 @@ export default function InfoBox({children, info}: { children: any, info: InfoDat
                 Boolean(info?.text) && <>
                     <Link href={url} target={target} title='Click to learn more!'>
                         <div
-                            className='group-hover:flex hidden absolute top-full bg-gray-700  border rounded border-w1 px-3 p-1 secondarySelector z-50 w-full'>
+                            className='group-hover:flex hidden absolute bottom-full bg-gray-700  border rounded border-w1 px-3 p-1 secondarySelector z-50 w-full'>
                             <span className='text-sm font-medium'>{info?.text}</span>
                         </div>
                     </Link>

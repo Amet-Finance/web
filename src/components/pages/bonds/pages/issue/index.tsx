@@ -3,7 +3,6 @@ import Image from "next/image";
 import {useEffect, useState} from "react";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
-import {getTokenInfo} from "@/modules/web3/tokens";
 import Loading from "@/components/utils/loading";
 import {TxTypes, ZCB_ISSUER_CONTRACTS, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {openModal} from "@/store/redux/modal";
@@ -18,68 +17,29 @@ import TypeSVG from "../../../../../../public/svg/type";
 import TotalSVG from "../../../../../../public/svg/total";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
-import {IssuerContractInfo, TokenInfo} from "@/modules/web3/type";
+import {IssuerContractInfo, TokenResponseDetailed} from "@/modules/web3/type";
 import {Chain, useAccount, useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {toBN} from "@/modules/web3/util";
 import {getIssuerContractInfo} from "@/modules/web3/zcb";
 import InfoBox from "@/components/utils/info-box";
+import * as CloudAPI from "@/modules/cloud-api";
+import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/constants";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
-const BondTokenInfo = {
-    Investment: 'investmentToken',
-    Interest: 'interestToken'
-}
-
-const InfoSections = {
-    Total: {
-        text: "The total number of bonds to issue",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    Investment: {
-        text: "The contract address of the investment token.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    Interest: {
-        text: "The contract address of the interest token.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    InvestmentAmount: {
-        text: "The price per bond in the investment token.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    InterestAmount: {
-        text: "The total return per bond in the interest token.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    Redeem: {
-        text: "The duration after which bonds can be redeemed.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    Type: {
-        text: "The bond type. Zero Coupon Bonds (ZCB) have no periodic interest payments; interest is paid at bond redemption.",
-        link: URLS.FAQ_ZCB,
-        isBlank: true
-    }
-}
 
 export default function Issue() {
 
-    const account = useAccount();
-    const {chain} = useNetwork();
+    const {address} = useAccount();
+    const network = useNetwork();
+    const chain = network.chain || defaultChain;
     const {open} = useWeb3Modal()
 
     const [additionalInfo, setAdditionalInfo] = useState({} as IssuerContractInfo)
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
-    const [investmentTokenInfo, setInvestmentTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
-    const [interestTokenInfo, setInterestTokenInfo] = useState({contractAddress: ZERO_ADDRESS} as TokenInfo)
+    const [investmentTokenInfo, setInvestmentTokenInfo] = useState({} as TokenResponseDetailed)
+    const [interestTokenInfo, setInterestTokenInfo] = useState({} as TokenResponseDetailed)
     const bondsHandler = [bondInfo, setBondInfo]
 
 
@@ -120,7 +80,7 @@ export default function Issue() {
                 return;
             }
 
-            if (!account.address) {
+            if (!address) {
                 return open()
             }
 
@@ -128,7 +88,7 @@ export default function Issue() {
             bondInfo.interestTokenInfo = interestTokenInfo;
 
 
-            const response = await sendTransactionAsync?.()
+            const response = await sendTransactionAsync();
             if (response?.hash && chain) {
                 const txResponse = await trackTransaction(chain, response?.hash)
                 if (txResponse) {
@@ -166,13 +126,17 @@ export default function Issue() {
 
         const contractAddress = (contractAddressTmp || "").toLowerCase();
         if (!contractAddress || !chain) {
+            console.log('not getting', contractAddress, chain, address)
             return;
         }
 
         console.log('Getting token info', contractAddress)
 
-        const token: TokenInfo = {
-            contractAddress: contractAddress,
+        const token: TokenResponseDetailed = {
+            _id: "",
+            balance: 0,
+            balanceClean: "",
+            isVerified: false,
             isLoading: true,
             name: "",
             symbol: "",
@@ -182,17 +146,22 @@ export default function Issue() {
 
         setToken({...token})
 
-        const timer = setInterval(async () => {
+        return setInterval(async () => {
 
-            const tokenInfo = await getTokenInfo(chain, contractAddress, account.address);
+            const params = {
+                address,
+                chainId: chain.id,
+                contractAddresses: [contractAddress],
+                returnBalance: Boolean(address)
+            }
+            const tokenInfoObject = await CloudAPI.getTokensDetailed({params})
+            const tokenInfo = tokenInfoObject?.[contractAddress.toLowerCase()];
             if (tokenInfo) {
                 setToken({...tokenInfo})
             } else {
                 setToken({...token, unidentified: true})
             }
-        }, 1000);
-
-        return timer;
+        }, 1500);
     }
 
     useEffect(() => {
@@ -209,12 +178,12 @@ export default function Issue() {
     useEffect(() => {
         const timer = getToken(chain, "interestToken");
         return () => clearTimeout(timer)
-    }, [chain, account.address, bondInfo.interestToken])
+    }, [chain, address, bondInfo.interestToken])
 
     useEffect(() => {
         const timer = getToken(chain, "investmentToken");
         return () => clearTimeout(timer)
-    }, [chain, account.address, bondInfo.investmentToken])
+    }, [chain, address, bondInfo.investmentToken])
 
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
@@ -357,13 +326,13 @@ export default function Issue() {
 }
 
 function TokenDetails({tokenInfo, type, total, additionalInfo}: {
-    tokenInfo: TokenInfo,
+    tokenInfo: TokenResponseDetailed,
     type: string,
     total: number,
     additionalInfo: any
 }) {
 
-    if (!tokenInfo || tokenInfo.contractAddress === ZERO_ADDRESS) {
+    if (!Object.keys(tokenInfo).length || tokenInfo?._id?.toLowerCase() === ZERO_ADDRESS) {
         return null;
     }
 

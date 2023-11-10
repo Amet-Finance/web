@@ -5,7 +5,7 @@ import {toBN} from "@/modules/web3/util";
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    [polygonMumbai.id]: "0xE19D98DE9608853947fDa06b54c268A2d83B4AF3",
+    [polygonMumbai.id]: "0x3Ae9CD505d1Ca12E768896A9F0bcE93eaC42aE7b",
     [bscTestnet.id]: ""
 }
 

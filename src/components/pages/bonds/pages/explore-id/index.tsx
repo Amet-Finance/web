@@ -1,60 +1,51 @@
 import BondActions from "@/components/pages/bonds/pages/explore-id/components/bond-actions";
 import {useEffect, useState} from "react";
-import {getTokenInfo} from "@/modules/web3/tokens";
 import * as Web3ZCB from "@/modules/web3/zcb";
-import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import AmetLoadingFull from "@/components/utils/amet-loading-full";
+import {BondInfoDetailed} from "@/modules/web3/type";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
-import {Chain, useAccount} from "wagmi";
+import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
+import * as CloudAPI from "@/modules/cloud-api";
+import {TokensResponse} from "@/modules/cloud-api/type";
+import {nop} from "@/modules/utils/function";
 
-export default function ExploreId({_id, chainId}: { _id: string, chainId: string }) {
+export default function ExploreId({bondInfoTmp}: { bondInfoTmp: BondInfoDetailed }) {
     const {address} = useAccount()
-    const chain = getChain(chainId)
 
-    const [bondInfo, setBondInfo] = useState({} as BondInfoDetailed);
+    const [bondInfo, setBondInfo] = useState(bondInfoTmp as BondInfoDetailed);
+    const {_id, investmentToken, chainId, interestToken} = bondInfo
 
-    const [tokens, setTokens] = useState({} as { [key: string]: TokenInfo });
-    const [isLoading, setLoading] = useState(true);
+    const [tokens, setTokens] = useState({} as TokensResponse);
 
     useEffect(() => {
-        const interval = getBondInfo(chain, _id, setLoading, setBondInfo)
+        const interval = getBondInfo([bondInfo, setBondInfo])
         return () => {
             clearInterval(interval)
         }
-    }, [address, chainId, _id, chain])
+    }, [address, chainId, _id, chainId])
+
 
     useEffect(() => {
-        if (!chain) return;
-        const tokenContracts = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))]
 
-        const promises: Promise<TokenInfo | undefined>[] = []
-        tokenContracts.forEach(contractAddress => {
-            const promise = getTokenInfo(chain, contractAddress, address)
-            promises.push(promise)
-        })
+        const contractAddresses = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))]
+        const params = {
+            chainId,
+            contractAddresses
+        }
 
-        Promise.all(promises)
+        CloudAPI.getTokens({params})
             .then(response => {
-                const tokensTmp = response.reduce((acc, item) => {
-                    if (item) {
-                        acc[item.contractAddress] = item;
-                    }
-                    return acc;
-                }, {} as any)
-
-                setTokens(tokensTmp)
+                setTokens(response)
             })
-    }, [address, bondInfo.investmentToken, bondInfo.interestToken, chain])
+            .catch(nop)
 
-    if (isLoading) {
-        return <AmetLoadingFull/>
-    }
+    }, [address, _id, investmentToken, interestToken, chainId])
+
 
     return <>
         <div className='flex items-center justify-center'>
             <div
-                className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start">
+                className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:pb-12 sm:pt-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start">
                 <BondDetails info={bondInfo} tokens={tokens}/>
                 <BondActions info={bondInfo} tokens={tokens}/>
             </div>
@@ -62,20 +53,15 @@ export default function ExploreId({_id, chainId}: { _id: string, chainId: string
     </>
 }
 
-function getBondInfo(chain: Chain | undefined, _id: string, setLoading: any, setBondInfo: any) {
+function getBondInfo(bondHandler: any) {
+    const [bondInfo, setBondInfo] = bondHandler
+    const chain = getChain(bondInfo.chainId)
     if (!chain) {
         return;
     }
-    setLoading(true);
-    Web3ZCB.getBondInfo(chain, _id)
-        .then(response => {
-            setBondInfo({...response})
-            setLoading(false)
-        })
-        .catch(error => console.error(error))
 
     return setInterval(() => {
-        Web3ZCB.getBondInfo(chain, _id)
+        Web3ZCB.getBondInfo(chain, bondInfo._id)
             .then(response => setBondInfo({...response}))
             .catch(error => console.error(error));
     }, 3000);

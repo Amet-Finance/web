@@ -16,8 +16,9 @@ import {useAccount, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {redeem} from "@/modules/web3/zcb";
+import {TokensResponse} from "@/modules/cloud-api/type";
 
-export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {
         _id,
@@ -32,7 +33,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const {open} = useWeb3Modal()
     const chain = getChain(chainId)
 
-    const investmentTokenInfo = investmentToken ? tokens[investmentToken] : undefined;
+    const investmentTokenInfo = tokens[investmentToken.toLowerCase()];
     const bondsLeft = Number(total) - Number(purchased);
 
     const [effectRefresher, setEffectRefresher] = useState(0);
@@ -78,14 +79,13 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         data: contractInfo.data,
     })
 
-    console.log(status)
 
     if (isSold) { // todo handle this p element case
         return <>
-            <div className='flex flex-col gap-2 justify-center items-center w-full py-5 rounded cursor-pointer w-full'>
+            <div className='flex flex-col gap-2 justify-center items-center py-5 rounded cursor-pointer w-full'>
                 <span className='font-bold text-5xl'>SOLD OUT</span>
                 <p className='text-g text-sm text-center'>All available bonds for this offering have been
-                    purchased.<br/> Keep an eye out for new bond opportunities!</p>
+                    purchased.</p>
             </div>
         </>
     }

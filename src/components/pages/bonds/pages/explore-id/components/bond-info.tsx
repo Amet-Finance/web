@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {Tokens} from "@/components/pages/bonds/pages/issue/type";
-import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
+import {BondInfoDetailed} from "@/modules/web3/type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {URLS} from "@/modules/utils/urls";
@@ -12,11 +11,11 @@ import {getExplorer, shorten, toBN} from "@/modules/web3/util";
 import {formatTime} from "@/modules/utils/dates";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 import ClockSVG from "../../../../../../../public/svg/clock";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {shortenString} from "@/modules/utils/string";
 import {copyAddress} from "@/modules/utils/address";
-import {requestAPI} from "@/modules/cloud-api/util";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 
 
 const BondTokens = {
@@ -24,7 +23,7 @@ const BondTokens = {
     Investment: "investment"
 }
 
-export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
     return <>
         <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl md:min-w-600 sm:w-full'>
@@ -108,7 +107,7 @@ function Line() {
 }
 
 
-function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
 
     const [isClosed, setClosed] = useState(false);
@@ -127,27 +126,14 @@ function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: Tokens })
     </>
 }
 
-function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
-    const [isWarning, setWarning] = useState(false);
+function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+
     const {total, purchased, redeemed, redeemLockPeriod, investmentToken, interestToken} = info;
 
-    const investmentTokenInfo = tokens[investmentToken]
-    const interestTokenInfo = tokens[interestToken]
+    const investmentTokenInfo = tokens[investmentToken.toLowerCase()]
+    const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const isLoading = !investmentTokenInfo || !interestTokenInfo
-
-    useEffect(() => {
-        if (investmentTokenInfo?.icon) {
-            requestAPI({url: investmentTokenInfo.icon}).then((data) => {
-                if (!data) setWarning(true)
-            })
-        }
-        if (interestTokenInfo?.icon) {
-            requestAPI({url: interestTokenInfo.icon}).then((data) => {
-                if (!data) setWarning(true)
-            })
-        }
-    }, [investmentTokenInfo?.icon, interestTokenInfo?.icon])
-
+    const isWarning = !investmentTokenInfo?.isVerified || !interestTokenInfo?.isVerified
 
     if (isLoading) {
         return <div className="flex items-center justify-center w-full"><Loading percent={-50}/></div>
@@ -175,13 +161,13 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
     </>
 }
 
-function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: BondInfoDetailed }) {
-    const {chainId} = info
+function TokenInfo({type, token, info}: { type: string, token: TokenResponse, info: BondInfoDetailed }) {
+    const {chainId, interestToken, investmentToken} = info
 
     const isInterest = type === BondTokens.Interest
+    const contractAddress = isInterest ? interestToken : investmentToken
     const Icon = isInterest ? <InterestSVG/> : <InvestmentSVG/>;
-    const tokenUrl = getExplorer(chainId, "token", token.contractAddress);
-    const hasBalance = typeof token.balanceClean !== "undefined"
+    const tokenUrl = getExplorer(chainId, "token", contractAddress);
     const title = isInterest ? "Total Return" : "Investment"
 
     const TotalAmount = () => {
@@ -222,7 +208,7 @@ function TokenInfo({type, token, info}: { type: string, token: TokenInfo, info: 
     </>
 }
 
-function Security({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+function Security({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
     const [isClosed, setClosed] = useState(false);
     const openOrClose = () => setClosed(!isClosed)
 
@@ -239,7 +225,7 @@ function Security({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
     </>
 }
 
-function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Tokens }) {
+function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {
         interestToken,
@@ -252,13 +238,10 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     } = info;
 
 
-    const interestTokenInfo = tokens[interestToken];
-    const investmentTokenInfo = tokens[investmentToken];
+    const interestTokenInfo = tokens[interestToken.toLowerCase()];
+    const investmentTokenInfo = tokens[investmentToken.toLowerCase()];
 
-    const isInterestNotFetched = !interestTokenInfo || interestTokenInfo.unidentified
-    const isInvestmentNotFetched = !investmentTokenInfo || investmentTokenInfo.unidentified
-
-    if (isInterestNotFetched || isInvestmentNotFetched) {
+    if (!interestTokenInfo || !investmentTokenInfo) {
         return <div className='flex justify-center items-center w-full'><Loading percent={-50}/></div>;
     }
 

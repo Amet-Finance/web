@@ -15,8 +15,23 @@ type BalanceAPIParams = {
     chainId: number;
 }
 
+type TokenResponse = {
+    _id: string,
+    name: string,
+    symbol: string,
+    decimals: number,
+    isVerified: boolean,
+    icon?: string
+}
+
+type TokensResponse = {
+    [contractLowerCased: string]: TokenResponse
+}
+
 export type  {
     BondsAPIParams,
     StatsAPIParams,
-    BalanceAPIParams
+    BalanceAPIParams,
+    TokenResponse,
+    TokensResponse
 }

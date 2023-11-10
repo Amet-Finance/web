@@ -8,8 +8,9 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
+import {TokensResponse} from "@/modules/cloud-api/type";
 
-export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: { [key: string]: TokenInfo } }) {
+export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
     return <>
         <div className="flex flex-col gap-4 text-sm">
@@ -23,12 +24,12 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
 }
 
 
-function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Tokens }) {
+function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {_id, chainId, interestToken} = bondInfo;
     const [amount, setAmount] = useState(0)
 
-    const interestTokenInfo = tokens[interestToken]
+    const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const chain = getChain(chainId);
 
     const config = {
@@ -75,12 +76,12 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
     </>
 }
 
-function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Tokens }) {
+function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {_id, chainId, interestToken} = bondInfo;
     const chain = getChain(chainId);
 
-    const interestTokenInfo = tokens[interestToken]
+    const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const config = {contractAddress: _id,}
     const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({

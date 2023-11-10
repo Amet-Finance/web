@@ -1,15 +1,24 @@
 import ExploreId from "@/components/pages/bonds/pages/explore-id";
+import {getBondInfo} from "@/modules/web3/zcb";
+import {getChain} from "@/modules/utils/wallet-connect";
 
-export default function ExploreIdPage({_id, chainId}: { _id: string, chainId: string }) {
-    return <ExploreId _id={_id} chainId={chainId}/>
+export default function ExploreIdPage({bondInfo}: any) {
+    return <ExploreId bondInfoTmp={bondInfo}/>
 }
 
 export async function getServerSideProps({query}: any) {
+    const chainId = query.chainId || null;
+    const contractAddress = query.id
+    const chain = getChain(chainId)
+    let bondInfo;
+    if (chain) {
+        bondInfo = await getBondInfo(chain, contractAddress)
+    }
+
     return {
         props: {
             pageId: "ExploreIdPage",
-            _id: query.id,
-            chainId: query.chainId || null
+            bondInfo
         }
     }
 }

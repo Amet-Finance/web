@@ -4,6 +4,7 @@ import Manage from "@/components/pages/bonds/pages/explore-id/components/bond-ac
 import Redeem from "@/components/pages/bonds/pages/explore-id/components/bond-actions/redeem";
 import Purchase from "@/components/pages/bonds/pages/explore-id/components/bond-actions/purchase";
 import ActionButtons from "@/components/pages/bonds/pages/explore-id/components/bond-actions/action-buttons";
+import {TokensResponse} from "@/modules/cloud-api/type";
 
 export const Actions: { [key: string]: string } = {
     Purchase: 'purchase',
@@ -11,7 +12,7 @@ export const Actions: { [key: string]: string } = {
     Manage: 'manage'
 }
 
-export default function BondActions({info, tokens}: { info: BondInfoDetailed, tokens: any }) {
+export default function BondActions({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
     const [action, setAction] = useState(Actions.Purchase);
     const actionHandler = [action, setAction];
 
@@ -25,7 +26,7 @@ export default function BondActions({info, tokens}: { info: BondInfoDetailed, to
 }
 
 function Action({actionHandler, info, tokens}: any) {
-    const [action, setAction] = actionHandler;
+    const [action] = actionHandler;
 
     switch (action) {
         case Actions.Purchase: {

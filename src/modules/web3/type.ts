@@ -1,3 +1,5 @@
+import {TokenResponse} from "@/modules/cloud-api/type";
+
 type IssuerContractInfo = {
     issuanceFeeForUI: string,
     creationFee: number,
@@ -40,9 +42,22 @@ type TokenInfo = {
 
 type ExplorerTypes = "token" | "address"
 
+type TokenResponseBalance = TokenResponse & {
+    balance: number,
+    balanceClean: string,
+}
+
+type TokenResponseDetailed = TokenResponseBalance & {
+    unidentified?: boolean,
+    isLoading?: boolean
+}
+
+
 export type {
     IssuerContractInfo,
     BondInfoDetailed,
     TokenInfo,
+    TokenResponseBalance,
+    TokenResponseDetailed,
     ExplorerTypes
 }

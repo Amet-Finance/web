@@ -31,7 +31,7 @@ function BondsContainer() {
     const {chain} = useNetwork();
     const chainId = chain?.id || defaultChain.id
 
-    const [search, setSearch] = useState({text: ""});
+    const [search, setSearch] = useState({text: "", hideSold: false});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,
@@ -46,10 +46,15 @@ function BondsContainer() {
         [event.target.id]: event.target.value
     });
 
-    const bondsFiltered = () => {
+    function bondsFiltered(): BondGeneral[] {
         return data.filter(item => {
-            const {interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
+            const {total, purchased, interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
+            const isSold = total - purchased === 0;
             const searchExists = search.text
+            if (search.hideSold && isSold) {
+                return false;
+            }
+
             if (Boolean(searchExists)) {
                 const regex = new RegExp(search.text, 'i')
                 const toTest = [interestTokenInfo.symbol, investmentTokenInfo.symbol, issuer, _id]
@@ -78,9 +83,14 @@ function BondsContainer() {
 
     return <>
         <div className={Styles.bonds}>
-            <div className='flex items-start'>
+            <div className='flex justify-center  w-full gap-12'>
+                <div className='flex gap-2 items-center cursor-pointer'
+                     onClick={() => setSearch({...search, hideSold: !Boolean(search.hideSold)})}>
+                    <div className={`w-5 h-5 rounded ${search.hideSold ? "bg-green-500" : "bg-b4"}`}/>
+                    <span>Hide sold</span>
+                </div>
                 <input type="text"
-                       className="placeholder:text-g2 px-4 py-2 bg-transparent border border-w1 border-solid rounded text-white w-52 text-sm "
+                       className="placeholder:text-g2 px-4 py-2 bg-transparent border border-w1 border-solid rounded text-white w-96 text-sm "
                        placeholder='Contract address, Token Symbol or Issuer address'
                        id='text'
                        onChange={onChange}
@@ -88,12 +98,13 @@ function BondsContainer() {
             </div>
             {
                 isLoading ?
-                    <><div className='flex items-center justify-center w-full h-56'><Loading percent={-50}/></div></> :
+                    <>
+                        <div className='flex items-center justify-center w-full h-56'><Loading percent={-50}/></div>
+                    </> :
                     <>
                         <div
                             className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm1:w-max sm:w-full">
-                            {bondsFiltered().map((bond: BondInfo, index: number) => <Bond info={bond as any}
-                                                                                          key={index}/>)}
+                            {bondsFiltered().map((bond: BondGeneral) => <Bond info={bond} key={bond._id}/>)}
                         </div>
                     </>
             }
