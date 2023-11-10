@@ -393,7 +393,7 @@ function Token({token, additionalInfo}: { token: any, additionalInfo: IssuerCont
     const isInterest = type === BondTokenInfo.Interest
     const totalClassName = isInterest ? Styles.interestTotal : Styles.investmentTotal;
     const sign = isInterest ? '-' : '+';
-    const normalizedCreationFee = additionalInfo.creationFeePercentage / 100
+    const normalizedCreationFee = additionalInfo.creationFeePercentage / 10
     const totalReceived = isInterest ? total : (total - (total * normalizedCreationFee) / 100)
 
     const [isWarning, setWarning] = useState(false);
