@@ -452,7 +452,7 @@ function NotIdentified() {
         <div className="flex items-center gap-4 max-w-lg">
             <p className='text-sm'>
                 Could not identify the token, make sure the contract is correct for
-                <span className="text-rl-1 font-bold"> {chain?.name} network</span>
+                <span className="text-red-500 font-bold"> {chain?.name} network</span>
             </p>
             <WarningSVG/>
         </div>

@@ -82,7 +82,6 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             }
         }
     } catch (error: any) {
-        console.log(`config`, config)
         console.log(`getContractInfoByType`, error.message)
         return {
             to: "",

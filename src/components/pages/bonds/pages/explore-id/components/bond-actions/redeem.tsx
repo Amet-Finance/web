@@ -180,19 +180,19 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                     ref={inputRef}
                     placeholder="The amount of bonds you want to redeem"/>
                 <div className='flex gap-2 items-center'>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
                             onClick={() => setPercent(5)}>5%
                     </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
                             onClick={() => setPercent(10)}>10%
                     </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
                             onClick={() => setPercent(25)}>25%
                     </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
                             onClick={() => setPercent(50)}>50%
                     </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:bg-green-600'
+                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
                             onClick={() => setPercent(100)}>100%
                     </button>
                 </div>

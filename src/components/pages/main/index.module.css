@@ -57,8 +57,12 @@
 }
 
 .learnMore {
-    background-color: white !important;
+    background-color: #DDDDDD !important;
     color: black !important;
+}
+
+.learnMore:hover {
+    background-color: #fff !important;
 }
 
 .btn {

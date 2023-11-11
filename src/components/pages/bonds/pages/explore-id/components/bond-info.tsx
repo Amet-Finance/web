@@ -148,9 +148,9 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
                     <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
                     <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
                     <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
-                        <div className='flex items-center gap-1'>
+                        <div className='flex items-center gap-1.5'>
                             <ClockSVG/>
-                            <span className='text-g'>Period:</span>
+                            <span>Period:</span>
                         </div>
                         <span
                             className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
@@ -204,9 +204,9 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
 
     return <>
         <div className='flex items-center justify-between px-0 py-1 w-full'>
-            <div className='flex items-center gap-1'>
+            <div className='flex items-center gap-1.5'>
                 {Icon}
-                <span className='text-g'>{title}:</span>
+                <span>{title}:</span>
             </div>
             <TotalAmount/>
         </div>
@@ -284,21 +284,22 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     return <>
         <div className='grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs p-4 py-1'>
             <div className='flex items-center justify-between w-full'>
-                <span className='text-g'>Secured Percentage:</span>
+                <span>Secured Percentage:</span>
                 <span className={percentageClass() + " text-sm font-bold"}>{redeemedPercentage.toFixed(2)}%</span>
             </div>
             <div className='flex items-center justify-between w-full'>
-                <span className='text-g'>Issuer Score:</span>
+                <span>Issuer Score:</span>
                 <span className='text-sm font-bold'>SOON</span>
             </div>
             <div className='flex items-center justify-between w-full'>
-                <span className='text-g'>Total Purchased:</span>
+                <span>Total Purchased:</span>
                 <span
-                    className='text-sm font-bold'>{formatLargeNumber(totalPurchased)} {investmentTokenInfo.symbol}</span>
+                    className='text-sm font-bold'>{formatLargeNumber(totalPurchased)} {shortenString(investmentTokenInfo.symbol, 5)}</span>
             </div>
             <div className='flex items-center justify-between w-full'>
-                <span className='text-g'>Total Redeemed:</span>
-                <span className='text-sm font-bold'>{formatLargeNumber(totalRedeemed)} {interestTokenInfo.symbol}</span>
+                <span>Total Redeemed:</span>
+                <span
+                    className='text-sm font-bold'>{formatLargeNumber(totalRedeemed)} {shortenString(interestTokenInfo.symbol, 5)}</span>
             </div>
 
         </div>

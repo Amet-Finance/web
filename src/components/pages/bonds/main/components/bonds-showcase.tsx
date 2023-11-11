@@ -10,7 +10,7 @@ import {defaultChain} from "@/modules/utils/wallet-connect";
 
 export default function BondsShowcase() {
     return <>
-        <div className="relative flex flex-col items-center gap-4 w-full text-center">
+        <div className="relative flex flex-col items-center gap-6 w-full text-center">
             <div className="relative flex flex-col items-center gap-3 w-full text-center">
                 <h2 className='text-3xl font-bold'>Explore New Bonds</h2>
                 <p className="text-g px-4">Stay ahead of the curve by exploring our freshly

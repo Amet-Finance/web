@@ -1,7 +1,7 @@
 import Styles from "./index.module.css";
 import Link from "next/link";
 import AmetLogo from "../../../public/svg/amet-logo";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import * as AccountSlice from "@/store/redux/account";
 import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
@@ -164,20 +164,36 @@ function ConnectedState() {
 
 function Chains() {
     const [isOpen, setOpen] = useState(false)
+    const boxRef = useRef<any>()
 
     const {isConnecting, isReconnecting} = useAccount();
     const network = useNetwork();
     const chain = network.chain || defaultChain;
+
+
+    const change = () => setOpen(!isOpen)
+
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [boxRef]);
 
     if (isConnecting || isReconnecting) {
         return <Loading percent={50}/>;
     }
 
 
-    const change = () => setOpen(!isOpen)
-
     return <>
-        <div className='relative flex flex-col p-2'>
+        <div className='relative flex flex-col p-2' ref={boxRef}>
             <Image src={getChainIcon(chain.id)}
                    alt={chain?.name}
                    width={30} height={30}
@@ -191,7 +207,7 @@ function Chains() {
 function ChainsDropDown({change}: any) {
     return <>
         <div className='
-        absolute top-14 right-0 min-w-max flex flex-col gap-2 bg-b1 px-3 py-1 rounded z-40 h-28 overflow-x-auto
+        absolute top-14 right-0 min-w-max flex flex-col bg-b1 px-3 py-1 rounded z-40 h-36 overflow-x-auto
         md:left-auto sm:left-0 border border-w1
         '
              onClick={change}>
@@ -216,8 +232,8 @@ function Chain({chain}: any) {
 
     return <>
         <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded' onClick={change}>
-            <Image src={getChainIcon(chain.id)} alt={chain.name} width={30} height={30} className='cursor-pointer'/>
-            <span>{chain.name}</span>
+            <Image src={getChainIcon(chain.id)} alt={chain.name} width={22} height={22} className='cursor-pointer'/>
+            <span className='text-sm'>{chain.name}</span>
         </div>
     </>
 }

@@ -136,9 +136,9 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
         <div className='flex md:gap-12 sm:gap-4 justify-between items-center text-sm'>
             <div className='flex flex-col py-2 rounded-md w-full'>
                 <SectionContainer>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-1.5'>
                         <InvestmentSVG/>
-                        <span className='text-g'>Investment:</span>
+                        <span>Investment:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
                         {!investmentTokenInfo.isVerified && <WarningSVG/>}
@@ -147,9 +147,9 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                     </div>
                 </SectionContainer>
                 <SectionContainer>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-1.5'>
                         <InterestSVG/>
-                        <span className='text-g whitespace-nowrap'>Total Return:</span>
+                        <span className='whitespace-nowrap'>Total Return:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
                         {!interestTokenInfo.isVerified && <WarningSVG/>}
@@ -158,9 +158,9 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                     </div>
                 </SectionContainer>
                 <SectionContainer>
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-1.5'>
                         <ClockSVG/>
-                        <span className='text-g whitespace-nowrap'>Lock Period:</span>
+                        <span className='whitespace-nowrap'>Lock Period:</span>
                     </div>
                     <span
                         className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>

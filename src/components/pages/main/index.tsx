@@ -4,6 +4,7 @@ import {useRef, useState} from "react";
 import Link from "next/link";
 import {join} from "@/modules/utils/styles";
 import {URLS} from "@/modules/utils/urls";
+import AEmblemSVG from "../../../../public/svg/product/a-emblem";
 
 
 const Texts = {
@@ -37,7 +38,7 @@ export default function Home() {
                         <Link href='/bonds' className='md:w-max sm:w-full'>
                             <button className={join([Styles.btn, "w-full"])}>Get Started</button>
                         </Link>
-                        <Link href={URLS.FAQ_WIAF} target="_blank" className='md:w-max sm:w-full'>
+                        <Link href={URLS.Docs} target="_blank" className='md:w-max sm:w-full'>
                             <button className={join([Styles.learnMore, Styles.btn, "w-full"])}>Learn More</button>
                         </Link>
                     </div>
@@ -45,7 +46,7 @@ export default function Home() {
                 <div className={Styles.sectionDown + " animate-bounce"} onClick={scrollToView}>
                     <div className={Styles.hz}/>
                     <div className={Styles.cl}>
-                        <span>B</span>
+                        <AEmblemSVG/>
                     </div>
                 </div>
             </div>
@@ -98,11 +99,10 @@ export default function Home() {
             <div className={Styles.sections}>
                 <FAQ/>
             </div>
-
-            <Link href='/bonds' target="_blank">
+            <Link href='/bonds' target="_blank" className='w-full'>
                 <div
-                    className='flex justify-center items-center bg-b4 w-full hover:bg-white hover:text-black py-20 cursor-pointer'>
-                    <span className='font-bold text-2xl'>Start Growing Your Wealth!</span>
+                    className='flex justify-center items-center bg-b4 w-full hover:bg-white hover:text-black py-16 cursor-pointer'>
+                    <span className='font-bold text-3xl'>Start Growing Your Wealth!</span>
                 </div>
             </Link>
 

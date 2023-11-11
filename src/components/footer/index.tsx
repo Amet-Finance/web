@@ -80,7 +80,7 @@ function Attribute({info}: any) {
     const {title, url} = info;
     return <>
         <Link href={url} target="_blank" rel='noreferrer'>
-            <span className="text-g2">{title}</span>
+            <button className="text-g2 cursor-pointer hover:text-white cursor-pointer">{title}</button>
         </Link>
     </>
 }
