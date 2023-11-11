@@ -81,8 +81,9 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 throw Error("Invalid type")
             }
         }
-    } catch (error) {
-        // console.log(`getContractInfoByType`, error)
+    } catch (error: any) {
+        console.log(`config`, config)
+        console.log(`getContractInfoByType`, error.message)
         return {
             to: "",
             value: 0,

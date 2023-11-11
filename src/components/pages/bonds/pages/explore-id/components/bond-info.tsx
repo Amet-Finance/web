@@ -16,6 +16,9 @@ import {shortenString} from "@/modules/utils/string";
 import {copyAddress} from "@/modules/utils/address";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
+import makeBlockie from "ethereum-blockies-base64";
+import VerifiedSVG from "../../../../../../../public/svg/verified";
+import WarningSVG from "../../../../../../../public/svg/warning";
 
 
 const BondTokens = {
@@ -133,7 +136,6 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
     const investmentTokenInfo = tokens[investmentToken.toLowerCase()]
     const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const isLoading = !investmentTokenInfo || !interestTokenInfo
-    const isWarning = !investmentTokenInfo?.isVerified || !interestTokenInfo?.isVerified
 
     if (isLoading) {
         return <div className="flex items-center justify-center w-full"><Loading percent={-50}/></div>
@@ -141,9 +143,8 @@ function GeneralInfoDetails({info, tokens}: { info: BondInfoDetailed, tokens: To
 
     return <>
         <div className='flex flex-col gap-2 w-full'>
-            {isWarning && <span className='text-xs text-red-700'>Warning: Please proceed with caution. The Token is not verified.</span>}
-            <div className='flex md:flex-row sm:flex-col gap-2 items-center justify-between w-full p-4 py-1'>
-                <div className='flex flex-col gap-0.5 w-full'>
+            <div className='flex md:flex-row sm:flex-col md:gap-24 sm:gap-2 items-center p-4 py-1 w-full'>
+                <div className='flex flex-col gap-0.5 md:w-1/2 sm:w-full'>
                     <TokenInfo type={BondTokens.Investment} token={investmentTokenInfo} info={info}/>
                     <TokenInfo type={BondTokens.Interest} token={interestTokenInfo} info={info}/>
                     <div className='flex items-center justify-between md:gap-20 sm:gap-4 px-0 py-1'>
@@ -171,8 +172,8 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
     const title = isInterest ? "Total Return" : "Investment"
 
     const TotalAmount = () => {
-        if (!token?.decimals) {
-            return 0;
+        if (!Number.isFinite(Number(token?.decimals))) {
+            return null;
         }
 
         const amount = (isInterest ?
@@ -180,17 +181,21 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
             toBN(info.investmentTokenAmount).div(toBN(10).pow(toBN(token.decimals)))).toNumber()
 
         const className = isInterest ? "text-green-500" : ""
+        const icon = token.icon || makeBlockie(token._id);
 
         return <>
             <Link href={tokenUrl} target="_blank">
                 <div className='flex justify-end gap-2 items-center w-full cursor-pointer'>
-                    <div className='flex gap-0.5 items-center'>
-                        <span className={className + " text-sm font-bold"}
-                              title={format(amount)}>{formatLargeNumber(amount)}</span>
-                        <span className={className + " text-sm font-bold"}>{shortenString(token?.symbol, 4)}</span>
+                    <div className='flex gap-2 items-center'>
+                        {!token.isVerified && <WarningSVG/>}
+                        <div className='flex gap-0.5 items-center'>
+                            <span className={className + " text-sm font-bold"}
+                                  title={format(amount)}>{formatLargeNumber(amount)}</span>
+                            <span className={className + " text-sm font-bold"}>{shortenString(token?.symbol, 4)}</span>
+                        </div>
                     </div>
                     <div className='flex justify-end'>
-                        <TokenImage src={token.icon} alt={token.name}/>
+                        <Image src={icon} alt={token.name} width={26} height={26} className='rounded-full'/>
                     </div>
                 </div>
             </Link>
@@ -301,19 +306,3 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
 }
 
 
-function TokenImage({src, alt}: any) {
-
-    return <>{
-        <Image src={src} alt={alt} width={26} height={26}
-               onLoadStart={(event) => {
-                   // @ts-ignore
-                   event.target.src = "/svg/question.svg"
-               }}
-               onError={
-                   (event) => {
-                       // @ts-ignore
-                       event.target.src = "/svg/question.svg"
-                   }
-               }/>
-    }</>
-}

@@ -1,20 +1,18 @@
 import Image from "next/image";
 import Styles from "./index.module.css"
-import {getIcon} from "@/modules/utils/images";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import InvestmentSVG from "../../../../../../public/svg/investment";
 import InterestSVG from "../../../../../../public/svg/interest";
 import ClockSVG from "../../../../../../public/svg/clock";
 import {formatTime, shortTime} from "@/modules/utils/dates";
 import Link from "next/link";
-import {useEffect, useState} from "react";
 import {stopPropagation} from "@/modules/utils/events";
 import {shorten, toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
-import Loading from "@/components/utils/loading";
-import axios from "axios";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {shortenString} from "@/modules/utils/string";
+import makeBlockie from "ethereum-blockies-base64";
+import WarningSVG from "../../../../../../public/svg/warning";
 
 
 export default function Bond({info}: { info: BondGeneral }) {
@@ -52,45 +50,29 @@ export default function Bond({info}: { info: BondGeneral }) {
 function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
 
     const {
-        total,
-        purchased,
-        redeemed,
-        chainId,
         interestTokenInfo,
         investmentTokenInfo,
-        investmentToken,
-        interestToken,
     } = bondInfo;
 
-    const [investment, setInvestment] = useState({
-        isVerified: true
-    })
-    const [interest, setInterest] = useState({
-        isVerified: true
-    })
-
-    const interestIcon = getIcon(Number(chainId), interestToken)
-    const investmentIcon = getIcon(Number(chainId), investmentToken)
 
     const title = `${interestTokenInfo?.symbol}-${investmentTokenInfo?.symbol}`
+    const investmentIcon = investmentTokenInfo.icon || makeBlockie(investmentTokenInfo._id);
+    const interestIcon = interestTokenInfo.icon || makeBlockie(interestTokenInfo._id);
 
-
-    const isWarning = !interest.isVerified || !investment.isVerified // todo update here
+    const isWarning = !interestTokenInfo?.isVerified || !interestTokenInfo?.isVerified // todo update here
     return <>
 
         <div className="flex justify-between items-center gap-10 w-full">
             <div className="flex justify-between items-center w-full">
                 <div className="relative flex items-center">
                     <div className="flex justify-center items-center rounded-full">
-                        <TokenImage src={investmentIcon}
-                                    alt={investmentTokenInfo?.symbol}
-                                    handler={[investment, setInvestment]}/>
+                        <Image src={investmentIcon} alt={investmentTokenInfo.name} width={26} height={26}
+                               className='rounded-full'/>
                     </div>
                     <div className="translate-x-[-30%] bg-black rounded-full px-0.5">
                         <div className="flex justify-center items-center">
-                            <TokenImage src={interestIcon}
-                                        alt={interestTokenInfo.symbol}
-                                        handler={[interest, setInterest]}/>
+                            <Image src={interestIcon} alt={interestTokenInfo.name} width={26} height={26}
+                                   className='rounded-full'/>
                         </div>
                     </div>
                 </div>
@@ -99,9 +81,6 @@ function BondHeader({bondInfo}: { bondInfo: BondGeneral }) {
                         <span className="text-sm">{title}</span>
                         <span className={Styles.type}>ZCB</span>
                     </div>
-                    {Boolean(isWarning) &&
-                        <span className='text-red-700 text-xs text-start absolute top-full left-0 w-full'>Warning: Please proceed with caution.</span>
-                    }
                 </div>
             </div>
         </div>
@@ -125,23 +104,23 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     const response: any = {}
 
     if (investmentTokenInfo) {
-        const isFake = !investmentTokenInfo.isVerified;
-        const amount = investmentTokenAmount || ""
-        const decimals = investmentTokenInfo.decimals || ""
+        const amount = investmentTokenAmount
+        const decimals = investmentTokenInfo?.decimals
+        let fixedAmount = (Number.isFinite(Number(amount)) && Number.isFinite(Number(decimals))) ? toBN(amount).div(toBN(10).pow(toBN(decimals))).toString() : undefined
+
         response.investment = {
-            currency: isFake ? "?" : shortenString(investmentTokenInfo.symbol, 5),
-            amount: isFake ? "?" : formatLargeNumber(Number(toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()))
+            currency: shortenString(investmentTokenInfo.symbol || "X", 5),
+            amount: fixedAmount ? formatLargeNumber(Number(fixedAmount)) : "X"
         }
     }
     if (interestTokenInfo) {
-        const isFake = !investmentTokenInfo.isVerified;
-        const amount = interestTokenAmount || ""
-        const decimals = interestTokenInfo.decimals || ""
+        const amount = interestTokenAmount
+        const decimals = interestTokenInfo?.decimals
+        let fixedAmount = (Number.isFinite(Number(amount)) && Number.isFinite(Number(decimals))) ? toBN(amount).div(toBN(10).pow(toBN(decimals))).toString() : undefined
 
-        const price = isFake ? "?" : toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()
         response.interest = {
-            currency: isFake ? "?" : shortenString(interestTokenInfo.symbol, 5),
-            amount: isFake ? "?" : formatLargeNumber(Number(toBN(amount).div(toBN(10).pow(toBN(decimals))).toString()))
+            currency: shortenString(interestTokenInfo.symbol || "X", 5),
+            amount: fixedAmount ? formatLargeNumber(Number(fixedAmount)) : "X"
         }
     }
 
@@ -155,13 +134,14 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
 
     return <>
         <div className='flex md:gap-12 sm:gap-4 justify-between items-center text-sm'>
-            <div className='flex flex-col py-2 rounded-md'>
+            <div className='flex flex-col py-2 rounded-md w-full'>
                 <SectionContainer>
                     <div className='flex items-center gap-1'>
                         <InvestmentSVG/>
                         <span className='text-g'>Investment:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
+                        {!investmentTokenInfo.isVerified && <WarningSVG/>}
                         <span className='text-sm font-bold'>{response.investment.amount}</span>
                         <span className='text-sm font-bold'>{response.investment.currency}</span>
                     </div>
@@ -172,6 +152,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                         <span className='text-g whitespace-nowrap'>Total Return:</span>
                     </div>
                     <div className='flex gap-1 items-center'>
+                        {!interestTokenInfo.isVerified && <WarningSVG/>}
                         <span className='text-sm text-green-500 font-bold'>{response.interest.amount}</span>
                         <span className='text-sm text-green-500 font-bold'>{response.interest.currency}</span>
                     </div>
@@ -208,36 +189,4 @@ function BondFooter({bondInfo}: { bondInfo: BondGeneral }) {
             </div>
         </div>
     </>
-}
-
-function TokenImage({src, alt, handler}: any) {
-
-    const [state, setter] = handler;
-    const [isLoading, setLoading] = useState(true)
-    const [srcC, setSrcC] = useState(src)
-
-    const handleError = () => {
-        setter({
-            isVerified: false
-        })
-    }
-
-
-    useEffect(() => {
-        axios.get(src)
-            .then(() => handleSuccess())
-            .catch(() => handleError())
-            .finally(() => setLoading(false))
-    }, []);
-
-    const handleSuccess = () => setter({isVerified: true})
-
-    if (isLoading) {
-        return <Loading percent={50}/>
-    }
-
-    return <>{
-        state.isVerified ?
-            <Image src={srcC} alt={alt} width={26} height={26} onError={handleError} onLoad={handleSuccess}/> :
-            <Image src="/svg/question.svg" alt={alt} width={26} height={26}/>}</>
 }

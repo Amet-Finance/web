@@ -17,6 +17,10 @@ const NAV_ITEMS: { title: string, defaultUrl: string, defaultTarget?: string, li
         ]
     },
     {
+        title: "Swap",
+        defaultUrl: '/swap'
+    },
+    {
         title: "Documentation",
         defaultUrl: URLS.Docs,
         defaultTarget: "_blank"

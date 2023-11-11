@@ -7,6 +7,7 @@ import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import {useNetwork} from "wagmi";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import Loading from "@/components/utils/loading";
+import InfoBox from "@/components/utils/info-box";
 
 
 export default function Explore() {
@@ -31,7 +32,7 @@ function BondsContainer() {
     const {chain} = useNetwork();
     const chainId = chain?.id || defaultChain.id
 
-    const [search, setSearch] = useState({text: "", hideSold: false});
+    const [search, setSearch] = useState({text: "", hideSold: true, hideNotVerified: false});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,
@@ -50,8 +51,15 @@ function BondsContainer() {
         return data.filter(item => {
             const {total, purchased, interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
             const isSold = total - purchased === 0;
+
             const searchExists = search.text
+            const isNotVerified = !item?.interestTokenInfo?.isVerified || !item?.investmentTokenInfo?.isVerified
+
             if (search.hideSold && isSold) {
+                return false;
+            }
+
+            if (search.hideNotVerified && isNotVerified) {
                 return false;
             }
 
@@ -87,7 +95,17 @@ function BondsContainer() {
                 <div className='flex gap-2 items-center cursor-pointer'
                      onClick={() => setSearch({...search, hideSold: !Boolean(search.hideSold)})}>
                     <div className={`w-5 h-5 rounded ${search.hideSold ? "bg-green-500" : "bg-b4"}`}/>
-                    <span>Hide sold</span>
+                    <InfoBox info={{text: "Toggle this filter to show only available bonds."}}>
+                        <span>Hide Sold Out Bonds</span>
+                    </InfoBox>
+                </div>
+                <div className='flex gap-2 items-center cursor-pointer'
+                     onClick={() => setSearch({...search, hideNotVerified: !Boolean(search.hideNotVerified)})}>
+                    <div className={`w-5 h-5 rounded ${search.hideNotVerified ? "bg-green-500" : "bg-b4"}`}/>
+                    <InfoBox
+                        info={{text: "This filter hides bonds where one or more assets involved are not verified coins by Amet Finance"}}>
+                        <span>Hide Unverified Asset Bonds</span>
+                    </InfoBox>
                 </div>
                 <input type="text"
                        className="placeholder:text-g2 px-4 py-2 bg-transparent border border-w1 border-solid rounded text-white w-96 text-sm "

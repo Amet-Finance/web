@@ -9,6 +9,7 @@ import {URLS} from "@/modules/utils/urls";
 import LinkedInSVG from "../../../public/svg/social/linkedin";
 import MediumSVG from "../../../public/svg/social/medium";
 import GithubSVG from "../../../public/svg/social/github";
+import FacebookSVG from "../../../public/svg/social/facebook";
 
 export default function Footer() {
     return <>
@@ -26,6 +27,7 @@ export default function Footer() {
                         <LinkedInSVG/>
                         <MediumSVG url={URLS.Medium}/>
                         <GithubSVG url={URLS.Github}/>
+                        <FacebookSVG url={URLS.Facebook}/>
                     </div>
                     <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
                 </div>

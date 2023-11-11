@@ -84,8 +84,8 @@ function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
         interestTokenInfo
     } = bondInfo;
 
-    const isInvestInvalid = !investmentTokenInfo || typeof investmentTokenInfo.decimals === "undefined"
-    const isInterestInvalid = !interestTokenInfo || typeof interestTokenInfo.decimals === "undefined"
+    const isInvestInvalid = !investmentTokenInfo || !Object.keys(investmentTokenInfo) || typeof investmentTokenInfo.decimals === "undefined"
+    const isInterestInvalid = !interestTokenInfo || !Object.keys(interestTokenInfo) || typeof interestTokenInfo.decimals === "undefined"
     if (isInvestInvalid || isInterestInvalid) {
         throw Error("Investment or Interest Token info is undefined")
     }

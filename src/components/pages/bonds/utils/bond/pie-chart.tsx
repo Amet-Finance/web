@@ -7,14 +7,13 @@ type Arguments = {
     total: number;
     purchased: number;
     redeemed: number;
-    isHorizontal?: boolean;
-    hideText?: boolean;
 }
 
-export default function PieChart({total, purchased, redeemed, isHorizontal, hideText}: Arguments) {
+export default function PieChart({total, purchased, redeemed}: Arguments) {
     const left = total - purchased;
     const theUnredeemedAmount = purchased - redeemed;
-    // todo write total inside the round https://www.youtube.com/watch?v=c2mzQKpd_DI
+
+
     const DatasetLabels = {
         Redeem: "Redeem",
         Purchased: 'Purchased',
@@ -109,32 +108,13 @@ export default function PieChart({total, purchased, redeemed, isHorizontal, hide
             chart.destroy();
         };
 
-    }, [total, purchased, redeemed, isHorizontal])
-
-    const size = isHorizontal ? "104px" : "52px"
+    }, [total, purchased, redeemed])
 
     return <>
-        <div className="container">
-            <div className='canvas'>
+        <div className="flex justify-center items-center cursor-pointer">
+            <div className='w-[100px] h-[100px]'>
                 <canvas ref={chartRef}/>
             </div>
         </div>
-        <style jsx>{`
-          .container {
-            display: flex;
-            flex-direction: ${isHorizontal ? "row" : "column"};
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            width: 100%;
-          }
-
-          .canvas {
-            width: 100px;
-            height: 100px;
-          }
-
-        `}</style>
     </>
 }

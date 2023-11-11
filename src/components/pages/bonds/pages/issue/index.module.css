@@ -205,6 +205,11 @@
     .inputs {
         grid-template-columns: repeat(1, 1fr);
     }
+
+    .bondDetailsMax {
+        max-width: none;
+        width: 100%;
+    }
 }
 
 @media (max-width: 500px) {

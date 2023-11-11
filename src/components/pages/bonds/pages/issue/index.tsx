@@ -26,6 +26,8 @@ import InfoBox from "@/components/utils/info-box";
 import * as CloudAPI from "@/modules/cloud-api";
 import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import {defaultChain} from "@/modules/utils/wallet-connect";
+import makeBlockie from "ethereum-blockies-base64";
+import VerifiedSVG from "../../../../../../public/svg/verified";
 
 
 export default function Issue() {
@@ -43,7 +45,13 @@ export default function Issue() {
     const bondsHandler = [bondInfo, setBondInfo]
 
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, {bondInfo, additionalInfo})
+    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, {
+        bondInfo: {
+            ...bondInfo,
+            investmentTokenInfo,
+            interestTokenInfo
+        }, additionalInfo
+    })
 
     const {isLoading, sendTransactionAsync} = useSendTransaction({
         to: contractInfo.to,
@@ -84,9 +92,6 @@ export default function Issue() {
                 return open()
             }
 
-            bondInfo.investmentTokenInfo = investmentTokenInfo;
-            bondInfo.interestTokenInfo = interestTokenInfo;
-
 
             const response = await sendTransactionAsync();
             if (response?.hash && chain) {
@@ -120,13 +125,13 @@ export default function Issue() {
     }
 
     function getToken(chain: Chain | undefined, type: string) {
-        const isInvestment = type === "investmentToken"
+        const isInvestment = type === "investmentToken";
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
         const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
 
         const contractAddress = (contractAddressTmp || "").toLowerCase();
         if (!contractAddress || !chain) {
-            console.log('not getting', contractAddress, chain, address)
+            setToken({} as any);
             return;
         }
 
@@ -274,13 +279,12 @@ export default function Issue() {
                     </div>
                 </div>
                 <div className={Styles.form}>
-                    <div className={Styles.formTexts}>
+                    <div className={join([Styles.formTexts, "w-[400px]"])}>
                         <h2 className='text-2xl font-bold'>Review Bond Details</h2>
                         <span className="text-g text-sm">Ensure accuracy and make any adjustments if needed.</span>
                         <div className={Styles.formLine}/>
                     </div>
-
-                    <div className={join([Styles.box, Styles.bondDetailsMax])}>
+                    <div className="flex flex-col justify-between gap-2 w-full text-sm lg:max-w-lg md:max-w-none">
                         <div className={Styles.assets}>
                             <div className={Styles.section}>
                                 <TotalSVG/>
@@ -307,7 +311,7 @@ export default function Issue() {
                         </div>
                     </div>
 
-                    <div className='flex flex-col gap-2 max-w-sm'>
+                    <div className='flex flex-col gap-2 w-full'>
                         <TokenDetails type={BondTokenInfo.Investment}
                                       additionalInfo={additionalInfo}
                                       total={totalRaised}
@@ -339,10 +343,10 @@ function TokenDetails({tokenInfo, type, total, additionalInfo}: {
     const isLoading = tokenInfo?.isLoading && !tokenInfo.unidentified
 
     return <>
-        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 max-w-lg">
+        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 w-[400px] lg:max-w-lg md:max-w-none">
             {
                 isLoading ?
-                    <div className={Styles.loader}><Loading/></div> :
+                    <div className='flex justify-center items-center'><Loading/></div> :
                     <OperationDetails tokenInfo={tokenInfo} total={total} type={type} additionalInfo={additionalInfo}/>
             }
         </div>
@@ -351,17 +355,18 @@ function TokenDetails({tokenInfo, type, total, additionalInfo}: {
 
 function OperationDetails({tokenInfo, total, type, additionalInfo}: TokenDetails) {
 
+    const isInterest = type === BondTokenInfo.Interest
     const icon = tokenInfo?.icon || "";
     const name = tokenInfo?.name || ""
     const symbol = tokenInfo?.symbol;
     const balance = tokenInfo?.balance;
     const balanceClean = tokenInfo?.balanceClean;
-    const title = type === BondTokenInfo.Interest ? "Interest" : "Investment"
-    const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
+    const title = isInterest ? "Interest" : "Investment"
+    const actionTitle = isInterest ? "Total Returned" : "Total Received"
 
     const info = {
-        title: "Learn more about Bonds",
-        url: URLS.Docs // todo update here
+        text: isInterest ? "Total Returned displays the sum of interest tokens to be distributed among bondholders." : "Total Received represents the amount of investment funds collected for your bonds.",
+        url: URLS.FAQ_IOB
     }
 
 
@@ -378,17 +383,34 @@ function OperationDetails({tokenInfo, total, type, additionalInfo}: TokenDetails
 
     return <>
         <div className="flex items-center gap-2">
-            <span className='font-bold'>{title}</span>
-            <InfoSVG info={info}/>
+            <InfoBox info={info}>
+                <span className='font-bold'>{title}</span>
+            </InfoBox>
         </div>
         <div className="flex flex-col gap-2">
-            {!tokenInfo?.unidentified ? <Token token={token} additionalInfo={additionalInfo}/> : <NotIdentified/>}
+            <Token tokenInfo={tokenInfo} type={type} total={total} additionalInfo={additionalInfo}/>
         </div>
     </>
 }
 
-function Token({token, additionalInfo}: { token: any, additionalInfo: IssuerContractInfo }) {
-    const {name, icon, balanceClean, symbol, actionTitle, total, type} = token;
+function Token({tokenInfo, type, total, additionalInfo}: {
+    tokenInfo: TokenResponseDetailed,
+    type: string,
+    total: number,
+    additionalInfo: IssuerContractInfo
+}) {
+
+    if (tokenInfo.unidentified) {
+        return <NotIdentified/>
+    }
+
+    const icon = tokenInfo.icon || makeBlockie(tokenInfo._id);
+    const name = tokenInfo.name || ""
+    const symbol = tokenInfo.symbol;
+    const balance = tokenInfo.balance;
+    const balanceClean = tokenInfo?.balanceClean;
+    const title = type === BondTokenInfo.Interest ? "Interest" : "Investment"
+    const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
 
     const isInterest = type === BondTokenInfo.Interest
     const totalClassName = isInterest ? Styles.interestTotal : Styles.investmentTotal;
@@ -396,27 +418,15 @@ function Token({token, additionalInfo}: { token: any, additionalInfo: IssuerCont
     const normalizedCreationFee = additionalInfo.creationFeePercentage / 10
     const totalReceived = isInterest ? total : (total - (total * normalizedCreationFee) / 100)
 
-    const [isWarning, setWarning] = useState(false);
-
-
-    function Img() {
-
-        const iconUrl = isWarning ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAA8lJREFUeF7t3bFtFUEUheF9NIAsKqAKJBeCkEgQIanrICVEJCQE7oOMDqiBBgBRAu9b6frq/c7Pzsy5/565a69nLz/fPPw54OfX98+gPo4PH5+Rfrv408NvWsLzV+9JfwkA8o/FAVACEEQlANk3Ly4BSgCisAQg++bFJUAJQBSWAGTfvLgEKAGIwhKA7JsXlwAlAFFYApB98+ISoAQgCksAsm9eXAKUAERhCUD2zYvHE+DHyzt6H+DW/54/jZACdAmA6RLa+AFg/q1XB8D6EtoCAsD8W68OgPUltAUEgPm3Xh0A60toCwgA82+9OgDWl9AWEADm33p1AKwvoS0gAMy/9eoAWF9CW0AAmH/r1QGwvoS2AAbg/vEFvQ+gE9D3Cb5+e2cOovrt6y90hWn/LgFA9TsCAE+4KAHshBD1rwSwACgBpvewegA7Y6kEKAF6ChAGagJrAoWfY3oLbQug8h01gdME1wTWBOI9bPJ6gHoAImg6QesBqHz1AONdbD1APQDewyavB6gHIILW9wAawXoHkftPQDztHzeB0wt4AjWkKUz7FwBUPhcHAL5S5SWYvUIABAARqD1UWwDZ7+ISoAQgikoAsm9eXAKUAERhCUD2zYtLgBKAKCwByL55cQlQAhCFJQDZNy8uAUoAorAEIPvmxeMJMH1c/LQBisD0/PWFkvHvBUwbGADDXwwJgNkTRkoAjIBpgNsChp8iAgA/+zZtIAbAMT3/EqAEIIbrAci+owTQU6qmIxTrHwABYAdV6q9y6wHqASjE6gHIvnqAoy2gLYDuoZrAfhVMAGkTRYMfbQFtAXhcvQK8/ilAF6A9iCbA9Px1/PGnAF1AANhx8wGAETANsI4fAAFwR98M0ghWgnV8rP/4MXnqXwmABGgBFGAdPwACoC1AGNA7sAQYPmhSiv9PGwD4TuC0gQEw/H8BAWCHPat/NYEYAVqAeoB6AEJQASwByP6aQP5zsBKsEYr17ylACxAAN94E6h1463q9gcZ7gFsvoK4/ANTB5foAWF5AnX4AqIPL9QGwvIA6/QBQB5frA2B5AXX6AaAOLtcHwPIC6vQDQB1crg+A5QXU6QeAOrhcHwDLC6jTDwB1cLk+AJYXUKfPANw/vqD/DZxegI4/rdcXanT+/O1gnYASrONP6wMA3wqeLqCOHwABoAyRvi2A7HNxCVACOEVwhRIAzDtDWgKUAGdwdPU1SoCrrTtHWAKUAOeQdOVVSoArjTtLVgKUAGexdNV1SoCrbDtPVAKUAOfRdMWVSoArTDtTUgKUAGfy9N/X+gt78wptEKuW+wAAAABJRU5ErkJggg==" : icon
-        const handleError = () => setWarning(true);
-
-        return <>
-            <Image src={iconUrl} alt={name} width={32} height={32} onError={handleError} className='rounded-full'/>
-        </>
-    }
 
     return <>
         <div className="flex items-center gap-2">
             <div className={Styles.tokenDetails}>
-                <Img/>
+                <Image src={icon} alt={name} width={32} height={32} className='rounded-full'/>
                 <div className="flex flex-col">
-                    <div className={Styles.tokenDetails}>
+                    <div className='flex items-center gap-2'>
                         <p>{name}</p>
-                        {isWarning && <WarningSVG/>}
+                        {tokenInfo.isVerified ? <VerifiedSVG/> : <WarningSVG/>}
                     </div>
                     {Boolean(balanceClean) &&
                         <span className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>}
@@ -439,8 +449,8 @@ function NotIdentified() {
     const {chain} = useNetwork()
 
     return <>
-        <div className="flex items-center gap-4">
-            <p className='text-sm break-words'>
+        <div className="flex items-center gap-4 max-w-lg">
+            <p className='text-sm'>
                 Could not identify the token, make sure the contract is correct for
                 <span className="text-rl-1 font-bold"> {chain?.name} network</span>
             </p>

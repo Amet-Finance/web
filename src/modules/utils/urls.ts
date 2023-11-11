@@ -17,7 +17,8 @@ const URLS = {
     Twitter: "https://twitter.com/amet_finance",
     LinkedIn: "https://www.linkedin.com/company/amet-finance",
     Medium: "https://medium.com/@amet-finance",
-    Github: "https://github.com/Amet-Finance"
+    Github: "https://github.com/Amet-Finance",
+    Facebook: "https://www.facebook.com/people/Amet-Finance/61552721081613/"
 }
 
 export {

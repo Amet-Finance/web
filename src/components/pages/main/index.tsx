@@ -1,7 +1,6 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
 import {useRef, useState} from "react";
-import BackgroundDocumentsSVG from "../../../../public/svg/background-documents";
 import Link from "next/link";
 import {join} from "@/modules/utils/styles";
 import {URLS} from "@/modules/utils/urls";
