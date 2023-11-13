@@ -10,7 +10,6 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {toast} from "react-toastify";
 import {format} from "@/modules/utils/numbers";
 import WarningSVG from "../../../../../../public/svg/warning";
-import InfoSVG from "../../../../../../public/svg/info";
 import ClockSVG from "../../../../../../public/svg/clock";
 import {join} from "@/modules/utils/styles";
 import TypeSVG from "../../../../../../public/svg/type";

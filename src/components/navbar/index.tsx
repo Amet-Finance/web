@@ -150,14 +150,16 @@ function ConnectedState() {
         <div className={Styles.addressContainer}>
             <button className='border border-w1 rounded px-8 py-3 cursor-pointer m-0'
                     onClick={enable}>{shorten(address)}</button>
-            {isEnabled && <>
-                <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
-                    <Link href={`/address/${address}`}>
-                        <span>Dashboard</span>
-                    </Link>
-                    <span className={Styles.disconnect} onClick={() => disconnect?.()}>Disconnect</span>
-                </div>
-            </>}
+            {
+                isEnabled && <>
+                    <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
+                        <Link href={`/address/${address}`} className='w-full text-center'>
+                            <span className='w-full'>Dashboard</span>
+                        </Link>
+                        <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
+                    </div>
+                </>
+            }
         </div>
     </>
 }

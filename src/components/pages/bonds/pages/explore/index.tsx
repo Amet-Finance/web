@@ -96,8 +96,8 @@ function BondsContainer() {
 
 
     return <>
-        <div className="flex flex-col gap-2 justify-center">
-            <div className='flex justify-between w-full px-4 lg1:flex-row lg1:gap-12 sm:flex-col sm:gap-4'>
+        <div className="flex flex-col gap-2 justify-center p-4">
+            <div className='flex justify-between w-full lg1:flex-row lg1:gap-12 sm:flex-col sm:gap-4'>
                 <div className='flex md:items-center sm:items-start md:gap-8 sm:gap-2 md:flex-row sm:flex-col'>
                     <div className='flex gap-2 items-center cursor-pointer'
                          onClick={() => setSearch({...search, hideSold: !Boolean(search.hideSold)})}>
@@ -130,18 +130,30 @@ function BondsContainer() {
                     <SearchSVG/>
                 </div>
             </div>
-            {
-                isLoading ?
-                    <>
-                        <div className='flex items-center justify-center w-full h-56'><Loading percent={-50}/></div>
-                    </> :
-                    <>
-                        <div
-                            className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 p-4 sm:w-full">
-                            {filteredBonds.map((bond: BondGeneral) => <Bond info={bond} key={bond._id}/>)}
-                        </div>
-                    </>
-            }
+            <BondsSection isLoading={isLoading} filteredBonds={filteredBonds}/>
+        </div>
+    </>
+}
+
+function BondsSection({filteredBonds, isLoading}: { filteredBonds: BondGeneral[], isLoading: boolean }) {
+    if (isLoading) {
+        return <div className='flex items-center justify-center w-full h-56'><Loading percent={-50}/></div>
+    }
+
+    if (!filteredBonds.length) {
+        return <>
+            <div
+                className='flex flex-col gap-2 justify-center items-center w-full bg-neutral-950 rounded py-24 px-12 text-center'>
+                <span className='md:text-3xl sm:text-2xl font-medium'>No Matching Bonds Found</span>
+                <span className='text-g text-sm break-all'>We could not find any bonds that match your current search criteria. Please review your filters or explore other options.</span>
+            </div>
+        </>
+    }
+
+    return <>
+        <div
+            className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 sm:w-full">
+            {filteredBonds.map((bond: BondGeneral) => <Bond info={bond} key={bond._id}/>)}
         </div>
     </>
 }

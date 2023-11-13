@@ -1,5 +1,5 @@
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react';
-import {polygonMumbai, mainnet, polygon, bsc, bscTestnet} from 'wagmi/chains';
+import {polygonMumbai, mainnet, polygon, bsc, bscTestnet, arbitrum} from 'wagmi/chains';
 
 const projectId = '777e05ce479a4c4b6e33deaed761ef5b'
 
@@ -10,7 +10,7 @@ const metadata = {
     icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const CHAINS = [mainnet, polygonMumbai, polygon, bsc]
+const CHAINS = [mainnet, arbitrum, polygonMumbai, polygon, bsc]
 const defaultChain = polygonMumbai;
 const wagmiConfig = defaultWagmiConfig({
     chains: CHAINS,

@@ -102,7 +102,7 @@ export default function Home() {
             <Link href='/bonds' target="_blank" className='w-full'>
                 <div
                     className='flex justify-center items-center bg-b4 w-full hover:bg-white hover:text-black py-16 cursor-pointer'>
-                    <span className='font-bold text-3xl'>Start Growing Your Wealth!</span>
+                    <span className='font-bold md:text-3xl sm:text-2xl text-center'>Start Growing Your Wealth!</span>
                 </div>
             </Link>
 

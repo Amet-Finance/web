@@ -12,9 +12,9 @@ export default function BondsShowcase() {
     return <>
         <div className="relative flex flex-col items-center gap-6 w-full text-center">
             <div className="relative flex flex-col items-center gap-3 w-full text-center">
-                <h2 className='text-3xl font-bold'>Explore New Bonds</h2>
-                <p className="text-g px-4">Stay ahead of the curve by exploring our freshly
-                    launched bonds. <br/> These opportunities are your ticket to the forefront of decentralized finance
+                <h2 className='text-3xl font-bold'>Explore Trending Bonds</h2>
+                <p className="text-g px-4">Stay ahead of the curve by exploring our trending bonds. <br/> These
+                    opportunities are your ticket to the forefront of decentralized finance
                     innovation.</p>
             </div>
             <BondsScreen/>
@@ -39,7 +39,7 @@ function BondsScreen() {
     const bondsHandler = [bonds, setBonds]
 
     useEffect(() => {
-        const interval = getBondsHandler(bondsHandler, {skip, limit, chainId});
+        const interval = getBondsHandler(bondsHandler, {skip, limit, chainId, isTrending: true});
         return () => clearInterval(interval);
     }, [chainId, skip, limit])
 
@@ -48,8 +48,9 @@ function BondsScreen() {
     }
 
     if (!data?.length) {
-        return <div className='flex justify-center items-center bg-g1 w-full h-52 rounded'>
-            <span className='text-4xl'>There are no bonds, yet!</span>
+        return <div className='flex flex-col gap-2 justify-center items-center bg-neutral-950 w-[70%] h-52 rounded'>
+            <span className='text-4xl font-medium'>No Available Bonds</span>
+            <span className='text-g text-sm'>Currently, there are no bonds available in the {chain?.name} chain. Our platform is continuously evolving, and new opportunities may arise soon.</span>
         </div>
     }
 

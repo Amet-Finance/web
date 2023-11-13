@@ -4,6 +4,7 @@ type BondsAPIParams = {
     chainId: number;
     issuer?: string;
     _id?: string[];
+    isTrending?: boolean;
 }
 
 type StatsAPIParams = {

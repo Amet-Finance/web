@@ -3,7 +3,8 @@ import * as CloudAPI from "@/modules/cloud-api";
 type Config = {
     skip: number
     limit: number
-    chainId: number
+    chainId: number,
+    isTrending?: boolean
 }
 
 function getBondsHandler(bondsHandler: any, config: Config) {
