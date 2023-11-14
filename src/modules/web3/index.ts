@@ -9,7 +9,6 @@ import * as Tokens from "./tokens";
 import {Chain} from "wagmi";
 import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
-import {getIssuerContractInfo} from "@/modules/web3/zcb";
 
 function getWeb3Instance(chain: Chain) {
     const RPCs = chain.rpcUrls.public.http;
