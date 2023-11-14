@@ -50,7 +50,7 @@ function BondsScreen() {
     if (!data?.length) {
         return <div className='flex flex-col gap-2 justify-center items-center bg-neutral-950 w-[70%] h-52 rounded'>
             <span className='text-4xl font-medium'>No Available Bonds</span>
-            <span className='text-g text-sm'>Currently, there are no bonds available in the {chain?.name} chain. Our platform is continuously evolving, and new opportunities may arise soon.</span>
+            <span className='text-g text-sm'>Currently, there are no bonds available. Our platform is continuously evolving, and new opportunities may arise soon.</span>
         </div>
     }
 
