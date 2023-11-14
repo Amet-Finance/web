@@ -1,4 +1,3 @@
-import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import {useEffect, useRef, useState} from "react";
 import {getAllowance} from "@/modules/web3/tokens";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
@@ -15,7 +14,6 @@ import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {redeem} from "@/modules/web3/zcb";
 import {TokensResponse} from "@/modules/cloud-api/type";
 
 export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
@@ -122,7 +120,8 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
                 }
 
                 const response = await sendTransactionAsync();
-                await trackTransaction(chain, response.hash)
+                await trackTransaction(chain, response.hash);
+
                 await sleep(4000);
                 await AccountSlice.initBalance(address, chainId);
             }
