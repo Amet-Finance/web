@@ -40,6 +40,8 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
 
+    const firstRedeemable = holdings[0]?.timeLeft;
+
 
     const contractInfo = getContractInfoByType(chain, TxTypes.RedeemBonds, {
         contractAddress: _id,
@@ -76,7 +78,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                             id: balanceTokenIds[index],
                             purchaseDate: Number(date),
                             isValid,
-                            timeLeft: isValid ? "0" : formatTime(timeLeft, true, true)
+                            timeLeft: isValid ? "" : formatTime(timeLeft, true, true)
                         } as Holding
                     })
 
@@ -198,7 +200,10 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                                 onClick={() => setPercent(100)}>100%
                         </button>
                     </div>
-                    <span className='text-xs text-g text-end'>Redeem after {holdings[0]?.timeLeft}</span>
+                    {
+                        Boolean(firstRedeemable) &&
+                        <span className='text-xs text-g text-end'>Redeem after {firstRedeemable}</span>
+                    }
                 </div>
             </div>
             <div className='flex flex-col gap-2'>
