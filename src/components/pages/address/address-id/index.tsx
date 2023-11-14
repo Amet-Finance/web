@@ -77,7 +77,7 @@ export default function AddressId({address}: { address: string }) {
     }
 
     return <>
-        <div className='flex items-start gap-24 py-24 min-h-screen lg1:px-32 lg1:flex-row sm:flex-col xl:px-16 sm:px-0'>
+        <div className='flex items-start gap-24 py-24 min-h-screen md:px-32 lg1:flex-row sm:flex-col xl:px-16 sm:px-4'>
             <div className='flex flex-col items-start gap-12 w-max'>
 
                 <div className='flex flex-col items-start gap-4 w-full'>
@@ -124,7 +124,7 @@ export default function AddressId({address}: { address: string }) {
 
             </div>
             <div className='flex flex-col w-full xl:p-0 lg1: px-5'>
-                <div className='flex justify-between gap-4 w-full pb-4'>
+                <div className='flex md:flex-row sm:flex-col items-center justify-between gap-4 w-full pb-4'>
                     <div className='flex items-center justify-center w-96 border border-w1 animate-pulse bg-b1 h-24'>
                         <span>Generating the graph...</span>
                     </div>
@@ -143,6 +143,10 @@ export default function AddressId({address}: { address: string }) {
 function Socials({accountInfo, changeHandler, editHandler}: any) {
     const [isEdit] = editHandler;
     const [changeInfo, setChangeInfo] = changeHandler;
+
+    const socialsExist = accountInfo.twitter || accountInfo.telegram || accountInfo.reddit
+
+
     const onChange = (event: any) => setChangeInfo({...changeInfo, [event.target.id]: event.target.value})
 
     return <>
@@ -194,6 +198,8 @@ function Socials({accountInfo, changeHandler, editHandler}: any) {
                     </div>
                 </div>
             </>}
+            {socialsExist &&
+                <span className='text-sm text-g mt-4 max-w-sm'>Please note that users have the ability to edit their social information. A verification badge will be displayed only when the social information associated with an address has been verified.</span>}
         </div>
     </>
 }
