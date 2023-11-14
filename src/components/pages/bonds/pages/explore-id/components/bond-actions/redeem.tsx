@@ -17,6 +17,7 @@ import {getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {TokensResponse} from "@/modules/cloud-api/type";
+import {Holding} from "@/components/pages/bonds/pages/explore-id/components/bond-actions/types";
 
 export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
@@ -35,7 +36,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
     const balanceTokenIds = balance[chainId]?.[contractAddress] || [];
     const interestTokenInfo = tokens[interestToken.toLowerCase()]
 
-    const [holdings, setHoldings] = useState([])
+    const [holdings, setHoldings] = useState([] as Holding[])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
     const tokenIdsLocal = validTokenIds.map((item: any) => item.id);
 
@@ -75,8 +76,8 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                             id: balanceTokenIds[index],
                             purchaseDate: Number(date),
                             isValid,
-                            timeLeft: isValid ? "0" : formatTime(timeLeft)
-                        }
+                            timeLeft: isValid ? "0" : formatTime(timeLeft, true, true)
+                        } as Holding
                     })
 
                     setHoldings(tokensWithDates);
@@ -179,22 +180,25 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
                     onChange={onChange}
                     ref={inputRef}
                     placeholder="The amount of bonds you want to redeem"/>
-                <div className='flex gap-2 items-center'>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
-                            onClick={() => setPercent(5)}>5%
-                    </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
-                            onClick={() => setPercent(10)}>10%
-                    </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
-                            onClick={() => setPercent(25)}>25%
-                    </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
-                            onClick={() => setPercent(50)}>50%
-                    </button>
-                    <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
-                            onClick={() => setPercent(100)}>100%
-                    </button>
+                <div className='flex justify-between items-center w-full'>
+                    <div className='flex gap-2 items-center'>
+                        <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
+                                onClick={() => setPercent(5)}>5%
+                        </button>
+                        <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
+                                onClick={() => setPercent(10)}>10%
+                        </button>
+                        <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
+                                onClick={() => setPercent(25)}>25%
+                        </button>
+                        <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
+                                onClick={() => setPercent(50)}>50%
+                        </button>
+                        <button className='px-1.5 py-0.5 border border-solid border-w1 rounded text-sm hover:border-w2'
+                                onClick={() => setPercent(100)}>100%
+                        </button>
+                    </div>
+                    <span className='text-xs text-g text-end'>Redeem after {holdings[0]?.timeLeft}</span>
                 </div>
             </div>
             <div className='flex flex-col gap-2'>
