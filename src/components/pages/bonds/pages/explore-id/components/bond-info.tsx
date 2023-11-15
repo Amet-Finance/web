@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {BondInfoDetailed} from "@/modules/web3/type";
-import {format, formatLargeNumber} from "@/modules/utils/numbers";
+import {divBigNumber, format, formatLargeNumber} from "@/modules/utils/numbers";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {URLS} from "@/modules/utils/urls";
 import InterestSVG from "../../../../../../../public/svg/interest";
@@ -19,6 +19,7 @@ import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 import makeBlockie from "ethereum-blockies-base64";
 import VerifiedSVG from "../../../../../../../public/svg/verified";
 import WarningSVG from "../../../../../../../public/svg/warning";
+import InfoBox from "@/components/utils/info-box";
 
 
 const BondTokens = {
@@ -176,9 +177,8 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
             return null;
         }
 
-        const amount = (isInterest ?
-            toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(token.decimals))) :
-            toBN(info.investmentTokenAmount).div(toBN(10).pow(toBN(token.decimals)))).toNumber()
+        const tokenAmount = isInterest ? info.interestTokenAmount : info.investmentTokenAmount;
+        const amount = divBigNumber(tokenAmount, token.decimals).toNumber()
 
         const className = isInterest ? "text-green-500" : ""
         const icon = token.icon || makeBlockie(token._id);
@@ -252,15 +252,16 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
 
     const decimals = interestTokenInfo.decimals || 18
 
-    const purchasePrice = toBN(investmentTokenAmount).div(toBN(10).pow(toBN(investmentTokenInfo.decimals)))
-    const redeemPrice = toBN(interestTokenAmount).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
+    const purchasePrice = divBigNumber(investmentTokenAmount, investmentTokenInfo.decimals);
+    const redeemPrice = divBigNumber(interestTokenAmount, interestTokenInfo.decimals);
 
     const totalPurchased = purchased * purchasePrice.toNumber();
     const totalRedeemed = redeemed * redeemPrice.toNumber();
 
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
-    const totalNeededAmount = notRedeemed.div(toBN(10).pow(toBN(decimals)))
-    const interestBalance = toBN(interestTokenBalance).div(toBN(10).pow(toBN(decimals)))
+    const totalNeededAmount = divBigNumber(notRedeemed.toString(), decimals)
+
+    const interestBalance = divBigNumber(interestTokenBalance, decimals)
 
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0
@@ -284,8 +285,9 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     return <>
         <div className='grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs p-4 py-1'>
             <div className='flex items-center justify-between w-full'>
-                <span>Secured Percentage:</span>
-                <span className={percentageClass() + " text-sm font-bold"}>{redeemedPercentage.toFixed(2)}%</span>
+                <span className='whitespace-nowrap'>Secured Percentage:</span>
+                <span className={percentageClass() + " text-sm font-bold cursor-pointer"}
+                      title={`${format(interestBalance.toNumber())} ${interestTokenInfo.symbol}`}>{redeemedPercentage.toFixed(2)}%</span>
             </div>
             <div className='flex items-center justify-between w-full'>
                 <span>Issuer Score:</span>

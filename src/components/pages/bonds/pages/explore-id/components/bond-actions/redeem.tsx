@@ -11,7 +11,7 @@ import * as AccountSlice from "@/store/redux/account";
 import Loading from "@/components/utils/loading";
 import {nop} from "@/modules/utils/function";
 import {toBN} from "@/modules/web3/util";
-import {format} from "@/modules/utils/numbers";
+import {divBigNumber, format} from "@/modules/utils/numbers";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
@@ -134,8 +134,8 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         let onClick: any = submit;
 
 
-        const balance = toBN(info.interestTokenBalance).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
-        const redeemAmount = toBN(info.interestTokenAmount).div(toBN(10).pow(toBN(interestTokenInfo.decimals)))
+        const balance = divBigNumber(info.interestTokenBalance, interestTokenInfo.decimals);
+        const redeemAmount = divBigNumber(info.interestTokenAmount, interestTokenInfo.decimals);
         const totalTokens = toBN(tokenIds.length).mul(redeemAmount)
 
         if (!amount || !isFinite(amount)) {

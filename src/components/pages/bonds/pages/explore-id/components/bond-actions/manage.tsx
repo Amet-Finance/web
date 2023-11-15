@@ -9,6 +9,7 @@ import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {TokensResponse} from "@/modules/cloud-api/type";
+import {divBigNumber, mulBigNumber} from "@/modules/utils/numbers";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
@@ -19,6 +20,7 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
             <ChangeOwner bondInfo={info}/>
             <IssueBonds bondInfo={info}/>
             <BurnUnsoldBonds bondInfo={info}/>
+            <DecreaseRedeemLockPeriod bondInfo={info}/>
         </div>
     </>
 }
@@ -30,13 +32,15 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
     const [amount, setAmount] = useState(0)
 
     const interestTokenInfo = tokens[interestToken.toLowerCase()]
-    const chain = getChain(chainId);
+    const decimals = interestTokenInfo?.decimals;
 
+    const chain = getChain(chainId);
     const config = {
         contractAddress: interestToken,
         toAddress: _id,
-        amount: toBN(amount).mul(toBN(10).pow(toBN(interestTokenInfo?.decimals || 18)))
+        amount: mulBigNumber(amount, decimals).toString()
     }
+
     const contractInfo = getContractInfoByType(chain, TxTypes.TransferERC20, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
         to: contractInfo.to,
@@ -194,7 +198,8 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                    placeholder='The amount of bonds you want to issue'/>
             <button
                 className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
-                onClick={issueMoreBonds}>Issue More bonds</button>
+                onClick={issueMoreBonds}>Issue More bonds
+            </button>
         </div>
     </>
 }
@@ -241,4 +246,8 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                 onClick={burnUnsoldBonds}>Burn Unsold Bonds {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
+}
+
+function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
+    return <><span>DecreaseRedeemLockPeriod Soon!</span></>
 }

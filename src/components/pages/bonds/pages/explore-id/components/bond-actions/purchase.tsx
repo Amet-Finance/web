@@ -8,7 +8,7 @@ import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {format} from "@/modules/utils/numbers";
+import {divBigNumber, format} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
@@ -48,17 +48,14 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     }, [chain, _id, investmentToken, address, effectRefresher])
 
 
-    const decimals = Number(investmentTokenInfo?.decimals) || 18
 
-    const investmentAmountClean = toBN(`${investmentTokenAmount}`).div(toBN(10).pow(toBN(decimals)));
-    const totalPrice = amount * investmentAmountClean.toNumber();
-
-    const allowanceDivided = toBN(allowance).div(toBN(10).pow(toBN(decimals))).toNumber();
-    const isApproval = totalPrice > allowanceDivided;
+    const investmentAmountClean = divBigNumber(investmentTokenAmount, investmentTokenInfo?.decimals)
+    const totalPrice = toBN(amount).mul(investmentAmountClean);
+    const allowanceDivided = divBigNumber(allowance, investmentTokenInfo?.decimals)
+    const isApproval = totalPrice.gt(allowanceDivided);
     const isSold = total - purchased === 0
 
     const onChange = (event: any) => setAmount(Number(event.target.value) || 0);
-
 
     const txType = isApproval ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
     const config = isApproval ? {
@@ -153,10 +150,10 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         } else if (isApproval) {
             title = `Approve`
             totalAmountStyle = "text-red-500 font-medium"
-            totalAmountText = `( ${format(totalPrice)} ${investmentTokenInfo?.symbol} )`
-        } else if (totalAmount) {
+            totalAmountText = `( ${format(totalPrice.toNumber())} ${investmentTokenInfo?.symbol} )`
+        } else if (totalAmount.toNumber()) {
             totalAmountStyle = "text-red-500 font-medium"
-            totalAmountText = `( -${format(totalPrice)} ${investmentTokenInfo?.symbol} )`
+            totalAmountText = `( -${format(totalPrice.toNumber())} ${investmentTokenInfo?.symbol} )`
         }
 
 
