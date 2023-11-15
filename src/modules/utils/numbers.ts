@@ -1,3 +1,6 @@
+import {toBN} from "@/modules/web3/util";
+import {toast} from "react-toastify";
+
 function format(number: number) {
     // Convert the number to a string
     const numberString = number.toString();
@@ -36,7 +39,38 @@ function formatLargeNumber(number: number) {
     }
 }
 
+
+function divBigNumber(amount: number | string, decimals: number) {
+    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+        return toBN(0)
+    }
+
+    return toBN(amount).div(toBN(10).pow(toBN(decimals)))
+}
+
+function mulBigNumber(amount: number | string, decimals: number) {
+    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+        return toBN(0)
+    }
+
+    const amountString = amount.toString();
+    const decimalsAfter = amountString.split('.')?.[1]?.length || 0;
+    let amountTmp = amount;
+
+    if (decimalsAfter) {
+        amountTmp = (Number(amount) * 10 ** decimalsAfter).toFixed();
+    }
+
+    if (decimalsAfter > decimals) {
+        toast.error("The number is too low")
+    }
+
+    return toBN(amountTmp).mul(toBN(10).pow(toBN(decimals - decimalsAfter)))
+}
+
 export {
     format,
-    formatLargeNumber
+    formatLargeNumber,
+    divBigNumber,
+    mulBigNumber
 }

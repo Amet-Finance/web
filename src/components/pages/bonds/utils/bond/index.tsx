@@ -9,7 +9,7 @@ import Link from "next/link";
 import {stopPropagation} from "@/modules/utils/events";
 import {shorten, toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
-import {formatLargeNumber} from "@/modules/utils/numbers";
+import {divBigNumber, formatLargeNumber} from "@/modules/utils/numbers";
 import {shortenString} from "@/modules/utils/string";
 import makeBlockie from "ethereum-blockies-base64";
 import WarningSVG from "../../../../../../public/svg/warning";
@@ -104,23 +104,15 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     const response: any = {}
 
     if (investmentTokenInfo) {
-        const amount = investmentTokenAmount
-        const decimals = investmentTokenInfo?.decimals
-        let fixedAmount = (Number.isFinite(Number(amount)) && Number.isFinite(Number(decimals))) ? toBN(amount).div(toBN(10).pow(toBN(decimals))).toString() : undefined
-
         response.investment = {
             currency: shortenString(investmentTokenInfo.symbol || "X", 5),
-            amount: fixedAmount ? formatLargeNumber(Number(fixedAmount)) : "X"
+            amount: divBigNumber(investmentTokenAmount, investmentTokenInfo?.decimals).toNumber()
         }
     }
     if (interestTokenInfo) {
-        const amount = interestTokenAmount
-        const decimals = interestTokenInfo?.decimals
-        let fixedAmount = (Number.isFinite(Number(amount)) && Number.isFinite(Number(decimals))) ? toBN(amount).div(toBN(10).pow(toBN(decimals))).toString() : undefined
-
         response.interest = {
             currency: shortenString(interestTokenInfo.symbol || "X", 5),
-            amount: fixedAmount ? formatLargeNumber(Number(fixedAmount)) : "X"
+            amount: divBigNumber(interestTokenAmount, interestTokenInfo?.decimals).toNumber()
         }
     }
 
