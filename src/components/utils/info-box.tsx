@@ -10,7 +10,7 @@ type InfoData = {
     isBlank?: boolean;
 }
 
-export default function InfoBox({children, info}: { children: any, info: InfoData }) {
+export default function InfoBox({children, info, className}: { children: any, info: InfoData, className?: string }) {
 
     const [showElement, setVisibility] = useState(false)
     const isBlank = info.isBlank || !info.link;
@@ -24,7 +24,7 @@ export default function InfoBox({children, info}: { children: any, info: InfoDat
     }
 
     return <>
-        <div className='relative flex items-center gap-1 w-full'>
+        <div className={`relative flex items-center gap-1 w-full ${className}`}>
             {children}
             <div className='group'>
                 <svg
