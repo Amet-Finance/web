@@ -3,7 +3,7 @@ import {bscTestnet, manta, polygonMumbai} from "wagmi/chains";
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    [polygonMumbai.id]: "0x3Ae9CD505d1Ca12E768896A9F0bcE93eaC42aE7b",
+    [polygonMumbai.id]: "0x90A18D3DfCe4ef0A263C28d00AfD2135424c1678",
     [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     [bscTestnet.id]: ""
 }
