@@ -16,7 +16,7 @@ export default function Footer() {
         <footer className="flex flex-col items-center z-20 bg-black">
             <div className='w-full h-px bg-b2'/>
             <div
-                className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between py-4 px-16 w-full">
+                className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between md:py-10 md:px-24 sm:py-10 sm:px-8 w-full">
                 <div className='flex flex-col md:items-start sm:items-center gap-2'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>
@@ -51,6 +51,7 @@ function Links() {
         {
             title: "Get Help",
             attributes: [
+                {title: 'Status', url: 'https://status.amet.finance'},
                 {title: 'Contact Us', url: 'mailto:hello@amet.finance'},
                 {title: 'FAQ', url: URLS.FAQ},
             ]
