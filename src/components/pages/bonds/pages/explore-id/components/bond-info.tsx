@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {BondInfoDetailed} from "@/modules/web3/type";
-import {divBigNumber, format, formatLargeNumber} from "@/modules/utils/numbers";
+import {divBigNumber, divBigNumberForUI, format, formatLargeNumber} from "@/modules/utils/numbers";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {URLS} from "@/modules/utils/urls";
 import InterestSVG from "../../../../../../../public/svg/interest";
@@ -173,12 +173,8 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
     const title = isInterest ? "Total Return" : "Investment"
 
     const TotalAmount = () => {
-        if (!Number.isFinite(Number(token?.decimals))) {
-            return null;
-        }
-
         const tokenAmount = isInterest ? info.interestTokenAmount : info.investmentTokenAmount;
-        const amount = divBigNumber(tokenAmount, token.decimals).toNumber()
+        const amount = divBigNumberForUI(tokenAmount, token.decimals)
 
         const className = isInterest ? "text-green-500" : ""
         const icon = token.icon || makeBlockie(token._id);
@@ -250,8 +246,6 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
         return <div className='flex justify-center items-center w-full'><Loading percent={-50}/></div>;
     }
 
-    const decimals = interestTokenInfo.decimals || 18
-
     const purchasePrice = divBigNumber(investmentTokenAmount, investmentTokenInfo.decimals);
     const redeemPrice = divBigNumber(interestTokenAmount, interestTokenInfo.decimals);
 
@@ -259,9 +253,9 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const totalRedeemed = redeemed * redeemPrice.toNumber();
 
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
-    const totalNeededAmount = divBigNumber(notRedeemed.toString(), decimals)
+    const totalNeededAmount = divBigNumber(notRedeemed.toString(), interestTokenInfo.decimals)
 
-    const interestBalance = divBigNumber(interestTokenBalance, decimals)
+    const interestBalance = divBigNumber(interestTokenBalance, interestTokenInfo.decimals)
 
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0

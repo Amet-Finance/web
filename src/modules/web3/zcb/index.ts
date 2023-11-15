@@ -10,6 +10,7 @@ import {toBN} from "@/modules/web3/util";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
+import {mulBigNumber} from "@/modules/utils/numbers";
 
 function getContract(chain: Chain, contractAddress: string) {
     const web3 = getWeb3Instance(chain)
@@ -91,8 +92,8 @@ function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
     }
 
 
-    const investmentAmount = toBN(Number(investmentTokenAmount)).mul(toBN(10).pow(toBN(Number(investmentTokenInfo.decimals))));
-    const interestAmount = toBN(Number(interestTokenAmount)).mul(toBN(10).pow(toBN(Number(interestTokenInfo.decimals))));
+    const investmentAmount = mulBigNumber(investmentTokenAmount, investmentTokenInfo.decimals, true)
+    const interestAmount = mulBigNumber(interestTokenAmount, interestTokenInfo.decimals, true)
 
     const web3 = getWeb3Instance(chain)
     const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);

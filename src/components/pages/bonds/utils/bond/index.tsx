@@ -9,7 +9,7 @@ import Link from "next/link";
 import {stopPropagation} from "@/modules/utils/events";
 import {shorten, toBN} from "@/modules/web3/util";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
-import {divBigNumber, formatLargeNumber} from "@/modules/utils/numbers";
+import {divBigNumber, divBigNumberForUI, formatLargeNumber} from "@/modules/utils/numbers";
 import {shortenString} from "@/modules/utils/string";
 import makeBlockie from "ethereum-blockies-base64";
 import WarningSVG from "../../../../../../public/svg/warning";
@@ -106,13 +106,13 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
     if (investmentTokenInfo) {
         response.investment = {
             currency: shortenString(investmentTokenInfo.symbol || "X", 5),
-            amount: divBigNumber(investmentTokenAmount, investmentTokenInfo?.decimals).toNumber()
+            amount: divBigNumberForUI(investmentTokenAmount, investmentTokenInfo?.decimals)
         }
     }
     if (interestTokenInfo) {
         response.interest = {
             currency: shortenString(interestTokenInfo.symbol || "X", 5),
-            amount: divBigNumber(interestTokenAmount, interestTokenInfo?.decimals).toNumber()
+            amount: divBigNumberForUI(interestTokenAmount, interestTokenInfo?.decimals)
         }
     }
 

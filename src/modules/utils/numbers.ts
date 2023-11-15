@@ -39,6 +39,16 @@ function formatLargeNumber(number: number) {
     }
 }
 
+function divBigNumberForUI(amount: number | string, decimals: number) {
+    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+        return 0
+    }
+
+    const isDecBigger = decimals > 3
+    const preDecimal = isDecBigger ? decimals - 3 : decimals;
+    const response = toBN(amount).div(toBN(10).pow(toBN(preDecimal)))
+    return response.toNumber() / 10 ** 3
+}
 
 function divBigNumber(amount: number | string, decimals: number) {
     if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
@@ -48,8 +58,11 @@ function divBigNumber(amount: number | string, decimals: number) {
     return toBN(amount).div(toBN(10).pow(toBN(decimals)))
 }
 
-function mulBigNumber(amount: number | string, decimals: number) {
+function mulBigNumber(amount: number | string, decimals: number, isStrict?: boolean) {
     if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+        if (isStrict) {
+            throw Error("Amount or Decimals is missing")
+        }
         return toBN(0)
     }
 
@@ -72,5 +85,6 @@ export {
     format,
     formatLargeNumber,
     divBigNumber,
+    divBigNumberForUI,
     mulBigNumber
 }
