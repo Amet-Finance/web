@@ -14,7 +14,7 @@ export async function getServerSideProps({query}: any) {
     if (chain) {
         bondInfo = await getBondInfo(chain, contractAddress)
     }
-    
+
     return {
         props: {
             pageId: "ExploreIdPage",

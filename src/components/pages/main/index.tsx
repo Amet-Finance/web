@@ -24,7 +24,7 @@ export default function Home() {
         <main className="relative flex flex-col min-h-screen md:pt-20 sm:pt-10 gap-24">
             <div className={Styles.sections}>
                 <div className="absolute right-0 md:flex sm:hidden">
-                    <Image src='./svg/VectorHash.svg' width={450} height={780} alt={"K"}/>
+                    <Image src='./svg/VectorHash.svg' width={450} height={780} alt={"On-Chain Bonds"}/>
                 </div>
                 <div className="relative flex flex-col gap-8 w-full md:items-start sm:items-center">
                     <h1 className="font-bold lg:text-6xl lg:leading-tight sm:text-5xl sm:leading-normal">
@@ -52,7 +52,7 @@ export default function Home() {
             </div>
             <div className={Styles.sections}>
                 <div className={join([Styles.bondBackgroundImage, "md:flex sm:hidden"])}>
-                    <Image src={'./svg/Circle.svg'} alt={"C"} fill/>
+                    <Image src={'./svg/Circle.svg'} alt={"Bonds"} fill/>
                 </div>
                 <div className={Styles.bondsSection} ref={bondsRef}>
                     <h2 className="text-3xl font-bold">On-Chain Bonds</h2>
