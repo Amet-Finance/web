@@ -1,5 +1,5 @@
 import {useAccount, useNetwork, useSendTransaction} from "wagmi";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {requestAPI} from "@/modules/cloud-api/util";
 import Loading from "@/components/utils/loading";
 import {TokenResponse} from "@/modules/cloud-api/type";
@@ -11,6 +11,7 @@ import makeBlockie from "ethereum-blockies-base64";
 import CloudAPI from "@/modules/cloud-api";
 import Link from "next/link";
 import XmarkSVG from "../../../../public/svg/xmark";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 type Result = {
     "inputAmount": string,
@@ -57,6 +58,7 @@ const chainsByRouterNames: { [key: string]: string } = {
 export default function Swap() {
     const {chain} = useNetwork();
     const {address} = useAccount();
+    const {open} = useWeb3Modal()
 
 
     const [isSupported, setSupported] = useState(true);
@@ -135,7 +137,8 @@ export default function Swap() {
         if (amountIn) setLoading(true);
 
         if (!chainName) {
-            setSupported(false)
+            setSupported(false);
+            setLoading(false);
         } else {
             setSupported(true)
 
@@ -165,6 +168,8 @@ export default function Swap() {
                 }, 2000)
 
                 return () => clearInterval(interval)
+            } else {
+                setLoading(false)
             }
         }
     }, [from.token?._id, to.token?._id, amountIn, address, chain?.id]);
@@ -179,87 +184,86 @@ export default function Swap() {
 
     async function swap() {
         try {
+            if (!address) {
+                return open();
+            }
+
             const response = await sendTransactionAsync();
             await trackTransaction(chain, response.hash)
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            console.log(error.message)
         }
+    }
+
+    if (!address) {
+        return <ConnectWallet/>
+    }
+
+    if (!isSupported) {
+        return <NotSupportedChain/>
     }
 
     return <>
         <div className='flex items-center justify-center w-full min-h-[80vh]'>
-            {
-                !isSupported ?
-                    <>
-                        <div className='flex flex-col items-center w-full'>
-                            <div className='flex flex-col items-center gap-2 p-4 bg-b4 rounded'>
-                                <p className='text-xl font-medium'><span
-                                    className='text-red-500'>{chain?.name}</span> swap is not supported</p>
-                                <span
-                                    className='text-g text-sm'>Sorry, Please switch the chain to use the swap widget</span>
-                            </div>
+            <div className='relative flex flex-col gap-2 w-40 border border-w1 min-w-500 rounded-2xl'>
+                <div className='flex flex-col gap-2 px-4 py-5'>
+                    <div className='flex justify-between items-center gap-10 w-full'>
+                        <span className='text-xl'>You Pay</span>
+                    </div>
+                    <div className='flex justify-between items-start'>
+                        <div className='flex flex-col gap-2'>
+                            <input type="number" placeholder='The amount to swap'
+                                   className='bg-transparent rounded w-full text-lg'
+                                   id='fromAmount'
+                                   onChange={onChange}
+                                   autoFocus/>
+                            <span className='text-g2'>~${result.amountInUsd || 0}</span>
                         </div>
-                    </> :
-                    <>
-                        <div className='relative flex flex-col gap-2 w-40 bg-b1  min-w-500 rounded'>
-                            <div className='flex flex-col gap-2 px-4 py-5'>
-                                <div className='flex justify-between items-center gap-10 w-full'>
-                                    <span className='text-xl'>You Pay</span>
-                                </div>
-                                <div className='flex justify-between items-center'>
-                                    <div className='flex flex-col gap-2'>
-                                        <input type="number" placeholder='The amount to swap'
-                                               className='bg-transparent rounded w-full text-lg'
-                                               id='fromAmount'
-                                               onChange={onChange}
-                                               autoFocus/>
-                                        <span className='text-g2'>~${result.amountInUsd || 0}</span>
+                        <TokenComponent token={from.token}
+                                        type='from'
+                                        tokenSelectorHandler={[tokenSelector, setTokenSelector]}/>
+                    </div>
+                </div>
+                <div className='flex flex-col gap-2 bg-b2 px-2 py-5 pb-2 m-2 rounded'>
+                    <span className='text-xl'>You Receive</span>
+                    <div className='flex justify-between items-start'>
+                        {
+                            isLoading ?
+                                <Loading percent={20}/> : <>
+                                    <div className='flex flex-col'>
+                                        <span>{format(output)}</span>
+                                        <span className='text-g2'>~${format(result?.receivedUsd || 0)}</span>
                                     </div>
-                                    <TokenComponent token={from.token}
-                                                    type='from'
-                                                    tokenSelectorHandler={[tokenSelector, setTokenSelector]}/>
-                                </div>
-                            </div>
-                            <div className='flex flex-col gap-2 bg-b2 px-2 py-5 pb-2 m-2 rounded'>
-                                <span className='text-xl'>You Receive</span>
-                                <div className='flex justify-between items-start'>
-                                    {
-                                        isLoading ?
-                                            <Loading percent={20}/> : <>
-                                                <div className='flex flex-col'>
-                                                    <span>{format(output)}</span>
-                                                    <span className='text-g2'>~${format(result?.receivedUsd || 0)}</span>
-                                                </div>
-                                            </>
-                                    }
-                                    <TokenComponent token={to.token}
-                                                    type='to'
-                                                    tokenSelectorHandler={[tokenSelector, setTokenSelector]}/>
-                                </div>
-                                <div className="h-px w-full bg-g5"/>
-                                {
-                                    isLoading ?
-                                        <Loading percent={60}/> :
-                                        <span>1 {from.token?.symbol} = {pricePerToken} {to.token?.symbol}</span>
-                                }
-                                <div className='flex flex-col items-center gap-2'>
-                                    <button
-                                        className='w-full bg-white  text-black rounded p-2 hover:bg-black hover:text-white'
-                                        onClick={swap}>Swap
-                                    </button>
-                                    <span className='text-xs'>Powered by <Link
-                                        href={`https://kyberswap.com/swap/${chainName}`} target="_blank"
-                                        rel="noreferrer">KyberSwap</Link></span>
-                                </div>
-                            </div>
-                            <TokenSelector
-                                tokenSelectorHandler={[tokenSelector, setTokenSelector]}
-                                tokens={tokens}
-                                fromHandler={[from, setFrom]}
-                                toHandler={[to, setTo]}/>
-                        </div>
-                    </>
-            }
+                                </>
+                        }
+                        <TokenComponent token={to.token}
+                                        type='to'
+                                        tokenSelectorHandler={[tokenSelector, setTokenSelector]}/>
+                    </div>
+                    <div className="h-px w-full bg-g5"/>
+                    {
+                        isLoading ?
+                            <Loading percent={60}/> :
+                            <span>1 {from.token?.symbol} = {pricePerToken} {to.token?.symbol}</span>
+                    }
+                    <div className='flex flex-col items-center gap-2'>
+                        <button
+                            className='w-full bg-white  text-black rounded p-2 hover:bg-black hover:text-white'
+                            onClick={swap}>Swap
+                        </button>
+                        <span className='text-xs'>Powered by <Link
+                            href={`https://kyberswap.com/swap/${chainName}`} target="_blank"
+                            rel="noreferrer">KyberSwap</Link></span>
+                    </div>
+                </div>
+                {
+                    Boolean(tokenSelector) && <TokenSelector
+                        tokenSelectorHandler={[tokenSelector, setTokenSelector]}
+                        tokens={tokens}
+                        fromHandler={[from, setFrom]}
+                        toHandler={[to, setTo]}/>
+                }
+            </div>
         </div>
     </>
 }
@@ -297,7 +301,33 @@ function TokenSelector({tokenSelectorHandler, tokens, fromHandler, toHandler}: {
     fromHandler: any,
     toHandler: any
 }) {
-    const [tokenSelector, setTokenSelector] = tokenSelectorHandler
+
+    const [tokenSelector, setTokenSelector] = tokenSelectorHandler;
+    const [searchText, setSearchText] = useState("");
+    const [filteredTokens, setFilteredTokens] = useState(tokens);
+    const inputRef = useRef<any>()
+
+    useEffect(() => {
+        inputRef?.current?.focus()
+    }, []);
+
+    useEffect(() => {
+
+        if (!searchText) {
+            setFilteredTokens(tokens)
+        } else {
+            const interval = setInterval(() => {
+                const newFilter = tokens.filter(item => {
+                    const regex = new RegExp(searchText, 'i')
+                    return regex.test(item.name) || regex.test(item.symbol) || regex.test(item._id)
+                })
+                console.log('running job')
+                setFilteredTokens(newFilter);
+            }, 100);
+
+            return () => clearInterval(interval);
+        }
+    }, [searchText]);
 
     if (!Boolean(tokenSelector)) {
         return null;
@@ -312,8 +342,12 @@ function TokenSelector({tokenSelectorHandler, tokens, fromHandler, toHandler}: {
                 <span className='text-xl'>Select tokens from the list:</span>
                 <XmarkSVG isMedium onClick={() => setTokenSelector("")}/>
             </div>
-            <div className='flex flex-col gap-2'>
-                {tokens.map(token => {
+            <div className='flex flex-col overflow-x-auto gap-2'>
+                <input type="text" className='bg-transparent border border-w1 rounded px-2 py-1'
+                       placeholder='Search by symbol or contract address'
+                       ref={inputRef}
+                       onChange={(event) => setSearchText(event.target.value)}/>
+                {filteredTokens.map(token => {
 
                     const selectToken = () => {
                         if (tokenSelector === 'from') {
@@ -340,6 +374,38 @@ function TokenSelector({tokenSelectorHandler, tokens, fromHandler, toHandler}: {
                         </div>
                     </>
                 })}
+            </div>
+        </div>
+    </>
+}
+
+
+function NotSupportedChain() {
+
+    const {chain} = useNetwork();
+
+    return <>
+        <div className='flex flex-col items-center w-full'>
+            <div className='flex flex-col items-center gap-2 p-4 bg-b4 rounded'>
+                <p className='text-xl font-medium'><span
+                    className='text-red-500'>{chain?.name}</span> swap is not supported</p>
+                <span
+                    className='text-g text-sm'>Sorry, Please switch the chain to use the swap widget</span>
+            </div>
+        </div>
+    </>
+}
+
+function ConnectWallet() {
+    const {open} = useWeb3Modal();
+
+    return <>
+        <div className='flex flex-col items-center w-full'>
+            <div className='flex flex-col items-center gap-4 p-4 bg-b4 rounded'>
+                <p className='text-xl font-medium'>Start by connecting you wallet</p>
+                <button className='w-full p-2 border border-w1 rounded hover:text-black hover:bg-white'
+                        onClick={() => open()}>Connect
+                </button>
             </div>
         </div>
     </>
