@@ -56,7 +56,11 @@ async function getTokens({params}: {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
         url,
-        params
+        params: {
+            chainId: params.chainId,
+            contractAddresses: JSON.stringify(params.contractAddresses || []),
+            verified: Boolean(params.verified)
+        }
     });
 }
 
@@ -66,7 +70,12 @@ async function getTokensDetailed({params}: {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
         url,
-        params
+        params: {
+            chainId: params.chainId,
+            contractAddresses: JSON.stringify(params.contractAddresses || []),
+            returnBalance: Boolean(params.returnBalance),
+            address: params.address
+        }
     });
 }
 

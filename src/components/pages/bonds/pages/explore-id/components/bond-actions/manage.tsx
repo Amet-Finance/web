@@ -1,15 +1,19 @@
 import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {getUtils, toBN} from "@/modules/web3/util";
-import {useSendTransaction} from "wagmi";
+import {useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {divBigNumber, mulBigNumber} from "@/modules/utils/numbers";
+import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
+import InfoBox from "@/components/utils/info-box";
+import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
+import Styles from "@/components/pages/bonds/pages/issue/index.module.css";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
@@ -249,5 +253,120 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 }
 
 function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
-    return <><span>DecreaseRedeemLockPeriod Soon!</span></>
+
+    const {chainId} = bondInfo;
+    const {chain} = useNetwork();
+    const [total, setTotal] = useState<number | undefined>()
+    const [timer, setTimer] = useState({
+        hour: 0,
+        day: 0,
+        month: 0,
+        year: 0
+    })
+
+    const change = (event: any) => {
+        setTimer({
+            ...timer,
+            [event.target.id]: Number(event.target.value)
+        })
+    }
+
+    const focusInnerInput = (event: Event | any) => {
+        const input = event.currentTarget.querySelector('input');
+        if (input) {
+            input.focus();
+        }
+    }
+
+
+    const config = {
+        contractAddress: bondInfo._id,
+        newPeriod: total
+    }
+    const contractInfo = getContractInfoByType(chain, TxTypes.DecreaseRedeemLockPeriod, config)
+    const {isLoading, sendTransactionAsync, data} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+        chainId
+    })
+
+    async function decrease() {
+        try {
+            if (total) {
+                const response = await sendTransactionAsync();
+                await trackTransaction(chain, response.hash)
+            }
+        } catch (error: any) {
+            console.error(error.message)
+        }
+    }
+
+    useEffect(() => {
+        if (timer.hour || timer.day || timer.month || timer.year) {
+            const action = setTimeout(() => {
+                let total = 0
+                total += (timer.hour || 0) * hourInSec
+                total += (timer.day || 0) * dayInSec
+                total += (timer.month || 0) * monthInSec
+                total += (timer.year || 0) * yearInSec
+
+                setTotal(total)
+            }, 100)
+
+            return () => {
+                clearTimeout(action)
+            }
+        }
+    }, [timer])
+
+
+    return <>
+        <div className='flex flex-col w-full gap-2'>
+            <div className="flex gap-2 justify-between w-full">
+                <div className="flex items-center justify-between w-full h-full gap-1">
+                    <div
+                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                        onClick={focusInnerInput}>
+                        <span className="text-g3">Hour</span>
+                        <input type="number"
+                               className="bg-transparent text-white w-full max-w-[50px] text-center"
+                               id='hour' defaultValue={timer.hour}
+                               onChange={change}/>
+                    </div>
+                    <div
+                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                        onClick={focusInnerInput}>
+                        <span className="text-g3">Day</span>
+                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='day'
+                               defaultValue={timer.day}
+                               onChange={change}/>
+                    </div>
+                    <div
+                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                        onClick={focusInnerInput}>
+                        <span className="text-g3">Month</span>
+                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='month'
+                               defaultValue={timer.month}
+                               onChange={change}/>
+                    </div>
+                    <div
+                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
+                        onClick={focusInnerInput}>
+                        <span className="text-g3">Year</span>
+                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='year'
+                               defaultValue={timer.year}
+                               onChange={change}/>
+                    </div>
+                </div>
+                <button
+                    className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem] rounded"
+                    onClick={decrease}>Decrease Lock Period {isLoading && <Loading percent={70}/>}</button>
+            </div>
+            {
+                Number.isFinite(Number(total)) &&
+                <span className='text-g'>New Lock Period: {formatTime(Number(total), true)}</span>
+            }
+        </div>
+    </>
 }

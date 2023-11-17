@@ -277,7 +277,7 @@ export default function Issue() {
                     </div>
                 </div>
                 <div className={Styles.form}>
-                    <div className={join([Styles.formTexts, "ld:w-[400px] md:w-full"])}>
+                    <div className={join([Styles.formTexts, "lg:w-[400px] md:w-full"])}>
                         <h2 className='text-2xl font-bold'>Review Bond Details</h2>
                         <span className="text-g text-sm">Ensure accuracy and make any adjustments if needed.</span>
                         <div className={Styles.formLine}/>

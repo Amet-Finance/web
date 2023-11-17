@@ -109,7 +109,7 @@ function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
         investmentAmount,
         interestToken,
         interestAmount,
-        `${investmentTokenInfo?.symbol}-${interestTokenInfo?.symbol} | Amet Finance`
+        `Amet Finance | ${investmentTokenInfo?.symbol.toUpperCase()}-${interestTokenInfo?.symbol.toUpperCase()}-ZCB`
     ).encodeABI();
 }
 
@@ -141,6 +141,11 @@ function issueMoreBonds(chain: Chain, contractAddress: string, amount: number) {
 function burnUnsoldBonds(chain: Chain, contractAddress: string, amount: number) {
     const contract = getContract(chain, contractAddress)
     return contract.methods.burnUnsoldBonds(amount).encodeABI();
+}
+
+function decreaseRedeemLockPeriod(chain: Chain, contractAddress: string, newPeriod: number) {
+    const contract = getContract(chain, contractAddress)
+    return contract.methods.decreaseRedeemLockPeriod(newPeriod).encodeABI();
 }
 
 function decode(transaction: TransactionReceipt): {} {
@@ -175,6 +180,7 @@ export {
     changeOwner,
     withdrawRemaining,
     burnUnsoldBonds,
+    decreaseRedeemLockPeriod,
     issueMoreBonds,
     decode,
     getBondInfo,

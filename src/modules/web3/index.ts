@@ -76,6 +76,12 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                     data: ZCB.burnUnsoldBonds(chain, config.contractAddress, config.amount)
                 }
             }
+            case TxTypes.DecreaseRedeemLockPeriod: {
+                return {
+                    to: config.contractAddress,
+                    data: ZCB.decreaseRedeemLockPeriod(chain, config.contractAddress, config.newPeriod)
+                }
+            }
             default: {
                 throw Error("Invalid type")
             }

@@ -17,7 +17,8 @@ const TxTypes = {
     WithdrawRemaining: 'withdraw-remaining',
     ChangeOwner: 'change-owner',
     IssueMoreBonds: 'issue-more-bonds',
-    BurnUnsoldBonds: 'burn-unsold-bonds'
+    BurnUnsoldBonds: 'burn-unsold-bonds',
+    DecreaseRedeemLockPeriod: 'decrease-redeem-lock-period'
 }
 
 const TransactionMessages = {
