@@ -21,16 +21,16 @@ export default function Home() {
     const scrollToView = () => bondsRef.current.scrollIntoView({behavior: "smooth", block: "start", inline: "start"})
 
     return <>
-        <main className="relative flex flex-col min-h-screen md:pt-20 sm:pt-10 gap-24">
+        <main className="relative flex flex-col min-h-screen md:pt-20 sm:pt-6 gap-24">
             <div className={Styles.sections}>
                 <div className="absolute right-0 md:flex sm:hidden">
                     <Image src='./svg/VectorHash.svg' width={450} height={780} alt={"On-Chain Bonds"}/>
                 </div>
                 <div className="relative flex flex-col gap-8 w-full md:items-start sm:items-center">
-                    <h1 className="font-bold lg:text-6xl lg:leading-tight sm:text-5xl sm:leading-normal">
-                        Empowering <span className="bg-white text-black px-1">Your</span><br/>
-                        Financial Future <br/>
-                        In DeFI
+                    <h1 className="font-bold lg:text-5xl lg:leading-tight sm:text-4xl sm:leading-normal lg:max-w-[70%] md:max-w-none">
+                        Empower Your Investments <br/>
+                        with <span className="bg-white text-black px-1">On-Chain Bonds</span><br/>
+                        on Amet Finance
                     </h1>
                     <div className="h-px md:w-1/5 sm:w-full bg-white"/>
                     <p className="text-g md:max-w-[45%] sm:max-w-full">{Texts.pMain}</p>

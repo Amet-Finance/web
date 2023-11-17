@@ -195,7 +195,6 @@ export default function Issue() {
 
     return <>
         <main className={Styles.container}>
-
             <div className={Styles.bondContainer}>
                 <div className={Styles.form}>
                     <div className={Styles.formTexts}>
@@ -278,7 +277,7 @@ export default function Issue() {
                     </div>
                 </div>
                 <div className={Styles.form}>
-                    <div className={join([Styles.formTexts, "w-[400px]"])}>
+                    <div className={join([Styles.formTexts, "ld:w-[400px] md:w-full"])}>
                         <h2 className='text-2xl font-bold'>Review Bond Details</h2>
                         <span className="text-g text-sm">Ensure accuracy and make any adjustments if needed.</span>
                         <div className={Styles.formLine}/>
@@ -342,7 +341,7 @@ function TokenDetails({tokenInfo, type, total, additionalInfo}: {
     const isLoading = tokenInfo?.isLoading && !tokenInfo.unidentified
 
     return <>
-        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 w-[400px] lg:max-w-lg md:max-w-none">
+        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 lg:w-[400px] lg:max-w-lg md:w-full">
             {
                 isLoading ?
                     <div className='flex justify-center items-center'><Loading/></div> :
@@ -448,7 +447,7 @@ function NotIdentified() {
     const {chain} = useNetwork()
 
     return <>
-        <div className="flex items-center gap-4 max-w-lg">
+        <div className="flex lg:items-center md:items-start gap-4 lg:max-w-lg md:max-w-none">
             <p className='text-sm'>
                 Could not identify the token, make sure the contract is correct for
                 <span className="text-red-500 font-bold"> {chain?.name} network</span>
