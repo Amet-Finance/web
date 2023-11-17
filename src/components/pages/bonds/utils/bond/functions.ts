@@ -1,4 +1,4 @@
-import * as CloudAPI from "@/modules/cloud-api";
+import CloudAPI from "@/modules/cloud-api";
 
 type Config = {
     skip: number

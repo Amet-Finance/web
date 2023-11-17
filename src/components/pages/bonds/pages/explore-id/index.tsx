@@ -5,7 +5,7 @@ import {BondInfoDetailed} from "@/modules/web3/type";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
 import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
-import * as CloudAPI from "@/modules/cloud-api";
+import CloudAPI from "@/modules/cloud-api";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {nop} from "@/modules/utils/function";
 

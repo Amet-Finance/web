@@ -22,7 +22,7 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {getIssuerContractInfo} from "@/modules/web3/zcb";
 import InfoBox from "@/components/utils/info-box";
-import * as CloudAPI from "@/modules/cloud-api";
+import CloudAPI from "@/modules/cloud-api";
 import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import makeBlockie from "ethereum-blockies-base64";

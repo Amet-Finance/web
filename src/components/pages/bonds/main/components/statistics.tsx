@@ -2,9 +2,7 @@ import Styles from './index.module.css'
 import {useEffect, useState} from "react";
 import {format} from "@/modules/utils/numbers";
 import Loading from "@/components/utils/loading";
-import * as CloudApi from "@/modules/cloud-api";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
+import CloudApi from "@/modules/cloud-api";
 import {useNetwork} from "wagmi";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 

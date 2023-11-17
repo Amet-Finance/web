@@ -50,16 +50,16 @@ function divBigNumberForUI(amount: number | string, decimals: number) {
     return response.toNumber() / 10 ** 3
 }
 
-function divBigNumber(amount: number | string, decimals: number) {
-    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+function divBigNumber(amount?: number | string, decimals?: number) {
+    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals)) || typeof amount === "undefined" || typeof decimals === 'undefined') {
         return toBN(0)
     }
 
     return toBN(amount).div(toBN(10).pow(toBN(decimals)))
 }
 
-function mulBigNumber(amount: number | string, decimals: number, isStrict?: boolean) {
-    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
+function mulBigNumber(amount?: number | string, decimals?: number, isStrict?: boolean) {
+    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals)) || typeof amount === "undefined" || typeof decimals === 'undefined') {
         if (isStrict) {
             throw Error("Amount or Decimals is missing")
         }

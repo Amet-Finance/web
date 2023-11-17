@@ -49,8 +49,9 @@ async function updateAddress({params, body}: any) {
     });
 }
 
+
 async function getTokens({params}: {
-    params: { chainId: number, contractAddresses: string[] }
+    params: { chainId: number, contractAddresses: string[], verified?: boolean }
 }): Promise<TokensResponse> {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
@@ -69,7 +70,8 @@ async function getTokensDetailed({params}: {
     });
 }
 
-export {
+
+const CloudAPI = {
     getBonds,
     getStats,
     getBalance,
@@ -78,3 +80,4 @@ export {
     getTokens,
     getTokensDetailed
 }
+export default CloudAPI

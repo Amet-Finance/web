@@ -5,7 +5,7 @@ import TwitterSVG from "../../../../../public/svg/social/twitter";
 import RedditSVG from "../../../../../public/svg/social/reddit";
 import TelegramSVG from "../../../../../public/svg/social/telegram";
 import {useEffect, useState} from "react";
-import * as CloudAPI from "@/modules/cloud-api";
+import CloudAPI from "@/modules/cloud-api";
 import Image from "next/image";
 import {useAccount, useNetwork, useSignMessage} from "wagmi";
 import {AccountParams} from "@/components/pages/address/address-id/type";

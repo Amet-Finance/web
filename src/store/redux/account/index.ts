@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import store from "@/store/store";
 import {Account} from "@/store/redux/account/type";
-import * as CloudAPI from "../../../modules/cloud-api/index"
+import CloudAPI from "../../../modules/cloud-api/index"
 
 const emptyState: Account = {
     balance: {} // serepate by chains
