@@ -1,5 +1,5 @@
 import ExploreId from "@/components/pages/bonds/pages/explore-id";
-import {getBondInfo} from "@/modules/web3/zcb";
+import {getBondInfo, getBondName} from "@/modules/web3/zcb";
 import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function ExploreIdPage({bondInfo}: any) {
@@ -14,11 +14,14 @@ export async function getServerSideProps({query}: any) {
     if (chain) {
         bondInfo = await getBondInfo(chain, contractAddress)
     }
-
+    
     return {
         props: {
             pageId: "ExploreIdPage",
-            bondInfo
+            bondInfo,
+            meta: {
+                title: "Bonds: " + await getBondName(chain, contractAddress) // todo make this request to S3/back-end
+            }
         }
     }
 }

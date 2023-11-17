@@ -32,7 +32,7 @@ const MetaConstants: { [key: string]: MetaInfo } = {
         description: "Explore your wallet address and transactions on Amet Finance. Securely track your financial activities with us."
     },
     default: {
-        title: "Amet Finance - Empowering Your Financial Future in DeFi",
+        title: "Amet Finance - Your Gateway to Secure and Transparent On-Chain Bonds",
         description: "Unlock limitless opportunities with Amet Finance. Join us to explore on-chain bonds and embrace the decentralized future of finance.",
         ogImage: URLS.OgImage
     }

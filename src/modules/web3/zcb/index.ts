@@ -68,6 +68,11 @@ async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondI
     };
 }
 
+async function getBondName(chain: any, contractAddress: string) {
+    const contract = getContract(chain, contractAddress);
+    return await contract.methods.name().call();
+}
+
 async function getTokensPurchaseDates(chain: any, contractAddress: string, tokenIds: number[]) {
     const contract = getContract(chain, contractAddress);
     return await contract.methods.getTokensPurchaseDates(tokenIds).call();
@@ -173,5 +178,6 @@ export {
     issueMoreBonds,
     decode,
     getBondInfo,
-    getTokensPurchaseDates
+    getTokensPurchaseDates,
+    getBondName
 }
