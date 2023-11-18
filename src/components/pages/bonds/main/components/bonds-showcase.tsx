@@ -62,7 +62,7 @@ function BondsScreen() {
             <Link href={`/bonds/explore`} className='w-full'>
                 <div
                     className='flex justify-center items-center cursor-pointer w-full left-0 lg:top-[90%] md:top-[97%] sm:top-[97%]'>
-                    <div className='flex gap-2 justify-center items-end z-10 w-full blur-0'>
+                    <div className='flex gap-2 justify-center items-end z-10 w-full blur-0 hover:scale-110'>
                         <span className='text-2xl font-bold'>Explore More Bonds</span>
                         <ArrowSVG/>
                     </div>

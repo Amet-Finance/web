@@ -10,6 +10,8 @@ const URLS = {
     FAQ_IOB: "https://docs.amet.finance/v1/getting-started/issuing-on-chain-bonds",
     FAQ_ZCB: "https://docs.amet.finance/v1/zero-coupon-bond/zero-coupon-bonds-zcb-on-amet-finance",
 
+    BrandAssets: "https://docs.amet.finance/v1/additional-materials/brand-assets",
+
     Docs: "https://docs.amet.finance/v1/",
     Discord: "https://discord.gg/JxWpBGP8vz",
     Reddit: "https://www.reddit.com/r/Amet_Finance/",

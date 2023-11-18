@@ -46,6 +46,7 @@ function Links() {
             attributes: [
                 {title: 'Terms Of Service', url: URLS.TermsOfService},
                 {title: 'Privacy Policy', url: URLS.PrivacyPolicy},
+                {title: 'Brand Assets', url: URLS.BrandAssets},
                 {title: 'DefiLlama', url: URLS.DefiLlama},
             ]
         },
