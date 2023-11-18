@@ -406,7 +406,7 @@ function Token({tokenInfo, type, total, additionalInfo}: {
     const name = tokenInfo.name || ""
     const symbol = tokenInfo.symbol;
     const balance = tokenInfo.balance;
-    const balanceClean = tokenInfo?.balanceClean;
+    const balanceClean = Number(tokenInfo?.balanceClean);
     const title = type === BondTokenInfo.Interest ? "Interest" : "Investment"
     const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
 
@@ -426,8 +426,10 @@ function Token({tokenInfo, type, total, additionalInfo}: {
                         <p>{name}</p>
                         {tokenInfo.isVerified ? <VerifiedSVG/> : <WarningSVG/>}
                     </div>
-                    {Boolean(balanceClean) &&
-                        <span className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>}
+                    {
+                        Number.isFinite(balanceClean) &&
+                        <span className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>
+                    }
                 </div>
             </div>
         </div>
