@@ -186,7 +186,7 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
                         {!token.isVerified && <WarningSVG/>}
                         <div className='flex gap-0.5 items-center'>
                             <span className={className + " text-sm font-bold"}
-                                  title={format(amount)}>{formatLargeNumber(amount)}</span>
+                                  title={format(amount).toString()}>{formatLargeNumber(amount)}</span>
                             <span className={className + " text-sm font-bold"}>{shortenString(token?.symbol, 4)}</span>
                         </div>
                     </div>
