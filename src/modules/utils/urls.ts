@@ -3,6 +3,8 @@ const URLS = {
     OgImage: "https://amet.finance/meta/og-image.jpg",
     TermsOfService: "https://docs.amet.finance/v1/additional-materials/terms-of-service",
     PrivacyPolicy: 'https://docs.amet.finance/v1/additional-materials/privacy-policy',
+    ContactUs: "https://wkf.ms/3G3SNtn",
+    StatusPage: "https://status.amet.finance",
 
     FAQ: "https://docs.amet.finance/v1/frequently-asked-questions-faqs",
     FAQ_WIAF: "https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-is-amet-finance",
@@ -21,7 +23,15 @@ const URLS = {
     Medium: "https://medium.com/@amet-finance",
     Github: "https://github.com/Amet-Finance",
     Facebook: "https://www.facebook.com/people/Amet-Finance/61552721081613/",
-    DefiLlama: "https://defillama.com/protocol/amet-finance"
+    DefiLlama: "https://defillama.com/protocol/amet-finance",
+
+
+    DiscordProposals: "https://discord.gg/HXkTHxX3pZ",
+
+
+    others: {
+        KyberSwapSettingsFAQ: "https://docs.kyberswap.com/getting-started/foundational-topics/decentralized-finance/slippage"
+    }
 }
 
 export {

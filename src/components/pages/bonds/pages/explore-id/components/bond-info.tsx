@@ -229,6 +229,7 @@ function Security({info, tokens}: { info: BondInfoDetailed, tokens: TokensRespon
 function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {
+        total,
         interestToken,
         purchased,
         redeemed,
@@ -239,6 +240,7 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     } = info;
 
 
+    const isTotallyRedeemed = total - redeemed === 0
     const interestTokenInfo = tokens[interestToken.toLowerCase()];
     const investmentTokenInfo = tokens[investmentToken.toLowerCase()];
 
@@ -253,12 +255,11 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const totalRedeemed = redeemed * redeemPrice.toNumber();
 
     const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
-    const totalNeededAmount = divBigNumber(notRedeemed.toString(), interestTokenInfo.decimals)
-
-    const interestBalance = divBigNumber(interestTokenBalance, interestTokenInfo.decimals)
+    const totalNeededAmount = divBigNumber(notRedeemed.toString(), interestTokenInfo.decimals);
+    const interestBalance = divBigNumber(interestTokenBalance, interestTokenInfo.decimals);
 
     let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
-    redeemedPercentage = isFinite(redeemedPercentage) ? redeemedPercentage : 0
+    redeemedPercentage = isTotallyRedeemed ? 100 : (Number(redeemedPercentage) || 0);
 
     const percentageClass = () => {
         if (redeemedPercentage === 0) {

@@ -53,8 +53,8 @@ function Links() {
         {
             title: "Get Help",
             attributes: [
-                {title: 'Status', url: 'https://status.amet.finance'},
-                {title: 'Contact Us', url: 'mailto:hello@amet.finance'},
+                {title: 'Status', url: URLS.StatusPage},
+                {title: 'Contact Us', url: URLS.ContactUs},
                 {title: 'FAQ', url: URLS.FAQ},
             ]
         }

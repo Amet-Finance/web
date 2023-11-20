@@ -2,6 +2,11 @@ import {toBN} from "@/modules/web3/util";
 import {toast} from "react-toastify";
 
 function format(number: number) {
+
+    if (number < 1) {
+        return number
+    }
+
     // Convert the number to a string
     const numberString = number.toString();
 
@@ -47,7 +52,7 @@ function divBigNumberForUI(amount: number | string, decimals: number) {
     const isDecBigger = decimals > 3
     const preDecimal = isDecBigger ? decimals - 3 : decimals;
     const response = toBN(amount).div(toBN(10).pow(toBN(preDecimal)))
-    return response.toNumber() / 10 ** 3
+    return isDecBigger ? response.toNumber() / 10 ** 3 : response.toNumber(); // todo continue
 }
 
 function divBigNumber(amount?: number | string, decimals?: number) {
