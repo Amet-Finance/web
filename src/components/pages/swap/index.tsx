@@ -6,7 +6,7 @@ import {TokenResponse} from "@/modules/cloud-api/type";
 import {divBigNumber, divBigNumberForUI, format, mulBigNumber} from "@/modules/utils/numbers";
 import Image from "next/image";
 import {trackTransaction} from "@/modules/web3";
-import {arbitrum, bsc, mainnet, polygon, scroll} from "wagmi/chains";
+import {arbitrum, bsc, mainnet, polygon, polygonZkEvm, scroll} from "wagmi/chains";
 import makeBlockie from "ethereum-blockies-base64";
 import CloudAPI from "@/modules/cloud-api";
 import Link from "next/link";
@@ -16,32 +16,12 @@ import RefreshSVG from "../../../../public/svg/utils/refresh";
 import SettingsSVG from "../../../../public/svg/utils/settings";
 import {toast} from "react-toastify";
 import {ZERO_ADDRESS} from "@/modules/web3/constants";
-import {TokenSelectorComponent} from "@/components/pages/swap/type";
+import {Result, TokenSelectorComponent} from "@/components/pages/swap/type";
 import InfoBox from "@/components/utils/info-box";
 import {URLS} from "@/modules/utils/urls";
 
-type Result = {
-    "inputAmount": string,
-    "outputAmount": string,
-    "totalGas": number,
-    "gasPriceGwei": string,
-    "gasUsd": number,
-    "amountInUsd": number,
-    "amountOutUsd": number,
-    "receivedUsd": number,
-    "swaps": any[]
-    "tokens": {
-        [contractAddress: string]: {
-            "address": string,
-            "symbol": string,
-            "name": string,
-            "price": number,
-            "decimals": number
-        }
-    },
-    "encodedSwapData": string,
-    "routerAddress": string
-}
+const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+
 
 // Optimism (ChainID: 10) -> optimism
 // Avalanche (ChainID: 43114) -> avalanche
@@ -55,11 +35,12 @@ type Result = {
 // BitTorrent Chain (ChainID: 199) -> bittorrent
 
 const chainsByRouterNames: { [key: string]: string } = {
-    [mainnet.id]: 'ethereum',
-    [bsc.id]: 'bsc',
-    [arbitrum.id]: 'arbitrum',
+    [polygonZkEvm.id]: "polygon-zkevm",
     [polygon.id]: 'polygon',
-    [scroll.id]: 'scroll'
+    // [mainnet.id]: 'ethereum',
+    // [bsc.id]: 'bsc',
+    // [arbitrum.id]: 'arbitrum',
+    // [scroll.id]: 'scroll'
 }
 
 export default function Swap() {
@@ -137,10 +118,20 @@ export default function Swap() {
                 contractAddresses: [],
                 verified: true
             }
+
+            const nativeToken = {
+                _id: nativeTokenContract,
+                name: chain.nativeCurrency.name,
+                symbol: chain.nativeCurrency.symbol,
+                decimals: chain.nativeCurrency.decimals,
+                isVerified: true,
+                icon: `/svg/chains/${chain.id}.svg`
+            }
+
             CloudAPI.getTokens({params})
                 .then(response => {
                     if (response) {
-                        setTokens(Object.values(response))
+                        setTokens([nativeToken, ...Object.values(response)])
                     }
                 })
 
@@ -148,7 +139,7 @@ export default function Swap() {
             const interval = setInterval(() => {
                 CloudAPI.getTokens({params}).then(response => {
                     if (response) {
-                        setTokens(Object.values(response))
+                        setTokens([nativeToken, ...Object.values(response)])
                     }
                 })
             }, 20000)
