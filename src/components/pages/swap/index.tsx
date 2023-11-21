@@ -5,7 +5,7 @@ import Loading from "@/components/utils/loading";
 import {TokenResponse} from "@/modules/cloud-api/type";
 import {divBigNumber, divBigNumberForUI, format, mulBigNumber} from "@/modules/utils/numbers";
 import Image from "next/image";
-import {trackTransaction} from "@/modules/web3";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {arbitrum, bsc, mainnet, polygon, polygonZkEvm, scroll} from "wagmi/chains";
 import makeBlockie from "ethereum-blockies-base64";
 import CloudAPI from "@/modules/cloud-api";
@@ -15,10 +15,13 @@ import {useWeb3Modal} from "@web3modal/wagmi/react";
 import RefreshSVG from "../../../../public/svg/utils/refresh";
 import SettingsSVG from "../../../../public/svg/utils/settings";
 import {toast} from "react-toastify";
-import {ZERO_ADDRESS} from "@/modules/web3/constants";
+import {TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {Result, TokenSelectorComponent} from "@/components/pages/swap/type";
 import InfoBox from "@/components/utils/info-box";
 import {URLS} from "@/modules/utils/urls";
+import {getAllowance} from "@/modules/web3/tokens";
+import {nop} from "@/modules/utils/function";
+import BN from "bn.js";
 
 const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
@@ -62,12 +65,15 @@ export default function Swap() {
     const [tokenSelector, setTokenSelector] = useState("");
     const [tokens, setTokens] = useState<TokenResponse[]>([])
 
+    const [allowance, setAllowance] = useState(0);
+
     const [from, setFrom] = useState({amount: 0} as { amount: number, token?: TokenResponse })
     const [to, setTo] = useState({} as { token?: TokenResponse })
     const [result, setResult] = useState({} as Result)
 
     const amountIn = mulBigNumber(from.amount, from.token?.decimals).toString();
     const chainName = chainsByRouterNames[chain?.id || ""];
+    const isApprove = (from.amount && from.token && to.token && from.token._id !== nativeTokenContract) && new BN(allowance).lt(new BN(amountIn));
 
     function onChange(event: any) {
         const {id, value} = event.target;
@@ -148,8 +154,22 @@ export default function Swap() {
         }
     }, [chain]);
 
-    useEffect(() => {
+    useEffect(() => { // check allowance
+        if (chain && from.token?._id && address) {
 
+            if (from.token._id === nativeTokenContract) {
+                setAllowance(1000000000)
+            } else {
+                getAllowance(chain, from.token?._id, address, result.routerAddress)
+                    .then(allowanceResponse => {
+                        setAllowance(allowanceResponse)
+                    })
+                    .catch(nop)
+            }
+        }
+    }, [chain, address, from, result.routerAddress, refresh]);
+
+    useEffect(() => {
         const getTokenPrices = () => {
             requestAPI({
                 url: `https://aggregator-api.kyberswap.com/${chainName}/route/encode`,
@@ -197,10 +217,19 @@ export default function Swap() {
     const pricePerToken = format((output / from.amount) || 0);
     const isBlur = Boolean(tokenSelector) || Boolean(settings.isOpen);
 
-    const {sendTransactionAsync} = useSendTransaction({
-        to: result.routerAddress,
-        data: result.encodedSwapData as any,
-    })
+    const config: any = isApprove ? getContractInfoByType(chain, TxTypes.ApproveToken, {
+            contractAddress: from.token?._id,
+            spender: result.routerAddress,
+            value: mulBigNumber(from.amount, from.token?.decimals, true)
+        })
+        :
+        {
+            to: result.routerAddress,
+            value: BigInt(from?.token?._id === nativeTokenContract ? amountIn : 0) || 0,
+            data: result.encodedSwapData as any,
+            chainId: chain?.id
+        }
+    const transaction = useSendTransaction(config)
 
     // todo add the settings page as well
     async function swap() {
@@ -213,8 +242,11 @@ export default function Swap() {
                 return toast.error("Please select the token")
             }
 
-            const response = await sendTransactionAsync();
-            await trackTransaction(chain, response.hash)
+            console.log(`config`, config)
+
+            const response = await transaction.sendTransactionAsync();
+            await trackTransaction(chain, response.hash);
+            refreshPrices()
         } catch (error: any) {
             console.log(error.message)
         }
@@ -259,7 +291,7 @@ export default function Swap() {
                         <div className='flex justify-between items-start'>
                             {
                                 isLoading ?
-                                    <Loading percent={35}/> : <>
+                                    <Loading percent={25.8}/> : <>
                                         <div className='flex flex-col gap-0.5 cursor-not-allowed'>
                                             <span>{format(output)}</span>
                                             <span className='text-g2 text-sm'>~${format(result?.receivedUsd || 0)}</span>
@@ -274,8 +306,10 @@ export default function Swap() {
 
                     <div className='flex flex-col items-center gap-2 mt-4'>
                         <button
-                            className='w-full bg-white  text-black rounded p-2 hover:bg-black hover:text-white'
-                            onClick={swap}>Swap
+                            className='flex gap-2 items-center  justify-center w-full bg-g3  text-white rounded p-2'
+                            onClick={swap}>
+                            {transaction.isLoading && <Loading percent={70}/>}
+                            {isApprove ? "Approve" : "Swap"}
                         </button>
                         <span className='text-sm'>Powered by <Link
                             href="https://kyberswap.com/" target="_blank"
