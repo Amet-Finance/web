@@ -209,7 +209,7 @@ function Chains() {
 function ChainsDropDown({change}: any) {
     return <>
         <div className='
-        absolute top-14 right-0 min-w-max flex flex-col bg-b1 px-3 py-1 rounded z-40 h-36 overflow-x-auto
+        absolute top-14 right-0 min-w-max flex flex-col bg-b1 px-3 py-1 rounded z-40 max-h-36 overflow-x-auto
         md:left-auto sm:left-0 border border-w1
         '
              onClick={change}>

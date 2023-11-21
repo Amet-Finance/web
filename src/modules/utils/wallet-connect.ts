@@ -10,7 +10,7 @@ const metadata = {
     icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const CHAINS = [manta, mainnet, arbitrum, polygonMumbai, polygon, bsc]
+const CHAINS = [manta, polygon]
 const defaultChain = manta;
 const wagmiConfig = defaultWagmiConfig({
     chains: CHAINS,
