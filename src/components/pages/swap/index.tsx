@@ -41,8 +41,8 @@ const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 const chainsByRouterNames: { [key: string]: string } = {
     [polygonZkEvm.id]: "polygon-zkevm",
     [polygon.id]: 'polygon',
+    [bsc.id]: 'bsc',
     // [mainnet.id]: 'ethereum',
-    // [bsc.id]: 'bsc',
     // [arbitrum.id]: 'arbitrum',
     // [scroll.id]: 'scroll'
 }
