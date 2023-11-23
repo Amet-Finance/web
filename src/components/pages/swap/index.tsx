@@ -22,6 +22,7 @@ import {URLS} from "@/modules/utils/urls";
 import {getAllowance} from "@/modules/web3/tokens";
 import {nop} from "@/modules/utils/function";
 import BN from "bn.js";
+import SwapSVG from "../../../../public/svg/utils/swap";
 
 const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
@@ -109,6 +110,19 @@ export default function Swap() {
         setSettings({...settings, isOpen: true});
     }
 
+    function swapCurrencies() {
+        setResult({} as any);
+        setFrom({
+            ...from,
+            token: to.token
+        });
+        setTo({
+            ...to,
+            token: from.token
+        });
+        refreshPrices();
+    }
+
     useEffect(() => {
 
         setFrom({amount: from.amount});
@@ -194,6 +208,7 @@ export default function Swap() {
             })
         }
 
+        setResult({} as any);
         if (amountIn) setLoading(true);
 
         if (!chainName) {
@@ -214,7 +229,6 @@ export default function Swap() {
     }, [from.token?._id, to.token?._id, amountIn, address, chain?.id, refresh]);
 
     const output = divBigNumberForUI(result.outputAmount, to.token?.decimals || 18);
-    const pricePerToken = format((output / from.amount) || 0);
     const isBlur = Boolean(tokenSelector) || Boolean(settings.isOpen);
 
     const config: any = isApprove ? getContractInfoByType(chain, TxTypes.ApproveToken, {
@@ -231,7 +245,6 @@ export default function Swap() {
         }
     const transaction = useSendTransaction(config)
 
-    // todo add the settings page as well
     async function swap() {
         try {
             if (!address) {
@@ -242,7 +255,6 @@ export default function Swap() {
                 return toast.error("Please select the token")
             }
 
-            console.log(`config`, config)
 
             const response = await transaction.sendTransactionAsync();
             await trackTransaction(chain, response.hash);
@@ -287,6 +299,9 @@ export default function Swap() {
                     </InputComponent>
 
                     <InputComponent>
+                        <div className='absolute top-[-20%] left-[45%] cursor-pointer'>
+                            <SwapSVG onClick={swapCurrencies}/>
+                        </div>
                         <span className='text-g3'>You Receive</span>
                         <div className='flex justify-between items-start'>
                             {
@@ -331,7 +346,7 @@ export default function Swap() {
 
 function InputComponent({children}: any) {
     return <>
-        <div className='flex flex-col gap-2 px-6 py-3 border border-w6 rounded-2xl bg-g6'>
+        <div className='relative flex flex-col gap-2 px-6 py-3 border border-w6 rounded-2xl bg-g6'>
             {children}
         </div>
     </>
@@ -384,7 +399,6 @@ function TokenSelector({tokenSelectorHandler, tokens, fromHandler, toHandler}: T
                     const regex = new RegExp(searchText, 'i')
                     return regex.test(item.name) || regex.test(item.symbol) || regex.test(item._id)
                 })
-                console.log('running job')
                 setFilteredTokens(newFilter);
             }, 100);
 

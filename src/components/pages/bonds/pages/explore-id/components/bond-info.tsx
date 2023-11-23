@@ -258,8 +258,8 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const totalNeededAmount = divBigNumber(notRedeemed.toString(), interestTokenInfo.decimals);
     const interestBalance = divBigNumber(interestTokenBalance, interestTokenInfo.decimals);
 
-    let redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
-    redeemedPercentage = isTotallyRedeemed ? 100 : (Number(redeemedPercentage) || 0);
+    const redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
+    const securedTitle = isTotallyRedeemed ? "FINISHED" : `${(Number(redeemedPercentage) || 0).toFixed(2)}%`;
 
     const percentageClass = () => {
         if (redeemedPercentage === 0) {
@@ -282,7 +282,7 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
             <div className='flex items-center justify-between w-full'>
                 <span className='whitespace-nowrap'>Secured Percentage:</span>
                 <span className={percentageClass() + " text-sm font-bold cursor-pointer"}
-                      title={`${format(interestBalance.toNumber())} ${interestTokenInfo.symbol}`}>{redeemedPercentage.toFixed(2)}%</span>
+                      title={`${format(interestBalance.toNumber())} ${interestTokenInfo.symbol}`}>{securedTitle}</span>
             </div>
             <div className='flex items-center justify-between w-full'>
                 <span>Issuer Score:</span>

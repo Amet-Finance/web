@@ -49,10 +49,12 @@ function divBigNumberForUI(amount: number | string, decimals: number) {
         return 0
     }
 
-    const isDecBigger = decimals > 3
-    const preDecimal = isDecBigger ? decimals - 3 : decimals;
+    const discountedDecimal = 6
+    const isDecBigger = decimals > discountedDecimal
+    const preDecimal = isDecBigger ? decimals - discountedDecimal : decimals;
     const response = toBN(amount).div(toBN(10).pow(toBN(preDecimal)))
-    return isDecBigger ? response.toNumber() / 10 ** 3 : response.toNumber(); // todo continue
+
+    return isDecBigger ? response.toNumber() / 10 ** discountedDecimal : response.toNumber();
 }
 
 function divBigNumber(amount?: number | string, decimals?: number) {

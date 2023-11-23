@@ -43,9 +43,9 @@ export default function ExploreId({bondInfoTmp}: { bondInfoTmp: BondInfoDetailed
 
 
     return <>
-        <div className='flex items-center justify-center'>
+        <div className='flex items-center justify-center md:w-auto sm:w-full'>
             <div
-                className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:pb-12 sm:pt-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start">
+                className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:pb-12 sm:pt-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start md:w-auto sm:w-full">
                 <BondDetails info={bondInfo} tokens={tokens}/>
                 <BondActions info={bondInfo} tokens={tokens}/>
             </div>

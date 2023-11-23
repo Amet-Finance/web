@@ -1,10 +1,9 @@
 import {getWeb3Instance} from "@/modules/web3/index";
-import ERC20 from './abi-jsons/ERC20.json'
-import {Chain} from "wagmi";
+import {Chain, erc20ABI} from "wagmi";
 
 function getTokenContract(chain: Chain, contractAddress: string) {
     const web3 = getWeb3Instance(chain);
-    return new web3.eth.Contract(ERC20 as any, contractAddress);
+    return new web3.eth.Contract(erc20ABI as any, contractAddress);
 }
 
 async function getTokenBalance(chain: Chain, contractAddress: string, address: string) {
