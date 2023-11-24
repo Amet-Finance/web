@@ -89,7 +89,6 @@
     gap: 1rem;
     padding: 0.75rem;
     position: absolute;
-    background-color: transparent;
     top: 130%;
     /*width: 100%;*/
     background-color: black;
@@ -152,19 +151,6 @@
     padding: 0.5rem 1.5rem;
     border-radius: 0.25rem;
     cursor: pointer;
-}
-
-.addressBorder {
-    border: 1px solid #424242;
-}
-
-.addressBorder:hover {
-    border: 1px solid #ffffff;
-}
-
-.enabledAddress {
-    border-radius: 0.5rem 0.5rem 0 0;
-    border-bottom: rgba(255, 255, 255, 0);
 }
 
 @media (max-width: 768px) {

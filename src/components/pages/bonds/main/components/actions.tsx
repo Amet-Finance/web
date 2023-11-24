@@ -11,7 +11,8 @@ export default function Actions() {
         <div className={Styles.container}>
             <div className={Styles.actions}>
                 <h1 className={join([Styles.headline, "font-bold"])}>
-                    Unlock Financial <span className="bg-white text-black text-center px-1">Possibilities</span><br/> with On-Chain Bonds</h1>
+                    Unlock Financial <span
+                    className="bg-white text-black text-center px-1">Possibilities</span><br/> with On-Chain Bonds</h1>
                 <div className={Styles.line}/>
                 <p className={Styles.gray1}>{texts.secondary}</p>
                 <div className={Styles.actionContainer}>

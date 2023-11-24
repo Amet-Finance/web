@@ -1,7 +1,7 @@
-function stopPropagation (event: any) {
+function stopPropagation(event: any) {
     event.stopPropagation()
 }
 
-export  {
+export {
     stopPropagation
 }

@@ -3,43 +3,52 @@ import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
 import {getWeb3Instance} from "@/modules/web3";
 
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {TransactionReceipt} from "web3-core";
 import {getTokenBalance} from "@/modules/web3/tokens";
 import {BondInfoDetailed, IssuerContractInfo} from "@/modules/web3/type";
-import {toBN} from "@/modules/web3/util";
-import {defaultChain} from "@/modules/utils/wallet-connect";
 import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
+import {decodeEventLog, encodeFunctionData, getContract, TransactionReceipt} from 'viem'
 
-function getContract(chain: Chain, contractAddress: string) {
-    const web3 = getWeb3Instance(chain)
-    return new web3.eth.Contract(ZCB_ABI as any, contractAddress);
+function getContractInstance(chain: Chain, contractAddress: string) {
+    const provider = getWeb3Instance(chain)
+    return getContract({
+        address: contractAddress as any,
+        abi: ZCB_ABI,
+        publicClient: provider
+    })
+}
+
+function getIssuerContractInstance(chain: Chain) {
+    const provider = getWeb3Instance(chain)
+    return getContract({
+        address: ZCB_ISSUER_CONTRACTS[chain.id] as any,
+        abi: ZCB_Issuer_ABI,
+        publicClient: provider
+    })
 }
 
 async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfo> {
-    const web3 = getWeb3Instance(chain)
-    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);
+    const contract = getIssuerContractInstance(chain)
 
-    const creationFee = await contract.methods.creationFee().call();
-    const creationFeePercentage = await contract.methods.creationFeePercentage().call();
-    const isPaused = await contract.methods.isPaused().call()
-
-    const normalizedAmount = Number(creationFee) / 10 ** chain.nativeCurrency.decimals
-    const issuanceFeeForUI = `${normalizedAmount} ${chain.nativeCurrency.symbol}`
+    const creationFee = await contract.read.creationFee();
+    const creationFeePercentage = await contract.read.creationFeePercentage();
+    const isPaused = await contract.read.isPaused();
+    const normalizedAmount = Number(creationFee) / 10 ** chain.nativeCurrency.decimals;
+    const issuanceFeeForUI = `${normalizedAmount} ${chain.nativeCurrency.symbol}`;
 
     return {
         issuanceFeeForUI,
         creationFee: Number(creationFee),
         creationFeeHex: `0x${Number(creationFee).toString(16)}`,
         creationFeePercentage: Number(creationFeePercentage),
-        isPaused
+        isPaused: isPaused === true
     }
 }
 
 async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondInfoDetailed> {
-    const contract = getContract(chain, contractAddress);
-    const info = await contract.methods.getInfo().call();
+    const contract = getContractInstance(chain, contractAddress);
+    const info: any = await contract.read.getInfo();
 
     const [
         issuer, total,
@@ -53,32 +62,32 @@ async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondI
     return {
         _id: contractAddress,
         chainId: chain.id,
-        issuer,
-        total,
-        purchased,
-        redeemed,
-        redeemLockPeriod,
-        investmentToken,
-        investmentTokenAmount,
-        interestToken,
-        interestTokenAmount,
+        issuer: issuer,
+        total: Number(total),
+        purchased: Number(purchased),
+        redeemed: Number(redeemed),
+        redeemLockPeriod: Number(redeemLockPeriod),
+        investmentToken: investmentToken,
+        investmentTokenAmount: investmentTokenAmount.toString(),
+        interestToken: interestToken,
+        interestTokenAmount: interestTokenAmount.toString(),
         interestTokenBalance: await getTokenBalance(chain, interestToken, contractAddress),
-        feePercentage,
-        issuanceDate
+        feePercentage: Number(feePercentage),
+        issuanceDate: Number(issuanceDate)
     };
 }
 
 async function getBondName(chain: any, contractAddress: string) {
-    const contract = getContract(chain, contractAddress);
-    return await contract.methods.name().call();
+    const contract = getContractInstance(chain, contractAddress);
+    return await contract.read.name();
 }
 
-async function getTokensPurchaseDates(chain: any, contractAddress: string, tokenIds: number[]) {
-    const contract = getContract(chain, contractAddress);
-    return await contract.methods.getTokensPurchaseDates(tokenIds).call();
+async function getTokensPurchaseDates(chain: any, contractAddress: string, tokenIds: number[]): Promise<string[]> {
+    const contract = getContractInstance(chain, contractAddress);
+    return await contract.read.getTokensPurchaseDates([tokenIds]) as string[];
 }
 
-function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
+function issueBonds(chain: Chain, bondInfo: BondInfo) {
     const {
         total,
         redeemLockPeriod,
@@ -100,72 +109,102 @@ function issueBonds(chain: Chain, bondInfo: BondInfo): string | undefined {
     const investmentAmount = mulBigNumber(investmentTokenAmount, investmentTokenInfo.decimals, true)
     const interestAmount = mulBigNumber(interestTokenAmount, interestTokenInfo.decimals, true)
 
-    const web3 = getWeb3Instance(chain)
-    const contract = new web3.eth.Contract(ZCB_Issuer_ABI as any, ZCB_ISSUER_CONTRACTS[chain.id]);
-    return contract.methods.create(
-        total,
-        redeemLockPeriod,
-        investmentToken,
-        investmentAmount,
-        interestToken,
-        interestAmount,
-        `Amet Finance | ${investmentTokenInfo?.symbol.toUpperCase()}-${interestTokenInfo?.symbol.toUpperCase()}-ZCB`
-    ).encodeABI();
+    const contract = getIssuerContractInstance(chain);
+
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'create',
+        args: [
+            total,
+            redeemLockPeriod,
+            investmentToken,
+            investmentAmount,
+            interestToken,
+            interestAmount,
+            `Amet Finance | ${investmentTokenInfo?.symbol.toUpperCase()}-${interestTokenInfo?.symbol.toUpperCase()}-ZCB`
+        ] as any
+    })
 }
 
 function purchase(chain: Chain, contractAddress: string, count: number) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.purchase(count).encodeABI();
+    const contract = getContractInstance(chain, contractAddress);
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'purchase',
+        args: [count] as any
+    })
 }
 
 function redeem(chain: Chain, contractAddress: string, tokenIds: string[]) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.redeem(tokenIds).encodeABI();
+    const contract = getContractInstance(chain, contractAddress)
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'redeem',
+        args: [tokenIds] as any
+    })
 }
 
 function withdrawRemaining(chain: Chain, contractAddress: string) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.withdrawRemaining().encodeABI();
+    const contract = getContractInstance(chain, contractAddress)
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'withdrawRemaining',
+        args: []
+    })
 }
 
 function changeOwner(chain: Chain, contractAddress: string, newAddress: string) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.changeOwner(newAddress).encodeABI();
+    const contract = getContractInstance(chain, contractAddress);
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'changeOwner',
+        args: [newAddress] as any
+    })
 }
 
 function issueMoreBonds(chain: Chain, contractAddress: string, amount: number) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.issueBonds(amount).encodeABI();
+    const contract = getContractInstance(chain, contractAddress);
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'issueBonds',
+        args: [amount] as any
+    })
 }
 
 function burnUnsoldBonds(chain: Chain, contractAddress: string, amount: number) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.burnUnsoldBonds(amount).encodeABI();
+    const contract = getContractInstance(chain, contractAddress);
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'burnUnsoldBonds',
+        args: [amount] as any
+    })
 }
 
 function decreaseRedeemLockPeriod(chain: Chain, contractAddress: string, newPeriod: number) {
-    const contract = getContract(chain, contractAddress)
-    return contract.methods.decreaseRedeemLockPeriod(newPeriod).encodeABI();
+    const contract = getContractInstance(chain, contractAddress)
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'decreaseRedeemLockPeriod',
+        args: [newPeriod] as any
+    })
 }
 
 function decode(transaction: TransactionReceipt): {} {
+    let result: { [key: string]: any } = {};
 
-    const web3 = getWeb3Instance(defaultChain); // todo here it is hardcoded
-    const eventAbi: any = ZCB_Issuer_ABI.find((abi) => abi.name === "Create");
-    const eventSignature = web3.eth.abi.encodeEventSignature(eventAbi);
+    transaction.logs.forEach((log) => {
 
-    const result: { [key: string]: any } = {};
+        const decoded = decodeEventLog({
+            abi: ZCB_Issuer_ABI,
+            data: log.data,
+            topics: log.topics
+        })
 
-    transaction.logs.forEach((log, index) => {
-        if (log.topics[0] === eventSignature) {
-            const decodedData = web3.eth.abi.decodeLog(
-                eventAbi.inputs,
-                log.data,
-                log.topics.slice(1)
-            );
-            Object.keys(decodedData).forEach((key: string) => {
-                result[key] = decodedData[key];
-            })
+        if (decoded.eventName === "Create") {
+            result = {
+                ...result,
+                ...decoded.args
+            }
         }
     });
 

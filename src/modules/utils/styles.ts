@@ -1,4 +1,4 @@
-function join(styles: string[]){
+function join(styles: string[]) {
     return styles.join(" ")
 }
 

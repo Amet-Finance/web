@@ -16,7 +16,7 @@ export const counterSlice = createSlice({
             state.type = action.payload['type']
             state.additional = action.payload['additional']
         },
-        close: (state, action) => {
+        close: (state) => {
             state.type = ModalTypes.None;
             state.additional = undefined;
         }
@@ -24,14 +24,14 @@ export const counterSlice = createSlice({
 });
 
 const reducer = counterSlice.reducer;
-const {open, close} = counterSlice.actions;
+const {open} = counterSlice.actions;
 
 
 function openModal(type: string, additional?: any) {
     return store.dispatch(open({type: type, additional}))
 }
 
-function closeModal(){
+function closeModal() {
     return store.dispatch(open({type: ModalTypes.None}))
 }
 

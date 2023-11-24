@@ -1,6 +1,5 @@
 import {useEffect, useRef} from "react";
 import {Chart, ChartMeta, registerables} from "chart.js";
-import {join} from "@/modules/utils/styles";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 
 type Arguments = {

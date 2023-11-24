@@ -1,6 +1,6 @@
 import Styles from './index.module.css';
 import {useEffect, useRef, useState} from "react";
-import {BondGeneral, BondInfo} from "@/components/pages/bonds/pages/issue/type";
+import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";

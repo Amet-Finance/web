@@ -1,4 +1,4 @@
-import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
+import {BondInfoDetailed} from "@/modules/web3/type";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import {useSelector} from "react-redux";
 import {useEffect, useRef, useState} from "react";
@@ -56,7 +56,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     useEffect(() => {
         if (address && chainId) {
-            AccountSlice.initBalance(address, chainId);
+            AccountSlice.initBalance(address, chainId).catch(nop);
             const interval = setInterval(() => AccountSlice.initBalance(address, chainId), 10000);
             return () => clearInterval(interval);
         }
@@ -71,7 +71,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             getTokensPurchaseDates(chain, contractAddress, balanceTokenIds)
                 .then(response => {
                     const utcTimestamp = Date.now() / 1000;
-                    const tokensWithDates = response.map((date: number, index: number) => {
+                    const tokensWithDates = response.map((date: string, index: number) => {
                         const isValid = utcTimestamp - Number(redeemLockPeriod) > Number(date)
                         const timeLeft = Number(date) + Number(redeemLockPeriod) - utcTimestamp
                         return {
@@ -136,7 +136,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
         const balance = divBigNumber(info.interestTokenBalance, interestTokenInfo.decimals);
         const redeemAmount = divBigNumber(info.interestTokenAmount, interestTokenInfo.decimals);
-        const totalTokens = toBN(tokenIds.length).mul(redeemAmount)
+        const totalTokens = toBN(tokenIds.length).times(redeemAmount)
 
         if (!amount || !isFinite(amount)) {
             onClick = nop
@@ -149,7 +149,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             onClick = nop
             title = "Not enough liquidity"
         } else if (tokenIds.length) {
-            const total = toBN(tokenIds.length).mul(redeemAmount).toNumber();
+            const total = (toBN(tokenIds.length).times(redeemAmount)).toNumber();
             totalAmountStyle = "text-green-500 font-medium"
             totalAmountText = `( +${format(total)} ${interestTokenInfo.symbol} )`
         }

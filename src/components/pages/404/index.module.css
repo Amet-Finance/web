@@ -7,15 +7,3 @@
     width: 100%;
 }
 
-.back {
-    padding: 1rem 2rem;
-    background-color: transparent;
-    cursor: pointer;
-    border-radius: 0.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-}
-
-.back:hover {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}

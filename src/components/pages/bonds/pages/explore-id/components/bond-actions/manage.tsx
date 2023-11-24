@@ -1,19 +1,15 @@
-import {BondInfoDetailed, TokenInfo} from "@/modules/web3/type";
+import {BondInfoDetailed} from "@/modules/web3/type";
 import {useEffect, useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-import {getUtils, toBN} from "@/modules/web3/util";
 import {useNetwork, useSendTransaction} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
-import {Tokens} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {TokensResponse} from "@/modules/cloud-api/type";
-import {divBigNumber, mulBigNumber} from "@/modules/utils/numbers";
+import {mulBigNumber} from "@/modules/utils/numbers";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
-import InfoBox from "@/components/utils/info-box";
-import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
-import Styles from "@/components/pages/bonds/pages/issue/index.module.css";
+import {getAddress} from "viem";
 
 export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
@@ -140,8 +136,7 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     async function changeOwner() {
         try {
-            const {toChecksumAddress} = getUtils()
-            toChecksumAddress(newAddress);
+            getAddress(newAddress);
 
             const response = await sendTransactionAsync();
             await trackTransaction(chain, response.hash);

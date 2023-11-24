@@ -1,4 +1,4 @@
-import {bsc, manta, polygon, polygonMumbai, polygonZkEvm} from "wagmi/chains";
+import {bsc, manta, polygon, polygonMumbai, polygonZkEvm, zetachainAthensTestnet} from "wagmi/chains";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -8,7 +8,7 @@ const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
     [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     [bsc.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
 
-
+    [zetachainAthensTestnet.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     [polygonMumbai.id]: "0x90A18D3DfCe4ef0A263C28d00AfD2135424c1678",
 }
 

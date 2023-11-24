@@ -1,5 +1,6 @@
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {TransactionReceipt} from "web3-core";
+import {TransactionReceipt} from "viem";
+
 
 type Modal = {
     type: string,

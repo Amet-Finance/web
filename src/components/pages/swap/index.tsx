@@ -3,10 +3,10 @@ import {useEffect, useRef, useState} from "react";
 import {requestAPI} from "@/modules/cloud-api/util";
 import Loading from "@/components/utils/loading";
 import {TokenResponse} from "@/modules/cloud-api/type";
-import {divBigNumber, divBigNumberForUI, format, mulBigNumber} from "@/modules/utils/numbers";
+import {divBigNumberForUI, format, mulBigNumber} from "@/modules/utils/numbers";
 import Image from "next/image";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
-import {arbitrum, bsc, mainnet, polygon, polygonZkEvm, scroll} from "wagmi/chains";
+import {bsc, polygon, polygonZkEvm} from "wagmi/chains";
 import makeBlockie from "ethereum-blockies-base64";
 import CloudAPI from "@/modules/cloud-api";
 import Link from "next/link";
@@ -21,8 +21,8 @@ import InfoBox from "@/components/utils/info-box";
 import {URLS} from "@/modules/utils/urls";
 import {getAllowance} from "@/modules/web3/tokens";
 import {nop} from "@/modules/utils/function";
-import BN from "bn.js";
 import SwapSVG from "../../../../public/svg/utils/swap";
+import {toBN} from "@/modules/web3/util";
 
 const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
@@ -66,7 +66,7 @@ export default function Swap() {
     const [tokenSelector, setTokenSelector] = useState("");
     const [tokens, setTokens] = useState<TokenResponse[]>([])
 
-    const [allowance, setAllowance] = useState(0);
+    const [allowance, setAllowance] = useState("0");
 
     const [from, setFrom] = useState({amount: 0} as { amount: number, token?: TokenResponse })
     const [to, setTo] = useState({} as { token?: TokenResponse })
@@ -74,7 +74,7 @@ export default function Swap() {
 
     const amountIn = mulBigNumber(from.amount, from.token?.decimals).toString();
     const chainName = chainsByRouterNames[chain?.id || ""];
-    const isApprove = (from.amount && from.token && to.token && from.token._id !== nativeTokenContract) && new BN(allowance).lt(new BN(amountIn));
+    const isApprove = (from.amount && from.token && to.token && from.token._id !== nativeTokenContract) && toBN(allowance).lt(toBN(amountIn));
 
     function onChange(event: any) {
         const {id, value} = event.target;
@@ -172,11 +172,11 @@ export default function Swap() {
         if (chain && from.token?._id && address) {
 
             if (from.token._id === nativeTokenContract) {
-                setAllowance(1000000000)
+                setAllowance("1000000000000")
             } else {
                 getAllowance(chain, from.token?._id, address, result.routerAddress)
                     .then(allowanceResponse => {
-                        setAllowance(allowanceResponse)
+                        setAllowance(allowanceResponse.toString())
                     })
                     .catch(nop)
             }

@@ -1,29 +1,43 @@
 import {getWeb3Instance} from "@/modules/web3/index";
 import {Chain, erc20ABI} from "wagmi";
+import {encodeFunctionData, getContract} from "viem";
 
 function getTokenContract(chain: Chain, contractAddress: string) {
-    const web3 = getWeb3Instance(chain);
-    return new web3.eth.Contract(erc20ABI as any, contractAddress);
+    const provider = getWeb3Instance(chain);
+    return getContract({
+        address: contractAddress as any,
+        abi: erc20ABI,
+        publicClient: provider
+    })
 }
 
-async function getTokenBalance(chain: Chain, contractAddress: string, address: string) {
-    const contract = getTokenContract(chain, contractAddress)
-    return await contract.methods.balanceOf(address).call();
+async function getTokenBalance(chain: Chain, contractAddress: string, address: string): Promise<string> {
+    const contract = getTokenContract(chain, contractAddress);
+    const balance = await contract.read.balanceOf([address] as any);
+    return balance.toString();
 }
 
 async function getAllowance(chain: Chain, contractAddress: string, address: string, spender: string) {
     const contract = getTokenContract(chain, contractAddress)
-    return await contract.methods.allowance(address, spender).call();
+    return await contract.read.allowance([address, spender] as any);
 }
 
 function approve(chain: Chain, contractAddress: string, spender: string, value: number) {
     const contract = getTokenContract(chain, contractAddress)
-    return contract.methods.approve(spender, value).encodeABI()
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'approve',
+        args: [spender, value] as any
+    })
 }
 
 function deposit(chain: Chain, contractAddress: string, toAddress: string, value: number) {
     const contract = getTokenContract(chain, contractAddress)
-    return contract.methods.transfer(toAddress, value).encodeABI()
+    return encodeFunctionData({
+        abi: contract.abi,
+        functionName: 'transfer',
+        args: [toAddress, value] as any
+    })
 }
 
 export {

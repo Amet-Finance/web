@@ -57,12 +57,15 @@ function getBondInfo(bondHandler: any) {
     const [bondInfo, setBondInfo] = bondHandler
     const chain = getChain(bondInfo.chainId)
     if (!chain) {
-        return;
+        return undefined;
     }
 
-    return setInterval(() => {
-        Web3ZCB.getBondInfo(chain, bondInfo._id)
-            .then(response => setBondInfo({...response}))
-            .catch(error => console.error(error));
-    }, 3000);
+    if (bondInfo._id) {
+        return setInterval(() => {
+
+            Web3ZCB.getBondInfo(chain, bondInfo._id)
+                .then(response => setBondInfo({...response}))
+                .catch(error => console.error(error));
+        }, 3000);
+    }
 }

@@ -85,7 +85,7 @@ function mulBigNumber(amount?: number | string, decimals?: number, isStrict?: bo
         toast.error("The number is too low")
     }
 
-    return toBN(amountTmp).mul(toBN(10).pow(toBN(decimals - decimalsAfter)))
+    return toBN(amountTmp).times(toBN(10).pow(toBN(decimals - decimalsAfter)))
 }
 
 export {

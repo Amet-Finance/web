@@ -1,4 +1,4 @@
-function nop(argument: any) {
+function nop() {
     return null
 }
 

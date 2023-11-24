@@ -17,9 +17,7 @@ import {copyAddress} from "@/modules/utils/address";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 import makeBlockie from "ethereum-blockies-base64";
-import VerifiedSVG from "../../../../../../../public/svg/verified";
 import WarningSVG from "../../../../../../../public/svg/warning";
-import InfoBox from "@/components/utils/info-box";
 
 
 const BondTokens = {
@@ -254,7 +252,7 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const totalPurchased = purchased * purchasePrice.toNumber();
     const totalRedeemed = redeemed * redeemPrice.toNumber();
 
-    const notRedeemed = toBN(info.total - info.redeemed).mul(toBN(info.interestTokenAmount));
+    const notRedeemed = toBN(info.total - info.redeemed).times(toBN(info.interestTokenAmount));
     const totalNeededAmount = divBigNumber(notRedeemed.toString(), interestTokenInfo.decimals);
     const interestBalance = divBigNumber(interestTokenBalance, interestTokenInfo.decimals);
 

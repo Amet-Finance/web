@@ -9,12 +9,12 @@ import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
 import {useWeb3Modal} from '@web3modal/wagmi/react'
 
-import {useAccount, useDisconnect, useNetwork} from "wagmi";
+import {useAccount, useDisconnect, useNetwork, useSwitchNetwork} from "wagmi";
 import {CHAINS, defaultChain, getChainIcon} from "@/modules/utils/wallet-connect";
-import {useSwitchNetwork} from 'wagmi'
 import {NAV_ITEMS} from "@/components/navbar/constants";
 import {shorten} from "@/modules/web3/util";
 import Loading from "@/components/utils/loading";
+import {nop} from "@/modules/utils/function";
 
 
 export default function Navbar() {
@@ -23,7 +23,7 @@ export default function Navbar() {
 
     useEffect(() => {
         if (address && chain?.id) {
-            AccountSlice.initBalance(address, chain?.id)
+            AccountSlice.initBalance(address, chain?.id).catch(nop)
         }
     }, [address, chain]);
 

@@ -33,8 +33,6 @@ type BondInfo = {
     interestTokenInfo?: TokenResponseDetailed | undefined;
 }
 
-type Tokens = { [contractAddress: string]: TokenInfo }
-
 type TokenDetails = {
     tokenInfo: TokenResponseDetailed,
     total: number,
@@ -47,6 +45,5 @@ type TokenDetails = {
 export type  {
     BondGeneral,
     BondInfo,
-    TokenDetails,
-    Tokens
+    TokenDetails
 }

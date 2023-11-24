@@ -43,7 +43,7 @@ const InfoSections = {
     }
 }
 
-export  {
+export {
     BondTokenInfo,
     InfoSections
 }

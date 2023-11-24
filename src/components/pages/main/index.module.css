@@ -18,42 +18,10 @@
 }
 
 
-.firstSection {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 3.5rem;
-    width: 100%;
-}
-
-.firstImage {
-    position: absolute;
-    right: 0;
-}
-
-.mainText {
-    font-size: 5rem;
-}
-
-.secondaryText {
-    color: #5B5B5B;
-}
-
 .stroke {
     width: 15%;
     height: 1px;
     background-color: white;
-}
-
-.paragraphText {
-    color: #5B5B5B;
-    max-width: 45%;
-}
-
-.actionButtons {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
 }
 
 .learnMore {
@@ -102,11 +70,6 @@
     color: black;
 }
 
-.statsAndDocs {
-    display: flex;
-    flex-direction: column;
-}
-
 .bondBackgroundImage {
     position: absolute;
     left: 0;
@@ -121,17 +84,6 @@
     gap: 3.5rem;
     width: 100%;
     z-index: 1;
-}
-
-.bondTexts {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-}
-
-.bondText {
-    max-width: 400px;
-    color: #5B5B5B;
 }
 
 .bondInfo {
@@ -157,11 +109,6 @@
     gap: 1rem;
 }
 
-.bondInfoParagraph {
-    max-width: 400px;
-    color: #5B5B5B;
-}
-
 .statistics {
     display: flex;
     align-items: center;
@@ -179,35 +126,8 @@
     gap: 0.5rem;
 }
 
-.highText {
-    font-size: 2rem;
-    font-weight: 600;
-}
-
-.lowText {
-    font-size: 0.8rem;
-    color: #5B5B5B;
-}
-
-.documentation {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    cursor: alias;
-    /*min-height: 400px;*/
-}
-
 .documentation:hover svg path {
     stroke-opacity: 1;
-}
-
-.documentText {
-    position: absolute;
-    font-size: 4rem;
-    z-index: 1;
 }
 
 @media (max-width: 1440px) {
@@ -233,26 +153,8 @@
         padding: 0 1rem;
     }
 
-    .firstSection {
-        align-items: center;
-    }
-
-    .paragraphText {
-        max-width: none;
-    }
-
     .stroke {
         width: 80%;
-    }
-
-    .actionButtons {
-        justify-content: center;
-    }
-
-    .bondTexts {
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
     }
 
     .bondInfo {
@@ -264,11 +166,6 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem 1rem;
-    }
-
-    .mainText {
-        font-size: 4rem;
-        text-align: center;
     }
 
     .bondImage {

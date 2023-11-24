@@ -11,7 +11,7 @@ export async function getServerSideProps({query}: any) {
     const contractAddress = query.id
     const chain = getChain(chainId)
     let bondInfo;
-    if (chain) {
+    if (chain && contractAddress) {
         bondInfo = await getBondInfo(chain, contractAddress)
     }
 

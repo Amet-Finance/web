@@ -123,7 +123,7 @@ export default function Issue() {
         })
     }
 
-    function getToken(chain: Chain | undefined, type: string) {
+    function getToken(chain: Chain | undefined, type: string): NodeJS.Timeout | undefined {
         const isInvestment = type === "investmentToken";
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
         const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
@@ -132,6 +132,23 @@ export default function Issue() {
         if (!contractAddress || !chain) {
             setToken({} as any);
             return;
+        }
+
+
+        const requestToAPI = async () => {
+            const params = {
+                address,
+                chainId: chain.id,
+                contractAddresses: [contractAddress],
+                returnBalance: Boolean(address)
+            }
+            const tokenInfoObject = await CloudAPI.getTokensDetailed({params})
+            const tokenInfo = tokenInfoObject?.[contractAddress.toLowerCase()];
+            if (tokenInfo) {
+                setToken({...tokenInfo})
+            } else {
+                setToken({...token, unidentified: true})
+            }
         }
 
         console.log('Getting token info', contractAddress)
@@ -148,7 +165,9 @@ export default function Issue() {
             icon: ""
         }
 
-        setToken({...token})
+
+        requestToAPI();
+
 
         return setInterval(async () => {
 
@@ -165,7 +184,8 @@ export default function Issue() {
             } else {
                 setToken({...token, unidentified: true})
             }
-        }, 1500);
+        }, 5000);
+
     }
 
     useEffect(() => {
@@ -345,7 +365,8 @@ function TokenDetails({tokenInfo, type, total, additionalInfo}: {
             {
                 isLoading ?
                     <div className='flex justify-center items-center'><Loading/></div> :
-                    <OperationDetails tokenInfo={tokenInfo} total={total} type={type} additionalInfo={additionalInfo}/>
+                    <OperationDetails tokenInfo={tokenInfo} total={total} type={type}
+                                      additionalInfo={additionalInfo}/>
             }
         </div>
     </>
@@ -428,7 +449,8 @@ function Token({tokenInfo, type, total, additionalInfo}: {
                     </div>
                     {
                         Number.isFinite(balanceClean) &&
-                        <span className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>
+                        <span
+                            className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>
                     }
                 </div>
             </div>

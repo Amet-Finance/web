@@ -136,26 +136,29 @@ function FAQ() {
         },
     ];
 
+
+    function FaqItem({item, index}: any) {
+        const isSelected = index === selectedId;
+        const selectItemId = () => selectId(isSelected ? -1 : index)
+
+        return <>
+            <div className='flex flex-col gap-4 w-full text-start'>
+                <div className='flex flex-col gap-2 w-full'>
+                    <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
+                        <span className='text-start text-xl font-semibold'>{item.title}</span>
+                        <button className='text-3xl font-semibold'>{isSelected ? "-" : "+"}</button>
+                    </div>
+                    {isSelected && <span className='text-g text-sm max-w-[80%]'>{item.answer}</span>}
+                </div>
+                <div className='h-px bg-g5 w-full'/>
+            </div>
+        </>
+    }
+
     return <>
         <h4 className='text-3xl font-semibold'>Frequently Asked Questions</h4>
         <div className='flex flex-col gap-4 w-full'>
-            {questions.map((item, index) => {
-                const isSelected = index === selectedId;
-                const selectItemId = () => selectId(isSelected ? -1 : index)
-
-                return <>
-                    <div className='flex flex-col gap-4 w-full text-start'>
-                        <div className='flex flex-col gap-2 w-full'>
-                            <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
-                                <span className='text-start text-xl font-semibold'>{item.title}</span>
-                                <button className='text-3xl font-semibold'>{isSelected ? "-" : "+"}</button>
-                            </div>
-                            {isSelected && <span className='text-g text-sm max-w-[80%]'>{item.answer}</span>}
-                        </div>
-                        <div className='h-px bg-g5 w-full'/>
-                    </div>
-                </>
-            })}
+            {questions.map((item, index) => <FaqItem item={item} index={index} key={index}/>)}
         </div>
     </>
 }

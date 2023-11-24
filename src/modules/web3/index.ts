@@ -1,22 +1,23 @@
 import {TransactionMessages, TxTypes, ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import * as ZCB from "@/modules/web3/zcb";
 import * as TokensWeb3 from './tokens';
-import Web3 from "web3";
-import {TransactionReceipt} from "web3-core";
+import * as Tokens from './tokens';
 
 import {sleep} from "@/modules/utils/dates";
-import * as Tokens from "./tokens";
 import {Chain} from "wagmi";
 import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
+import {createPublicClient, http, TransactionReceipt} from "viem";
+import {ContractInfoType} from "@/modules/web3/type";
 
 function getWeb3Instance(chain: Chain) {
-    const RPCs = chain.rpcUrls.public.http;
-    const index = Math.floor(Math.random() * RPCs.length)
-    return new Web3(RPCs[index]);
+    return createPublicClient({
+        chain: chain,
+        transport: http()
+    });
 }
 
-function getContractInfoByType(chain: Chain | undefined, txType: string, config: any) {
+function getContractInfoByType(chain: Chain | undefined, txType: string, config: any): ContractInfoType {
     try {
         if (!chain || !txType) throw "";
 
@@ -90,8 +91,8 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
         console.log(`getContractInfoByType`, error.message)
         return {
             to: "",
-            value: 0,
-            data: ""
+            value: "0",
+            data: "0x"
         }
     }
 }
@@ -114,10 +115,10 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         if (recursionCount > 50) {
             return undefined;
         }
-        const web3 = getWeb3Instance(chain);
+        const provider = getWeb3Instance(chain);
 
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
-        const response = await web3.eth.getTransactionReceipt(txHash);
+        const response = await provider.getTransactionReceipt({hash: txHash as any});
         if (!response) {
             return await trackTransactionReceipt(chain, txHash, recursionCount++);
         }
@@ -136,7 +137,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 
 async function decodeTransactionLogs(transaction: TransactionReceipt) {
 
-    const isZcbIssuer = Object.values(ZCB_ISSUER_CONTRACTS).some(address => address.toLowerCase() === transaction.to.toLowerCase())
+    const isZcbIssuer = Object.values(ZCB_ISSUER_CONTRACTS).some(address => address.toLowerCase() === transaction.to?.toLowerCase())
 
     switch (true) {
         case isZcbIssuer: {

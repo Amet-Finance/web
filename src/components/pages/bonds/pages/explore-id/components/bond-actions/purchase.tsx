@@ -37,20 +37,19 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const [effectRefresher, setEffectRefresher] = useState(0);
     const inputRef = useRef<any>();
     const [amount, setAmount] = useState(0);
-    const [allowance, setAllowance] = useState(0)
+    const [allowance, setAllowance] = useState("0")
 
     useEffect(() => {
         if (chain && address) {
             getAllowance(chain, investmentToken, address, _id)
-                .then(response => setAllowance(response))
-                .catch(() => null)
+                .then(response => setAllowance(response.toString()))
+                .catch(() => null);
         }
     }, [chain, _id, investmentToken, address, effectRefresher])
 
 
-
     const investmentAmountClean = divBigNumber(investmentTokenAmount, investmentTokenInfo?.decimals)
-    const totalPrice = toBN(amount).mul(investmentAmountClean);
+    const totalPrice = toBN(amount).times(investmentAmountClean);
     const allowanceDivided = divBigNumber(allowance, investmentTokenInfo?.decimals)
     const isApproval = totalPrice.gt(allowanceDivided);
     const isSold = total - purchased === 0
@@ -61,7 +60,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const config = isApproval ? {
         contractAddress: investmentToken,
         spender: _id,
-        value: toBN(amount).mul(toBN(investmentTokenAmount))
+        value: toBN(amount).times(toBN(investmentTokenAmount))
     } : {
         contractAddress: _id,
         count: amount

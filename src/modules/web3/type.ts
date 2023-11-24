@@ -52,6 +52,11 @@ type TokenResponseDetailed = TokenResponseBalance & {
     isLoading?: boolean
 }
 
+type ContractInfoType = {
+    to: string
+    data: `0x${string}`,
+    value?: string
+}
 
 export type {
     IssuerContractInfo,
@@ -59,5 +64,6 @@ export type {
     TokenInfo,
     TokenResponseBalance,
     TokenResponseDetailed,
-    ExplorerTypes
+    ExplorerTypes,
+    ContractInfoType
 }

@@ -1,8 +1,5 @@
-import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useState} from "react";
-import fa from "@walletconnect/legacy-modal/dist/cjs/browser/languages/fa";
-import InfoSVG from "../../../public/svg/info";
 
 type InfoData = {
     text: string;
@@ -40,10 +37,10 @@ export default function InfoBox({children, info, className}: { children: any, in
                 {
                     (Boolean(info?.text)) && <>
                         {/*<Link href={url} target={target} title='Click to learn more!'>*/}
-                            <div
-                                className='group-hover:flex hidden absolute top-[130%] bg-neutral-700 left-0 border border-w1 rounded px-3 p-1 secondarySelector z-50 w-full h-max'>
-                                <span className='text-sm font-medium'>{info?.text}</span>
-                            </div>
+                        <div
+                            className='group-hover:flex hidden absolute top-[130%] bg-neutral-700 left-0 border border-w1 rounded px-3 p-1 secondarySelector z-50 w-full h-max'>
+                            <span className='text-sm font-medium'>{info?.text}</span>
+                        </div>
                         {/*</Link>*/}
                     </>
                 }

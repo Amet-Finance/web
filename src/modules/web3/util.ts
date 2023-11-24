@@ -1,15 +1,10 @@
-import {getWeb3Instance} from "@/modules/web3/index";
 import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
-import {CHAINS} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
+import BigNumber from "bignumber.js";
 
-
-function getUtils() {
-    return getWeb3Instance(defaultChain).utils
-}
 
 function toBN(value: number | string) {
-    return getUtils().toBN(value)
+    return BigNumber(value)
 }
 
 
@@ -39,7 +34,6 @@ function shorten(address: string | any, length = 6) {
 
 
 export {
-    getUtils,
     toBN,
     getExplorer,
     shorten
