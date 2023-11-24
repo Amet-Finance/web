@@ -1,6 +1,6 @@
 import ZCB_Issuer_ABI from '../abi-jsons/ZCB_Issuer.json'
 import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
-import {getWeb3Instance} from "@/modules/web3";
+import {getProvider} from "@/modules/web3";
 
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenBalance} from "@/modules/web3/tokens";
@@ -11,7 +11,7 @@ import {mulBigNumber} from "@/modules/utils/numbers";
 import {decodeEventLog, encodeFunctionData, getContract, TransactionReceipt} from 'viem'
 
 function getContractInstance(chain: Chain, contractAddress: string) {
-    const provider = getWeb3Instance(chain)
+    const provider = getProvider(chain)
     return getContract({
         address: contractAddress as any,
         abi: ZCB_ABI,
@@ -20,7 +20,7 @@ function getContractInstance(chain: Chain, contractAddress: string) {
 }
 
 function getIssuerContractInstance(chain: Chain) {
-    const provider = getWeb3Instance(chain)
+    const provider = getProvider(chain)
     return getContract({
         address: ZCB_ISSUER_CONTRACTS[chain.id] as any,
         abi: ZCB_Issuer_ABI,
@@ -118,9 +118,9 @@ function issueBonds(chain: Chain, bondInfo: BondInfo) {
             total,
             redeemLockPeriod,
             investmentToken,
-            investmentAmount,
+            BigInt(investmentAmount.toNumber()),
             interestToken,
-            interestAmount,
+            BigInt(interestAmount.toNumber()),
             `Amet Finance | ${investmentTokenInfo?.symbol.toUpperCase()}-${interestTokenInfo?.symbol.toUpperCase()}-ZCB`
         ] as any
     })

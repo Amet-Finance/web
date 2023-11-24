@@ -1,5 +1,4 @@
 import {toBN} from "@/modules/web3/util";
-import {toast} from "react-toastify";
 
 function format(number: number) {
 
@@ -73,19 +72,7 @@ function mulBigNumber(amount?: number | string, decimals?: number, isStrict?: bo
         return toBN(0)
     }
 
-    const amountString = amount.toString();
-    const decimalsAfter = amountString.split('.')?.[1]?.length || 0;
-    let amountTmp = amount;
-
-    if (decimalsAfter) {
-        amountTmp = (Number(amount) * 10 ** decimalsAfter).toFixed();
-    }
-
-    if (decimalsAfter > decimals) {
-        toast.error("The number is too low")
-    }
-
-    return toBN(amountTmp).times(toBN(10).pow(toBN(decimals - decimalsAfter)))
+    return toBN(amount).times(toBN(10).pow(toBN(decimals)))
 }
 
 export {

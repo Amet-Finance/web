@@ -1,9 +1,9 @@
-import {getWeb3Instance} from "@/modules/web3/index";
+import {getProvider} from "@/modules/web3/index";
 import {Chain, erc20ABI} from "wagmi";
 import {encodeFunctionData, getContract} from "viem";
 
 function getTokenContract(chain: Chain, contractAddress: string) {
-    const provider = getWeb3Instance(chain);
+    const provider = getProvider(chain);
     return getContract({
         address: contractAddress as any,
         abi: erc20ABI,
@@ -22,7 +22,7 @@ async function getAllowance(chain: Chain, contractAddress: string, address: stri
     return await contract.read.allowance([address, spender] as any);
 }
 
-function approve(chain: Chain, contractAddress: string, spender: string, value: number) {
+function approve(chain: Chain, contractAddress: string, spender: string, value: bigint) {
     const contract = getTokenContract(chain, contractAddress)
     return encodeFunctionData({
         abi: contract.abi,
@@ -31,13 +31,13 @@ function approve(chain: Chain, contractAddress: string, spender: string, value: 
     })
 }
 
-function deposit(chain: Chain, contractAddress: string, toAddress: string, value: number) {
+function deposit(chain: Chain, contractAddress: string, toAddress: string, value: bigint) {
     const contract = getTokenContract(chain, contractAddress)
     return encodeFunctionData({
         abi: contract.abi,
         functionName: 'transfer',
         args: [toAddress, value] as any
-    })
+    });
 }
 
 export {

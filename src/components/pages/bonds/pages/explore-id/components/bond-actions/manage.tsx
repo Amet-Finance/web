@@ -38,21 +38,22 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
     const config = {
         contractAddress: interestToken,
         toAddress: _id,
-        amount: mulBigNumber(amount, decimals).toString()
+        amount: mulBigNumber(amount, decimals, true).toNumber()
     }
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.TransferERC20, config)
+    const contractInfo = getContractInfoByType(chain, TxTypes.TransferERC20, config);
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
         to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
+        value: BigInt(contractInfo.value || 0),
         data: contractInfo.data,
         chainId
     })
 
-    const changeAmount = (event: any) => setAmount(event.target.value)
+    const changeAmount = (event: any) => setAmount(event.target.value || 0)
 
     async function deposit() {
         try {
+
             if (!interestTokenInfo) {
                 return toast.error('Interest token Meta Data is missing!');
             }

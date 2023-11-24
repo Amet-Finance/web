@@ -8,7 +8,7 @@ import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {divBigNumber, format} from "@/modules/utils/numbers";
+import {divBigNumber, format, mulBigNumber} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useSendTransaction} from "wagmi";
@@ -60,7 +60,7 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const config = isApproval ? {
         contractAddress: investmentToken,
         spender: _id,
-        value: toBN(amount).times(toBN(investmentTokenAmount))
+        value: toBN(amount).times(toBN(investmentTokenAmount)).toNumber()
     } : {
         contractAddress: _id,
         count: amount

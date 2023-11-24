@@ -123,12 +123,25 @@ export default function Issue() {
         })
     }
 
-    function getToken(chain: Chain | undefined, type: string): NodeJS.Timeout | undefined {
+    function getToken(chain: Chain | undefined, type: string): {
+        interval: NodeJS.Timeout,
+        timeout: NodeJS.Timeout
+    } | undefined {
         const isInvestment = type === "investmentToken";
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
-        const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo
+        const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo;
 
         const contractAddress = (contractAddressTmp || "").toLowerCase();
+        const oppositeContractAddress = isInvestment ? bondInfo.interestToken : bondInfo.investmentToken;
+        const oppositeTokenInfo = isInvestment ? interestTokenInfo : investmentTokenInfo;
+
+
+        if (oppositeContractAddress?.toLowerCase() === contractAddress && oppositeTokenInfo) {
+            setToken(oppositeTokenInfo);
+            return;
+        }
+
+
         if (!contractAddress || !chain) {
             setToken({} as any);
             return;
@@ -165,11 +178,10 @@ export default function Issue() {
             icon: ""
         }
 
+        const timeout = setTimeout(requestToAPI, 1500);
 
-        requestToAPI();
 
-
-        return setInterval(async () => {
+        const interval = setInterval(async () => {
 
             const params = {
                 address,
@@ -184,7 +196,12 @@ export default function Issue() {
             } else {
                 setToken({...token, unidentified: true})
             }
-        }, 5000);
+        }, 10000);
+
+        return {
+            interval,
+            timeout
+        }
 
     }
 
@@ -201,12 +218,18 @@ export default function Issue() {
 
     useEffect(() => {
         const timer = getToken(chain, "interestToken");
-        return () => clearTimeout(timer)
+        return () => {
+            clearTimeout(timer?.timeout)
+            clearInterval(timer?.interval)
+        }
     }, [chain, address, bondInfo.interestToken])
 
     useEffect(() => {
         const timer = getToken(chain, "investmentToken");
-        return () => clearTimeout(timer)
+        return () => {
+            clearTimeout(timer?.timeout)
+            clearInterval(timer?.interval)
+        }
     }, [chain, address, bondInfo.investmentToken])
 
 
@@ -432,7 +455,7 @@ function Token({tokenInfo, type, total, additionalInfo}: {
     const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
 
     const isInterest = type === BondTokenInfo.Interest
-    const totalClassName = isInterest ? Styles.interestTotal : Styles.investmentTotal;
+    const totalClassName = isInterest ? "text-red-500" : "text-green-500";
     const sign = isInterest ? '-' : '+';
     const normalizedCreationFee = additionalInfo.creationFeePercentage / 10
     const totalReceived = isInterest ? total : (total - (total * normalizedCreationFee) / 100)

@@ -10,7 +10,7 @@ import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
 
-function getWeb3Instance(chain: Chain) {
+function getProvider(chain: Chain) {
     return createPublicClient({
         chain: chain,
         transport: http()
@@ -32,7 +32,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.ApproveToken: {
                 return {
                     to: config.contractAddress,
-                    data: TokensWeb3.approve(chain, config.contractAddress, config.spender, config.value)
+                    data: TokensWeb3.approve(chain, config.contractAddress, config.spender, BigInt(config.value))
                 }
             }
             case TxTypes.PurchaseBonds: {
@@ -48,10 +48,10 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 }
             }
             case TxTypes.TransferERC20: {
-                return {
+                return  {
                     to: config.contractAddress,
-                    data: Tokens.deposit(chain, config.contractAddress, config.toAddress, config.amount)
-                }
+                    data: Tokens.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
+                };
             }
             case TxTypes.WithdrawRemaining: {
                 return {
@@ -88,7 +88,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             }
         }
     } catch (error: any) {
-        console.log(`getContractInfoByType`, error.message)
+        console.log(`getContractInfoByType| ${txType}`, error.message)
         return {
             to: "",
             value: "0",
@@ -115,7 +115,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         if (recursionCount > 50) {
             return undefined;
         }
-        const provider = getWeb3Instance(chain);
+        const provider = getProvider(chain);
 
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
         const response = await provider.getTransactionReceipt({hash: txHash as any});
@@ -130,7 +130,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         return decodeTransactionLogs(response);
     } catch (error: any) {
         console.error(`trackTransactionReceipt: ${error.message}`);
-        return undefined;
+        return await trackTransactionReceipt(chain, txHash, recursionCount++);
     }
 }
 
@@ -157,7 +157,7 @@ async function decodeTransactionLogs(transaction: TransactionReceipt) {
 }
 
 export {
-    getWeb3Instance,
+    getProvider,
     getContractInfoByType,
     trackTransaction,
 }
