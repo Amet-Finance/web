@@ -47,6 +47,8 @@ const chainsByRouterNames: { [key: string]: string } = {
     // [scroll.id]: 'scroll'
 }
 
+const LOCAL_KYBER_CONFIG = 'kyberswap-config'
+
 export default function Swap() {
     const {chain} = useNetwork();
     const {address} = useAccount();
@@ -106,8 +108,8 @@ export default function Swap() {
         }
     }
 
-    function openSettings() {
-        setSettings({...settings, isOpen: true});
+    function openOrCloseSettings() {
+        setSettings({...settings, isOpen: !settings.isOpen});
     }
 
     function swapCurrencies() {
@@ -124,11 +126,20 @@ export default function Swap() {
     }
 
     useEffect(() => {
+        if (typeof localStorage !== "undefined") {
+            const result = localStorage.getItem(LOCAL_KYBER_CONFIG)
+            const parsed = JSON.parse(result || "{}")
+            setSettings({
+                ...settings,
+                ...parsed
+            })
+        }
+    }, []);
 
+    useEffect(() => {
         setFrom({amount: from.amount});
         setTo({});
         setResult({} as any);
-
     }, [chain]);
 
     useEffect(() => {
@@ -276,7 +287,7 @@ export default function Swap() {
                         <span className='text-xl'>Swap</span>
                         <div className='flex gap-2 items-center'>
                             <RefreshSVG onClick={refreshPrices} isLoading={isLoading}/>
-                            <SettingsSVG onClick={openSettings}/>
+                            <SettingsSVG onClick={openOrCloseSettings}/>
                         </div>
                     </div>
 
@@ -338,7 +349,7 @@ export default function Swap() {
                         fromHandler={[from, setFrom]}
                         toHandler={[to, setTo]}/>
                 }
-                {Boolean(settings.isOpen) && <Settings settingsHandler={[settings, setSettings]}/>}
+                {Boolean(settings.isOpen) && <Settings settingsHandler={[settings, setSettings, openOrCloseSettings]}/>}
             </div>
         </div>
     </>
@@ -479,9 +490,23 @@ function NotSupportedChain() {
 }
 
 function Settings({settingsHandler}: { settingsHandler: any[] }) {
-    const [settings, setSettings] = settingsHandler;
-    const close = () => setSettings({...settings, isOpen: false})
+    const [settings, setSettings, openOrCloseSettings] = settingsHandler;
     const slippageTolerancePercent = settings.slippageTolerance / 100
+
+    function changeSwapSettings(key: string, value: any) {
+
+        setSettings({
+            ...settings,
+            [key]: value
+        })
+
+        const result = localStorage.getItem(LOCAL_KYBER_CONFIG);
+        const parsed = JSON.parse(result || "{}");
+        localStorage.setItem(LOCAL_KYBER_CONFIG, JSON.stringify({
+            ...parsed,
+            [key]: value
+        }))
+    }
 
     const changeSlippage = (event: any) => {
 
@@ -494,9 +519,8 @@ function Settings({settingsHandler}: { settingsHandler: any[] }) {
             return toast.error("Exceeded Min Slippage Tolerance")
         }
         setSettings({...settings, slippageTolerance})
+        changeSwapSettings("slippageTolerance", slippageTolerance)
     }
-
-    const changeSaveGas = () => setSettings({...settings, saveGas: !settings.saveGas})
 
     return <>
         <div className='absolute flex justify-center items-center w-full h-full top-0 left-0 right-0 ml-auto mr-auto'>
@@ -504,7 +528,7 @@ function Settings({settingsHandler}: { settingsHandler: any[] }) {
                 className='flex flex-col justify-center gap-4  md:w-[80%] sm:w-[95%] border border-w1 rounded-2xl  bg-b4 p-6 py-3 '>
                 <div className='flex justify-between items-center'>
                     <span className='text-xl'>Settings:</span>
-                    <XmarkSVG isMedium onClick={close}/>
+                    <XmarkSVG isMedium onClick={openOrCloseSettings}/>
                 </div>
                 <div className='flex flex-col overflow-x-auto gap-10 px-2'>
 
@@ -528,7 +552,7 @@ function Settings({settingsHandler}: { settingsHandler: any[] }) {
                             </InfoBox>
                             <div
                                 className={'flex w-14 rounded-full cursor-pointer p-0.5 ' + (settings.saveGas ? "bg-green-500 justify-end" : "bg-neutral-800 justify-start")}
-                                onClick={changeSaveGas}>
+                                onClick={() => changeSwapSettings("saveGas", !settings.saveGas)}>
                                 <div className='bg-white py-3 px-3 rounded-full'/>
                             </div>
                         </div>

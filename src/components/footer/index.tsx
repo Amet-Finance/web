@@ -1,4 +1,3 @@
-import Styles from './index.module.css';
 import TwitterSVG from "../../../public/svg/social/twitter";
 import DiscordSVG from "../../../public/svg/social/discord";
 import RedditSVG from "../../../public/svg/social/reddit";
@@ -62,9 +61,9 @@ function Links() {
 
     function LinkComponent({item}: any) {
         return <>
-            <div className={Styles.link} key={item.title}>
+            <div className='flex flex-col gap-4' key={item.title}>
                 <span>{item.title}</span>
-                <div className={Styles.attributes}>
+                <div className='flex flex-col gap-1'>
                     {item.attributes.map((attribute: any, index: number) => <Attribute info={attribute} key={index}/>)}
                 </div>
             </div>
@@ -73,7 +72,7 @@ function Links() {
 
 
     return <>
-        <div className={Styles.links}>
+        <div className='flex gap-8'>
             {links.map(item => <LinkComponent item={item} key={item.title}/>)}
         </div>
     </>

@@ -9,7 +9,7 @@ import Quiz from "@/components/modals/quiz";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
-    const modalState = useSelector((item: RootState) => item.modal)
+    const modalState = useSelector((item: RootState) => item.modal)//
     const isClosed = modalState.type === ModalTypes.None;
 
     if (isClosed) {
@@ -27,7 +27,7 @@ export default function ModalHandler() {
             bottom: 'auto',
             marginRight: '-50%',
             transform: 'translate(-50%, -50%)',
-            zIndex: "1000",
+            zIndex: "100",
             backgroundColor: "#0C0C0C",
             border: "none",
             borderRadius: "1rem",

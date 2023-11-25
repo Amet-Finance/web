@@ -91,7 +91,6 @@ export default function Issue() {
                 return open()
             }
 
-
             const response = await sendTransactionAsync();
             if (response?.hash && chain) {
                 const txResponse = await trackTransaction(chain, response?.hash)
@@ -136,7 +135,7 @@ export default function Issue() {
         const oppositeTokenInfo = isInvestment ? interestTokenInfo : investmentTokenInfo;
 
 
-        if (oppositeContractAddress?.toLowerCase() === contractAddress && oppositeTokenInfo) {
+        if ((oppositeContractAddress || "").toLowerCase() === contractAddress && oppositeTokenInfo) {
             setToken(oppositeTokenInfo);
             return;
         }
@@ -177,6 +176,8 @@ export default function Issue() {
             decimals: 0,
             icon: ""
         }
+
+        setToken(token);
 
         const timeout = setTimeout(requestToAPI, 1500);
 

@@ -97,7 +97,7 @@ function BondIssuerInfoDetails({info}: { info: BondInfoDetailed }) {
                 <span>Chain:</span>
                 <div className='flex items-center gap-2'>
                     <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
-                    <span className="text-g text-sm">{chain?.name}</span>
+                    <span className="text-g text-sm text-end w-min whitespace-nowrap">{chain?.name}</span>
                 </div>
             </div>
         </div>

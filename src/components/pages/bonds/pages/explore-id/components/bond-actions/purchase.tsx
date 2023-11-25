@@ -8,10 +8,10 @@ import {sleep} from "@/modules/utils/dates";
 import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {divBigNumber, format, mulBigNumber} from "@/modules/utils/numbers";
+import {divBigNumber, format} from "@/modules/utils/numbers";
 import {BondInfoDetailed} from "@/modules/web3/type";
 import {getChain} from "@/modules/utils/wallet-connect";
-import {useAccount, useSendTransaction} from "wagmi";
+import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {TokensResponse} from "@/modules/cloud-api/type";
@@ -27,8 +27,12 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         investmentToken
     } = info;
 
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork()
     const {address} = useAccount()
     const {open} = useWeb3Modal()
+
+
     const chain = getChain(chainId)
 
     const investmentTokenInfo = tokens[investmentToken.toLowerCase()];
@@ -69,12 +73,12 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
     const contractInfo = getContractInfoByType(chain, txType, config)
     const {isLoading, sendTransactionAsync, status} = useSendTransaction({
         to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        value: BigInt(contractInfo.value || 0),
+        data: contractInfo.data
     })
 
 
-    if (isSold) { // todo handle this p element case
+    if (isSold) {
         return <>
             <div className='flex flex-col gap-2 justify-center items-center py-5 rounded cursor-pointer w-full'>
                 <span className='font-bold text-5xl'>SOLD OUT</span>
@@ -96,6 +100,10 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         try {
             if (!address) {
                 return open()
+            }
+
+            if (network.chain?.id !== chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
             }
 
             if (isApproval) {

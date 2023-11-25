@@ -3,7 +3,6 @@ import Link from "next/link";
 import AmetLogo from "../../../public/svg/amet-logo";
 import {useEffect, useRef, useState} from "react";
 import * as AccountSlice from "@/store/redux/account";
-import {join} from "@/modules/utils/styles";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
@@ -20,6 +19,7 @@ import {nop} from "@/modules/utils/function";
 export default function Navbar() {
     const {address} = useAccount();
     const {chain} = useNetwork();
+    const [isDesktop, setDesktop] = useState(true);
 
     useEffect(() => {
         if (address && chain?.id) {
@@ -27,18 +27,26 @@ export default function Navbar() {
         }
     }, [address, chain]);
 
-    return <>
-        <DesktopNav/>
-        <MobileNav/>
-    </>
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setDesktop(window.innerWidth >= 768)
+
+            window.onresize = (event: any) => {
+                setDesktop(event.target?.innerWidth >= 768)
+            }
+        }
+    }, []);
+
+
+    return isDesktop ? <DesktopNav/> : <MobileNav/>
 }
 
 function DesktopNav() {
     return <>
-        <nav className={join([Styles.container, Styles.destkop])}>
-            <div className={Styles.nav}>
+        <nav className='relative flex justify-between items-center px-20 py-3 w-full'>
+            <div className='flex items-center gap-8 z-50'>
                 <AmetLogo/>
-                <div className={Styles.navLinks}>
+                <div className='flex items-center gap-6'>
                     {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
                 </div>
             </div>
@@ -53,11 +61,9 @@ function MobileNav() {
     const changeVisibility = () => setVisible(!isVisible)
 
     return <>
-        <nav className={join([Styles.container, Styles.mobile])}>
-            <div className={Styles.nav}>
-                <AmetLogo/>
-            </div>
-            <div className={Styles.nav}>
+        <nav className="relative flex justify-between items-center px-8 py-3 w-full">
+            <AmetLogo/>
+            <div className='flex items-center z-50'>
                 {!isVisible ? <BurgerSVG onClick={changeVisibility}/> : <XmarkSVG onClick={changeVisibility}/>}
             </div>
             {
@@ -69,11 +75,12 @@ function MobileNav() {
 
 function MobileLinks({changeVisibility}: any) {
     return <>
-        <div className={Styles.mobileNav}>
-            <div className={Styles.mobileNavLinks} onClick={changeVisibility}>
+        <div
+            className='fixed left-0 top-0 w-full h-screen bg-black z-10 flex flex-col items-start p-0 px-8 gap-8'>
+            <div className='flex flex-col items-start gap-4 mt-32' onClick={changeVisibility}>
                 {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
             </div>
-            <WalletState changeVisibility={changeVisibility}/>
+            <WalletState changeVisibility={changeVisibility} isMobile/>
         </div>
     </>
 }
@@ -107,17 +114,18 @@ function NavLink({link}: any) {
 }
 
 
-function WalletState({changeVisibility}: any) {
+function WalletState({changeVisibility, isMobile}: { changeVisibility?: any, isMobile?: boolean }) {
     const account = useAccount()
     const [address, setAddress] = useState<string | undefined>('')
+
     useEffect(() => {
         setAddress(account.address)
     }, [account.address, account.isConnected]);
 
     return <>
-        <div className='relative flex items-center gap-2'>
+        <div className={'relative flex items-center ' + (isMobile ? " gap-0" : " gap-2")}>
             <Chains/>
-            {address ? <ConnectedState/> : <ConnectButton changeVisibility={changeVisibility}/>}
+            {address ? <ConnectedState isMobile/> : <ConnectButton changeVisibility={changeVisibility}/>}
         </div>
     </>
 }
@@ -133,33 +141,41 @@ function ConnectButton({changeVisibility}: any) {
 
 
     return <>
-        <button className={Styles.connect} onClick={connect}>Connect</button>
+        <button className="border border-w1 rounded px-4 py-1.5 cursor-pointer m-0 hover:bg-white hover:text-black" onClick={connect}>Connect</button>
     </>
 }
 
-function ConnectedState() {
+function ConnectedState({isMobile}: { isMobile?: boolean }) {
     const {address} = useAccount()
-    const {disconnect} = useDisconnect()
     const [isEnabled, setEnabled] = useState(false);
     const enable = () => setEnabled(!isEnabled)
 
 
+    return <>
+        <div className="relative">
+            <button className='border border-w1 rounded px-4 py-1.5 cursor-pointer m-0'
+                    onClick={enable}>{shorten(address, 5)}</button>
+            <WalletDropDown enableHandler={[isEnabled, setEnabled, enable]}/>
+        </div>
+    </>
+}
+
+function WalletDropDown({enableHandler}: { enableHandler: any }) {
+    const {address} = useAccount()
+    const {disconnect} = useDisconnect()
+    const [isEnabled, setEnabled, enable] = enableHandler;
     const dropStyles = `${Styles.addressDropDown} ${isEnabled && Styles.enabledDrop}`
 
+    if (!isEnabled) {
+        return null;
+    }
+
     return <>
-        <div className={Styles.addressContainer}>
-            <button className='border border-w1 rounded px-8 py-3 cursor-pointer m-0'
-                    onClick={enable}>{shorten(address)}</button>
-            {
-                isEnabled && <>
-                    <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
-                        <Link href={`/address/${address}`} className='w-full text-center'>
-                            <span className='w-full'>Dashboard</span>
-                        </Link>
-                        <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
-                    </div>
-                </>
-            }
+        <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
+            <Link href={`/address/${address}`} className='w-full text-center'>
+                <span className='w-full'>Dashboard</span>
+            </Link>
+            <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
         </div>
     </>
 }
@@ -221,14 +237,14 @@ function ChainsDropDown({change}: any) {
 function Chain({chain}: any) {
     const {open} = useWeb3Modal()
     const {address, isConnected} = useAccount()
-    const {switchNetwork} = useSwitchNetwork()
+    const {switchNetworkAsync} = useSwitchNetwork()
 
 
     async function change() {
         if (!address) {
             await open({view: "Connect"})
         } else {
-            switchNetwork?.(chain.id)
+            await switchNetworkAsync?.(chain.id)
         }
     }
 

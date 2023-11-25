@@ -2,7 +2,7 @@ import {BondInfoDetailed} from "@/modules/web3/type";
 import {useEffect, useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-import {useNetwork, useSendTransaction} from "wagmi";
+import {useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
@@ -29,7 +29,10 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
 function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {_id, chainId, interestToken} = bondInfo;
-    const [amount, setAmount] = useState(0)
+    const [amount, setAmount] = useState(0);
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
+
 
     const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const decimals = interestTokenInfo?.decimals;
@@ -45,8 +48,7 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
         to: contractInfo.to,
         value: BigInt(contractInfo.value || 0),
-        data: contractInfo.data,
-        chainId
+        data: contractInfo.data
     })
 
     const changeAmount = (event: any) => setAmount(event.target.value || 0)
@@ -60,6 +62,10 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
 
             if (!amount) {
                 return toast.error('Please fill the amount field!');
+            }
+
+            if (network.chain?.id !== chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
             }
 
             const response = await sendTransactionAsync();
@@ -84,6 +90,8 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
 function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
 
     const {_id, chainId, interestToken} = bondInfo;
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
 
     const interestTokenInfo = tokens[interestToken.toLowerCase()]
@@ -98,6 +106,10 @@ function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tok
 
     async function withdrawRemaining() {
         try {
+            if (chain?.id !== network.chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
+            }
+
             const response = await sendTransactionAsync();
             await trackTransaction(chain, response.hash)
         } catch (error) {
@@ -117,6 +129,8 @@ function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tok
 function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     const {_id, chainId} = bondInfo;
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
     const [newAddress, setChangeAddress] = useState("")
 
@@ -138,6 +152,10 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
     async function changeOwner() {
         try {
             getAddress(newAddress);
+
+            if (chain?.id !== network.chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
+            }
 
             const response = await sendTransactionAsync();
             await trackTransaction(chain, response.hash);
@@ -162,6 +180,8 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
 function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     const {_id, chainId} = bondInfo;
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
     const [amount, setAmount] = useState(0)
 
@@ -185,6 +205,10 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                 return toast.error('Please fill the amount field!');
             }
 
+            if (chain?.id !== network.chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
+            }
+
             const response = await sendTransactionAsync();
             await trackTransaction(chain, response.hash)
         } catch (error) {
@@ -206,8 +230,10 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
 function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
     const {_id, chainId} = bondInfo;
-    const [amount, setAmount] = useState(0)
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
+    const [amount, setAmount] = useState(0)
 
     const config = {
         contractAddress: _id,
@@ -227,6 +253,10 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
         try {
             if (!amount) {
                 return toast.error('Please fill the amount field!');
+            }
+
+            if (network.chain?.id !== chain?.id) {
+                await switchNetworkAsync?.(chain?.id);
             }
 
             const response = await sendTransactionAsync();
@@ -251,7 +281,9 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
 function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
     const {chainId} = bondInfo;
-    const {chain} = useNetwork();
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
+    const chain = getChain(chainId);
     const [total, setTotal] = useState<number | undefined>()
     const [timer, setTimer] = useState({
         hour: 0,
@@ -290,6 +322,11 @@ function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
     async function decrease() {
         try {
             if (total) {
+
+                if (chain?.id !== network.chain?.id) {
+                    await switchNetworkAsync?.(chain?.id);
+                }
+
                 const response = await sendTransactionAsync();
                 await trackTransaction(chain, response.hash)
             }
