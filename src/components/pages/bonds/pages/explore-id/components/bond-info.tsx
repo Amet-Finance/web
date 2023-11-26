@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {BondInfoDetailed} from "@/modules/web3/type";
+import {BondDescription, BondInfoDetailed} from "@/modules/web3/type";
 import {divBigNumber, divBigNumberForUI, format, formatLargeNumber} from "@/modules/utils/numbers";
 import CopySVG from "../../../../../../../public/svg/copy";
 import {URLS} from "@/modules/utils/urls";
@@ -11,7 +11,7 @@ import {getExplorer, shorten, toBN} from "@/modules/web3/util";
 import {formatTime} from "@/modules/utils/dates";
 import PieChart from "@/components/pages/bonds/utils/bond/pie-chart";
 import ClockSVG from "../../../../../../../public/svg/clock";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {shortenString} from "@/modules/utils/string";
 import {copyAddress} from "@/modules/utils/address";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
@@ -19,38 +19,105 @@ import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 import makeBlockie from "ethereum-blockies-base64";
 import WarningSVG from "../../../../../../../public/svg/warning";
 
+const LOCAL_CONFIG_KEY = 'amet-finance-bond-details'
 
 const BondTokens = {
     Interest: "interest",
     Investment: "investment"
 }
 
-export default function BondDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+export default function BondDetails({info, tokens, bondDescription}: {
+    info: BondInfoDetailed,
+    tokens: TokensResponse,
+    bondDescription: BondDescription
+}) {
 
     return <>
         <div className='flex flex-col items-center gap-4 bg-d-1 p-5 rounded-xl md:min-w-600 sm:w-full'>
             <h2 className="mb-4 text-3xl font-medium">Bond Details</h2>
+            {
+                Boolean(bondDescription.details) && <>
+                    <Description info={info} bondDescription={bondDescription}/>
+                    <Line/>
+                </>
+            }
             <BondIssuerInfo info={info}/>
             <Line/>
             <GeneralInfo info={info} tokens={tokens}/>
             <Line/>
-            <Security info={info} tokens={tokens}/>
+            <Security info={info} tokens={tokens} bondDescription={bondDescription}/>
+        </div>
+    </>
+}
+
+function Description({info, bondDescription}: { info: BondInfoDetailed, bondDescription: BondDescription }) {
+
+    const key = "description"
+    const [isClosed, setClosed] = useState(false);
+    const openOrClose = () => {
+        setClosed(!isClosed);
+        updateLocalConfig(key, !isClosed);
+    }
+
+    useEffect(() => {
+        if (typeof localStorage !== "undefined") {
+            const config = getLocalConfig();
+            setClosed(Boolean(config[key]))
+        }
+    }, [])
+
+    return <>
+        <div className='flex flex-col gap-4 w-full'>
+            <div className='flex justify-between items-center w-full cursor-pointer' onClick={openOrClose}>
+                <span className='text-xl'>Description:</span>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'>{isClosed ? "+" : "-"}</button>
+            </div>
+            {!isClosed && <DescriptionDetails info={info} bondDescription={bondDescription}/>}
+        </div>
+    </>
+}
+
+function DescriptionDetails({info, bondDescription}: { info: BondInfoDetailed, bondDescription: BondDescription }) {
+    // console.log(bondDescription.details?.description.toString())
+
+    const formattedText = bondDescription.details?.description?.split('\n').map((line, index) => (
+        <>
+            {line}
+            <br/>
+        </>
+    ));
+
+    return <>
+        <div className='flex flex-col gap-2 max-w-xl'>
+            <h1 className='text-2xl font-bold'>{bondDescription.details?.title}</h1>
+            <div className="text-g text-sm">
+                {formattedText}
+            </div>
         </div>
     </>
 }
 
 function BondIssuerInfo({info}: { info: BondInfoDetailed }) {
 
-
+    const key = "issuer-info"
     const [isClosed, setClosed] = useState(false);
-    const openOrClose = () => setClosed(!isClosed);
+    const openOrClose = () => {
+        setClosed(!isClosed);
+        updateLocalConfig(key, !isClosed);
+    }
+
+    useEffect(() => {
+        if (typeof localStorage !== "undefined") {
+            const config = getLocalConfig();
+            setClosed(Boolean(config[key]))
+        }
+    }, [])
 
     return <>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex justify-between items-center w-full'>
+            <div className='flex justify-between items-center w-full cursor-pointer' onClick={openOrClose}>
                 <span className='text-xl'>Contract information:</span>
-                <button className='cursor-pointer text-3xl text-g hover:text-white'
-                        onClick={openOrClose}>{isClosed ? "+" : "-"}</button>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'>{isClosed ? "+" : "-"}</button>
             </div>
             {!isClosed && <BondIssuerInfoDetails info={info}/>}
         </div>
@@ -111,17 +178,24 @@ function Line() {
 
 function GeneralInfo({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
 
-
+    const key = "general-info"
     const [isClosed, setClosed] = useState(false);
-    const openOrClose = () => setClosed(!isClosed)
+    const openOrClose = () => {
+        setClosed(!isClosed);
+        updateLocalConfig(key, !isClosed);
+    }
 
-
+    useEffect(() => {
+        if (typeof localStorage !== "undefined") {
+            const config = getLocalConfig();
+            setClosed(Boolean(config[key]))
+        }
+    }, [])
     return <>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex justify-between items-center w-full'>
+            <div className='flex justify-between items-center w-full cursor-pointer' onClick={openOrClose}>
                 <span className='text-xl'>General Information:</span>
-                <button className='cursor-pointer text-3xl text-g hover:text-white'
-                        onClick={openOrClose}>{isClosed ? "+" : "-"}</button>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'>{isClosed ? "+" : "-"}</button>
             </div>
             {!isClosed && <GeneralInfoDetails info={info} tokens={tokens}/>}
         </div>
@@ -207,24 +281,40 @@ function TokenInfo({type, token, info}: { type: string, token: TokenResponse, in
     </>
 }
 
-function Security({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+function Security({info, tokens, bondDescription}: {
+    info: BondInfoDetailed,
+    tokens: TokensResponse,
+    bondDescription: BondDescription
+}) {
+    const key = "security"
     const [isClosed, setClosed] = useState(false);
-    const openOrClose = () => setClosed(!isClosed)
+    const openOrClose = () => {
+        setClosed(!isClosed);
+        updateLocalConfig(key, !isClosed);
+    }
 
-
+    useEffect(() => {
+        if (typeof localStorage !== "undefined") {
+            const config = getLocalConfig();
+            setClosed(Boolean(config[key]))
+        }
+    }, [])
     return <>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex justify-between items-center w-full'>
+            <div className='flex justify-between items-center w-full cursor-pointer' onClick={openOrClose}>
                 <span className='text-xl'>Security Details:</span>
-                <span className='cursor-pointer text-3xl text-g hover:text-white'
-                      onClick={openOrClose}>{isClosed ? "+" : "-"}</span>
+                <button className='cursor-pointer text-3xl text-g hover:text-white'>{isClosed ? "+" : "-"}</button>
             </div>
-            {!isClosed && <SecurityDetails info={info} tokens={tokens}/>}
+            {!isClosed && <SecurityDetails info={info} tokens={tokens} bondDescription={bondDescription}/>}
         </div>
     </>
 }
 
-function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+function SecurityDetails({info, tokens, bondDescription}: {
+    info: BondInfoDetailed,
+    tokens: TokensResponse,
+    bondDescription: BondDescription
+}) {
 
     const {
         total,
@@ -259,6 +349,11 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     const redeemedPercentage = interestBalance.toNumber() * 100 / totalNeededAmount.toNumber();
     const securedTitle = isTotallyRedeemed ? "FINISHED" : `${(Number(redeemedPercentage) || 0).toFixed(2)}%`;
 
+
+    const descriptionExists = Boolean(bondDescription.details?.description) || Boolean(bondDescription.details?.title)
+    let descriptionTitle = descriptionExists ? "Exists" : "Missing"
+    const descriptionClasses = descriptionExists ? "text-green-500" : "text-red-500"
+
     const percentageClass = () => {
         if (redeemedPercentage === 0) {
             return "text-red-500"
@@ -284,7 +379,15 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
             </div>
             <div className='flex items-center justify-between w-full'>
                 <span>Issuer Score:</span>
-                <span className='text-sm font-bold'>SOON</span>
+                <span className='text-sm font-bold text-neutral-500'>SOON</span>
+            </div>
+            <div className='flex items-center justify-between w-full'>
+                <span>Description:</span>
+                <span className={'text-sm font-bold ' + descriptionClasses}>{descriptionTitle}</span>
+            </div>
+            <div className='flex items-center justify-between w-full'>
+                <span>Bond Score:</span>
+                <span className='text-sm font-bold text-neutral-500'>SOON</span>
             </div>
             <div className='flex items-center justify-between w-full'>
                 <span>Total Purchased:</span>
@@ -301,4 +404,16 @@ function SecurityDetails({info, tokens}: { info: BondInfoDetailed, tokens: Token
     </>
 }
 
+function getLocalConfig() {
+    const response = localStorage.getItem(LOCAL_CONFIG_KEY);
+    return JSON.parse(response || "{}")
+}
+
+function updateLocalConfig(key: string, value: any) {
+    const response = getLocalConfig()
+    localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify({
+        ...response,
+        [key]: value
+    }))
+}
 

@@ -1,7 +1,7 @@
 import BondActions from "@/components/pages/bonds/pages/explore-id/components/bond-actions";
 import {useEffect, useState} from "react";
 import * as Web3ZCB from "@/modules/web3/zcb";
-import {BondInfoDetailed} from "@/modules/web3/type";
+import {BondDescription, BondInfoDetailed} from "@/modules/web3/type";
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
 import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
@@ -9,7 +9,7 @@ import CloudAPI from "@/modules/cloud-api";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {nop} from "@/modules/utils/function";
 
-export default function ExploreId({bondInfoTmp}: { bondInfoTmp: BondInfoDetailed }) {
+export default function ExploreId({bondInfoTmp, bondDescription}: { bondInfoTmp: BondInfoDetailed, bondDescription: BondDescription }) {
     const {address} = useAccount()
 
     const [bondInfo, setBondInfo] = useState(bondInfoTmp as BondInfoDetailed);
@@ -46,8 +46,8 @@ export default function ExploreId({bondInfoTmp}: { bondInfoTmp: BondInfoDetailed
         <div className='flex items-center justify-center md:w-auto sm:w-full'>
             <div
                 className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:pb-12 sm:pt-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start md:w-auto sm:w-full">
-                <BondDetails info={bondInfo} tokens={tokens}/>
-                <BondActions info={bondInfo} tokens={tokens}/>
+                <BondDetails info={bondInfo} tokens={tokens} bondDescription={bondDescription}/>
+                <BondActions info={bondInfo} tokens={tokens} bondDescription={bondDescription}/>
             </div>
         </div>
     </>

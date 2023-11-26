@@ -20,7 +20,20 @@ async function postAPI({url, body, params, headers}: { url: string, body: any, p
     }
 }
 
+
+async function patchAPI({url, body, params, headers}: { url: string, body: any, params?: any, headers?: any }) {
+    try {
+        const response = await axios.patch(url, body, {params, headers})
+        return response.data;
+    } catch (error) {
+        console.log(error)
+        return undefined;
+    }
+}
+
+
 export {
     requestAPI,
-    postAPI
+    postAPI,
+    patchAPI
 }

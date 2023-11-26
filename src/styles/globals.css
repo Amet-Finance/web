@@ -38,6 +38,10 @@ input:focus {
     outline: none !important;
 }
 
+textarea:focus {
+    outline: none !important;
+}
+
 
 .bg-d-1 {
     background-color: #090909

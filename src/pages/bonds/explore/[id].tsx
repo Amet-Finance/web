@@ -1,28 +1,31 @@
 import ExploreId from "@/components/pages/bonds/pages/explore-id";
-import {getBondInfo, getBondName} from "@/modules/web3/zcb";
+import {getBondInfo} from "@/modules/web3/zcb";
 import {getChain} from "@/modules/utils/wallet-connect";
+import {requestAPI} from "@/modules/cloud-api/util";
 
-export default function ExploreIdPage({bondInfo}: any) {
-    return <ExploreId bondInfoTmp={bondInfo}/>
+export default function ExploreIdPage({bondInfo, bondDescription}: any) {
+    return <ExploreId bondInfoTmp={bondInfo} bondDescription={bondDescription}/>
 }
 
 export async function getServerSideProps({query}: any) {
+
+    const props: any = {
+        pageId: "ExploreIdPage",
+    }
+
     const chainId = query.chainId || null;
     const contractAddress = query.id
     const chain = getChain(chainId)
-    let bondInfo;
-    if (chain && contractAddress) {
-        bondInfo = await getBondInfo(chain, contractAddress)
-    }
 
-    return {
-        props: {
-            pageId: "ExploreIdPage",
-            bondInfo,
-            meta: {
-                title: await getBondName(chain, contractAddress), // todo make this request to S3/back-end
-                ogImage: `https://storage.amet.finance/images/${bondInfo?._id.toLowerCase()}.svg`
+    if (chain && contractAddress) {
+        props.bondInfo = await getBondInfo(chain, contractAddress)
+        props.bondDescription = await requestAPI({url: `https://storage.amet.finance/contracts/${contractAddress.toLowerCase()}.json`})
+        if (props.bondDescription) {
+            props.meta = {
+                title: props.bondDescription.name
             }
         }
     }
+
+    return {props}
 }

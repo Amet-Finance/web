@@ -6,6 +6,7 @@ import {Montserrat} from "next/font/google";
 import IssuedBondSuccessModal from "@/components/modals/issued-bond-success-modal";
 import {RootState} from "@/store/redux/type";
 import Quiz from "@/components/modals/quiz";
+import BondEditDescription from "@/components/modals/bond-edit-description";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -57,6 +58,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.Quiz: {
             return <Quiz/>
+        }
+        case ModalTypes.BondEditDescription: {
+            return <BondEditDescription additional={additional}/>
         }
     }
 }

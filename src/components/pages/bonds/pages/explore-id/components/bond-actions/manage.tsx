@@ -1,4 +1,4 @@
-import {BondInfoDetailed} from "@/modules/web3/type";
+import {BondDescription, BondInfoDetailed} from "@/modules/web3/type";
 import {useEffect, useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
@@ -10,11 +10,14 @@ import {TokensResponse} from "@/modules/cloud-api/type";
 import {mulBigNumber} from "@/modules/utils/numbers";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {getAddress} from "viem";
+import {ModalTypes} from "@/store/redux/modal/constants";
+import {openModal} from "@/store/redux/modal";
 
-export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+export default function Manage({info, tokens, bondDescription}: { info: BondInfoDetailed, tokens: TokensResponse, bondDescription: BondDescription }) {
 
     return <>
         <div className="flex flex-col gap-4 text-sm">
+            <EditDescription bondInfo={info} bondDescription={bondDescription}/>
             <WithdrawRemaining bondInfo={info} tokens={tokens}/>
             <Deposit bondInfo={info} tokens={tokens}/>
             <ChangeOwner bondInfo={info}/>
@@ -25,6 +28,54 @@ export default function Manage({info, tokens}: { info: BondInfoDetailed, tokens:
     </>
 }
 
+function EditDescription({bondInfo, bondDescription}: { bondInfo: BondInfoDetailed, bondDescription: BondDescription }) {
+    return <>
+        <button
+            onClick={() => openModal(ModalTypes.BondEditDescription, {bondInfo, bondDescription})}
+            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center">
+            Update Bond Description
+        </button>
+    </>
+}
+
+function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
+
+    const {_id, chainId, interestToken} = bondInfo;
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork();
+    const chain = getChain(chainId);
+
+    const interestTokenInfo = tokens[interestToken.toLowerCase()]
+    const config = {contractAddress: _id,}
+    const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
+    const {isLoading, sendTransactionAsync, data} = useSendTransaction({
+        to: contractInfo.to,
+        value: BigInt(contractInfo.value || 0) || undefined,
+        data: contractInfo.data,
+        chainId
+    })
+
+    async function withdrawRemaining() {
+        try {
+            if (chain?.id !== network.chain?.id) {
+                await switchNetworkAsync?.(chain?.id)
+            }
+
+            const response = await sendTransactionAsync();
+            await trackTransaction(chain, response.hash)
+        } catch (error) {
+
+        }
+    }
+
+    return <>
+        <button
+            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center"
+            onClick={withdrawRemaining}>
+            Withdraw Remaining {interestTokenInfo?.symbol} {isLoading && <Loading percent={70}/>}
+        </button>
+    </>
+}
 
 function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
 
@@ -84,45 +135,6 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
                 className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem]"
                 onClick={deposit}>Deposit {isLoading && <Loading percent={70}/>}</button>
         </div>
-    </>
-}
-
-function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
-
-    const {_id, chainId, interestToken} = bondInfo;
-    const network = useNetwork();
-    const {switchNetworkAsync} = useSwitchNetwork();
-    const chain = getChain(chainId);
-
-    const interestTokenInfo = tokens[interestToken.toLowerCase()]
-    const config = {contractAddress: _id,}
-    const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
-    const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
-        chainId
-    })
-
-    async function withdrawRemaining() {
-        try {
-            if (chain?.id !== network.chain?.id) {
-                await switchNetworkAsync?.(chain?.id)
-            }
-
-            const response = await sendTransactionAsync();
-            await trackTransaction(chain, response.hash)
-        } catch (error) {
-
-        }
-    }
-
-    return <>
-        <button
-            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center"
-            onClick={withdrawRemaining}>
-            Withdraw Remaining {interestTokenInfo?.symbol} {isLoading && <Loading percent={70}/>}
-        </button>
     </>
 }
 

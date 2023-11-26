@@ -25,6 +25,18 @@ type BondInfoDetailed = {
     issuanceDate: number
 }
 
+type BondDescription = {
+    name: string,
+    description: string
+    external_url: string,
+    image: string,
+    details?: {
+        title?: string,
+        description?: string
+    }
+}
+
+
 type TokenInfo = {
     contractAddress: string,
     name: string,
@@ -61,6 +73,7 @@ type ContractInfoType = {
 export type {
     IssuerContractInfo,
     BondInfoDetailed,
+    BondDescription,
     TokenInfo,
     TokenResponseBalance,
     TokenResponseDetailed,
