@@ -20,7 +20,8 @@ export async function getServerSideProps({query}: any) {
             pageId: "ExploreIdPage",
             bondInfo,
             meta: {
-                title: await getBondName(chain, contractAddress) // todo make this request to S3/back-end
+                title: await getBondName(chain, contractAddress), // todo make this request to S3/back-end
+                ogImage: `https://storage.amet.finance/images/${bondInfo?._id.toLowerCase()}.svg`
             }
         }
     }
