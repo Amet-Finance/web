@@ -166,7 +166,7 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             } else if (amount > validTokens.length) {
                 className += ` ${Styles.disable}`
                 onClick = nop
-                title = "Max bonds reached"
+                title = "Cannot Redeem Yet"
             } else if (balance.lt(totalTokens)) {
                 className += ` ${Styles.disable}`
                 onClick = nop

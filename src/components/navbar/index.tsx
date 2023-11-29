@@ -146,13 +146,27 @@ function ConnectButton({changeVisibility}: any) {
 }
 
 function ConnectedState({isMobile}: { isMobile?: boolean }) {
-    const {address} = useAccount()
+    const {address} = useAccount();
+    const boxRef = useRef<any>()
     const [isEnabled, setEnabled] = useState(false);
     const enable = () => setEnabled(!isEnabled)
 
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setEnabled(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [boxRef]);
 
     return <>
-        <div className="relative">
+        <div className="relative" ref={boxRef}>
             <button className='border border-w1 rounded px-4 py-1.5 cursor-pointer m-0'
                     onClick={enable}>{shorten(address, 5)}</button>
             <WalletDropDown enableHandler={[isEnabled, setEnabled, enable]}/>
@@ -174,6 +188,9 @@ function WalletDropDown({enableHandler}: { enableHandler: any }) {
         <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
             <Link href={`/address/${address}`} className='w-full text-center'>
                 <span className='w-full'>Dashboard</span>
+            </Link>
+            <Link href="/affiliate" className='w-full text-center'>
+                <span className='w-full'>Affiliate</span>
             </Link>
             <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
         </div>
