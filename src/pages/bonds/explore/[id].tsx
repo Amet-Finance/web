@@ -15,14 +15,18 @@ export async function getServerSideProps({query}: any) {
 
     const contractAddress = query.id
     const chain = getChain(query.chainId)
+    const defaultBondInfo = {
+        _id: contractAddress,
+        chainId: chain?.id
+    }
 
     if (chain && contractAddress) {
         const bondInfoPromise = getBondInfo(chain, contractAddress);
         const bondDescriptionPromise = CloudAPI.getContractDetails(contractAddress);
         const [bondInfo, bondDescription] = await Promise.allSettled([bondInfoPromise, bondDescriptionPromise])
 
-        props.bondInfo = bondInfo.status === "fulfilled" ? bondInfo.value : {_id: contractAddress, chainId: chain.id}
-        props.bondDescription = bondDescription.status === "fulfilled" ? bondDescription.value : {}
+        props.bondInfo = bondInfo.status === "fulfilled" && bondInfo.value ? bondInfo.value : defaultBondInfo;
+        props.bondDescription = bondDescription.status === "fulfilled" && bondDescription.value ? bondDescription.value : {}
 
         if (Object.values(props.bondDescription).length) {
             props.meta = {
