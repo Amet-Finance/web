@@ -57,7 +57,7 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
 
 
 function SettingsSection() {
-    const [isOpen, setOpen] = useState(true)
+    const [isOpen, setOpen] = useState(false)
 
     return <>
         <div className='relative'>
