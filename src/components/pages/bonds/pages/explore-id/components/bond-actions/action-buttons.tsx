@@ -4,16 +4,20 @@ import {RootState} from "@/store/redux/type";
 import {Actions} from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index";
 import {useAccount} from "wagmi";
 import {useEffect, useState} from "react";
+import SettingsSVG from "../../../../../../../../public/svg/utils/settings";
 
 export default function ActionButtons({info, actionHandler}: any) {
     return <>
-        <div className='flex gap-4 items-center'>
-            {
-                Object.keys(Actions).map((key: string) => <ActionButton name={key}
-                                                                        info={info}
-                                                                        actionHandler={actionHandler}
-                                                                        key={key}/>)
-            }
+        <div className='flex justify-between'>
+            <div className='flex gap-4 items-center'>
+                {
+                    Object.keys(Actions).map((key: string) => <ActionButton name={key}
+                                                                            info={info}
+                                                                            actionHandler={actionHandler}
+                                                                            key={key}/>)
+                }
+            </div>
+            <SettingsSection/>
         </div>
     </>
 }
@@ -48,5 +52,25 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
 
     return <>
         <button className={className} onClick={select}>{buttonText}</button>
+    </>
+}
+
+
+function SettingsSection() {
+    const [isOpen, setOpen] = useState(true)
+
+    return <>
+        <div className='relative'>
+            <SettingsSVG onClick={() => setOpen(!isOpen)}/>
+            {
+                isOpen && <>
+                    <div className='absolute top-[120%] right-0 flex flex-col border border-w1 py-2 bg-d-1 rounded'>
+                        <span className='whitespace-nowrap px-4 cursor-pointer'>Add NFT to wallet</span>
+                        <span className='whitespace-nowrap px-4 cursor-pointer'>Explore issuer</span>
+                    </div>
+
+                </>
+            }
+        </div>
     </>
 }

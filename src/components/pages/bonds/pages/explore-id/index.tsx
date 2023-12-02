@@ -9,7 +9,10 @@ import CloudAPI from "@/modules/cloud-api";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {nop} from "@/modules/utils/function";
 
-export default function ExploreId({bondInfoTmp, bondDescription}: { bondInfoTmp: BondInfoDetailed, bondDescription: BondDescription }) {
+export default function ExploreId({bondInfoTmp, bondDescription}: {
+    bondInfoTmp: BondInfoDetailed,
+    bondDescription: BondDescription
+}) {
     const {address} = useAccount()
 
     const [bondInfo, setBondInfo] = useState(bondInfoTmp as BondInfoDetailed);
@@ -19,25 +22,19 @@ export default function ExploreId({bondInfoTmp, bondDescription}: { bondInfoTmp:
 
     useEffect(() => {
         const interval = getBondInfo([bondInfo, setBondInfo])
-        return () => {
-            clearInterval(interval)
-        }
+        return () => clearInterval(interval)
     }, [address, chainId, _id, chainId])
 
 
     useEffect(() => {
+        const contractAddresses = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))].filter(item => Boolean(item))
+        const params = {chainId, contractAddresses}
 
-        const contractAddresses = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))]
-        const params = {
-            chainId,
-            contractAddresses
+        if (contractAddresses.length) {
+            CloudAPI.getTokens({params})
+                .then(response => setTokens(response))
+                .catch(nop)
         }
-
-        CloudAPI.getTokens({params})
-            .then(response => {
-                setTokens(response)
-            })
-            .catch(nop)
 
     }, [address, _id, investmentToken, interestToken, chainId])
 
@@ -56,16 +53,11 @@ export default function ExploreId({bondInfoTmp, bondDescription}: { bondInfoTmp:
 function getBondInfo(bondHandler: any) {
     const [bondInfo, setBondInfo] = bondHandler
     const chain = getChain(bondInfo.chainId)
-    if (!chain) {
-        return undefined;
-    }
+    if (!chain || !bondInfo._id) return undefined;
 
-    if (bondInfo._id) {
-        return setInterval(() => {
-
-            Web3ZCB.getBondInfo(chain, bondInfo._id)
-                .then(response => setBondInfo({...response}))
-                .catch(error => console.error(error));
-        }, 3000);
-    }
+    return setInterval(() => {
+        Web3ZCB.getBondInfo(chain, bondInfo._id)
+            .then(response => setBondInfo({...response}))
+            .catch(error => console.error(error));
+    }, 3000);
 }
