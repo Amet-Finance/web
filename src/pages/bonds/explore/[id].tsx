@@ -5,6 +5,7 @@ import {requestAPI} from "@/modules/cloud-api/util";
 import CloudAPI from "@/modules/cloud-api";
 
 export default function ExploreIdPage({bondInfo, bondDescription}: any) {
+    console.log(`bondInfo, bondDescription`, bondInfo, bondDescription)
     return <ExploreId bondInfoTmp={bondInfo} bondDescription={bondDescription || {}}/>
 }
 
