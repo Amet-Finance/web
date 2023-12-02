@@ -81,10 +81,10 @@ function DescriptionDetails({info, bondDescription}: { info: BondInfoDetailed, b
     // console.log(bondDescription.details?.description.toString())
 
     const formattedText = bondDescription.details?.description?.split('\n').map((line, index) => (
-        <>
+        <div key={index}>
             {line}
             <br/>
-        </>
+        </div>
     ));
 
     return <>

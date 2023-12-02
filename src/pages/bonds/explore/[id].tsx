@@ -2,9 +2,10 @@ import ExploreId from "@/components/pages/bonds/pages/explore-id";
 import {getBondInfo} from "@/modules/web3/zcb";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {requestAPI} from "@/modules/cloud-api/util";
+import CloudAPI from "@/modules/cloud-api";
 
 export default function ExploreIdPage({bondInfo, bondDescription}: any) {
-    return <ExploreId bondInfoTmp={bondInfo} bondDescription={bondDescription}/>
+    return <ExploreId bondInfoTmp={bondInfo} bondDescription={bondDescription || {}}/>
 }
 
 export async function getServerSideProps({query}: any) {
@@ -19,7 +20,7 @@ export async function getServerSideProps({query}: any) {
 
     if (chain && contractAddress) {
         props.bondInfo = await getBondInfo(chain, contractAddress)
-        props.bondDescription = await requestAPI({url: `https://storage.amet.finance/contracts/${contractAddress.toLowerCase()}.json`})
+        props.bondDescription = await CloudAPI.getContractDetails(contractAddress)
         if (props.bondDescription) {
             props.meta = {
                 title: props.bondDescription.name

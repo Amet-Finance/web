@@ -1,5 +1,5 @@
 import {postAPI, requestAPI} from "@/modules/cloud-api/util";
-import {API_URL} from "@/modules/cloud-api/constants";
+import {API_URL, STORAGE_URL} from "@/modules/cloud-api/constants";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import {BalanceAPIParams, BondsAPIParams, StatsAPIParams, TokensResponse} from "@/modules/cloud-api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
@@ -80,6 +80,10 @@ async function getTokensDetailed({params}: {
 }
 
 
+async function getContractDetails(contractAddress: string) {
+    return requestAPI({url: `${STORAGE_URL}/contracts/${contractAddress.toLowerCase()}.json`});
+}
+
 const CloudAPI = {
     getBonds,
     getStats,
@@ -87,6 +91,7 @@ const CloudAPI = {
     getAddress,
     updateAddress,
     getTokens,
-    getTokensDetailed
+    getTokensDetailed,
+    getContractDetails
 }
 export default CloudAPI
