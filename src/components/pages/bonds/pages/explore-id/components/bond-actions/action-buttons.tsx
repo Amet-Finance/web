@@ -24,6 +24,7 @@ export default function ActionButtons({info, actionHandler}: any) {
 
 function ActionButton({name, info, actionHandler}: { name: string, info: BondInfoDetailed, actionHandler: any }) {
     const {_id, chainId, issuer} = info;
+    const [show, setShow] = useState(false);
 
     const [action, setAction] = actionHandler;
     const {address} = useAccount();
@@ -32,7 +33,7 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
 
     const isIssuer = issuer.toLowerCase() === address?.toLowerCase()
     const isSelected = Actions[name] === action;
-    const className = isSelected ? "text-white" : "text-g"
+    const className = isSelected ? "text-white" : "text-g";
 
     const select = () => setAction(Actions[name])
 
@@ -41,12 +42,19 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
             const contractAddress = _id.toLowerCase() || ""
             const balanceTokenIds = balance[chainId]?.[contractAddress] || [];
             const nameTmp = name + `(${balanceTokenIds.length})`;
-            setButtonText(nameTmp)
+            setButtonText(nameTmp);
+            setShow(true);
+        } else if (Actions[name] === Actions.Manage) {
+            const hideManage = Boolean(Actions[name] === Actions.Manage && !isIssuer && address && issuer);
+            setShow(!hideManage);
+        } else {
+            setShow(true)
         }
+
+
     }, [balance, _id, chainId, name])
 
-
-    if (Actions[name] === Actions.Manage && !isIssuer && address) {
+    if (!show) {
         return null;
     }
 
