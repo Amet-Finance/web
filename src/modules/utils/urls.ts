@@ -3,7 +3,7 @@ const URLS = {
     OgImage: "https://amet.finance/meta/og-image.jpg",
     TermsOfService: "https://docs.amet.finance/v1/additional-materials/terms-of-service",
     PrivacyPolicy: 'https://docs.amet.finance/v1/additional-materials/privacy-policy',
-    ContactUs: "https://wkf.ms/3G3SNtn",
+    ContactUs: "https://forms.gle/zUcZUT51Zx1wiqoS7",
     StatusPage: "https://status.amet.finance",
 
     FAQ: "https://docs.amet.finance/v1/frequently-asked-questions-faqs",
