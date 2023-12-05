@@ -19,31 +19,22 @@ import {nop} from "@/modules/utils/function";
 export default function Navbar() {
     const {address} = useAccount();
     const {chain} = useNetwork();
-    const [isDesktop, setDesktop] = useState(true);
 
     useEffect(() => {
         if (address && chain?.id) {
             AccountSlice.initBalance(address, chain?.id).catch(nop)
         }
     }, [address, chain]);
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setDesktop(window.innerWidth >= 768)
-
-            window.onresize = (event: any) => {
-                setDesktop(event.target?.innerWidth >= 768)
-            }
-        }
-    }, []);
-
-
-    return isDesktop ? <DesktopNav/> : <MobileNav/>
+    
+    return <>
+        <DesktopNav/>
+        <MobileNav/>
+    </>
 }
 
 function DesktopNav() {
     return <>
-        <nav className='relative flex justify-between items-center px-20 py-3 w-full'>
+        <nav className='relative justify-between items-center px-20 py-3 w-full md:flex sm:hidden'>
             <div className='flex items-center gap-8 z-50'>
                 <AmetLogo/>
                 <div className='flex items-center gap-6'>
@@ -61,7 +52,7 @@ function MobileNav() {
     const changeVisibility = () => setVisible(!isVisible)
 
     return <>
-        <nav className="relative flex justify-between items-center px-8 py-3 w-full">
+        <nav className="relative  justify-between items-center px-8 py-3 w-full md:hidden sm:flex">
             <AmetLogo/>
             <div className='flex items-center z-50'>
                 {!isVisible ? <BurgerSVG onClick={changeVisibility}/> : <XmarkSVG onClick={changeVisibility}/>}
@@ -141,7 +132,9 @@ function ConnectButton({changeVisibility}: any) {
 
 
     return <>
-        <button className="border border-w1 rounded px-4 py-1.5 cursor-pointer m-0 hover:bg-white hover:text-black" onClick={connect}>Connect</button>
+        <button className="border border-w1 rounded px-4 py-1.5 cursor-pointer m-0 hover:bg-white hover:text-black"
+                onClick={connect}>Connect
+        </button>
     </>
 }
 
