@@ -34,8 +34,8 @@ export async function getServerSideProps({query}: any) {
             meta.title = bondDescription?.name
 
             const description = bondDescription?.details?.description;
-            if (description) {
-                meta.description = `${description.slice(0, 100)}...Discover secure on-chain bonds with Amet Finance`
+            if (description && typeof description === "string" && description.length > 5) {
+                meta.description = description;
             }
         }
 
