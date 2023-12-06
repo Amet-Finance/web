@@ -28,7 +28,10 @@ export default function Bond({info}: { info: BondGeneral }) {
         <Link href={bondUrl}>
             <div
                 className="relative flex flex-col justify-center
-                rounded-md px-5 py-3 gap-2 cursor-pointer
+                 rounded-md
+                 md:px-5 md:py-3
+                 sm:px-3 sm:py-1
+                 gap-2 cursor-pointer
                  bg-b3 border border-w1 hover:border-w2
                  group
                  ">
@@ -118,7 +121,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
 
     const SectionContainer = ({children}: any) => {
         return <>
-            <div className='flex items-center justify-between md:gap-12 sm:gap-4 px-0 py-1'>
+            <div className='flex items-center justify-between md:gap-12 sm:gap-2 md:text-base sm:text-sm  px-0 py-1'>
                 {children}
             </div>
         </>
@@ -155,7 +158,7 @@ function BondDetails({bondInfo}: { bondInfo: BondGeneral }) {
                         <span className='whitespace-nowrap'>Lock Period:</span>
                     </div>
                     <span
-                        className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true)}</span>
+                        className='text-sm font-bold whitespace-nowrap'>{formatTime(Number(redeemLockPeriod), true, true, true)}</span>
                 </SectionContainer>
             </div>
             <PieChart total={total} redeemed={redeemed} purchased={purchased}/>

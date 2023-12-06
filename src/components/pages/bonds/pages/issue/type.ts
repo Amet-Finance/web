@@ -15,7 +15,8 @@ type BondGeneral = {
     interestToken: string;
     interestTokenAmount: number;
     interestTokenInfo: TokenResponse;
-    issuanceDate: number
+    issuanceDate: number;
+    trending?: boolean
 }
 
 type BondInfo = {

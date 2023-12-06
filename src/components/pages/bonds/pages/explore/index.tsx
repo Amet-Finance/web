@@ -35,7 +35,7 @@ function BondsContainer() {
 
     const inputRef = useRef<any>()
 
-    const [search, setSearch] = useState({text: "", hideSold: true, hideNotVerified: false});
+    const [search, setSearch] = useState({text: "", hideSold: true, hideNotVerified: false, isTrending: false});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,
@@ -52,7 +52,7 @@ function BondsContainer() {
 
     function bondsFiltered(): BondGeneral[] {
         return data.filter(item => {
-            const {total, purchased, interestTokenInfo, investmentTokenInfo, issuer, _id} = item;
+            const {total, purchased, interestTokenInfo, investmentTokenInfo, issuer, _id, trending} = item;
             const isSold = total - purchased === 0;
 
             const searchExists = search.text
@@ -63,6 +63,10 @@ function BondsContainer() {
             }
 
             if (search.hideNotVerified && isNotVerified) {
+                return false;
+            }
+
+            if (search.isTrending && !trending) {
                 return false;
             }
 
@@ -96,7 +100,7 @@ function BondsContainer() {
 
 
     return <>
-        <div className="flex flex-col gap-2 justify-center p-4">
+        <div className="flex flex-col gap-2 justify-center md:p-4 sm:p-0">
             <div className='flex justify-between w-full lg1:flex-row lg1:gap-12 sm:flex-col sm:gap-4'>
                 <div className='flex md:items-center sm:items-start md:gap-8 sm:gap-2 md:flex-row sm:flex-col'>
                     <div className='flex gap-2 items-center cursor-pointer'
@@ -114,6 +118,15 @@ function BondsContainer() {
                         <InfoBox
                             info={{text: "This filter hides bonds where one or more assets involved are not verified coins by Amet Finance"}}>
                             <span>Hide Unverified Asset Bonds</span>
+                        </InfoBox>
+                    </div>
+                    <div className='flex gap-2 items-center cursor-pointer'
+                         onClick={() => setSearch({...search, isTrending: !Boolean(search.isTrending)})}>
+                        <div
+                            className={`w-5 h-5 rounded border border-w1 ${search.isTrending ? "bg-green-500" : "bg-b4"}`}/>
+                        <InfoBox
+                            info={{text: "This filter shows only bonds that are trending"}}>
+                            <span>Show Trending Only</span>
                         </InfoBox>
                     </div>
                 </div>
@@ -152,7 +165,7 @@ function BondsSection({filteredBonds, isLoading}: { filteredBonds: BondGeneral[]
 
     return <>
         <div
-            className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 gap-6 sm:w-full">
+            className="grid xl1:grid-cols-3 lg1:grid-cols-2 md:grid-cols-1 md:gap-6 sm:gap-2 sm:w-full">
             {filteredBonds.map((bond: BondGeneral) => <Bond info={bond} key={bond._id}/>)}
         </div>
     </>

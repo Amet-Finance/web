@@ -8,7 +8,7 @@ function shortTime(time: number) {
     return new Date(time).toDateString()
 }
 
-function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
+function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean, hideLong?: boolean) {
 
     const years = Math.floor(seconds / yearInSec);
     seconds -= years * yearInSec;
@@ -64,7 +64,8 @@ function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
         timeSegments.push(`${Math.round(seconds)} ${text}`);
     }
 
-    return timeSegments.join(' ');
+    const response = timeSegments.join(' ');
+    return hideLong ? `${response.slice(0, 8)}${response.length > 8 ? "..." : ""}` : response;
 }
 
 async function sleep(ms: number): Promise<void> {
