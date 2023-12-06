@@ -17,7 +17,7 @@ import WarningSVG from "../../../../../../public/svg/warning";
 
 export default function Bond({info}: { info: BondGeneral }) {
     const {total, purchased} = info;
-    const bondUrl = `${window.location.origin}/bonds/explore/${info._id}?chainId=${info.chainId}`
+    const bondUrl = `${window.location.origin}/bonds/explore/${info.chainId}/${info._id}`
     if (!info.investmentTokenInfo || !info.interestTokenInfo) {
         return null;
     }

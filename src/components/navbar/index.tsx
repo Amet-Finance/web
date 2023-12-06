@@ -25,7 +25,7 @@ export default function Navbar() {
             AccountSlice.initBalance(address, chain?.id).catch(nop)
         }
     }, [address, chain]);
-    
+
     return <>
         <DesktopNav/>
         <MobileNav/>
@@ -109,9 +109,7 @@ function WalletState({changeVisibility, isMobile}: { changeVisibility?: any, isM
     const account = useAccount()
     const [address, setAddress] = useState<string | undefined>('')
 
-    useEffect(() => {
-        setAddress(account.address)
-    }, [account.address, account.isConnected]);
+    useEffect(() => setAddress(account.address), [account.address, account.isConnected]);
 
     return <>
         <div className={'relative flex items-center ' + (isMobile ? " gap-0" : " gap-2")}>
@@ -210,9 +208,7 @@ function Chains() {
 
         document.addEventListener('click', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
+        return () => document.removeEventListener('click', handleClickOutside);
     }, [boxRef]);
 
     if (isConnecting || isReconnecting) {

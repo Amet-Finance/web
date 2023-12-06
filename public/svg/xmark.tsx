@@ -1,3 +1,5 @@
+import {nop} from "@/modules/utils/function";
+
 export default function XmarkSVG({color, onClick, isMedium, isSmall}: {color?: string, onClick?: any, isMedium?: boolean, isSmall?: boolean}) {
 
     let width;
@@ -13,10 +15,7 @@ export default function XmarkSVG({color, onClick, isMedium, isSmall}: {color?: s
         height = 31;
     }
 
-    const emptyFunc = () => {
-    };
-
-    const onClickFunction = onClick || emptyFunc;
+    const onClickFunction = onClick || nop;
 
     return <>
         <svg width={width} height={height} viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"

@@ -207,9 +207,7 @@ function Answer({answer, selectHandler}: any) {
 function Finish() {
 
     useEffect(() => {
-        if (typeof localStorage !== "undefined") {
-            localStorage.setItem('quizPassed', "true")
-        }
+        if (typeof localStorage !== "undefined") localStorage.setItem('quizPassed', "true")
     }, []);
 
     return <>

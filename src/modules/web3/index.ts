@@ -48,7 +48,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 }
             }
             case TxTypes.TransferERC20: {
-                return  {
+                return {
                     to: config.contractAddress,
                     data: Tokens.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
                 };
@@ -120,7 +120,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
         const response = await provider.getTransactionReceipt({hash: txHash as any});
         if (!response) {
-            return await trackTransactionReceipt(chain, txHash, recursionCount++);
+            return trackTransactionReceipt(chain, txHash, recursionCount++);
         }
 
         if (!response.status) {
@@ -130,7 +130,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         return decodeTransactionLogs(response);
     } catch (error: any) {
         console.error(`trackTransactionReceipt: ${error.message}`);
-        return await trackTransactionReceipt(chain, txHash, recursionCount++);
+        return trackTransactionReceipt(chain, txHash, recursionCount++);
     }
 }
 

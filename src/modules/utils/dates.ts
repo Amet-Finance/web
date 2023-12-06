@@ -68,9 +68,7 @@ function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean) {
 }
 
 async function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 
