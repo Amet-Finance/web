@@ -1,6 +1,6 @@
 import Styles from "./index.module.css";
 import Image from "next/image";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
 import Loading from "@/components/utils/loading";
@@ -27,6 +27,8 @@ import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import makeBlockie from "ethereum-blockies-base64";
 import VerifiedSVG from "../../../../../../public/svg/verified";
+import {nop} from "@/modules/utils/function";
+import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 
 
 export default function Issue() {
@@ -39,6 +41,7 @@ export default function Issue() {
     const [additionalInfo, setAdditionalInfo] = useState({} as IssuerContractInfo)
     const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
 
+    const [tokens, setTokens] = useState({} as TokensResponse)
     const [investmentTokenInfo, setInvestmentTokenInfo] = useState({} as TokenResponseDetailed)
     const [interestTokenInfo, setInterestTokenInfo] = useState({} as TokenResponseDetailed)
     const bondsHandler = [bondInfo, setBondInfo]
@@ -122,10 +125,12 @@ export default function Issue() {
         })
     }
 
+
     function getToken(chain: Chain | undefined, type: string): {
         interval: NodeJS.Timeout,
         timeout: NodeJS.Timeout
     } | undefined {
+
         const isInvestment = type === "investmentToken";
         const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
         const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo;
@@ -233,6 +238,18 @@ export default function Issue() {
         }
     }, [chain, address, bondInfo.investmentToken])
 
+    useEffect(() => {
+        const params = {
+            chainId: chain?.id,
+            contractAddresses: [],
+            verified: true
+        }
+
+        CloudAPI.getTokens({params})
+            .then(tokensTmp => setTokens(tokensTmp))
+            .catch(nop);
+    }, [chain])
+
 
     const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
     const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
@@ -259,27 +276,16 @@ export default function Issue() {
                                    placeholder="Total bonds" onChange={onChange}/>
                         </div>
                         <RedeemLockPeriod bondsHandler={bondsHandler}/>
-                        <div className="flex flex-col justify-between gap-2">
-                            <InfoBox info={InfoSections.Investment}>
-                                <span>Investment Token</span>
-                            </InfoBox>
-                            <input type="text"
-                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
-                                   id="investmentToken"
-                                   onChange={onChange}
-                                   placeholder="Investment token contract address"/>
-                        </div>
-
-                        <div className="flex flex-col justify-between gap-2">
-                            <InfoBox info={InfoSections.Interest}>
-                                <span>Interest Token</span>
-                            </InfoBox>
-                            <input type="text"
-                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
-                                   id="interestToken"
-                                   onChange={onChange}
-                                   placeholder="Interest token contract address"/>
-                        </div>
+                        <TokenManagement
+                            config={{id: 'investmentToken', title: "Investment Token", info: InfoSections.Investment}}
+                            bondInfo={bondInfo}
+                            tokens={tokens}
+                            onChange={onChange}/>
+                        <TokenManagement
+                            config={{id: 'interestToken', title: "Interest Token", info: InfoSections.Interest}}
+                            bondInfo={bondInfo}
+                            tokens={tokens}
+                            onChange={onChange}/>
 
                         <div className="flex flex-col justify-between gap-2">
                             <InfoBox info={InfoSections.InvestmentAmount}>
@@ -368,6 +374,89 @@ export default function Issue() {
                 </div>
             </div>
         </main>
+    </>
+}
+
+function TokenManagement({config, bondInfo, tokens, onChange}: {
+    config: { id: string, title: string, info: any },
+    bondInfo: BondInfo,
+    tokens: TokensResponse,
+    onChange: any
+}) {
+    const {title, info} = config;
+
+
+    const isInterest = config.id === 'interestToken'
+    const value = isInterest ? bondInfo.interestToken : bondInfo.investmentToken;
+    const tokenExists = Boolean(Object.values(tokens || {}).length)
+
+    const boxRef = useRef<any>()
+    const [isOpen, setOpen] = useState(false)
+    const openOrClose = () => setOpen(!isOpen);
+    const select = (contractAddress: string) => onChange({
+        target: {
+            id: config.id,
+            value: contractAddress,
+            type: "string"
+        }
+    });
+
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [boxRef]);
+
+
+    const showSelector = isOpen && tokenExists;
+
+    return <>
+        <div className="relative flex flex-col justify-between gap-2" ref={boxRef} onClick={openOrClose}>
+            <InfoBox info={info}>
+                <span>{title}</span>
+            </InfoBox>
+            <input type="text"
+                   className={"placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm " + (showSelector && " rounded-b-none")}
+                   id={config.id}
+                   value={value || ""}
+                   onChange={onChange}
+                   autoComplete="off"
+                   placeholder={`${config.title} contract address`}/>
+            {showSelector && <TokensSelector tokens={tokens} select={select}/>}
+        </div>
+    </>
+}
+
+
+function TokensSelector({tokens, select}: { tokens: TokensResponse, select: any }) {
+
+    const Token = ({token}: { token: TokenResponse }) => {
+        const icon = token.icon || makeBlockie(token._id);
+        const name = token.name || ""
+        const symbol = token.symbol;
+
+        return <>
+            <div className='flex items-center gap-2 cursor-pointer px-4 hover:bg-g6 py-1.5'
+                 onClick={() => select(token._id)}>
+                <Image src={icon} alt={name} width={24} height={24} className='rounded-full'/>
+                <p>{name} <span className='text-g'>({symbol})</span></p>
+            </div>
+        </>
+    }
+
+    return <>
+        <div
+            className='absolute flex flex-col gap-0.5 top-full left-0 w-full z-50  bg-b5 rounded max-h-28 overflow-y-auto border border-w1 border-t-0 rounded-t-none'>
+            {Object.values(tokens).map(token => <Token token={token} key={token._id}/>)}
+        </div>
     </>
 }
 

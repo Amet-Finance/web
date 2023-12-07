@@ -16,10 +16,11 @@ const NAV_ITEMS: { title: string, defaultUrl: string, defaultTarget?: string, li
 
         ]
     },
-    {
-        title: "Swap",
-        defaultUrl: '/swap'
-    },
+    // todo temp hide unless Kyberswap exploit is solved
+    // {
+    //     title: "Swap",
+    //     defaultUrl: '/swap'
+    // },
     {
         title: "Documentation",
         defaultUrl: URLS.Docs,

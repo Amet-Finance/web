@@ -180,9 +180,9 @@ function WalletDropDown({enableHandler}: { enableHandler: any }) {
             <Link href={`/address/${address}`} className='w-full text-center'>
                 <span className='w-full'>Dashboard</span>
             </Link>
-            <Link href="/affiliate" className='w-full text-center'>
-                <span className='w-full'>Affiliate</span>
-            </Link>
+            {/*<Link href="/affiliate" className='w-full text-center'>*/}
+            {/*    <span className='w-full'>Affiliate</span>*/}
+            {/*</Link>*/}
             <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
         </div>
     </>
@@ -247,10 +247,14 @@ function Chain({chain}: any) {
 
 
     async function change() {
-        if (!address) {
-            await open({view: "Connect"})
-        } else {
-            await switchNetworkAsync?.(chain.id)
+        try {
+            if (!address) {
+                await open({view: "Connect"})
+            } else {
+                await switchNetworkAsync?.(chain.id)
+            }
+        } catch (error: any) {
+            console.log(error)
         }
     }
 
