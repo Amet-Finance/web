@@ -3,7 +3,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {Actions} from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index";
 import {useAccount} from "wagmi";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import SettingsSVG from "../../../../../../../../public/svg/utils/settings";
 
 export default function ActionButtons({info, actionHandler}: any) {
@@ -65,16 +65,29 @@ function ActionButton({name, info, actionHandler}: { name: string, info: BondInf
 
 
 function SettingsSection() {
+    const boxRef = useRef<any>()
     const [isOpen, setOpen] = useState(false)
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [boxRef]);
 
     return <>
-        <div className='relative'>
+        <div className='relative' ref={boxRef}>
             <SettingsSVG onClick={() => setOpen(!isOpen)}/>
             {
                 isOpen && <>
                     <div className='absolute top-[120%] right-0 flex flex-col border border-w1 py-2 bg-d-1 rounded'>
-                        <span className='whitespace-nowrap px-4 cursor-pointer'>Add NFT to wallet</span>
-                        <span className='whitespace-nowrap px-4 cursor-pointer'>Explore issuer</span>
+                        <span className='whitespace-nowrap px-4 cursor-pointer'>Report/Flag Bond</span>
                     </div>
 
                 </>
