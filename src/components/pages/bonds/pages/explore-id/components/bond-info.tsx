@@ -355,22 +355,34 @@ function SecurityDetails({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     const infoTexts = {
         securedPercentage: {
-            text: "The Secured Percentage represents the portion of the total interest currency amount that is securely locked in the contract. This amount is reserved to fulfill bond obligations and repay bondholders. Click to read more."
+            text: "The Secured Percentage represents the portion of the total interest currency amount that is securely locked in the contract. This amount is reserved to fulfill bond obligations and repay bondholders. Click to read more.",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         },
         description: {
-            text: "The Description is a brief text provided by the bond issuer, offering additional insights into the purpose or details of the bond. It helps investors understand the nature of the investment."
+            text: "The Description is a brief text provided by the bond issuer, offering additional insights into the purpose or details of the bond. It helps investors understand the nature of the investment.",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         },
         issuerScore: {
-            text: "The Issuer Score is a numerical rating, ranging from 1 to 10, assigned to the bond issuer. It is recalculated every 24 hours using a specified formula. Click to read more."
+            text: "The Issuer Score is a numerical rating, ranging from 1 to 10, assigned to the bond issuer. It is recalculated every 24 hours using a specified formula. Click to read more.",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         },
         bondScore: {
-            text: "The Bond Score is a numerical rating, ranging from 1 to 10, assigned to the specific bond. It considers factors like the Secured Percentage, Description presence, and potentially other criteria. Click to read more."
+            text: "The Bond Score is a numerical rating, ranging from 1 to 10, assigned to the specific bond. It considers factors like the Secured Percentage, Description presence, and potentially other criteria. Click to read more.",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         },
         uniqueHolders: {
-            text: "Unique Holders represent the count of distinct individuals or addresses holding the bond. Each holder is counted only once, regardless of the quantity of bonds they own."
+            text: "Unique Holders represent the count of distinct individuals or addresses holding the bond. Each holder is counted only once, regardless of the quantity of bonds they own.",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         },
         uniqueHoldersIndex: {
-            text: "The Unique Holders Index is calculated by dividing the number of Unique Holders by the total number of purchased and not redeemed bonds. It provides a ratio indicating the average number of bonds held per unique holder"
+            text: "The Unique Holders Index is calculated by dividing the number of Unique Holders by the total number of purchased and not redeemed bonds. It provides a ratio indicating the average number of bonds held per unique holder",
+            link: 'https://docs.amet.finance/v1/getting-started/risk-metrics',
+            isBlank: true
         }
     }
 
