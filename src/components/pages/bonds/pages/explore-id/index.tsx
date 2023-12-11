@@ -24,7 +24,7 @@ export default function ExploreId({bondInfoDetailed}: { bondInfoDetailed: Detail
 
 
     return <>
-        <div className='flex items-center justify-center md:w-auto sm:w-full min-h-screen'>
+        <div className='flex items-center justify-center md:w-auto sm:w-full min-h-[90vh]'>
             <div className="flex flex-col gap-2 justify-center xl:px-16 lg1:px-8 sm:py-4">
                 <div className='flex gap-4 lg1:flex-row sm:flex-col lg1:items-start sm:items-center md:w-auto sm:w-full'>
                     <BondDetails bondInfo={bondInfo} loadingHandler={loadingHandler} refreshHandler={refreshHandler}/>
