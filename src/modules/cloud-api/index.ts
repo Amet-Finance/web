@@ -13,11 +13,11 @@ import {TokenResponseDetailed} from "@/modules/web3/type";
 
 async function getBonds(params: BondsAPIParams): Promise<BondGeneral[]> {
     const bondsAPI = `${API_URL}/v1/contract`
-    const {data} = await requestAPI({
+    const response = await requestAPI({
         url: bondsAPI,
         params
     });
-    return data;
+    return response?.data;
 }
 
 async function getBondDetailed(params: BondDetailedAPIParams): Promise<DetailedBondResponse> {
@@ -32,20 +32,20 @@ async function getBondDetailed(params: BondDetailedAPIParams): Promise<DetailedB
 
 async function getStats(params: StatsAPIParams) {
     const statisticsAPI = `${API_URL}/v1/statistics`
-    const {data} = await requestAPI({
+    const response = await requestAPI({
         url: statisticsAPI,
         params
     });
-    return data;
+    return response?.data;
 }
 
 async function getBalance({address, chainId}: BalanceAPIParams) {
     const balanceAPI = `${API_URL}/v1/balance/${address}`
-    const {data} = await requestAPI({
+    const response = await requestAPI({
         url: balanceAPI,
         params: {chainId}
     });
-    return data;
+    return response?.data;
 }
 
 // todo add types for this
