@@ -1,4 +1,3 @@
-import {BondDescription, BondInfoDetailed} from "@/modules/web3/type";
 import {useEffect, useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
@@ -6,52 +5,52 @@ import {useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
-import {TokensResponse} from "@/modules/cloud-api/type";
+import {DetailedBondResponse} from "@/modules/cloud-api/type";
 import {mulBigNumber} from "@/modules/utils/numbers";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {getAddress} from "viem";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {openModal} from "@/store/redux/modal";
 
-export default function Manage({info, tokens, bondDescription}: { info: BondInfoDetailed, tokens: TokensResponse, bondDescription: BondDescription }) {
+export default function Manage({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     return <>
         <div className="flex flex-col gap-4 text-sm">
-            <EditDescription bondInfo={info} bondDescription={bondDescription}/>
-            <WithdrawRemaining bondInfo={info} tokens={tokens}/>
-            <Deposit bondInfo={info} tokens={tokens}/>
-            <ChangeOwner bondInfo={info}/>
-            <IssueBonds bondInfo={info}/>
-            <BurnUnsoldBonds bondInfo={info}/>
-            <DecreaseRedeemLockPeriod bondInfo={info}/>
+            <EditDescription bondInfo={bondInfo}/>
+            <WithdrawRemaining bondInfo={bondInfo}/>
+            <Deposit bondInfo={bondInfo}/>
+            <ChangeOwner bondInfo={bondInfo}/>
+            <IssueBonds bondInfo={bondInfo}/>
+            <BurnUnsoldBonds bondInfo={bondInfo}/>
+            <DecreaseRedeemLockPeriod bondInfo={bondInfo}/>
         </div>
     </>
 }
 
-function EditDescription({bondInfo, bondDescription}: { bondInfo: BondInfoDetailed, bondDescription: BondDescription }) {
+function EditDescription({bondInfo}: { bondInfo: DetailedBondResponse }) {
     return <>
         <button
-            onClick={() => openModal(ModalTypes.BondEditDescription, {bondInfo, bondDescription})}
+            onClick={() => openModal(ModalTypes.BondEditDescription, {bondInfo})}
             className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center">
             Update Bond Description
         </button>
     </>
 }
 
-function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
+function WithdrawRemaining({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
-    const {_id, chainId, interestToken} = bondInfo;
+    const {contractInfo} = bondInfo;
+    const {_id, chainId, interestToken, interestTokenInfo} = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
 
-    const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const config = {contractAddress: _id,}
-    const contractInfo = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
+    const contractInfoData = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data,
         chainId
     })
 
@@ -77,15 +76,14 @@ function WithdrawRemaining({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tok
     </>
 }
 
-function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: TokensResponse }) {
-
-    const {_id, chainId, interestToken} = bondInfo;
+function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
+    const {contractInfo} = bondInfo
+    const {_id, chainId, interestToken, interestTokenInfo} = contractInfo;
     const [amount, setAmount] = useState(0);
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
 
 
-    const interestTokenInfo = tokens[interestToken.toLowerCase()]
     const decimals = interestTokenInfo?.decimals;
 
     const chain = getChain(chainId);
@@ -95,11 +93,11 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
         amount: mulBigNumber(amount, decimals, true).toNumber()
     }
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.TransferERC20, config);
+    const contractInfoData = getContractInfoByType(chain, TxTypes.TransferERC20, config);
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0),
-        data: contractInfo.data
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0),
+        data: contractInfoData.data
     })
 
     const changeAmount = (event: any) => setAmount(event.target.value || 0)
@@ -138,9 +136,10 @@ function Deposit({bondInfo, tokens}: { bondInfo: BondInfoDetailed, tokens: Token
     </>
 }
 
-function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
+function ChangeOwner({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
-    const {_id, chainId} = bondInfo;
+    const {contractInfo} = bondInfo;
+    const {_id, chainId} = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
@@ -151,11 +150,11 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
         contractAddress: _id,
         newAddress
     }
-    const contractInfo = getContractInfoByType(chain, TxTypes.ChangeOwner, config)
+    const contractInfoData = getContractInfoByType(chain, TxTypes.ChangeOwner, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data,
         chainId
     })
 
@@ -189,23 +188,24 @@ function ChangeOwner({bondInfo}: { bondInfo: BondInfoDetailed }) {
     </>
 }
 
-function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
+function IssueBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
-    const {_id, chainId} = bondInfo;
+    const {contractInfo} = bondInfo;
+    const {_id, chainId} = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
     const [amount, setAmount] = useState(0)
 
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.IssueMoreBonds, {
+    const contractInfoData = getContractInfoByType(chain, TxTypes.IssueMoreBonds, {
         contractAddress: _id,
         amount
     })
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data,
         chainId
     })
 
@@ -234,14 +234,15 @@ function IssueBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
                    placeholder='The amount of bonds you want to issue'/>
             <button
                 className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
-                onClick={issueMoreBonds}>Issue More bonds
+                onClick={issueMoreBonds}>Issue More bonds {isLoading && <Loading percent={70}/>}
             </button>
         </div>
     </>
 }
 
-function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
-    const {_id, chainId} = bondInfo;
+function BurnUnsoldBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
+    const {contractInfo} = bondInfo;
+    const {_id, chainId} = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
@@ -251,11 +252,11 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
         contractAddress: _id,
         amount
     }
-    const contractInfo = getContractInfoByType(chain, TxTypes.BurnUnsoldBonds, config)
+    const contractInfoData = getContractInfoByType(chain, TxTypes.BurnUnsoldBonds, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data,
         chainId
     })
 
@@ -290,9 +291,10 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: BondInfoDetailed }) {
     </>
 }
 
-function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
+function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
-    const {chainId} = bondInfo;
+    const {contractInfo} = bondInfo
+    const {chainId} = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
@@ -320,14 +322,14 @@ function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: BondInfoDetailed }) {
 
 
     const config = {
-        contractAddress: bondInfo._id,
+        contractAddress: contractInfo._id,
         newPeriod: total
     }
-    const contractInfo = getContractInfoByType(chain, TxTypes.DecreaseRedeemLockPeriod, config)
+    const contractInfoData = getContractInfoByType(chain, TxTypes.DecreaseRedeemLockPeriod, config)
     const {isLoading, sendTransactionAsync, data} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data,
         chainId
     })
 

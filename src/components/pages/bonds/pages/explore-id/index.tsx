@@ -1,63 +1,67 @@
 import BondActions from "@/components/pages/bonds/pages/explore-id/components/bond-actions";
 import {useEffect, useState} from "react";
-import * as Web3ZCB from "@/modules/web3/zcb";
-import {BondDescription, BondInfoDetailed} from "@/modules/web3/type";
+
 import BondDetails from "@/components/pages/bonds/pages/explore-id/components/bond-info";
-import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
+import {DetailedBondResponse} from "@/modules/cloud-api/type";
 import CloudAPI from "@/modules/cloud-api";
-import {TokensResponse} from "@/modules/cloud-api/type";
-import {nop} from "@/modules/utils/function";
+import {toast} from "react-toastify";
 
-export default function ExploreId({bondInfoTmp, bondDescription}: {
-    bondInfoTmp: BondInfoDetailed,
-    bondDescription: BondDescription
-}) {
-    const {address} = useAccount()
+export default function ExploreId({bondInfoDetailed}: { bondInfoDetailed: DetailedBondResponse }) {
+    const [bondInfo, setBondInfo] = useState(bondInfoDetailed as DetailedBondResponse);
+    const [refresh, setRefresh] = useState(0);
+    const [isLoading, setLoading] = useState(false);
 
-    const [bondInfo, setBondInfo] = useState(bondInfoTmp as BondInfoDetailed);
-    const {_id, investmentToken, chainId, interestToken} = bondInfo
 
-    const [tokens, setTokens] = useState({} as TokensResponse);
+    const bondHandler = [bondInfo, setBondInfo];
+    const loadingHandler = [isLoading, setLoading];
+    const refreshHandler = [refresh, setRefresh];
 
     useEffect(() => {
-        const interval = getBondInfo([bondInfo, setBondInfo])
+        const interval = getBondInfo(bondHandler, loadingHandler, refresh)
         return () => clearInterval(interval)
-    }, [address, chainId, _id, chainId])
-
-
-    useEffect(() => {
-        const contractAddresses = [...Array.from(new Set([bondInfo.investmentToken, bondInfo.interestToken]))].filter(item => Boolean(item))
-        const params = {chainId, contractAddresses}
-
-        if (contractAddresses.length) {
-            CloudAPI.getTokens({params})
-                .then(response => setTokens(response))
-                .catch(nop)
-        }
-
-    }, [address, _id, investmentToken, interestToken, chainId])
+    }, [refresh])
 
 
     return <>
-        <div className='flex items-center justify-center md:w-auto sm:w-full'>
-            <div
-                className="flex gap-4 min-h-screen xl:p-16 lg1:p-8 sm:pb-12 sm:pt-8 sm:flex-col sm:items-center lg1:flex-row lg1:items-start md:w-auto sm:w-full">
-                <BondDetails info={bondInfo} tokens={tokens} bondDescription={bondDescription}/>
-                <BondActions info={bondInfo} tokens={tokens} bondDescription={bondDescription}/>
+        <div className='flex items-center justify-center md:w-auto sm:w-full min-h-screen'>
+            <div className="flex flex-col gap-2 justify-center xl:px-16 lg1:px-8 sm:py-4">
+                <div className='flex gap-4 lg1:flex-row sm:flex-col lg1:items-start sm:items-center md:w-auto sm:w-full'>
+                    <BondDetails bondInfo={bondInfo} loadingHandler={loadingHandler} refreshHandler={refreshHandler}/>
+                    <BondActions bondInfo={bondInfo} refreshHandler={refreshHandler}/>
+                </div>
             </div>
         </div>
     </>
 }
 
-function getBondInfo(bondHandler: any) {
-    const [bondInfo, setBondInfo] = bondHandler
-    const chain = getChain(bondInfo.chainId)
-    if (!chain || !bondInfo._id) return undefined;
+function getBondInfo(bondHandler: any[], loadingHandler: any[], refresh: number) {
+    const [bondInfo, setBondInfo] = bondHandler;
+    const [isLoading, setLoading] = loadingHandler
+    const {contractInfo} = bondInfo;
+
+    const chain = getChain(contractInfo.chainId)
+    if (!chain || !contractInfo._id) return undefined;
+
+    if (isLoading) {
+        toast.error(`Already loading`)
+        return;
+    }
+
+    if (refresh !== 0) {
+        setLoading(true);
+        CloudAPI.getBondDetailed({chainId: chain.id, _id: contractInfo._id})
+            .then(response => Boolean(response) && setBondInfo({...response, lastUpdated: Date.now()}))
+            .catch(error => console.error(error))
+            .finally(() => setLoading(false));
+    }
+
 
     return setInterval(() => {
-        Web3ZCB.getBondInfo(chain, bondInfo._id)
-            .then(response => setBondInfo({...response}))
-            .catch(error => console.error(error));
-    }, 3000);
+        setLoading(true);
+        CloudAPI.getBondDetailed({chainId: chain.id, _id: contractInfo._id})
+            .then(response => Boolean(response) && setBondInfo({...response, lastUpdated: Date.now()}))
+            .catch(error => console.error(error))
+            .finally(() => setLoading(false));
+    }, 30000);
 }

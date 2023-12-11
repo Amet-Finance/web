@@ -9,23 +9,28 @@ import {toBN} from "@/modules/web3/util";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {divBigNumber, format} from "@/modules/utils/numbers";
-import {BondInfoDetailed} from "@/modules/web3/type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {TokensResponse} from "@/modules/cloud-api/type";
+import {DetailedBondResponse} from "@/modules/cloud-api/type";
 
-export default function Purchase({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+export default function Purchase({bondInfo, refreshHandler}: {
+    bondInfo: DetailedBondResponse,
+    refreshHandler: any[]
+}) {
 
+    const [refresh, setRefresh] = refreshHandler;
+    const {contractInfo} = bondInfo;
     const {
         _id,
         chainId,
         investmentTokenAmount,
         total,
         purchased,
+        investmentTokenInfo,
         investmentToken
-    } = info;
+    } = contractInfo;
 
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork()
@@ -34,8 +39,6 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
 
 
     const chain = getChain(chainId)
-
-    const investmentTokenInfo = tokens[investmentToken.toLowerCase()];
     const bondsLeft = Number(total) - Number(purchased);
 
     const [effectRefresher, setEffectRefresher] = useState(0);
@@ -70,11 +73,11 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
         count: amount
     }
 
-    const contractInfo = getContractInfoByType(chain, txType, config)
+    const contractInfoData = getContractInfoByType(chain, txType, config)
     const {isLoading, sendTransactionAsync, status} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0),
-        data: contractInfo.data
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0),
+        data: contractInfoData.data
     })
 
 
@@ -126,7 +129,8 @@ export default function Purchase({info, tokens}: { info: BondInfoDetailed, token
                 const response = await sendTransactionAsync();
                 await trackTransaction(chain, response.hash);
 
-                await sleep(4000);
+                await sleep(2000);
+                setRefresh(Math.random());
                 await AccountSlice.initBalance(address, chainId);
             }
 

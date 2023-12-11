@@ -1,10 +1,9 @@
-import {BondInfoDetailed} from "@/modules/web3/type";
 import Styles from "@/components/pages/bonds/pages/explore-id/components/bond-actions/index.module.css";
 import {useSelector} from "react-redux";
 import {useEffect, useRef, useState} from "react";
 import {RootState} from "@/store/redux/type";
 import {getTokensPurchaseDates} from "@/modules/web3/zcb";
-import {formatTime} from "@/modules/utils/dates";
+import {formatTime, sleep} from "@/modules/utils/dates";
 import {toast} from "react-toastify";
 import {TxTypes} from "@/modules/web3/constants";
 import * as AccountSlice from "@/store/redux/account";
@@ -16,20 +15,32 @@ import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagm
 import {getChain} from "@/modules/utils/wallet-connect";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {TokensResponse} from "@/modules/cloud-api/type";
+import {DetailedBondResponse} from "@/modules/cloud-api/type";
 import {Holding} from "@/components/pages/bonds/pages/explore-id/components/bond-actions/types";
 import SettingsSVG from "../../../../../../../../public/svg/utils/settings";
 import XmarkSVG from "../../../../../../../../public/svg/xmark";
+import BigNumber from "bignumber.js";
 
-export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens: TokensResponse }) {
+export default function Redeem({bondInfo, refreshHandler}: { bondInfo: DetailedBondResponse, refreshHandler: any[] }) {
+    const [refresh, setRefresh] = refreshHandler;
+    const {contractInfo} = bondInfo;
 
-    const {_id, redeemLockPeriod, chainId, interestToken} = info;
+    const {
+        _id,
+        redeemLockPeriod,
+        chainId,
+        interestTokenAmount,
+        interestTokenInfo,
+        interestTokenBalance
+    } = contractInfo;
     const {balance} = useSelector((item: RootState) => item.account);
     const {address} = useAccount();
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork()
     const chain = getChain(chainId);
     const {open} = useWeb3Modal()
+
+    const [effectRefresh, setEffectRefresh] = useState(0)
 
     const inputRef = useRef<any>(null)
     const [tokenIds, setTokenIds] = useState([] as any);
@@ -42,7 +53,6 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
 
     const contractAddress = _id.toLowerCase() || ""
     const balanceTokenIds = balance[chainId]?.[contractAddress] || [];
-    const interestTokenInfo = tokens[interestToken.toLowerCase()]
 
     const [holdings, setHoldings] = useState([] as Holding[])
     const validTokenIds = holdings.filter((item: any) => item.isValid);
@@ -54,21 +64,21 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         contractAddress: _id,
         tokenIds: isAdvanced ? advancedTokenIds : tokenIds
     }
-    const contractInfo = getContractInfoByType(chain, TxTypes.RedeemBonds, config)
+    const contractInfoData = getContractInfoByType(chain, TxTypes.RedeemBonds, config)
 
     const {isLoading, sendTransactionAsync} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data
+        to: contractInfoData.to,
+        value: BigInt(contractInfoData.value || 0) || undefined,
+        data: contractInfoData.data
     })
 
     useEffect(() => {
         if (address && chainId) {
             AccountSlice.initBalance(address, chainId).catch(nop);
-            const interval = setInterval(() => AccountSlice.initBalance(address, chainId), 10000);
+            const interval = setInterval(() => AccountSlice.initBalance(address, chainId), 15000);
             return () => clearInterval(interval);
         }
-    }, [address, chainId])
+    }, [address, chainId, effectRefresh])
 
 
     useEffect(() => {
@@ -124,8 +134,13 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
             setTokenIds([]);
             setAmount(0);
             setAdvancedTokenIds([]);
-            inputRef.current.value = "";
-            advancedInputRef.current.value = '';
+
+            if (inputRef.current?.value) inputRef.current.value = "";
+            if (advancedInputRef.current?.value) advancedInputRef.current.value = '';
+
+            await sleep(3000);
+            setEffectRefresh(Math.random());
+            setRefresh(Math.random());
         } catch (error: any) {
             console.log(error);
         }
@@ -148,8 +163,8 @@ export default function Redeem({info, tokens}: { info: BondInfoDetailed, tokens:
         let onClick: any = submit;
 
 
-        const balance = divBigNumber(info.interestTokenBalance, interestTokenInfo.decimals);
-        const redeemAmount = divBigNumber(info.interestTokenAmount, interestTokenInfo.decimals);
+        const balance = BigNumber(interestTokenBalance?.balanceClean || 0);
+        const redeemAmount = divBigNumber(interestTokenAmount, interestTokenInfo.decimals);
         const totalTokens = toBN(config.tokenIds.length).times(redeemAmount)
 
         if (isAdvanced) {

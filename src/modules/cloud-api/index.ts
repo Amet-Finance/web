@@ -1,7 +1,14 @@
 import {postAPI, requestAPI} from "@/modules/cloud-api/util";
-import {API_URL, STORAGE_URL} from "@/modules/cloud-api/constants";
+import {API_URL} from "@/modules/cloud-api/constants";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
-import {BalanceAPIParams, BondsAPIParams, StatsAPIParams, TokensResponse} from "@/modules/cloud-api/type";
+import {
+    BalanceAPIParams,
+    BondDetailedAPIParams,
+    BondsAPIParams,
+    DetailedBondResponse,
+    StatsAPIParams,
+    TokensResponse
+} from "@/modules/cloud-api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 
 async function getBonds(params: BondsAPIParams): Promise<BondGeneral[]> {
@@ -11,6 +18,16 @@ async function getBonds(params: BondsAPIParams): Promise<BondGeneral[]> {
         params
     });
     return data;
+}
+
+async function getBondDetailed(params: BondDetailedAPIParams): Promise<DetailedBondResponse> {
+    const bondsAPI = `${API_URL}/v1/contract/detailed/${params._id}`
+    return await requestAPI({
+        url: bondsAPI,
+        params: {
+            chainId: params.chainId
+        }
+    });
 }
 
 async function getStats(params: StatsAPIParams) {
@@ -79,19 +96,14 @@ async function getTokensDetailed({params}: {
     });
 }
 
-
-async function getContractDetails(contractAddress: string) {
-    return requestAPI({url: `${STORAGE_URL}/contracts/${contractAddress.toLowerCase()}.json`});
-}
-
 const CloudAPI = {
     getBonds,
+    getBondDetailed,
     getStats,
     getBalance,
     getAddress,
     updateAddress,
     getTokens,
     getTokensDetailed,
-    getContractDetails
 }
 export default CloudAPI

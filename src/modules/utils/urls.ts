@@ -6,9 +6,9 @@ const URLS = {
     ContactUs: "https://forms.gle/zUcZUT51Zx1wiqoS7",
     StatusPage: "https://status.amet.finance",
 
-    FAQ: "https://docs.amet.finance/v1/frequently-asked-questions-faqs",
-    FAQ_WIAF: "https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-is-amet-finance",
-    FAQ_WAB: "https://docs.amet.finance/v1/frequently-asked-questions-faqs/what-are-bonds",
+    FAQ: "https://docs.amet.finance/v1/what-is-amet-finance",
+    FAQ_WIAF: "https://docs.amet.finance/v1/getting-started/frequently-asked-questions-faqs/what-is-amet-finance",
+    FAQ_WAB: "https://docs.amet.finance/v1/zero-coupon-bond/zero-coupon-bonds-zcb-on-amet-finance",
     FAQ_IOB: "https://docs.amet.finance/v1/getting-started/issuing-on-chain-bonds",
     FAQ_ZCB: "https://docs.amet.finance/v1/zero-coupon-bond/zero-coupon-bonds-zcb-on-amet-finance",
 

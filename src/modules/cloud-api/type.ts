@@ -7,6 +7,11 @@ type BondsAPIParams = {
     isTrending?: boolean;
 }
 
+type BondDetailedAPIParams = {
+    chainId: number,
+    _id: string
+}
+
 type StatsAPIParams = {
     chainId: number;
 }
@@ -28,11 +33,68 @@ type TokenResponse = {
 type TokensResponse = {
     [contractLowerCased: string]: TokenResponse
 }
+type TokenBalance = {
+    balance: string,
+    balanceClean: number,
+    decimals: number
+}
+
+type BondInfoDetailed = {
+    _id: string,
+    chainId: number,
+    issuer: string,
+    total: number,
+    purchased: number,
+    redeemed: number,
+    redeemLockPeriod: number,
+
+    investmentToken: string,
+    investmentTokenAmount: string,
+    investmentTokenInfo: TokenResponse,
+
+    interestToken: string,
+    interestTokenAmount: string,
+    interestTokenInfo: TokenResponse
+
+    interestTokenBalance?: TokenBalance,
+    feePercentage: number,
+    issuanceDate: number
+}
+
+
+type Description = {
+    name: string,
+    description: string,
+    external_url: string,
+    image: string,
+    details?: {
+        title: string,
+        description: string
+    }
+}
+
+type SecurityDetails = {
+    securedPercentage: number,
+    issuerScore: number,
+    bondScore: number,
+    uniqueHolders: number,
+    uniqueHoldersIndex: number
+}
+
+type DetailedBondResponse = {
+    description: Description,
+    contractInfo: BondInfoDetailed,
+    securityDetails: SecurityDetails,
+    lastUpdated: number
+}
+
 
 export type  {
     BondsAPIParams,
     StatsAPIParams,
     BalanceAPIParams,
     TokenResponse,
-    TokensResponse
+    TokensResponse,
+    BondDetailedAPIParams,
+    DetailedBondResponse
 }

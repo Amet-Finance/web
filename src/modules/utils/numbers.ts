@@ -3,7 +3,10 @@ import {toBN} from "@/modules/web3/util";
 function format(number: number) {
 
     if (number < 1) {
-        return number
+        if (number.toString().length > 4) {
+            return number.toFixed(4)
+        }
+        return number;
     }
 
     // Convert the number to a string
