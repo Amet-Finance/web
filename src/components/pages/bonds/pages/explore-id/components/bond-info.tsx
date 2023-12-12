@@ -167,6 +167,8 @@ function BondIssuerInfoDetails({bondInfo}: { bondInfo: DetailedBondResponse }) {
     const localAddress = `/address/${contractInfo.issuer}`
     const chainIcon = getChainIcon(chain?.id)
 
+    const issuanceDate  = new Date(contractInfo.issuanceDate * 1000)
+
 
     return <>
         <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 w-full md:text-base text-xs p-4 py-1">
@@ -202,6 +204,14 @@ function BondIssuerInfoDetails({bondInfo}: { bondInfo: DetailedBondResponse }) {
                     <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
                     <span className="text-g text-sm text-end w-min whitespace-nowrap">{chain?.name}</span>
                 </div>
+            </div>
+            <div className="flex items-center justify-between gap-2 w-full">
+                <span>Issuance Date:</span>
+                <span className="text-g text-sm" title={issuanceDate.toUTCString()}>{issuanceDate.toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2 w-full">
+                <span>Issuance Block:</span>
+                <span className="text-g text-sm">{contractInfo.issuanceBlock}</span>
             </div>
         </div>
     </>

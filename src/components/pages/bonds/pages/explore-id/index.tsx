@@ -6,6 +6,7 @@ import {getChain} from "@/modules/utils/wallet-connect";
 import {DetailedBondResponse} from "@/modules/cloud-api/type";
 import CloudAPI from "@/modules/cloud-api";
 import {toast} from "react-toastify";
+import RecentActivity from "@/components/pages/bonds/pages/explore-id/components/recent-activity";
 
 export default function ExploreId({bondInfoDetailed}: { bondInfoDetailed: DetailedBondResponse }) {
     const [bondInfo, setBondInfo] = useState(bondInfoDetailed as DetailedBondResponse);
@@ -30,6 +31,7 @@ export default function ExploreId({bondInfoDetailed}: { bondInfoDetailed: Detail
                     <BondDetails bondInfo={bondInfo} loadingHandler={loadingHandler} refreshHandler={refreshHandler}/>
                     <BondActions bondInfo={bondInfo} refreshHandler={refreshHandler}/>
                 </div>
+                <RecentActivity bondInfo={bondInfo}/>
             </div>
         </div>
     </>

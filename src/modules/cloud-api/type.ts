@@ -58,7 +58,8 @@ type BondInfoDetailed = {
 
     interestTokenBalance?: TokenBalance,
     feePercentage: number,
-    issuanceDate: number
+    issuanceDate: number,
+    issuanceBlock: number
 }
 
 

@@ -8,7 +8,7 @@ import {BondInfoDetailed, IssuerContractInfo} from "@/modules/web3/type";
 import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
-import {decodeEventLog, encodeFunctionData, getContract, TransactionReceipt} from 'viem'
+import {decodeEventLog, encodeFunctionData, getContract, parseAbiItem, TransactionReceipt} from 'viem'
 
 function getContractInstance(chain: Chain, contractAddress: string) {
     const provider = getProvider(chain)
@@ -211,6 +211,18 @@ function decode(transaction: TransactionReceipt): {} {
     return result;
 }
 
+
+async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint) {
+    const provider = getProvider(chain)
+    return await provider.getLogs({
+        address: contractAddress as any,
+        event: parseAbiItem('event Transfer(address indexed, address indexed, uint256 indexed)'),
+        fromBlock: fromBlock,
+        toBlock: toBlock
+    })
+}
+
+
 export {
     getIssuerContractInfo,
     issueBonds,
@@ -224,5 +236,6 @@ export {
     decode,
     getBondInfo,
     getTokensPurchaseDates,
-    getBondName
+    getBondName,
+    getTransferActivity
 }
