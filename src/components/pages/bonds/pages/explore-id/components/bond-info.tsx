@@ -399,10 +399,10 @@ function SecurityDetails({bondInfo}: { bondInfo: DetailedBondResponse }) {
     const isTotallyRedeemed = total - redeemed === 0
 
 
-    const bondScore = format(securityDetails.bondScore);
-    const issuerScore = format(securityDetails.issuerScore);
-    const uniqueHolders = format(securityDetails.uniqueHolders);
-    const uniqueHoldersIndex = format(securityDetails.uniqueHoldersIndex);
+    const bondScore = format(securityDetails.bondScore || 0);
+    const issuerScore = format(securityDetails.issuerScore || 0);
+    const uniqueHolders = format(securityDetails.uniqueHolders || 0);
+    const uniqueHoldersIndex = format(securityDetails.uniqueHoldersIndex || 0);
 
     const redeemedPercentage = isTotallyRedeemed ? 100 : securityDetails.securedPercentage;
     const securedTitle = isTotallyRedeemed ? "FINISHED" : `${format(redeemedPercentage)}%`;
