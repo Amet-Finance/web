@@ -28,6 +28,7 @@ export default function RecentActivity({bondInfo}: { bondInfo: DetailedBondRespo
 
         async function initiate() {
 
+            let concat = {};
             if (isLoading) {
                 return toast.error("Already loading")
             }
@@ -40,6 +41,7 @@ export default function RecentActivity({bondInfo}: { bondInfo: DetailedBondRespo
                 const currentBlock = await provider.getBlockNumber();
 
 
+                console.time('Finished fetching events')
                 const INTERPRETER = BigInt(1024)
                 const MIN_BLOCK = BigInt(contractInfo.issuanceBlock);
 
@@ -70,10 +72,12 @@ export default function RecentActivity({bondInfo}: { bondInfo: DetailedBondRespo
                             return acc;
                         }, {} as any)
 
-                        const concat = {...activity, ...mappedResults};
-                        setActivity(concat);
+                        concat = {...concat, ...mappedResults};
+                        setActivity({...concat});
                     }
                 }
+
+                console.timeEnd('Finished fetching events')
             }
 
             setLoading(false)
