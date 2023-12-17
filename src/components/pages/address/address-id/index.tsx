@@ -7,16 +7,17 @@ import TelegramSVG from "../../../../../public/svg/social/telegram";
 import {useEffect, useState} from "react";
 import CloudAPI from "@/modules/cloud-api";
 import Image from "next/image";
-import {useAccount, useNetwork, useSignMessage} from "wagmi";
+import {useAccount, useSignMessage} from "wagmi";
 import {AccountParams} from "@/components/pages/address/address-id/type";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import {mainnet} from "wagmi/chains";
 import makeBlockie from 'ethereum-blockies-base64';
-import {defaultChain} from "@/modules/utils/wallet-connect";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {BondsAPIParams} from "@/modules/cloud-api/type";
 import Loading from "@/components/utils/loading";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 export default function AddressId({address}: { address: string }) {
 
@@ -207,8 +208,8 @@ function Socials({accountInfo, changeHandler, editHandler}: any) {
 
 function Contracts({address}: { address: string }) {
 
-    const network = useNetwork();
-    const chainId = network.chain?.id || defaultChain.id;
+    const generalState = useSelector((item: RootState) => item.general);
+    const chainId = generalState.chainId;
 
     const Types: any = {
         Issued: 'issued',

@@ -4,11 +4,11 @@ import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
 import {join} from "@/modules/utils/styles";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
-import {useNetwork} from "wagmi";
-import {defaultChain} from "@/modules/utils/wallet-connect";
 import Loading from "@/components/utils/loading";
 import InfoBox from "@/components/utils/info-box";
 import SearchSVG from "../../../../../../public/svg/utils/search";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 
 export default function Explore() {
@@ -30,12 +30,12 @@ export default function Explore() {
 
 function BondsContainer() {
 
-    const {chain} = useNetwork();
-    const chainId = chain?.id || defaultChain.id
+    const generalState = useSelector((item: RootState) => item.general);
+    const chainId = generalState.chainId;
 
     const inputRef = useRef<any>()
 
-    const [search, setSearch] = useState({text: "", hideSold: true, hideNotVerified: false, isTrending: false});
+    const [search, setSearch] = useState({text: "", hideSold: false, hideNotVerified: false, isTrending: false});
     const [bonds, setBonds] = useState({
         isLoading: false,
         limit: 100,

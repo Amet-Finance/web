@@ -8,21 +8,25 @@ import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
 import {useWeb3Modal} from '@web3modal/wagmi/react'
 
-import {useAccount, useDisconnect, useNetwork, useSwitchNetwork} from "wagmi";
-import {CHAINS, defaultChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {useAccount, useDisconnect} from "wagmi";
+import {CHAINS, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {NAV_ITEMS} from "@/components/navbar/constants";
 import {shorten} from "@/modules/web3/util";
-import Loading from "@/components/utils/loading";
 import {nop} from "@/modules/utils/function";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
+import GeneralState from "@/store/redux/general";
 
 
 export default function Navbar() {
     const {address} = useAccount();
-    const {chain} = useNetwork();
+
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
 
     useEffect(() => {
-        if (address && chain?.id) {
-            AccountSlice.initBalance(address, chain?.id).catch(nop)
+        if (address && generalState.chainId) {
+            AccountSlice.initBalance(address, generalState.chainId).catch(nop)
         }
     }, [address, chain]);
 
@@ -166,6 +170,7 @@ function ConnectedState({isMobile}: { isMobile?: boolean }) {
 }
 
 function WalletDropDown({enableHandler}: { enableHandler: any }) {
+    const {open} = useWeb3Modal();
     const {address} = useAccount()
     const {disconnect} = useDisconnect()
     const [isEnabled, setEnabled, enable] = enableHandler;
@@ -177,6 +182,7 @@ function WalletDropDown({enableHandler}: { enableHandler: any }) {
 
     return <>
         <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
+            <button onClick={() => open()}>Account</button>
             <Link href={`/address/${address}`} className='w-full text-center'>
                 <span className='w-full'>Dashboard</span>
             </Link>
@@ -192,10 +198,8 @@ function Chains() {
     const [isOpen, setOpen] = useState(false)
     const boxRef = useRef<any>()
 
-    const {isConnecting, isReconnecting} = useAccount();
-    const network = useNetwork();
-    const chain = network.chain || defaultChain;
-
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
 
     const change = () => setOpen(!isOpen)
 
@@ -211,15 +215,10 @@ function Chains() {
         return () => document.removeEventListener('click', handleClickOutside);
     }, [boxRef]);
 
-    if (isConnecting || isReconnecting) {
-        return <Loading percent={50}/>;
-    }
-
-
     return <>
         <div className='relative flex flex-col p-2' ref={boxRef}>
-            <Image src={getChainIcon(chain.id)}
-                   alt={chain?.name}
+            <Image src={getChainIcon(chain?.id)}
+                   alt={chain?.name || ""}
                    width={30} height={30}
                    className='cursor-pointer'
                    onClick={change}/>
@@ -241,25 +240,9 @@ function ChainsDropDown({change}: any) {
 }
 
 function Chain({chain}: any) {
-    const {open} = useWeb3Modal()
-    const {address, isConnected} = useAccount()
-    const {switchNetworkAsync} = useSwitchNetwork()
-
-
-    async function change() {
-        try {
-            if (!address) {
-                await open({view: "Connect"})
-            } else {
-                await switchNetworkAsync?.(chain.id)
-            }
-        } catch (error: any) {
-            console.log(error)
-        }
-    }
-
     return <>
-        <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded' onClick={change}>
+        <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded'
+             onClick={() => GeneralState.switchGeneralChain(chain.id)}>
             <Image src={getChainIcon(chain.id)} alt={chain.name} width={22} height={22} className='cursor-pointer'/>
             <span className='text-sm'>{chain.name}</span>
         </div>

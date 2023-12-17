@@ -1,4 +1,4 @@
-import {useAccount, useNetwork, useSendTransaction} from "wagmi";
+import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {useEffect, useRef, useState} from "react";
 import {requestAPI} from "@/modules/cloud-api/util";
 import Loading from "@/components/utils/loading";
@@ -23,6 +23,9 @@ import {getAllowance} from "@/modules/web3/tokens";
 import {nop} from "@/modules/utils/function";
 import SwapSVG from "../../../../public/svg/utils/swap";
 import {toBN} from "@/modules/web3/util";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
+import {getChain} from "@/modules/utils/wallet-connect";
 
 const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
@@ -50,7 +53,14 @@ const chainsByRouterNames: { [key: string]: string } = {
 const LOCAL_KYBER_CONFIG = 'kyberswap-config'
 
 export default function Swap() {
-    const {chain} = useNetwork();
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
+
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork({
+        chainId: chain?.id
+    });
+
     const {address} = useAccount();
     const {open} = useWeb3Modal()
 
@@ -264,6 +274,10 @@ export default function Swap() {
 
             if (!result.encodedSwapData) {
                 return toast.error("Please select the token")
+            }
+
+            if (network.chain?.id !== chain?.id) {
+                await switchNetworkAsync?.();
             }
 
 

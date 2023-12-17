@@ -3,8 +3,8 @@ import {useEffect, useState} from "react";
 import {format} from "@/modules/utils/numbers";
 import Loading from "@/components/utils/loading";
 import CloudApi from "@/modules/cloud-api";
-import {useNetwork} from "wagmi";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const Keys: { [key: string]: any } = {
     issued: {
@@ -27,8 +27,8 @@ const Keys: { [key: string]: any } = {
 
 export default function Statistics() {
 
-    const {chain} = useNetwork();
-    const chainId = chain?.id || defaultChain.id
+    const generalState = useSelector((item: RootState) => item.general);
+    const chainId = generalState.chainId;
 
     const [isLoading, setLoading] = useState(false);
     const [statistics, setStatistics] = useState({

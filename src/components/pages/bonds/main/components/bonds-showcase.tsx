@@ -5,8 +5,8 @@ import Bond from "@/components/pages/bonds/utils/bond";
 import Loading from "@/components/utils/loading";
 import {getBondsHandler} from "@/components/pages/bonds/utils/bond/functions";
 import ArrowSVG from "../../../../../../public/svg/utils/arrow";
-import {useNetwork} from "wagmi";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 export default function BondsShowcase() {
     return <>
@@ -24,8 +24,8 @@ export default function BondsShowcase() {
 
 function BondsScreen() {
 
-    const {chain} = useNetwork();
-    const chainId = chain?.id || defaultChain.id
+    const generalState = useSelector((item: RootState) => item.general);
+    const chainId = generalState.chainId;
 
     const [bonds, setBonds] = useState({
         isLoading: false,

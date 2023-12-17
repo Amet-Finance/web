@@ -17,25 +17,32 @@ import TotalSVG from "../../../../../../public/svg/total";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
 import {IssuerContractInfo, TokenResponseDetailed} from "@/modules/web3/type";
-import {Chain, useAccount, useNetwork, useSendTransaction} from "wagmi";
+import {Chain, useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {getIssuerContractInfo} from "@/modules/web3/zcb";
 import InfoBox from "@/components/utils/info-box";
 import CloudAPI from "@/modules/cloud-api";
 import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/constants";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/wallet-connect";
 import makeBlockie from "ethereum-blockies-base64";
 import VerifiedSVG from "../../../../../../public/svg/verified";
 import {nop} from "@/modules/utils/function";
 import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 
 export default function Issue() {
 
     const {address} = useAccount();
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
+
     const network = useNetwork();
-    const chain = network.chain || defaultChain;
+    const {switchNetworkAsync} = useSwitchNetwork({
+        chainId: chain?.id
+    });
     const {open} = useWeb3Modal()
 
     const [additionalInfo, setAdditionalInfo] = useState({} as IssuerContractInfo)
@@ -93,6 +100,11 @@ export default function Issue() {
             if (!address) {
                 return open()
             }
+
+            if (network.chain?.id !== chain?.id) {
+                await switchNetworkAsync?.();
+            }
+
 
             const response = await sendTransactionAsync();
             if (response?.hash && chain) {
@@ -239,6 +251,7 @@ export default function Issue() {
     }, [chain, address, bondInfo.investmentToken])
 
     useEffect(() => {
+        if (!chain?.id) return;
         const params = {
             chainId: chain?.id,
             contractAddresses: [],
@@ -581,7 +594,8 @@ function Token({tokenInfo, type, total, additionalInfo}: {
 }
 
 function NotIdentified() {
-    const {chain} = useNetwork()
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
 
     return <>
         <div className="flex lg:items-center md:items-start gap-4 lg:max-w-lg md:max-w-none">

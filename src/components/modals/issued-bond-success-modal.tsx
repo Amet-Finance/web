@@ -4,10 +4,11 @@ import {RootState} from "@/store/redux/type";
 import CongratulationsSVG from "../../../public/svg/congratulations";
 import XmarkSVG from "../../../public/svg/xmark";
 import {closeModal} from "@/store/redux/modal";
-import {useNetwork} from "wagmi";
+import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function IssuedBondSuccessModal() {
-    const {chain} = useNetwork()
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
     const modalState = useSelector((item: RootState) => item.modal)
 
 

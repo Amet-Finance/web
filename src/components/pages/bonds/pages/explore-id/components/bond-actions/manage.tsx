@@ -6,7 +6,7 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import Loading from "@/components/utils/loading";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {DetailedBondResponse} from "@/modules/cloud-api/type";
-import {mulBigNumber} from "@/modules/utils/numbers";
+import {divBigNumber, format, mulBigNumber} from "@/modules/utils/numbers";
 import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
 import {getAddress} from "viem";
 import {ModalTypes} from "@/store/redux/modal/constants";
@@ -31,7 +31,7 @@ function EditDescription({bondInfo}: { bondInfo: DetailedBondResponse }) {
     return <>
         <button
             onClick={() => openModal(ModalTypes.BondEditDescription, {bondInfo})}
-            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center">
+            className="flex items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:border-w3 whitespace-nowrap text-center">
             Update Bond Description
         </button>
     </>
@@ -40,10 +40,25 @@ function EditDescription({bondInfo}: { bondInfo: DetailedBondResponse }) {
 function WithdrawRemaining({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     const {contractInfo} = bondInfo;
-    const {_id, chainId, interestToken, interestTokenInfo} = contractInfo;
+    const {
+        _id,
+        chainId,
+        interestToken,
+        interestTokenInfo,
+        interestTokenBalance,
+        interestTokenAmount,
+        total,
+        purchased,
+        redeemed
+    } = contractInfo;
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
     const chain = getChain(chainId);
+
+    const interestAmount = divBigNumber(interestTokenAmount, interestTokenInfo.decimals).toNumber()
+    const remainingAmount = (interestTokenBalance?.balanceClean || 0) - ((total - redeemed) * interestAmount);
+    const hasRemaining = remainingAmount > 0;
+
 
     const config = {contractAddress: _id,}
     const contractInfoData = getContractInfoByType(chain, TxTypes.WithdrawRemaining, config)
@@ -56,6 +71,10 @@ function WithdrawRemaining({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     async function withdrawRemaining() {
         try {
+            if (!hasRemaining) {
+                return;
+            }
+
             if (chain?.id !== network.chain?.id) {
                 await switchNetworkAsync?.(chain?.id)
             }
@@ -69,16 +88,26 @@ function WithdrawRemaining({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     return <>
         <button
-            className="flex justify-center items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:bg-white hover:text-black whitespace-nowrap text-center"
+            className={
+                "flex items-center gap-2 px-2 py-1 border border-solid border-w1 rounded hover:border-w3 whitespace-nowrap text-center " + (!hasRemaining ? "cursor-not-allowed " : "")}
             onClick={withdrawRemaining}>
-            Withdraw Remaining {interestTokenInfo?.symbol} {isLoading && <Loading percent={70}/>}
+            Withdraw Remaining
+            <span
+                className={hasRemaining ? "text-green-500 font-medium" : "text-g"}>({format(remainingAmount)} {interestTokenInfo?.symbol})</span>
+            {
+                isLoading && <Loading percent={70}/>
+            }
         </button>
     </>
 }
 
 function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
     const {contractInfo} = bondInfo
-    const {_id, chainId, interestToken, interestTokenInfo} = contractInfo;
+    const {_id, chainId, interestToken, interestTokenInfo, total, redeemed, interestTokenAmount} = contractInfo;
+
+    const interestAmount = divBigNumber(interestTokenAmount, interestTokenInfo.decimals).toNumber()
+    const totalNeeded = (total - redeemed) * interestAmount;
+
     const [amount, setAmount] = useState(0);
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork();
@@ -100,6 +129,7 @@ function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
         data: contractInfoData.data
     })
 
+    const changeByPercentage = (percentage: number) => setAmount(Math.round((totalNeeded * percentage) / 100))
     const changeAmount = (event: any) => setAmount(event.target.value || 0)
 
     async function deposit() {
@@ -125,13 +155,24 @@ function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
-            <input type="number" className='px-2 w-full bg-transparent text-g'
-                   placeholder="Enter deposit amount to increase Secured Percentage"
-                   onChange={changeAmount}/>
+        <div
+            className='flex gap-2 justify-between items-center border border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
+            <div className='flex md:flex-col sm:flex-row px-2 py-1 gap-2 w-full'>
+                <input type="number" className='w-full bg-transparent text-g'
+                       placeholder="Deposit Interest Tokens"
+                       onChange={changeAmount}
+                       value={amount || ""}
+                />
+                <div className='flex gap-2 items-center text-xs w-full'>
+                    <button className='border border-w1 px-2' onClick={() => changeByPercentage(10)}>10%</button>
+                    <button className='border border-w1 px-2' onClick={() => changeByPercentage(30)}>30%</button>
+                    <button className='border border-w1 px-2' onClick={() => changeByPercentage(50)}>50%</button>
+                    <button className='border border-w1 px-2' onClick={() => changeByPercentage(100)}>100%</button>
+                </div>
+            </div>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem]"
-                onClick={deposit}>Deposit {isLoading && <Loading percent={70}/>}</button>
+                className="flex justify-center items-center gap-2 px-2 py-1  w-full border-w1 md:min-w-[12rem] sm:min-w-0"
+                onClick={deposit}>Deposit Interest {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
 }
@@ -176,12 +217,13 @@ function ChangeOwner({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
+        <div
+            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
             <input type="text" className='px-2 w-full bg-transparent' onChange={onChange}
                    placeholder='Enter the new owner address'
             />
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
+                className="flex justify-center items-center gap-2 px-2 py-1 w-full whitespace-nowrap hover:border-w3 md:min-w-[12rem] sm:min-w-0"
                 onClick={changeOwner}>Change Owner {isLoading && <Loading percent={70}/>}
             </button>
         </div>
@@ -229,11 +271,12 @@ function IssueBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
+        <div
+            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
             <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent'
                    placeholder='The amount of bonds you want to issue'/>
             <button
-                className="flex items-center justify-center gap-2 px-2 py-1 border border-l-2 border-w1 whitespace-nowrap hover:bg-white hover:text-black min-w-[12rem]"
+                className="flex items-center justify-center gap-2 px-2 py-1 whitespace-nowrap md:min-w-[12rem] sm:min-w-0"
                 onClick={issueMoreBonds}>Issue More bonds {isLoading && <Loading percent={70}/>}
             </button>
         </div>
@@ -280,12 +323,13 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div className='flex gap-2 justify-between items-center border border-solid border-w1 rounded'>
+        <div
+            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
             <input type="number" className='px-2 w-full bg-transparent text-g'
                    placeholder="The amount of bonds you want to burn"
                    onChange={changeAmount}/>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem]"
+                className="flex justify-center items-center gap-2 px-2 py-1 whitespace-nowrap md:min-w-[12rem] sm:min-w-0"
                 onClick={burnUnsoldBonds}>Burn Unsold Bonds {isLoading && <Loading percent={70}/>}</button>
         </div>
     </>
@@ -370,7 +414,7 @@ function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: DetailedBondResponse }
 
     return <>
         <div className='flex flex-col w-full gap-2'>
-            <div className="flex gap-2 justify-between w-full">
+            <div className="flex gap-2 justify-between w-full md:flex-row sm:flex-col">
                 <div className="flex items-center justify-between w-full h-full gap-1">
                     <div
                         className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
@@ -407,7 +451,7 @@ function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: DetailedBondResponse }
                     </div>
                 </div>
                 <button
-                    className="flex justify-center items-center gap-2 px-2 py-1 border whitespace-nowrap border-l-2 border-w1 hover:bg-white hover:text-black min-w-[12rem] rounded"
+                    className="flex justify-center items-center gap-2 px-2 py-1 border  border-w1 hover:border-w3 whitespace-nowrap md:min-w-[12rem] sm:min-w-0 rounded"
                     onClick={decrease}>Decrease Lock Period {isLoading && <Loading percent={70}/>}</button>
             </div>
             {

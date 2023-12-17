@@ -28,7 +28,7 @@ export default function RecentActivity({bondInfo}: { bondInfo: DetailedBondRespo
 
         async function initiate() {
 
-            let concat = {};
+            let concat: ActivityLogs = {};
             if (isLoading) {
                 return toast.error("Already loading")
             }
