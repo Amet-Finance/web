@@ -1,5 +1,5 @@
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react';
-import {bsc, manta, optimism, polygon, polygonMumbai, polygonZkEvm, zetachainAthensTestnet} from 'wagmi/chains';
+import {bsc, manta, optimism, polygon, polygonZkEvm, zetachainAthensTestnet} from 'wagmi/chains';
 
 const projectId = '777e05ce479a4c4b6e33deaed761ef5b'
 
@@ -10,7 +10,7 @@ const metadata = {
     icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const CHAINS = [manta, polygon, optimism, polygonZkEvm, zetachainAthensTestnet, bsc, polygonMumbai]
+const CHAINS = [manta, polygon, optimism, polygonZkEvm, zetachainAthensTestnet, bsc]
 const defaultChain = CHAINS[0];
 const wagmiConfig = defaultWagmiConfig({
     chains: CHAINS,
@@ -23,11 +23,7 @@ createWeb3Modal({
     wagmiConfig, projectId,
     chains: CHAINS,
     defaultChain,
-    themeMode: "dark",
-    // chainImages: {
-    //     [mainnet.id]: `https://amet.finance/svg/chains/0x${mainnet.id.toString(16)}.svg`,
-    //     [polygonMumbai.id]: `https://amet.finance/svg/chains/0x${polygonMumbai.id.toString(16)}.svg`
-    // }
+    themeMode: "dark"
 })
 
 function getChainIcon(chainId: string | number | undefined) {
