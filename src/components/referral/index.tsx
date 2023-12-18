@@ -1,6 +1,8 @@
 import {useState} from "react";
 import {useAccount, useSignMessage} from "wagmi";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import Image from "next/image";
+
 
 const States = {
     BecomeAReferralPartner: 'BecomeAReferralPartner',
@@ -12,9 +14,12 @@ export default function Referral() {
     const stateHandler = [state, setState];
 
     return <>
-        <div className='flex justify-center items-center min-h-[90vh]'>
-            <BecomeAReferralPartner stateHandler={stateHandler}/>
-            <ReferralPartnerForm stateHandler={stateHandler}/>
+        <div className='relative flex justify-center items-center min-h-[90vh]'>
+            <Image src='/svg/images/bg-referral.svg' alt='Bond abstract image'  fill className='absolute top-full left-0'/>
+            <div className='flex justify-center items-center z-10'>
+                <BecomeAReferralPartner stateHandler={stateHandler}/>
+                <ReferralPartnerForm stateHandler={stateHandler}/>
+            </div>
         </div>
     </>
 }
@@ -30,12 +35,13 @@ function BecomeAReferralPartner({stateHandler}: { stateHandler: any }) {
         <div className='flex flex-col gap-4 items-center'>
             <div className='flex flex-col gap-2 items-center text-center'>
                 <h1 className='text-3xl font-bold'>Unlock Earnings with Amet Finance Referral Program</h1>
-                <p className='max-w-3xl text-g'>Join our referral program to earn rewards by promoting on-chain bonds.
-                    Sign up now and start earning with every bond issued through your referral link</p>
+                <p className='max-w-3xl text-g'>{`Share the power of innovative bond solutions with your network, and earn attractive rewards for
+                    every successful referral. Become a part of our mission to revolutionize the world of decentralized
+                    finance.`}</p>
             </div>
             <button className='border border-w1 p-1.5 px-8 rounded hover:text-black hover:bg-white'
                     onClick={() => setState(States.ReferralPartnerForm)}>
-                Become a Referral Partner
+                Start Referring & Earning
             </button>
         </div>
     </>
@@ -81,7 +87,7 @@ function ReferralPartnerForm({stateHandler}: { stateHandler: any }) {
         <div className='flex flex-col justify-center items-center gap-4'>
 
             <div className='flex flex-col gap-2 text-center'>
-                <h1 className='text-2xl font-bold'>Become a Referral Partner with Amet Finance</h1>
+                <h1 className='text-3xl font-bold'>Become a Referral Partner with Amet Finance</h1>
                 <p className='max-w-3xl'>{`Empower yourself with our referral partner program. Fill out the form below, and unlock the potential to earn commissions by promoting Amet Finance's revolutionary on-chain bonds. Join us on this rewarding journey`}</p>
             </div>
 

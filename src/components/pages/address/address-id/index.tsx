@@ -10,7 +10,6 @@ import Image from "next/image";
 import {useAccount, useSignMessage} from "wagmi";
 import {AccountParams} from "@/components/pages/address/address-id/type";
 import {getExplorer, shorten} from "@/modules/web3/util";
-import {mainnet} from "wagmi/chains";
 import makeBlockie from 'ethereum-blockies-base64';
 import Bond from "@/components/pages/bonds/utils/bond";
 import {BondsAPIParams} from "@/modules/cloud-api/type";
@@ -18,10 +17,13 @@ import Loading from "@/components/utils/loading";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import {getChain} from "@/modules/utils/wallet-connect";
 
 export default function AddressId({address}: { address: string }) {
 
     const account = useAccount();
+    const generalState = useSelector((item: RootState) => item.general);
+    const chain = getChain(generalState.chainId);
 
     const [accountInfo, setAccountInfo] = useState<AccountParams>({})
     const [changeInfo, setChangeInfo] = useState({} as any)
@@ -31,7 +33,8 @@ export default function AddressId({address}: { address: string }) {
     const [isEdit, setEdit] = useState(false);
     const [refresh, setRefresh] = useState(0)
 
-    const addressExplorer = getExplorer(mainnet.id, "address", address);
+    const addressExplorer = getExplorer(chain?.id, "address", address);
+    console.log(addressExplorer)
 
     useEffect(() => {
         if (account.address) {
@@ -52,24 +55,28 @@ export default function AddressId({address}: { address: string }) {
 
 
     async function saveChanges() {
-        const signature = await signMessageAsync();
+        try {
+            const signature = await signMessageAsync();
 
-        const params = {
-            address: account.address,
-            message,
-            signature
-        }
+            const params = {
+                address: account.address,
+                message,
+                signature
+            }
 
-        const body = {
-            ...accountInfo,
-            ...changeInfo
-        }
+            const body = {
+                ...accountInfo,
+                ...changeInfo
+            }
 
-        const response = await CloudAPI.updateAddress({params, body})
-        if (response) {
-            console.log(`response`, response);
-            setRefresh(Math.random() * 10);
-            setEdit(false);
+            const response = await CloudAPI.updateAddress({params, body})
+            if (response) {
+                console.log(`response`, response);
+                setRefresh(Math.random() * 10);
+                setEdit(false);
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -199,8 +206,7 @@ function Socials({accountInfo, changeHandler, editHandler}: any) {
                     </div>
                 </div>
             </>}
-            {socialsExist &&
-                <span className='text-sm text-g mt-4 max-w-sm'>Please note that users have the ability to edit their social information. A verification badge will be displayed only when the social information associated with an address has been verified.</span>}
+            <span className='text-sm text-g mt-4 max-w-sm'>Please note that users have the ability to edit their social information. A verification badge will be displayed only when the social information associated with an address has been verified.</span>
         </div>
     </>
 }

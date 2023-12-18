@@ -15,14 +15,32 @@ import {openModal} from "@/store/redux/modal";
 export default function Manage({bondInfo}: { bondInfo: DetailedBondResponse }) {
 
     return <>
-        <div className="flex flex-col gap-4 text-sm">
+        <div className="flex flex-col gap-4 text-sm pb-4">
             <EditDescription bondInfo={bondInfo}/>
             <WithdrawRemaining bondInfo={bondInfo}/>
-            <Deposit bondInfo={bondInfo}/>
-            <ChangeOwner bondInfo={bondInfo}/>
-            <IssueBonds bondInfo={bondInfo}/>
-            <BurnUnsoldBonds bondInfo={bondInfo}/>
-            <DecreaseRedeemLockPeriod bondInfo={bondInfo}/>
+            <InputContainer>
+                <Deposit bondInfo={bondInfo}/>
+            </InputContainer>
+            <InputContainer>
+                <ChangeOwner bondInfo={bondInfo}/>
+            </InputContainer>
+            <InputContainer>
+                <IssueBonds bondInfo={bondInfo}/>
+            </InputContainer>
+            <InputContainer>
+                <BurnUnsoldBonds bondInfo={bondInfo}/>
+            </InputContainer>
+            <InputContainer>
+                <DecreaseRedeemLockPeriod bondInfo={bondInfo}/>
+            </InputContainer>
+        </div>
+    </>
+}
+
+function InputContainer({children}: any) {
+    return <>
+        <div className='relative grid grid-cols-6 border border-w1 rounded hover:border-w3'>
+            {children}
         </div>
     </>
 }
@@ -155,9 +173,7 @@ function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div
-            className='flex gap-2 justify-between items-center border border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
-            <div className='flex md:flex-col sm:flex-row px-2 py-1 gap-2 w-full'>
+        <div className='flex md:flex-col sm:flex-row px-2 py-1 gap-2 w-full col-span-4'>
                 <input type="number" className='w-full bg-transparent text-g'
                        placeholder="Deposit Interest Tokens"
                        onChange={changeAmount}
@@ -171,9 +187,8 @@ function Deposit({bondInfo}: { bondInfo: DetailedBondResponse }) {
                 </div>
             </div>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1  w-full border-w1 md:min-w-[12rem] sm:min-w-0"
+                className="flex justify-center items-center gap-2 px-2 py-1  w-full border-w1 text-end col-span-2 bg-neutral-900"
                 onClick={deposit}>Deposit Interest {isLoading && <Loading percent={70}/>}</button>
-        </div>
     </>
 }
 
@@ -217,16 +232,14 @@ function ChangeOwner({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div
-            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
-            <input type="text" className='px-2 w-full bg-transparent' onChange={onChange}
+
+        <input type="text" className='px-2 w-full bg-transparent col-span-4' onChange={onChange}
                    placeholder='Enter the new owner address'
             />
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 w-full whitespace-nowrap hover:border-w3 md:min-w-[12rem] sm:min-w-0"
+                className="flex justify-center items-center gap-2 px-2 py-1 w-full whitespace-nowrap hover:border-w3 col-span-2 bg-neutral-900"
                 onClick={changeOwner}>Change Owner {isLoading && <Loading percent={70}/>}
             </button>
-        </div>
     </>
 }
 
@@ -271,15 +284,12 @@ function IssueBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div
-            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
-            <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent'
+        <input type="number" onChange={changeAmount} className='px-2 w-full bg-transparent col-span-4'
                    placeholder='The amount of bonds you want to issue'/>
             <button
-                className="flex items-center justify-center gap-2 px-2 py-1 whitespace-nowrap md:min-w-[12rem] sm:min-w-0"
+                className="flex items-center justify-center gap-2 px-2 py-1 whitespace-nowrap col-span-2 bg-neutral-900"
                 onClick={issueMoreBonds}>Issue More bonds {isLoading && <Loading percent={70}/>}
             </button>
-        </div>
     </>
 }
 
@@ -323,15 +333,12 @@ function BurnUnsoldBonds({bondInfo}: { bondInfo: DetailedBondResponse }) {
     }
 
     return <>
-        <div
-            className='flex gap-2 justify-between items-center border border-solid border-w1 rounded hover:border-w3 md:flex-row sm:flex-col'>
-            <input type="number" className='px-2 w-full bg-transparent text-g'
+        <input type="number" className='px-2 w-full bg-transparent text-g col-span-4'
                    placeholder="The amount of bonds you want to burn"
                    onChange={changeAmount}/>
             <button
-                className="flex justify-center items-center gap-2 px-2 py-1 whitespace-nowrap md:min-w-[12rem] sm:min-w-0"
+                className="flex justify-center items-center gap-2 px-2 py-1 whitespace-nowrap col-span-2 bg-neutral-900"
                 onClick={burnUnsoldBonds}>Burn Unsold Bonds {isLoading && <Loading percent={70}/>}</button>
-        </div>
     </>
 }
 
@@ -413,51 +420,45 @@ function DecreaseRedeemLockPeriod({bondInfo}: { bondInfo: DetailedBondResponse }
 
 
     return <>
-        <div className='flex flex-col w-full gap-2'>
-            <div className="flex gap-2 justify-between w-full md:flex-row sm:flex-col">
-                <div className="flex items-center justify-between w-full h-full gap-1">
-                    <div
-                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                        onClick={focusInnerInput}>
-                        <span className="text-g3">Hour</span>
-                        <input type="number"
-                               className="bg-transparent text-white w-full max-w-[50px] text-center"
-                               id='hour' defaultValue={timer.hour}
-                               onChange={change}/>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                        onClick={focusInnerInput}>
-                        <span className="text-g3">Day</span>
-                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='day'
-                               defaultValue={timer.day}
-                               onChange={change}/>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                        onClick={focusInnerInput}>
-                        <span className="text-g3">Month</span>
-                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='month'
-                               defaultValue={timer.month}
-                               onChange={change}/>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                        onClick={focusInnerInput}>
-                        <span className="text-g3">Year</span>
-                        <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='year'
-                               defaultValue={timer.year}
-                               onChange={change}/>
-                    </div>
-                </div>
-                <button
-                    className="flex justify-center items-center gap-2 px-2 py-1 border  border-w1 hover:border-w3 whitespace-nowrap md:min-w-[12rem] sm:min-w-0 rounded"
-                    onClick={decrease}>Decrease Lock Period {isLoading && <Loading percent={70}/>}</button>
-            </div>
-            {
-                Number.isFinite(Number(total)) &&
-                <span className='text-g'>New Lock Period: {formatTime(Number(total), true)}</span>
-            }
+        <div
+            className="flex flex-col items-center justify-center bg-transparent border-r-2 border-w1 text-white text-xs h-full"
+            onClick={focusInnerInput}>
+            <span className="text-g3">Hour</span>
+            <input type="number"
+                   className="bg-transparent text-white w-full max-w-[50px] text-center"
+                   id='hour' defaultValue={timer.hour}
+                   onChange={change}/>
         </div>
+        <div
+            className="flex flex-col items-center justify-center bg-transparent border-r-2 border-w1 text-white text-xs h-full"
+            onClick={focusInnerInput}>
+            <span className="text-g3">Day</span>
+            <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='day'
+                   defaultValue={timer.day}
+                   onChange={change}/>
+        </div>
+        <div
+            className="flex flex-col items-center justify-center bg-transparent border-r-2 border-w1 text-white text-xs h-full"
+            onClick={focusInnerInput}>
+            <span className="text-g3">Month</span>
+            <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='month'
+                   defaultValue={timer.month}
+                   onChange={change}/>
+        </div>
+        <div
+            className="flex flex-col items-center justify-center bg-transparent text-white text-xs h-full"
+            onClick={focusInnerInput}>
+            <span className="text-g3">Year</span>
+            <input type="number" className="bg-transparent text-white max-w-[50px] text-center" id='year'
+                   defaultValue={timer.year}
+                   onChange={change}/>
+        </div>
+        <button
+            className="flex justify-center items-center gap-2 px-2 py-1 hover:border-w3  bg-neutral-900 col-span-2"
+            onClick={decrease}>Decrease Lock Period {isLoading && <Loading percent={70}/>}</button>
+        {
+            Number.isFinite(Number(total)) &&
+            <span className='absolute top-[110%] left-0 text-g text-xs'>New Lock Period: {formatTime(Number(total), true)}</span>
+        }
     </>
 }

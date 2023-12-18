@@ -181,15 +181,15 @@ function WalletDropDown({enableHandler}: { enableHandler: any }) {
     }
 
     return <>
-        <div className={dropStyles + " bg-black border border-w1 rounded"} onClick={enable}>
-            <button onClick={() => open()}>Account</button>
-            <Link href={`/address/${address}`} className='w-full text-center'>
-                <span className='w-full'>Dashboard</span>
+        <div className={dropStyles + " bg-black border border-w1 rounded gap-1"} onClick={enable}>
+            <button className='w-full hover:bg-g6 p-2 py-1 rounded' onClick={() => open()}>Account</button>
+            <Link href={`/address/${address}`} className='w-full hover:bg-g6 p-2 py-1 rounded'>
+                <button className='w-full'>Dashboard</button>
             </Link>
-            <Link href="/referral" className='w-full text-center'>
-                <span className='w-full'>Referral</span>
+            <Link href="/referral" className='w-full hover:bg-g6 p-2 py-1 rounded'>
+                <button className='w-full'>Referral</button>
             </Link>
-            <button className="w-full text-center" onClick={() => disconnect?.()}>Disconnect</button>
+            <button className='w-full hover:bg-g6 p-2 py-1 rounded' onClick={() => disconnect?.()}>Disconnect</button>
         </div>
     </>
 }
