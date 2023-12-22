@@ -36,7 +36,7 @@ export default function Navbar() {
             GeneralState.switchGeneralChain(network.chain.id)
         }
     }, [address]);
-    
+
     return <>
         <DesktopNav/>
         <MobileNav/>
