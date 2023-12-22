@@ -8,7 +8,7 @@ import XmarkSVG from "../../../public/svg/xmark";
 import Image from "next/image";
 import {useWeb3Modal} from '@web3modal/wagmi/react'
 
-import {useAccount, useDisconnect} from "wagmi";
+import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {CHAINS, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {NAV_ITEMS} from "@/components/navbar/constants";
 import {shorten} from "@/modules/web3/util";
@@ -20,6 +20,7 @@ import GeneralState from "@/store/redux/general";
 
 export default function Navbar() {
     const {address} = useAccount();
+    const network = useNetwork();
 
     const generalState = useSelector((item: RootState) => item.general);
     const chain = getChain(generalState.chainId);
@@ -30,6 +31,12 @@ export default function Navbar() {
         }
     }, [address, chain]);
 
+    useEffect(() => {
+        if (address && network.chain?.id) {
+            GeneralState.switchGeneralChain(network.chain.id)
+        }
+    }, [address]);
+    
     return <>
         <DesktopNav/>
         <MobileNav/>
