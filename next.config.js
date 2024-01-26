@@ -4,7 +4,12 @@ const nextConfig = {
     images: {
         remotePatterns: [{
             hostname: 'storage.amet.finance'
-        }]
+        }, {
+            hostname: "static.coinstats.app"
+        },
+            {
+                hostname: "miro.medium.com"
+            }],
     }
 }
 

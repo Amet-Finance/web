@@ -1,5 +1,32 @@
-import {TokenInfo, TokenResponseDetailed} from "@/modules/web3/type";
-import {TokenResponse} from "@/modules/cloud-api/type";
+import {IssuerContractInfoDetailed, TokenInfo, TokenResponseDetailed} from "@/modules/web3/type";
+import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
+
+type BondInfoForIssuance = {
+    total: number,
+    maturityPeriod: number,
+    chainId: number,
+    investmentToken: string,
+    investmentAmount: number,
+    interestToken: string,
+    interestAmount: number
+}
+
+type BondData = {
+    bondInfoHandler: [BondInfoForIssuance, any],
+}
+
+type BondAndTokenData = BondData & {
+    tokensHandler: [TokensResponse, any]
+}
+
+type BondAndTokenDataWithType = BondAndTokenData & {
+    type: string
+}
+
+type BondCombinedData = BondAndTokenData & {
+    issuerContractInfo: IssuerContractInfoDetailed
+}
+
 
 type BondGeneral = {
     _id: string;
@@ -44,7 +71,14 @@ type TokenDetails = {
 
 
 export type  {
+    BondInfoForIssuance,
+    BondData,
+    BondCombinedData,
+    BondAndTokenDataWithType,
+    BondAndTokenData,
+
+
     BondGeneral,
     BondInfo,
-    TokenDetails
+    TokenDetails,
 }

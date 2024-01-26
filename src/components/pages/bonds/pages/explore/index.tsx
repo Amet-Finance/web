@@ -1,4 +1,3 @@
-import Styles from './index.module.css';
 import {useEffect, useRef, useState} from "react";
 import {BondGeneral} from "@/components/pages/bonds/pages/issue/type";
 import Bond from "@/components/pages/bonds/utils/bond";
@@ -13,18 +12,7 @@ import {RootState} from "@/store/redux/type";
 
 export default function Explore() {
     return <>
-        <div className={Styles.container}>
-            <div className={Styles.texts}>
-                <h1 className={join([Styles.headline, "font-bold"])}>
-                    Explore <span className="text-black bg-white px-1">On-Chain Bonds:</span><br/> Find, Filter, and
-                    Invest
-                </h1>
-                <hr className={Styles.line}/>
-                <p className={Styles.secondary}>Discover a range of on-chain bonds through advanced filters and
-                    intuitive search options.</p>
-            </div>
-            <BondsContainer/>
-        </div>
+
     </>
 }
 

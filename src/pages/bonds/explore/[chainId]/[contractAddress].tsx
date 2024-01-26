@@ -2,9 +2,11 @@ import ExploreId from "@/components/pages/bonds/pages/explore-id";
 import {getChain} from "@/modules/utils/wallet-connect";
 import CloudAPI from "@/modules/cloud-api";
 import {DetailedBondResponse} from "@/modules/cloud-api/type";
+import ExploreBondId from "@/components/pages/bonds/pages/explore-bond-id";
 
 export default function ExploreIdPage({bondInfoDetailed}: { bondInfoDetailed: DetailedBondResponse }) {
-    return <ExploreId bondInfoDetailed={bondInfoDetailed}/>
+    // return <ExploreId bondInfoDetailed={bondInfoDetailed}/>
+    return <ExploreBondId bondInfoDetailed={bondInfoDetailed}/>
 }
 
 export async function getServerSideProps({query}: any) {

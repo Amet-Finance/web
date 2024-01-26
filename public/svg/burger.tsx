@@ -1,4 +1,4 @@
-export default function BurgerSVG({onClick}: any) {
+export default function BurgerSVG({onClick}: { onClick?: any }) {
     return <>
         <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick}>
             <path fillRule="evenodd" clipRule="evenodd"

@@ -12,6 +12,7 @@ import GoogleAnalytics from "@/components/headers/google-analytics";
 import {ToastContainer} from "react-toastify";
 import {WagmiConfig} from 'wagmi';
 import {wagmiConfig} from "@/modules/utils/wallet-connect";
+import AbstractHandler from "@/components/additional-designs/abstract-handler";
 
 
 const montserrat = Montserrat({subsets: ['latin']})
@@ -23,9 +24,12 @@ export default function App({Component, pageProps}: AppProps) {
         <WagmiConfig config={wagmiConfig}>
             <Provider store={store}>
                 <Headers id={pageProps.pageId} meta={pageProps.meta}/>
-                <main className={"flex flex-col justify-between min-h-screen " + montserrat.className}>
+                <main className={"relative flex flex-col justify-between min-h-screen w-full " + montserrat.className}>
+                    <AbstractHandler id={pageProps.pageId}/>
                     <Navbar/>
-                    <Component {...pageProps} />
+                    <div className='z-10 mt-16'>
+                        <Component {...pageProps} />
+                    </div>
                     <Footer/>
                 </main>
                 <ModalHandler/>

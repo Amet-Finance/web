@@ -23,6 +23,7 @@ body {
     overflow-x: hidden;
     background-color: black;
     color: white;
+    overflow-y: auto !important;
 }
 
 a {
@@ -45,4 +46,14 @@ textarea:focus {
 
 .bg-d-1 {
     background-color: #090909
+}
+
+/* styles.css */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
+    scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }

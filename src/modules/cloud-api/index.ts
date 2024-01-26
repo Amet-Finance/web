@@ -81,8 +81,11 @@ async function getTokens({params}: {
     });
 }
 
-async function getTokensDetailed({params}: {
-    params: { chainId: number, contractAddresses: string[], returnBalance?: boolean, address?: string }
+async function getTokensDetailed(params: {
+    chainId: number,
+    contractAddresses: string[],
+    returnBalance?: boolean,
+    address?: string
 }): Promise<{ [contractAddress: string]: TokenResponseDetailed }> {
     const url = `${API_URL}/v1/token`
     return await requestAPI({

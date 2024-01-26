@@ -1,6 +1,7 @@
 import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
 import BigNumber from "bignumber.js";
+import {BlockTimes} from "@/modules/web3/constants";
 
 
 function toBN(value: number | string) {
@@ -31,7 +32,6 @@ function shorten(address: string | any, length = 6) {
 
     return `${start}...${end}`;
 }
-
 
 export {
     toBN,

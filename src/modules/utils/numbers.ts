@@ -42,7 +42,7 @@ function formatLargeNumber(number: number) {
     } else if (number >= million) {
         return (number / million).toFixed(1) + 'M';
     } else {
-        return number.toString();
+        return format(number);
     }
 }
 

@@ -33,6 +33,7 @@ type TokenResponse = {
 type TokensResponse = {
     [contractLowerCased: string]: TokenResponse
 }
+
 type TokenBalance = {
     balance: string,
     balanceClean: number,
@@ -97,5 +98,6 @@ export type  {
     TokenResponse,
     TokensResponse,
     BondDetailedAPIParams,
-    DetailedBondResponse
+    DetailedBondResponse,
+    SecurityDetails
 }

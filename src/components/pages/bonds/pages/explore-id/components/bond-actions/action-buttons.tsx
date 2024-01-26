@@ -81,9 +81,7 @@ function SettingsSection() {
 
         document.addEventListener('click', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
+        return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
     return <>

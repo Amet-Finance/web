@@ -1,8 +1,14 @@
 import Home from "@/components/pages/main";
-import {useEffect} from "react";
-import {getTokenBalance} from "@/modules/web3/tokens";
-import {bsc} from "wagmi/chains";
+import {PageId} from "@/components/pages/constants";
 
 export default function HomePage() {
     return <Home/>
+}
+
+export function getStaticProps() {
+    return {
+        props: {
+            pageId: PageId.MainPage,
+        }
+    }
 }

@@ -1,12 +1,21 @@
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 
-export default function DiscordSVG() {
-    const color = "#7D7D7D"
+export default function DiscordSVG({isWhite, isBig}: { isWhite?: boolean, isBig?: boolean }) {
+    const size = isBig ? 32 : 26
+    const color = isWhite ? "#000" : "#7D7D7D"
+
     return <>
         <Link href={URLS.Discord} target="_blank" rel="noreferrer">
-        <svg width="26" height="26" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
-             className='hover'>
+            <DiscordIcon size={size} color={color} hoverColor={"#fff"}/>
+        </Link>
+    </>
+}
+
+export function DiscordIcon({size, color, hoverColor}: { size: number, color: string, hoverColor?: string }) {
+    return <>
+        <svg width={size} height={size} viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
+             className='cursor-pointer hover'>
             <path
                 d="M12.1003 15.0233V15.0127C10.8756 15.0127 9.88721 16.0252 9.88721 17.2696C9.88721 18.514 10.8756 19.5266 12.1003 19.5266C13.3251 19.5266 14.3135 18.5141 14.3135 17.2802C14.3135 16.0356 13.3143 15.0233 12.1003 15.0233Z"
                 fill={color}/>
@@ -17,14 +26,9 @@ export default function DiscordSVG() {
                 d="M19.8997 15.0127V15.0233C18.6857 15.0233 17.6865 16.0357 17.6865 17.2802C17.6865 18.5141 18.675 19.5266 19.8997 19.5266C21.1244 19.5266 22.1128 18.5141 22.1128 17.2696C22.1128 16.0251 21.1245 15.0127 19.8997 15.0127Z"
                 fill={color}/>
         </svg>
-    </Link>
         <style jsx>{`
-          .hover {
-            cursor: pointer;
-          }
-
           .hover:hover path {
-            fill: #fff;
+            fill: ${hoverColor};
           }
         `}</style>
     </>
