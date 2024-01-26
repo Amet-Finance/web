@@ -282,7 +282,7 @@ function FAQ() {
         const selectItemId = () => selectId(isSelected ? -1 : index)
 
         return <>
-            <div className='flex flex-col gap-4 w-full text-start'>
+            <div className='flex flex-col gap-10 w-full text-start'>
                 <div className='flex flex-col gap-2 w-full'>
                     <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
                         <span className='text-start text-xl font-medium'>{item.title}</span>
@@ -299,7 +299,7 @@ function FAQ() {
         <div
             className='flex flex-col justify-center items-center lg:px-72 md:px-12 sm:px-6  py-40 gap-16 text-white'>
             <h4 className='text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
-            <div className='flex flex-col gap-4 w-full'>
+            <div className='flex flex-col gap-8 w-full'>
                 {FAQ_QUESTIONS.map((item, index) => <FaqItem item={item} index={index} key={index}/>)}
             </div>
         </div>

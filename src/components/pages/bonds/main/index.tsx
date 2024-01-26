@@ -211,7 +211,7 @@ function BondsExplanation() {
                     </p>
                     <BasicButton wMin>Issue Bonds</BasicButton>
                 </div>
-                <div className='grid grid-cols-12 grid-rows-2 gap-1 text-black'>
+                <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black'>
                     <div className='col-span-6 row-span-2 '>
                         <TVL/>
                     </div>
