@@ -86,9 +86,9 @@ function OnChainBondsSection() {
         <div className='flex flex-col justify-center items-center gap-24 py-52'>
             <div className='flex flex-col items-center gap-5 px-4'>
                 <h2 className='text-4xl font-medium text-center'>On-Chain Bonds: Smart, Secure, Streamlined</h2>
-                <p className='max-w-3xl text-center text-neutral-400 text-center'>Step into the future of finance with
+                <p className='max-w-3xl text-center text-neutral-400 text-center'>{`Step into the future of finance with
                     On-Chain
-                    Bonds. Experience cutting-edge security with blockchain's transparency.</p>
+                    Bonds. Experience cutting-edge security with blockchain's transparency.`}</p>
             </div>
             <div className='grid lg1:grid-cols-3 md:grid-cols-1 gap-7 md:px-52 sm:px-4'>
                 <Box props={{

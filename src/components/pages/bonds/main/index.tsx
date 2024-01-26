@@ -19,12 +19,12 @@ export default function Bonds() {
                         <h1 className='text-5xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain
                             Bonds</h1>
                         <div className='h-px w-1/4 bg-neutral-500'/>
-                        <p className='text-neutral-400 text-sm max-w-2xl'>Amet Finance's on-chain bonds platform lets
+                        <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets
                             you
                             issue,
                             buy,
                             sell, and redeem bonds seamlessly.
-                            Elevate your investment strategy and embrace the future of decentralized finance today.</p>
+                            Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex gap-5'>
                             <BasicButton wMin>
                                 <span>Issue Bonds</span>
@@ -203,11 +203,11 @@ function BondsExplanation() {
             <div className='flex justify-between'>
                 <div className='flex flex-col max-w-xl gap-8'>
                     <h2 className='text-4xl font-medium'>Why On-Chain Bonds?</h2>
-                    <p className='text-neutral-400 text-sm'>Amet Finance's on-chain bonds platform lets you issue, buy,
+                    <p className='text-neutral-400 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
                         sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of
                         decentralized finance today. Amet Finance's on-chain bonds platform lets you issue, buy, sell,
                         and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.
+                        Elevate your investment strategy and embrace the future of decentralized finance today.`}
                     </p>
                     <BasicButton wMin>Issue Bonds</BasicButton>
                 </div>
@@ -240,30 +240,30 @@ function BondsExplanation() {
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>Amet Finance's on-chain bonds platform lets you issue, buy,
+                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
                         sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.</p>
+                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>Amet Finance's on-chain bonds platform lets you issue, buy,
+                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
                         sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.</p>
+                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>Amet Finance's on-chain bonds platform lets you issue, buy,
+                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
                         sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.</p>
+                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>Amet Finance's on-chain bonds platform lets you issue, buy,
+                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
                         sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.</p>
+                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                 </div>
             </div>
 
