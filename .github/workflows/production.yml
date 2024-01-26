@@ -2,9 +2,9 @@ name: Amet Finance Web Production
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "ui-changes-v2" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "ui-changes-v2" ]
 
 jobs:
   build-and-deploy:
