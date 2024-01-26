@@ -28,7 +28,8 @@ export default function Navbar() {
     }, []);
 
     return <>
-        <nav className="bg-black fixed flex justify-between items-center z-20 w-full py-4 xl:px-40 lg:px-24 md:px-12 sm: px-4">
+        <nav
+            className={"fixed flex justify-between items-center z-20 w-full py-4 xl:px-40 lg:px-24 md:px-12 sm:px-4 " + bgClass}>
             <AmetLogo/>
             <DesktopNavbar/>
             <MobileNavbar/>

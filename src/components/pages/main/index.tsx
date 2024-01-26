@@ -31,29 +31,16 @@ function LandingSection() {
     return <>
         <Link href='/bonds'>
             <div
-                className="relative flex flex-col justify-center items-center gap-12 min-h-[85vh] w-full px-4">
-                <h1 className='bg-black w-full text-5xl font-semibold text-center leading-[1.2] z-10 py-4 px-4'>Simplified
-                    Bond Investments for
-                    Everyone</h1>
+                className="relative flex flex-col justify-center items-center md:gap-12 sm:gap-4 md:min-h-[85vh] sm:min-h-[75vh] w-full px-4">
+                <h1 className='w-full text-5xl font-semibold text-center leading-[1.2] z-10 py-4 px-4'>Simplified Bond Investments for Everyone</h1>
                 <div className='h-px w-52 bg-neutral-100 z-10 '/>
-                <p className='bg-black w-full  max-w-5xl text-center text-neutral-200 z-10 px-4 py-4'>Welcome to the
-                    world
-                    of effortless on-chain bond
-                    investments. Amet Finance is designed to democratize the bond market, making it easy and accessible
-                    for
-                    all. With us, bond investments are no longer complex and exclusive.</p>
-
+                <p className='w-full max-w-5xl text-center text-neutral-300 z-10 px-4 py-4 md:text-base sm:text-sm'>Welcome to the world of effortless on-chain bond investments. Amet Finance is designed to democratize the bond market, making it easy and accessible for all. With us, bond investments are no longer complex and exclusive.</p>
                 <div className='flex group'>
                     <button
                         className='bg-white text-black rounded-full px-8 py-4 font-semibold group-hover:bg-neutral-300 z-10'>{`Let's Bond`}</button>
                     <button className='bg-white rounded-full px-8 py-4 text-xl group-hover:bg-neutral-300 z-10'>
                         <ArrowCurveSVG/>
                     </button>
-                </div>
-                <div
-                    className='absolute top-0 h-[85vh] left-0 w-full md:rounded-b-[6rem] sm:rounded-3xl border border-r-0 border-l-0 border-t-0 border-b-neutral-700 '>
-                    <Image src='/pngs/pexels-karolina-grabowska-5980921.jpg' alt="" width="5000" height='5000'
-                           className='object-cover w-full h-full md:rounded-b-[6rem] sm:rounded-3xl blur-xs saturate-0'/>
                 </div>
             </div>
         </Link>
