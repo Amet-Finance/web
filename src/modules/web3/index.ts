@@ -27,7 +27,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 return {
                     to: ZCB_ISSUER_CONTRACTS[chain.id],
                     data: ZcbIssuerController.issueBonds(chain, config.bondInfo, config.tokens),
-                    value: config.additionalInfo.creationFeeHex
+                    value: BigInt(config.issuerContractInfo.issuanceFee)
                 }
             }
             case TxTypes.ApproveToken: {
@@ -89,10 +89,10 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             }
         }
     } catch (error: any) {
-        // console.log(`getContractInfoByType| ${txType}`, error.message)
+        console.log(`getContractInfoByType| ${txType}`, error.message)
         return {
             to: "",
-            value: "0",
+            value: BigInt(0),
             data: "0x"
         }
     }

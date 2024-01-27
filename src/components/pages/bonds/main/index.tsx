@@ -26,12 +26,16 @@ export default function Bonds() {
                             sell, and redeem bonds seamlessly.
                             Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex gap-5'>
-                            <BasicButton wMin>
-                                <span>Issue Bonds</span>
-                            </BasicButton>
-                            <BasicButton wMin isWhiteBorder>
-                                <span>Explore Bonds</span>
-                            </BasicButton>
+                            <Link href='/bonds/issue'>
+                                <BasicButton wMin>
+                                    <span>Issue Bonds</span>
+                                </BasicButton>
+                            </Link>
+                            <Link href='/bonds/explore'>
+                                <BasicButton wMin isWhiteBorder>
+                                    <span>Explore Bonds</span>
+                                </BasicButton>
+                            </Link>
                         </div>
                     </div>
                     <Statistics/>
@@ -202,14 +206,12 @@ function BondsExplanation() {
         <div className='flex flex-col gap-40'>
             <div className='flex justify-between'>
                 <div className='flex flex-col max-w-xl gap-8'>
-                    <h2 className='text-4xl font-medium'>Why On-Chain Bonds?</h2>
-                    <p className='text-neutral-400 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
-                        sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of
-                        decentralized finance today. Amet Finance's on-chain bonds platform lets you issue, buy, sell,
-                        and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.`}
+                    <h2 className='text-4xl font-medium'>Why Issue On-Chain Bonds?</h2>
+                    <p className='text-neutral-400 text-sm'>{`Issuing on-chain bonds presents a unique opportunity for both entities and individuals seeking a simple yet effective way to raise capital. This method stands out for its straightforward process, offering a clear alternative to the intricacies of other financing methods. It allows issuers to reach a wider pool of investors, tapping into a market eager for stable and predictable investment options. By choosing to issue on-chain bonds, you open the door to hassle-free capital generation, providing a win-win for both issuers and investors looking for clarity and opportunity in the financial landscape.`}
                     </p>
-                    <BasicButton wMin>Issue Bonds</BasicButton>
+                    <Link href='/bonds/issue'>
+                        <BasicButton wMin>Issue Bonds</BasicButton>
+                    </Link>
                 </div>
                 <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black'>
                     <div className='col-span-6 row-span-2 '>
@@ -239,31 +241,32 @@ function BondsExplanation() {
             <div className='grid grid-cols-4 gap-12'>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
-                        sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                    <h4 className='text-2xl'>Issuing Bonds</h4>
+                    <p className='text-neutral-300 text-sm'>This is the first step where the bond is created and offered
+                        to the market. The issuer sets the terms including the bond’s total amount, interest rate, and
+                        maturity period, officially initiating the bond offering</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
-                        sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                    <h4 className='text-2xl'>Bond Acquisition</h4>
+                    <p className='text-neutral-300 text-sm'>In this phase, investors acquire the bonds by paying the
+                        issuer the bond price. This process mobilizes funds for the issuer, while investors receive a
+                        financial instrument promising future returns</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
-                        sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                    <h4 className='text-2xl'>Bond Growth Phase</h4>
+                    <p className='text-neutral-300 text-sm'>During this phase, the bond is held by the investors. Over
+                        this period, the bond accrues interest at the predetermined rate. It's a time of growth for the
+                        investment, leading up to its maturity date</p>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Issue</h4>
-                    <p className='text-neutral-300 text-sm'>{`Amet Finance's on-chain bonds platform lets you issue, buy,
-                        sell, and redeem bonds seamlessly.
-                        Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                    <h4 className='text-2xl'>Bond Redemption</h4>
+                    <p className='text-neutral-300 text-sm'>In this final phase, the bond reaches its maturity. The
+                        bondholder, now with the bond represented as an NFT, presents it to redeem their investment.
+                        Upon redemption, the total return is transferred to the bondholder. This marks the successful
+                        conclusion of the bond contract, fulfilling the investment cycle</p>
                 </div>
             </div>
 

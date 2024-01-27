@@ -70,7 +70,7 @@ type TokenResponseDetailed = TokenResponseBalance & {
 type ContractInfoType = {
     to: string
     data: `0x${string}`,
-    value?: string
+    value?: bigint
 }
 
 export type {

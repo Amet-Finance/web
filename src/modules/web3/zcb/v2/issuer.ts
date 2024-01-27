@@ -18,11 +18,11 @@ function getIssuerContractInstance(chain: Chain) {
 }
 
 function issueBonds(chain: Chain, bondInfo: BondInfoForIssuance, tokens: TokensResponse) {
+    // for total and etc... check uint40
     const investmentTokenInfo = tokens[bondInfo.investmentToken]
     const interestTokenInfo = tokens[bondInfo.interestToken]
     const investmentAmount = BigNumber(bondInfo.investmentAmount).times(BigNumber(10).pow(BigNumber(investmentTokenInfo.decimals)))
-    const interestAmount = BigNumber(bondInfo.interestToken).times(BigNumber(10).pow(BigNumber(interestTokenInfo.decimals)))
-
+    const interestAmount = BigNumber(bondInfo.interestAmount).times(BigNumber(10).pow(BigNumber(interestTokenInfo.decimals)))
 
     const issuerContract = ZcbIssuerController.getIssuerContractInstance(chain)
     return encodeFunctionData({
@@ -32,10 +32,10 @@ function issueBonds(chain: Chain, bondInfo: BondInfoForIssuance, tokens: TokensR
             bondInfo.total,
             bondInfo.maturityPeriod,
             bondInfo.investmentToken,
-            BigInt(investmentAmount.toNumber()),
+            BigInt(investmentAmount.toString()),
             bondInfo.interestToken,
-            BigInt(interestAmount.toNumber())
-        ] as any
+            BigInt(interestAmount.toString())
+        ]
     })
 }
 
