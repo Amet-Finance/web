@@ -150,7 +150,7 @@ function WalletComponent() {
                 isConnected: true
             })
         }
-    }, [account.isConnected, network.chain?.id])
+    }, [account.address, account.isConnected, network.chain?.id])
 
 
     return <>
@@ -163,12 +163,6 @@ function WalletComponent() {
         </div>
     </>
 
-}
-
-function NotConnectedComponent() {
-    return <>
-        <button className="bg-black px-8 py-2 rounded-full"></button>
-    </>
 }
 
 function ConnectedComponent({accountInfo}: { accountInfo: AccountInfo }) {

@@ -107,48 +107,48 @@ function BondsExplanation() {
     // 2.
     function TVL() {
         const chartRef = useRef<any>(null);
-        const options = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    enabled: true,
-                },
-            },
-            scales: {
-                x: {
-                    display: false, // Completely hide the x-axis including the axis line
-                    grid: {
-                        display: false, // Hide grid lines for x-axis
-                    },
-                    ticks: {
-                        display: false, // Hide ticks for x-axis
-                    },
-                },
-                y: {
-                    display: false, // Completely hide the y-axis including the axis line
-                    grid: {
-                        display: false, // Hide grid lines for y-axis
-                    },
-                    ticks: {
-                        display: false, // Hide ticks for y-axis
-                    },
-                },
-            },
-            elements: {
-                line: {
-                    tension: 0.05 // Adjust this for line smoothness
-                },
-                point: {
-                    radius: 0 // This will remove the points (bullets) on the line
-                },
-            },
-        };
 
         useEffect(() => {
             if (!chartRef.current) return;
+            const options = {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        enabled: true,
+                    },
+                },
+                scales: {
+                    x: {
+                        display: false, // Completely hide the x-axis including the axis line
+                        grid: {
+                            display: false, // Hide grid lines for x-axis
+                        },
+                        ticks: {
+                            display: false, // Hide ticks for x-axis
+                        },
+                    },
+                    y: {
+                        display: false, // Completely hide the y-axis including the axis line
+                        grid: {
+                            display: false, // Hide grid lines for y-axis
+                        },
+                        ticks: {
+                            display: false, // Hide ticks for y-axis
+                        },
+                    },
+                },
+                elements: {
+                    line: {
+                        tension: 0.05 // Adjust this for line smoothness
+                    },
+                    point: {
+                        radius: 0 // This will remove the points (bullets) on the line
+                    },
+                },
+            };
 
             const data = [10, 30, 32, 35, 42, 50, 48, 52, 55, 34, 35, 35, 60];
             Chart.register(...registerables)
@@ -182,6 +182,7 @@ function BondsExplanation() {
 
             return () => chart.destroy()
         }, [])
+
         return <>
             <div className="w-80 h-80 bg-white rounded-3xl">
                 <div className='flex justify-between items-center px-5 py-6'>
@@ -257,7 +258,7 @@ function BondsExplanation() {
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Bond Growth Phase</h4>
                     <p className='text-neutral-300 text-sm'>During this phase, the bond is held by the investors. Over
-                        this period, the bond accrues interest at the predetermined rate. It's a time of growth for the
+                        this period, the bond accrues interest at the predetermined rate. It is a time of growth for the
                         investment, leading up to its maturity date</p>
                 </div>
                 <div className='flex flex-col gap-8'>

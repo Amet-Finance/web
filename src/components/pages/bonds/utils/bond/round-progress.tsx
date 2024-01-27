@@ -83,10 +83,7 @@ export default function RoundProgress({total, purchased, redeemed, isHorizontal,
         });
 
 
-        return () => {
-            chart.destroy();
-        };
-
+        return () => chart.destroy()
     }, [total, purchased, redeemed, isHorizontal])
 
     const size = isHorizontal ? "104px" : "52px"
