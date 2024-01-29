@@ -6,7 +6,7 @@ import {
     BondData,
     BondInfoForIssuance
 } from "@/components/pages/bonds/pages/issue/type";
-import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
+import {Chain, useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import InfoBox from "@/components/utils/info-box";
 import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
@@ -222,7 +222,11 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                     contractAddresses: [tokenAddress]
                 }).then(tokensResponse => {
                     const token = tokensResponse[tokenAddress]
-                    if (token) setTokens({...tokens, [tokenAddress]: token})
+                    if (token) {
+                        setTokens({...tokens, [tokenAddress]: token})
+                    } else {
+                        setTokens({...tokens, [tokenAddress]: {unidentified: true}})
+                    }
                 })
             }
         }, 2000)
@@ -546,37 +550,26 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
             }, 10000)
             return () => clearInterval(interval)
         }
-    }, [chain, address, token]);
-
-    if (!token) {
-
-        if (tokenAddress) {
-            if (isAddress(tokenAddress)) {
-                return <div
-                    className='col-span-12 w-full flex justify-center gap-1 cursor-pointer bg-neutral-950 rounded-xl px-4 py-2'>
-                    <Loading/></div>
-            } else {
-                return <div
-                    className='col-span-12 w-full flex justify-center gap-1 cursor-pointer bg-neutral-950 rounded-xl px-4 py-2'>
-                    <p className='text-sm'>
-                        Could not identify the token, make sure the contract is correct for
-                        <span className="text-red-500 font-bold"> {chain?.name} network</span>
-                    </p>
-                    <WarningSVG/>
-                </div>
-            }
-        }
-        return null;
-    }
+    }, [chain, address, token, tokenAddress]);
 
     const title = isInvestment ? "Investment" : "Interest";
     const amountTitle = isInvestment ? "Total Received" : "Total Returned"
 
-    const total = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
+    if (!token) {
+        if (isAddress(tokenAddress)) return <TokenContainer><Loading/></TokenContainer>
+        else if (!isAddress(tokenAddress)) return <UnidentifiedToken chain={chain}/>
+        else return null
+    }
+
+    if (token.unidentified) {
+        return <UnidentifiedToken chain={chain}/>
+    }
+
     const iconSrc = token.icon || makeBlockie(zeroAddress);
+    const total = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
 
     return <>
-        <div className='col-span-12 w-full flex flex-col gap-2 cursor-pointer bg-[#131313] rounded-xl px-4 py-2'>
+        <TokenContainer>
             <span className='text-xl font-medium'>{title}:</span>
             <div className='flex items-center gap-4'>
                 <Image src={iconSrc} alt={token.name} width={32} height={32}
@@ -602,8 +595,27 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
                     </div>
                 </>
             }
-        </div>
+        </TokenContainer>
     </>
+}
+
+function TokenContainer({children}: { children?: any }) {
+    return <>
+        <div
+            className='col-span-12 w-full flex flex-col gap-2 cursor-pointer bg-neutral-900 rounded-xl px-4 py-2'>{children}</div>
+    </>
+}
+
+function UnidentifiedToken({chain}: { chain?: Chain }) {
+    return <TokenContainer>
+        <div className='flex justify-start gap-1 cursor-pointer'>
+            <p className='text-sm'>
+                Could not identify the token, make sure the contract is correct for
+                <span className="text-red-500 font-bold"> {chain?.name} network</span>
+            </p>
+            <WarningSVG/>
+        </div>
+    </TokenContainer>
 }
 
 

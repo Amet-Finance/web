@@ -27,7 +27,8 @@ type TokenResponse = {
     symbol: string,
     decimals: number,
     isVerified: boolean,
-    icon?: string
+    icon?: string,
+    unidentified?: boolean,
 }
 
 type TokensResponse = {
