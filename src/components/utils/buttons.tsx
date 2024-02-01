@@ -18,7 +18,7 @@ export function BasicButton({children, isBgWhite, isBgGrey, isWhiteBorder, onCli
     if(wMin) classOnBg += " w-min"
 
     return (<>
-        <button className={`w-full ${classOnBg} flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium cursor-pointer px-8`} onClick={onClick}>
+        <button className={`w-full ${classOnBg} h-full flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium cursor-pointer px-8`} onClick={onClick}>
             {children}
         </button>
     </>);

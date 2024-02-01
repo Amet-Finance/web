@@ -22,7 +22,8 @@ type BondCardInfo = {
     issuer: string,
     issuanceDate: string,
 
-    score: number
+    score: number,
+    tbv: number
 }
 
 export type  {

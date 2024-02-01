@@ -411,18 +411,20 @@ function ChainSelector({bondInfoHandler}: BondData) {
                 </div>
                 <div
                     className={`${isOpen ? "flex" : "hidden"} absolute flex-col bg-[#131313] border border-w1 rounded-md left-0 top-full z-10 w-full`}>
-                    {
-                        CHAINS.map(chain => <>
-                            <div className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2'
-                                 onClick={() => selectChain(chain.id)}>
-                                <Image src={`/svg/chains/${chain.id}.svg`} alt={chain.name} width={24} height={24}/>
-                                <span
-                                    className='text-sm font-medium min-w-full'>{shortenString(chain.name || "", 20)}</span>
-                            </div>
-                        </>)
-                    }
+                    {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
                 </div>
             </div>
+        </div>
+    </>
+}
+
+function ChainContainer({chain, selectChain}: { chain: Chain, selectChain: any }) {
+    return <>
+        <div className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2'
+             onClick={() => selectChain(chain.id)}>
+            <Image src={`/svg/chains/${chain.id}.svg`} alt={chain.name} width={24} height={24}/>
+            <span
+                className='text-sm font-medium min-w-full'>{shortenString(chain.name || "", 20)}</span>
         </div>
     </>
 }

@@ -57,3 +57,8 @@ textarea:focus {
     -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }
+
+
+.bg-blackToWhite {
+    background: linear-gradient(201deg, rgba(0, 0, 0, 0) 20%, rgba(15.46, 15.46, 15.46, 0) 66%, #222222 100%)
+}

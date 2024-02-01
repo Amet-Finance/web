@@ -61,7 +61,7 @@ const BOND_CARDS: BondCardInfo[] = [
             "decimals": 6,
             verified: true,
             amount: "10",
-            amountClean: 10
+            amountClean: 100
         },
         interest: {
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -71,7 +71,7 @@ const BOND_CARDS: BondCardInfo[] = [
             "decimals": 6,
             verified: true,
             amount: "10",
-            amountClean: 15
+            amountClean: 150
         },
 
         total: 100,
@@ -82,7 +82,8 @@ const BOND_CARDS: BondCardInfo[] = [
 
         issuer: "0x21451254Fas124",
         issuanceDate: "24.01.2024",
-        score: 8.9
+        score: 8.9,
+        tbv: 8000
     },
     {
         contractAddress: "0x1",
@@ -117,7 +118,8 @@ const BOND_CARDS: BondCardInfo[] = [
 
         issuer: "0x32AC51254FDe3",
         issuanceDate: "24.01.2024",
-        score: 9.2
+        score: 9.2,
+        tbv: 131000
     },
     {
         contractAddress: "0x1",
@@ -149,6 +151,43 @@ const BOND_CARDS: BondCardInfo[] = [
         redeemed: 0,
 
         maturityPeriod: 120000,
+
+        issuer: "0x32AC51254FDe3",
+        issuanceDate: "24.01.2024",
+        score: 9.8,
+        tbv: 0
+    },
+    {
+        contractAddress: "0x1",
+        chainId: 7001,
+
+        investment: {
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            "name": "Tether USD",
+            "symbol": "USDT",
+            "icon": "https://storage.amet.finance/icons/usdc.png",
+            "decimals": 6,
+            verified: true,
+            amount: "10",
+            amountClean: 400
+        },
+        interest: {
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            "name": "Bitcoin",
+            "symbol": "BTC",
+            "icon": "https://storage.amet.finance/icons/bitcoin.png",
+            "decimals": 6,
+            verified: true,
+            amount: "10",
+            amountClean: 0.01
+        },
+
+        total: 100,
+        purchased: 80,
+        redeemed: 30,
+
+        maturityPeriod: 120000,
+        tbv: 52350,
 
         issuer: "0x32AC51254FDe3",
         issuanceDate: "24.01.2024",

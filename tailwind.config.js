@@ -57,6 +57,9 @@ module.exports = {
             },
             fontSize: {
                 mm: "0.6rem"
+            },
+            background: {
+                blackToWhite: "linear-gradient(201deg, rgba(0, 0, 0, 0) 20%, rgba(15.46, 15.46, 15.46, 0) 66%, #222222 100%)"
             }
         }
     },

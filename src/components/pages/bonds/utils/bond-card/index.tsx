@@ -5,6 +5,8 @@ import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {tColor} from "@/components/pages/bonds/utils/colors";
+import {BlockTimes} from "@/modules/web3/constants";
+import {formatTime} from "@/modules/utils/dates";
 
 export default function BondCard({info, link}: { info: BondCardInfo, link?: string }) {
     const {
@@ -15,6 +17,7 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
         interest,
         investment,
         score,
+        tbv,
         maturityPeriod,
         chainId,
         issuer,
@@ -30,9 +33,11 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
     const redeemedPercentage = Math.round(redeemed * 100 / total);
     const purchasedPercentage = Math.round(purchased * 100 / total);
 
+    const maturityPeriodClean = (BlockTimes[chainId] || 1) * maturityPeriod
+
     return <>
         <Link href={url}>
-            <div className='group flex flex-col justify-between gap-16 rounded-3xl border border-w1 p-6 py-4 hover:border-w2 bg-black w-full'>
+            <div className='group flex flex-col justify-between gap-16 rounded-3xl border border-w1 p-6 py-4 hover:border-w2 bg-black w-full bg-gradient-to-tr from-black to-neutral-950 overflow-clip'>
                 <div className='flex justify-between w-full z-10'>
                     <div className='flex items-start gap-2'>
                         <div className='flex items-center gap-3 w-full whitespace-nowrap'>
@@ -40,7 +45,7 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
                                    alt={interest.name}
                                    width={1000}
                                    height={1000}
-                                   className='object-contain w-[40px] h-[40px] saturate-0 group-hover:saturate-100'/>
+                                   className='object-contain w-[40px] h-[40px]'/>
                             <div className='flex flex-col items-start'>
                                 <span className='text-xl font-bold'>{interest.name}</span>
                                 <span className='text-xs text-stone-400'>{investment.symbol} - {interest.symbol}</span>
@@ -49,7 +54,7 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
                         <span className='px-3 py-1 bg-stone-700 rounded-full text-xs'>ZCB</span>
                     </div>
                     <div className='flex flex-col'>
-                        <span className={`text-3xl font-bold ${scoreColor} saturate-0 group-hover:saturate-100`}>{score}</span>
+                        <span className={`text-3xl font-bold ${scoreColor} `}>{score}</span>
                         <span className='text-stone-400 text-xs'>Score</span>
                     </div>
                 </div>
@@ -64,11 +69,11 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
                             <span className='text-xs text-stone-400'>Total Return</span>
                         </div>
                         <div className='flex flex-col items-center gap-1'>
-                            <span className='text-md font-semibold'>{formatLargeNumber(maturityPeriod)}</span>
+                            <span className='text-md font-semibold'>{formatTime(maturityPeriodClean, true, true, true)}</span>
                             <span className='text-xs text-stone-400'>Maturity Period</span>
                         </div>
                         <div className='flex flex-col items-center gap-1'>
-                            <span className='text-md font-semibold'>${formatLargeNumber(maturityPeriod)}</span>
+                            <span className='text-md font-semibold'>${formatLargeNumber(tbv)}</span>
                             <span className='text-xs text-stone-400'>TBV</span>
                         </div>
                     </div>
