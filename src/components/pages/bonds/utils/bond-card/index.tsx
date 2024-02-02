@@ -61,11 +61,11 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
                 <div className='flex flex-col gap-4 z-10'>
                     <div className='flex justify-between items-stretch gap-6 whitespace-nowrap'>
                         <div className='flex flex-col items-center gap-1'>
-                            <span className='text-md font-semibold'>{formatLargeNumber(investment.amountClean)} {investment.symbol}</span>
+                            <span className='text-md font-semibold'>{formatLargeNumber(investment.amountClean, true)} {investment.symbol}</span>
                             <span className='text-xs text-stone-400'>Investment</span>
                         </div>
                         <div className='flex flex-col items-center gap-1'>
-                            <span className='text-md font-semibold'>{formatLargeNumber(interest.amountClean)} {interest.symbol}</span>
+                            <span className='text-md font-semibold'>{formatLargeNumber(interest.amountClean, true)} {interest.symbol}</span>
                             <span className='text-xs text-stone-400'>Total Return</span>
                         </div>
                         <div className='flex flex-col items-center gap-1'>
@@ -73,7 +73,7 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
                             <span className='text-xs text-stone-400'>Maturity Period</span>
                         </div>
                         <div className='flex flex-col items-center gap-1'>
-                            <span className='text-md font-semibold'>${formatLargeNumber(tbv)}</span>
+                            <span className='text-md font-semibold'>${formatLargeNumber(tbv, true)}</span>
                             <span className='text-xs text-stone-400'>TBV</span>
                         </div>
                     </div>

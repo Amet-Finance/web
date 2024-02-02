@@ -30,15 +30,11 @@ export default function Home() {
 
 function LandingSection() {
 
-    const Border = ({children}: any) => <span
-        className='border border-neutral-400 rounded-3xl px-2 py-1 font-medium'>{children}</span>
-
     return <>
-
         <div
-            className='relative flex items-end gap-4 text-white rounded-b-[4rem] mx-52 overflow-hidden bg-blackToWhite'>
+            className='flex gap-4 rounded-b-[4rem] overflow-hidden bg-blackToWhite xl1:mx-52 lg:mx-24'>
             <div className='flex flex-col justify-center gap-10 px-24 py-28 w-full'>
-                <h1 className='text-6xl font-bold leading-snug'>Simplified Bond <br/> Investments
+                <h1 className='xl1:text-6xl lg:text-5xl font-bold leading-snug'>Simplified Bond <br/> Investments
                     for <br/> Everyone</h1>
                 <div className='h-px w-1/5 bg-neutral-50'/>
                 <p className='text-neutral-400 max-w-xl'>Welcome to the world of effortless on-chain bond
@@ -53,7 +49,7 @@ function LandingSection() {
                     </BasicButton>
                 </Link>
             </div>
-            <div className='flex'>
+            <div className='flex items-end'>
                 <div className='relative w-[28rem] h-96 rounded-[4rem] origin-bottom-right'>
                     <div className='absolute w-full top-1/4 z-10 hover:-translate-x-10 shadow-2xl shadow-black'>
                         <BondCard info={BOND_CARDS[0]} link='/bonds'/>
@@ -88,7 +84,7 @@ function OnChainBondsSection() {
         const {imageSrc, title, paragraph} = props;
         return <>
             <div
-                className="flex flex-col justify-between gap-16 items-start py-12 px-7 rounded-3xl border border-neutral-900 shadow shadow-xl hover:shadow-neutral-900 bg-gradient-to-bl from-neutral-950 to-black hover:border-neutral-800 hover:scale-105 cursor-pointer ">
+                className="flex flex-col justify-between gap-16 items-start py-12 px-7 rounded-3xl border border-neutral-900 shadow-xl hover:shadow-neutral-900 bg-gradient-to-bl from-neutral-950 to-black hover:border-neutral-800 hover:scale-105 cursor-pointer ">
                 <Image src={imageSrc} width={73} height={92} alt={title}/>
                 <div className='flex flex-col gap-9'>
                     <span className='font-medium text-2xl'>{title}</span>
@@ -102,7 +98,7 @@ function OnChainBondsSection() {
         <div className='flex flex-col justify-center items-center gap-24 py-44 px-52'>
             <div className='flex flex-col items-center gap-5 px-4'>
                 <h2 className='text-4xl font-medium text-center'>On-Chain Bonds: Smart, Secure, Streamlined</h2>
-                <p className='max-w-3xl text-center text-neutral-400 text-center'>{`Step into the future of finance with
+                <p className='max-w-3xl text-center text-neutral-400'>{`Step into the future of finance with
                     On-Chain
                     Bonds. Experience cutting-edge security with blockchain's transparency.`}</p>
             </div>
@@ -152,7 +148,9 @@ function BondProperties() {
                         </div>
                     </div>
                     <Link href='/bonds/issue'>
-                        <BasicButton wMin>Issue Bonds</BasicButton>
+                        <BasicButton wMin>
+                            <span className='font-medium text-xl'>Issue Bonds</span>
+                        </BasicButton>
                     </Link>
                 </div>
                 <Image src='/pngs/Issue-bonds.png' alt="Issue Bonds"
@@ -185,7 +183,9 @@ function BondProperties() {
                         </div>
                     </div>
                     <Link href='/bonds/explore'>
-                        <BasicButton wMin>Explore Bonds</BasicButton>
+                        <BasicButton wMin>
+                            <span className='font-medium text-xl'>Explore Bonds</span>
+                        </BasicButton>
                     </Link>
                 </div>
             </div>
@@ -203,7 +203,9 @@ function TradeOnChainBondsSection() {
                     potential to trade them on leading NFT marketplaces. Discover new opportunities and liquidity
                     options by trading bonds just like you would any valued NFT.</p>
                 <Link href={URLS.Docs_Trade_Bonds} target='_blank'>
-                    <BasicButton wMin>Learn More in Our Docs</BasicButton>
+                    <BasicButton wMin>
+                        <span className='font-medium text-xl'>Learn More in Our Docs</span>
+                    </BasicButton>
                 </Link>
             </div>
             <div className='relative flex justify-end w-full'>
@@ -349,7 +351,7 @@ function Partnerships() {
             </div>
             <div className='grid grid-cols-8 gap-20'>
                 {
-                    partners.map((item, index) => (<>
+                    partners.map((item) => (<>
                         <Link href={item.url} target="_blank"
                               className='flex justify-center lg1:col-span-2 md:col-span-4 sm:col-span-8'>
                             <Image src={item.src} alt={item.alt} width={200} height={50} className='object-contain'/>
@@ -360,7 +362,7 @@ function Partnerships() {
             <Link href={URLS.Discord} target="_blank">
                 <div className='flex gap-3 items-center bg-white px-8 p-3 rounded-3xl text-black'>
                     <DiscordIcon color='#000' size={32}/>
-                    <span className='font-medium'>Join Our Discord</span>
+                    <span className='font-medium text-xl'>Join Our Discord</span>
                 </div>
             </Link>
         </div>

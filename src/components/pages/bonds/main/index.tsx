@@ -11,29 +11,22 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 
 export default function Bonds() {
     return <>
-        <div>
-            <div className='flex flex-col gap-24 px-36 py-32'>
-                <div className='relative flex justify-between w-full gap-12'>
-
-                    <div className='flex flex-col w-full gap-12 py-32'>
-                        <h1 className='text-5xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain
-                            Bonds</h1>
+        <div className='flex flex-col w-full'>
+            <div className='flex flex-col gap-32 px-52'>
+                <div className='relative flex justify-between w-full gap-12 bg-blackToWhite py-24 rounded-[4rem]'>
+                    <div className='flex flex-col w-full gap-12 px-24'>
+                        <h1 className='text-5xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain Bonds</h1>
                         <div className='h-px w-1/4 bg-neutral-500'/>
-                        <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets
-                            you
-                            issue,
-                            buy,
-                            sell, and redeem bonds seamlessly.
-                            Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                        <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex gap-5'>
                             <Link href='/bonds/issue'>
                                 <BasicButton wMin>
-                                    <span>Issue Bonds</span>
+                                    <span className='font-medium text-xl'>Issue Bonds</span>
                                 </BasicButton>
                             </Link>
                             <Link href='/bonds/explore'>
                                 <BasicButton wMin isWhiteBorder>
-                                    <span>Explore Bonds</span>
+                                    <span className='font-medium text-xl'>Explore Bonds</span>
                                 </BasicButton>
                             </Link>
                         </div>
@@ -49,12 +42,15 @@ export default function Bonds() {
 }
 
 function Statistics() {
+
+    const totalRedeemed = formatLargeNumber(6822).toString()
+
     return <>
-        <div className='relative grid grid-cols-2 gap-4 min-w-max h-min hollow-shadow '>
-            <StatisticsBox value="38" title="Total Issued"/>
-            <StatisticsBox value="$261,241" title="Total Volume" classAttributes='translate-y-28'/>
-            <StatisticsBox value="789" title="Total Purchased"/>
-            <StatisticsBox value="682" title="Total Redeemed" classAttributes='translate-y-28'/>
+        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 min-w-max h-min hollow-shadow '>
+            <StatisticsBox value="38" title="Total Issued" classAttributes="col-span-1 row-span-1"/>
+            <StatisticsBox value="$261,241" title="Total Volume" classAttributes='col-span-1 row-span-2 pr-16'/>
+            <StatisticsBox value="789" title="Total Purchased" classAttributes='col-span-1 row-span-2'/>
+            <StatisticsBox value={totalRedeemed} title="Total Redeemed" classAttributes='col-span-1 row-span-1 pr-16'/>
             <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px]"/>
         </div>
     </>
@@ -63,7 +59,7 @@ function Statistics() {
 function StatisticsBox({classAttributes, value, title}: { value: string, title: string, classAttributes?: string }) {
     return <>
         <div
-            className={"flex flex-col justify-end px-5 py-8 w-60 gap-2 h-64 bg-gradient-to-b from-zinc-900 to-black rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 " + classAttributes}>
+            className={"flex flex-col justify-end p-8 w-full gap-2 h-full bg-gradient-to-b from-neutral-900 to-black rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 " + classAttributes}>
             <span className='text-3xl font-bold'>{value}</span>
             <span className='text-neutral-500 font-medium text-sm'>{title}</span>
         </div>
@@ -74,7 +70,7 @@ function StatisticsBox({classAttributes, value, title}: { value: string, title: 
 function BondCards() {
     return <>
         <div
-            className='flex flex-col justify-center items-center w-full gap-4 bg-gradient-to-b from-zinc-950 to-black p-8 rounded-3xl'>
+            className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
             <div className='relative'>
                 <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
                     <BondCard info={BOND_CARDS[0]}/>
@@ -90,10 +86,10 @@ function BondCards() {
             <Link href='/bonds/explore'>
                 <div className="flex w-min">
                     <BasicButton>
-                        <span>Explore More Bonds</span>
-                    </BasicButton>
-                    <BasicButton>
-                        <ArrowCurveSVG color='#000'/>
+                        <div className='flex items-center gap-2'>
+                            <span className='font-medium text-xl'>Explore More Bonds</span>
+                            <ArrowCurveSVG color='#000'/>
+                        </div>
                     </BasicButton>
                 </div>
             </Link>
@@ -279,14 +275,12 @@ function BondsExplanation() {
 function SectionEnd() {
     return <>
         <div className='flex flex-col justify-center items-center bg-zinc-950 w-full py-32 gap-8'>
-            <h3 className='text-5xl font-bold max-w-2xl text-center capitalize'>See forward with Amet’s Blockchain
-                Analytics</h3>
-            <p className='text-sm text-stone-300'>Investment strategy and embrace the future of decentralized finance
-                today.</p>
+            <h3 className='text-5xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey at Amet Finance</h3>
+            <p className='text-sm text-stone-300'>Connect with like-minded individuals, gain insights, and stay updated on the latest trends and opportunities.</p>
             <Link href={URLS.Discord} target="_blank">
                 <div className='flex gap-3 items-center bg-white px-8 p-3 rounded-3xl text-black'>
                     <DiscordIcon color='#000' size={32}/>
-                    <span className='font-medium'>Join Our Discord</span>
+                    <span className='font-medium text-xl'>Join Our Discord</span>
                 </div>
             </Link>
         </div>
