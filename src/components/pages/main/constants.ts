@@ -155,7 +155,7 @@ const BOND_CARDS: BondCardInfo[] = [
         issuer: "0x32AC51254FDe3",
         issuanceDate: "24.01.2024",
         score: 9.8,
-        tbv: 0
+        tbv: 2100
     },
     {
         contractAddress: "0x1",

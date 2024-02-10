@@ -24,7 +24,7 @@ export default function BondCard({info, link}: { info: BondCardInfo, link?: stri
         issuanceDate
     } = info;
 
-    const url = link || `/explore/${chainId}/${contractAddress}`
+    const url = link || `/bonds/explore/${chainId}/${contractAddress}`
     const chain = getChain(chainId);
     const chainIcon = getChainIcon(chainId);
 

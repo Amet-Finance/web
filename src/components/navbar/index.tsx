@@ -29,7 +29,7 @@ export default function Navbar() {
 
     return <>
         <nav
-            className={"fixed flex justify-between items-center z-20 w-full py-4 xl:px-40 lg:px-24 md:px-12 sm:px-4 " + bgClass}>
+            className={"fixed flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8 " + bgClass}>
             <AmetLogo/>
             <DesktopNavbar/>
             <MobileNavbar/>

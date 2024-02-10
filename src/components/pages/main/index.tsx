@@ -32,24 +32,23 @@ function LandingSection() {
 
     return <>
         <div
-            className='flex gap-4 rounded-b-[4rem] overflow-hidden bg-blackToWhite xl1:mx-52 lg:mx-24'>
-            <div className='flex flex-col justify-center gap-10 px-24 py-28 w-full'>
-                <h1 className='xl1:text-6xl lg:text-5xl font-bold leading-snug'>Simplified Bond <br/> Investments
+            className='flex gap-4 rounded-b-[4rem] overflow-hidden bg-blackToWhite xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-0'>
+            <div
+                className='flex flex-col lg:items-start lg:text-start sm:items-center sm:text-center justify-center gap-8 lg:px-24 sm:px-8 py-28 w-full'>
+                <h1 className='xl1:text-6xl sm:text-5xl font-bold leading-snug'>Simplified Bond <br/> Investments
                     for <br/> Everyone</h1>
                 <div className='h-px w-1/5 bg-neutral-50'/>
-                <p className='text-neutral-400 max-w-xl'>Welcome to the world of effortless on-chain bond
+                <p className='text-neutral-400 max-w-xl text-sm'>Welcome to the world of effortless on-chain bond
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
-                <Link href='/bonds' className='relative'>
-                    <BasicButton wMin>
-                        <div className='flex gap-3 items-center'>
-                            <span className='font-medium text-xl'>{`Let's Bond`}</span>
-                            <ArrowCurveSVG/></div>
+                <Link href='/bonds' className='relative flex lg:w-min sm:w-full'>
+                    <BasicButton>
+                        <span className='font-medium px-4 py-0.5'>{`Let's Bond`}</span>
                     </BasicButton>
                 </Link>
             </div>
-            <div className='flex items-end'>
+            <div className='flex items-end lg:flex sm:hidden'>
                 <div className='relative w-[28rem] h-96 rounded-[4rem] origin-bottom-right'>
                     <div className='absolute w-full top-1/4 z-10 hover:-translate-x-10 shadow-2xl shadow-black'>
                         <BondCard info={BOND_CARDS[0]} link='/bonds'/>
@@ -88,14 +87,14 @@ function OnChainBondsSection() {
                 <Image src={imageSrc} width={73} height={92} alt={title}/>
                 <div className='flex flex-col gap-9'>
                     <span className='font-medium text-2xl'>{title}</span>
-                    <p className='text-g'>{paragraph}</p>
+                    <p className='text-neutral-400 text-sm'>{paragraph}</p>
                 </div>
             </div>
         </>
     }
 
     return <>
-        <div className='flex flex-col justify-center items-center gap-24 py-44 px-52'>
+        <div className='flex flex-col justify-center items-center gap-24 py-44 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='flex flex-col items-center gap-5 px-4'>
                 <h2 className='text-4xl font-medium text-center'>On-Chain Bonds: Smart, Secure, Streamlined</h2>
                 <p className='max-w-3xl text-center text-neutral-400'>{`Step into the future of finance with
@@ -125,66 +124,61 @@ function OnChainBondsSection() {
 
 function BondProperties() {
     return <>
-        <div className='flex flex-col justify-center items-center mx-52 rounded-[4rem] py-32 gap-4'>
-            <div className='flex justify-between items-center w-full gap-8'>
+        <div
+            className='flex flex-col justify-center items-center rounded-[4rem] py-12 gap-4 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
+            <div className='flex  justify-between items-center w-full gap-8'>
                 <div className='flex flex-col gap-8 z-10 w-full'>
-                    <h3 className='text-4xl font-bold'>Initiate Your Bonds Issuance Now</h3>
-                    <div className='flex flex-col max-w-xl gap-4'>
+                    <h3 className='text-3xl font-bold'>Initiate Your Bonds Issuance Now</h3>
+                    <div className='flex flex-col max-w-xl gap-4 text-sm'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Strategize Your Investment:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Determine your bonds strategy to align with your financial objectives</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Determine your bonds strategy to align with your financial objectives</span>
                         </div>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Set Your Bonds Terms:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Easily configure supply, maturity, and interest to fit your needs</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Easily configure supply, maturity, and interest to fit your needs</span>
                         </div>
 
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Securely Finalize Issuance:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Complete your bonds issuance with our streamlined smart contract process</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Complete your bonds issuance with our streamlined smart contract process</span>
                         </div>
                     </div>
                     <Link href='/bonds/issue'>
                         <BasicButton wMin>
-                            <span className='font-medium text-xl'>Issue Bonds</span>
+                            <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
                         </BasicButton>
                     </Link>
                 </div>
                 <Image src='/pngs/Issue-bonds.png' alt="Issue Bonds"
                        width={2000} height={2000}
-                       className='object-contain w-1/2 h-full'/>
+                       className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
             </div>
             <RoundedArrowSVG/>
             <div className='flex justify-between items-center w-full gap-8'>
                 <Image src='/pngs/explore-bonds.png' alt="Issue Bonds"
                        width={2000} height={2000}
-                       className='object-contain w-1/2 h-full'/>
+                       className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
                 <div className='flex flex-col gap-8 z-10'>
-                    <h3 className='text-4xl font-bold'>Discover and Acquire Bonds</h3>
-                    <div className='flex flex-col max-w-xl gap-4'>
+                    <h3 className='text-3xl font-bold'>Discover and Acquire Bonds</h3>
+                    <div className='flex flex-col max-w-xl gap-4 text-sm'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Explore Bond Offerings:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Browse through a variety of bonds issued on our platform to find the ones that best match your investment criteria</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Browse through a variety of bonds issued on our platform to find the ones that best match your investment criteria</span>
                         </div>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Conduct Your Due Diligence:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Delve into bond details to ensure they align with your investment goals and risk appetite</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Delve into bond details to ensure they align with your investment goals and risk appetite</span>
                         </div>
 
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Seamlessly Acquire Bonds:</span>
-                            <span className='col-span-1 row-span-2'></span>
-                            <span className='col-span-11 row-span-2 text-neutral-200'>Once you have found the right fit, easily purchase bonds with a simple click</span>
+                            <span className='col-span-11 row-span-2 text-neutral-400'>Once you have found the right fit, easily purchase bonds with a simple click</span>
                         </div>
                     </div>
                     <Link href='/bonds/explore'>
                         <BasicButton wMin>
-                            <span className='font-medium text-xl'>Explore Bonds</span>
+                            <span className='font-medium px-4 py-0.5'>Explore Bonds</span>
                         </BasicButton>
                     </Link>
                 </div>
@@ -195,27 +189,28 @@ function BondProperties() {
 
 function TradeOnChainBondsSection() {
     return <>
-        <div className='relative flex justify-between mx-52 py-24 pb-52'>
-            <div className='flex flex-col justify-end gap-10 w-1/2'>
-                <h3 className='text-4xl font-bold'>Trade On-Chain Bonds</h3>
-                <p className='max-w-xl text-neutral-400'>Our innovative approach turns each bond into an ERC1155 NFT,
+        <div className='relative flex justify-between py-32 pb-52 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
+            <div className='flex flex-col justify-end gap-8 lg1:w-1/2 sm:w-full'>
+                <h3 className='text-3xl font-bold'>Trade On-Chain Bonds</h3>
+                <p className='max-w-xl text-neutral-400 text-sm'>Our innovative approach turns each bond into an ERC1155
+                    NFT,
                     unlocking the
                     potential to trade them on leading NFT marketplaces. Discover new opportunities and liquidity
                     options by trading bonds just like you would any valued NFT.</p>
                 <Link href={URLS.Docs_Trade_Bonds} target='_blank'>
                     <BasicButton wMin>
-                        <span className='font-medium text-xl'>Learn More in Our Docs</span>
+                        <span className='font-medium px-4 py-0.5'>Learn More in Our Docs</span>
                     </BasicButton>
                 </Link>
             </div>
-            <div className='relative flex justify-end w-full'>
-                <div className='absolute w-1/2 z-40 top-24 right-24 hover:-translate-x-24'>
+            <div className='relative flex justify-end w-full lg1:flex sm:hidden'>
+                <div className='absolute w-1/2 z-40 top-20 right-40 hover:-translate-x-24'>
                     <BondCard info={BOND_CARDS[1]} link='/bonds/explore'/>
                 </div>
-                <div className='absolute w-1/2 z-30 top-12 right-12 hover:-translate-x-24'>
+                <div className='absolute w-1/2 z-30 top-0 right-20 hover:-translate-x-24'>
                     <BondCard info={BOND_CARDS[2]} link='/bonds/explore'/>
                 </div>
-                <div className='absolute w-1/2  hover:-translate-x-24'>
+                <div className='absolute w-1/2 -top-20 hover:-translate-x-24'>
                     <BondCard info={BOND_CARDS[3]} link='/bonds/explore'/>
                 </div>
             </div>
@@ -234,7 +229,7 @@ function InTheNewsSection() {
 
     return <>
         <div
-            className='flex flex-col py-44 gap-12 px-52 bg-b5'>
+            className='flex flex-col py-12 gap-12  bg-neutral-950 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='flex justify-between items-center'>
                 <h4 className='md:text-3xl sm:text-2xl font-bold'>In The News</h4>
                 <div className='flex gap-2 items-center'>
@@ -304,7 +299,7 @@ function FAQ() {
 
     return <>
         <div
-            className='flex flex-col justify-center items-center lg:px-72 md:px-12 sm:px-6  py-40 gap-16 text-white'>
+            className='flex flex-col justify-center items-center   xl1:px-52 lg:px-24 md:px-12 sm:px-8  py-40 gap-16 text-white'>
             <h4 className='text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
             <div className='flex flex-col gap-8 w-full'>
                 {FAQ_QUESTIONS.map((item, index) => <FaqItem item={item} index={index} key={index}/>)}
@@ -342,28 +337,30 @@ function Partnerships() {
 
     return <>
         <div
-            className='flex flex-col justify-center gap-24 py-40 lg:px-72 md:px-12 sm:px-6 items-center bg-b5'>
+            className='flex flex-col justify-center gap-24 py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-8 items-center bg-neutral-950'>
             <div className='flex flex-col gap-4 text-center'>
                 <h2 className='text-3xl font-bold'>Our Esteemed Partners: Collaborating for Success</h2>
                 <p className='max-w-3xl text-neutral-400'>Each partner plays a pivotal role in our ecosystem, bringing
                     unique expertise and value to our platform. Discover the synergy that makes our service stand out in
                     the world of finance</p>
             </div>
-            <div className='grid grid-cols-8 gap-20'>
+            <div className='grid grid-cols-8 md:gap-20 sm:gap-12'>
                 {
                     partners.map((item) => (<>
                         <Link href={item.url} target="_blank"
-                              className='flex justify-center lg1:col-span-2 md:col-span-4 sm:col-span-8'>
+                              className='flex justify-center lg1:col-span-2 md:col-span-4 sm:col-span-4'>
                             <Image src={item.src} alt={item.alt} width={200} height={50} className='object-contain'/>
                         </Link>
                     </>))
                 }
             </div>
             <Link href={URLS.Discord} target="_blank">
-                <div className='flex gap-3 items-center bg-white px-8 p-3 rounded-3xl text-black'>
-                    <DiscordIcon color='#000' size={32}/>
-                    <span className='font-medium text-xl'>Join Our Discord</span>
-                </div>
+                <BasicButton wMin>
+                    <div className='flex gap-2 items-center px-4 p-0.5 rounded-3xl text-black'>
+                        <DiscordIcon color='#000' size={32}/>
+                        <span className='font-medium '>Join Our Discord</span>
+                    </div>
+                </BasicButton>
             </Link>
         </div>
 
