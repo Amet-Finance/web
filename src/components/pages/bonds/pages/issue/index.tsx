@@ -99,7 +99,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
 
             const response = await sendTransactionAsync();
             const result = await trackTransaction(chain, response.hash)
-            openModal(ModalTypes.IssuedBondSuccess, result)
+            openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id})
         } catch (error: any) {
 
         }
@@ -216,7 +216,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            if (!tokens[tokenAddress]) {
+            if (!tokens[tokenAddress] && tokenAddress) {
                 CloudAPI.getTokensDetailed({
                     chainId: bondInfo.chainId,
                     contractAddresses: [tokenAddress]

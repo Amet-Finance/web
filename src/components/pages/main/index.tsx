@@ -12,6 +12,7 @@ import PlusSVG from "../../../../public/svg/utils/plus";
 import BondCard from "@/components/pages/bonds/utils/bond-card";
 import {DiscordIcon} from "../../../../public/svg/social/discord";
 import RoundedArrowSVG from "../../../../public/svg/utils/rounded-arrow";
+import ArrowBasicSVG from "../../../../public/svg/utils/arrow-basic";
 
 
 export default function Home() {
@@ -32,24 +33,24 @@ function LandingSection() {
 
     return <>
         <div
-            className='flex gap-4 rounded-b-[4rem] overflow-hidden bg-blackToWhite xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-0'>
+            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 min-h-[90vh]'>
             <div
-                className='flex flex-col lg:items-start lg:text-start sm:items-center sm:text-center justify-center gap-8 lg:px-24 sm:px-8 py-28 w-full'>
-                <h1 className='xl1:text-6xl sm:text-5xl font-bold leading-snug'>Simplified Bond <br/> Investments
-                    for <br/> Everyone</h1>
-                <div className='h-px w-1/5 bg-neutral-50'/>
+                className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center  w-full'>
+                <h1 className='xl1:text-8xl lg:text-7xl md:text-8xl sm:text-6xl font-bold leading-snug'>Simplified Bond
+                    Investments for Everyone</h1>
+                <div className='h-px w-1/4 bg-neutral-400'/>
                 <p className='text-neutral-400 max-w-xl text-sm'>Welcome to the world of effortless on-chain bond
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
-                <Link href='/bonds' className='relative flex lg:w-min sm:w-full'>
+                <Link href='/bonds' className='relative flex lg:w-1/3 sm:w-full'>
                     <BasicButton>
-                        <span className='font-medium px-4 py-0.5'>{`Let's Bond`}</span>
+                        <span className='font-semibold px-4 py-0.5'>Get Started</span>
                     </BasicButton>
                 </Link>
             </div>
-            <div className='flex items-end lg:flex sm:hidden'>
-                <div className='relative w-[28rem] h-96 rounded-[4rem] origin-bottom-right'>
+            <div className='flex items-end lg:flex sm:hidden h-full'>
+                <div className='relative w-[28rem] h- rounded-[4rem] origin-bottom-right'>
                     <div className='absolute w-full top-1/4 z-10 hover:-translate-x-10 shadow-2xl shadow-black'>
                         <BondCard info={BOND_CARDS[0]} link='/bonds'/>
                     </div>
@@ -66,6 +67,10 @@ function LandingSection() {
                         <BondCard info={BOND_CARDS[3]} link='/bonds'/>
                     </div>
                 </div>
+            </div>
+            <div className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer' onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
+                <span className='text-xs text-neutral-400'>Read More</span>
+                <ArrowBasicSVG classname='stroke-neutral-400 scale-[100%]'/>
             </div>
         </div>
     </>
@@ -86,7 +91,7 @@ function OnChainBondsSection() {
                 className="flex flex-col justify-between gap-16 items-start py-12 px-7 rounded-3xl border border-neutral-900 shadow-xl hover:shadow-neutral-900 bg-gradient-to-bl from-neutral-950 to-black hover:border-neutral-800 hover:scale-105 cursor-pointer ">
                 <Image src={imageSrc} width={73} height={92} alt={title}/>
                 <div className='flex flex-col gap-9'>
-                    <span className='font-medium text-2xl'>{title}</span>
+                    <span className='font-semibold text-3xl'>{title}</span>
                     <p className='text-neutral-400 text-sm'>{paragraph}</p>
                 </div>
             </div>
@@ -96,8 +101,9 @@ function OnChainBondsSection() {
     return <>
         <div className='flex flex-col justify-center items-center gap-24 py-44 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='flex flex-col items-center gap-5 px-4'>
-                <h2 className='text-4xl font-medium text-center'>On-Chain Bonds: Smart, Secure, Streamlined</h2>
-                <p className='max-w-3xl text-center text-neutral-400'>{`Step into the future of finance with
+                <h2 className='md:text-6xl sm:text-4xl font-bold text-center'>On-Chain Bonds: Smart, Secure,
+                    Streamlined</h2>
+                <p className='text-center text-neutral-400 text-sm'>{`Step into the future of finance with
                     On-Chain
                     Bonds. Experience cutting-edge security with blockchain's transparency.`}</p>
             </div>
@@ -126,10 +132,10 @@ function BondProperties() {
     return <>
         <div
             className='flex flex-col justify-center items-center rounded-[4rem] py-12 gap-4 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
-            <div className='flex  justify-between items-center w-full gap-8'>
+            <div className='flex justify-between items-center w-full gap-24'>
                 <div className='flex flex-col gap-8 z-10 w-full'>
-                    <h3 className='text-3xl font-bold'>Initiate Your Bonds Issuance Now</h3>
-                    <div className='flex flex-col max-w-xl gap-4 text-sm'>
+                    <h3 className='md:text-6xl sm:text-4xl font-bold'>Initiate Your Bonds Issuance</h3>
+                    <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Strategize Your Investment:</span>
                             <span className='col-span-11 row-span-2 text-neutral-400'>Determine your bonds strategy to align with your financial objectives</span>
@@ -151,17 +157,18 @@ function BondProperties() {
                     </Link>
                 </div>
                 <Image src='/pngs/Issue-bonds.png' alt="Issue Bonds"
-                       width={2000} height={2000}
+                       width={2000}
+                       height={2000}
                        className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
             </div>
             <RoundedArrowSVG/>
-            <div className='flex justify-between items-center w-full gap-8'>
-                <Image src='/pngs/explore-bonds.png' alt="Issue Bonds"
+            <div className='flex justify-between items-center w-full gap-24'>
+                <Image src='/pngs/explore-bonds.png' alt="Explore Bonds"
                        width={2000} height={2000}
                        className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
                 <div className='flex flex-col gap-8 z-10'>
-                    <h3 className='text-3xl font-bold'>Discover and Acquire Bonds</h3>
-                    <div className='flex flex-col max-w-xl gap-4 text-sm'>
+                    <h3 className='md:text-6xl sm:text-4xl font-bold'>Discover and Acquire Bonds</h3>
+                    <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Explore Bond Offerings:</span>
                             <span className='col-span-11 row-span-2 text-neutral-400'>Browse through a variety of bonds issued on our platform to find the ones that best match your investment criteria</span>
@@ -189,9 +196,9 @@ function BondProperties() {
 
 function TradeOnChainBondsSection() {
     return <>
-        <div className='relative flex justify-between py-32 pb-52 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
+        <div className='relative flex justify-between py-52 pb-52 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
             <div className='flex flex-col justify-end gap-8 lg1:w-1/2 sm:w-full'>
-                <h3 className='text-3xl font-bold'>Trade On-Chain Bonds</h3>
+                <h3 className='md:text-4xl sm:text-3xl font-bold'>Trade On-Chain Bonds</h3>
                 <p className='max-w-xl text-neutral-400 text-sm'>Our innovative approach turns each bond into an ERC1155
                     NFT,
                     unlocking the
@@ -231,7 +238,7 @@ function InTheNewsSection() {
         <div
             className='flex flex-col py-12 gap-12  bg-neutral-950 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='flex justify-between items-center'>
-                <h4 className='md:text-3xl sm:text-2xl font-bold'>In The News</h4>
+                <h4 className='md:text-4xl sm:text-3xl font-bold'>In The News</h4>
                 <div className='flex gap-2 items-center'>
                     <BasicButton isBgGrey onClick={() => scrollToRight('right')}>
                         <ArrowCurveSVG angle={-140} color='#fff'/>
@@ -300,7 +307,7 @@ function FAQ() {
     return <>
         <div
             className='flex flex-col justify-center items-center   xl1:px-52 lg:px-24 md:px-12 sm:px-8  py-40 gap-16 text-white'>
-            <h4 className='text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
+            <h4 className='md:text-4xl sm:text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
             <div className='flex flex-col gap-8 w-full'>
                 {FAQ_QUESTIONS.map((item, index) => <FaqItem item={item} index={index} key={index}/>)}
             </div>
@@ -338,9 +345,9 @@ function Partnerships() {
     return <>
         <div
             className='flex flex-col justify-center gap-24 py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-8 items-center bg-neutral-950'>
-            <div className='flex flex-col gap-4 text-center'>
-                <h2 className='text-3xl font-bold'>Our Esteemed Partners: Collaborating for Success</h2>
-                <p className='max-w-3xl text-neutral-400'>Each partner plays a pivotal role in our ecosystem, bringing
+            <div className='flex flex-col  items-center gap-4 text-center'>
+                <h2 className='md:text-4xl sm:text-3xl font-semibold'>Our Esteemed Partners: Collaborating for Success</h2>
+                <p className='max-w-3xl text-neutral-400 text-sm'>Each partner plays a pivotal role in our ecosystem, bringing
                     unique expertise and value to our platform. Discover the synergy that makes our service stand out in
                     the world of finance</p>
             </div>

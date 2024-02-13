@@ -1,32 +1,32 @@
 import {BasicButton} from "@/components/utils/buttons";
 import BondCard from "@/components/pages/bonds/utils/bond-card";
-import {BOND_CARDS} from "@/components/pages/main/constants";
-import ArrowCurveSVG from "../../../../../public/svg/utils/arrow-curve";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {DiscordIcon} from "../../../../../public/svg/social/discord";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
+import ContractAPI from "@/modules/cloud-api/contract-api";
+import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
 
 export default function Bonds() {
     return <>
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-32 px-52'>
-                <div className='relative flex justify-between w-full gap-12 bg-blackToWhite py-24 rounded-[4rem]'>
-                    <div className='flex flex-col w-full gap-12 px-24'>
+            <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+                <div className='relative flex justify-between w-full gap-12  py-24 rounded-[4rem]'>
+                    <div className='flex flex-col w-full gap-12 '>
                         <h1 className='text-5xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain Bonds</h1>
                         <div className='h-px w-1/4 bg-neutral-500'/>
                         <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex gap-5'>
                             <Link href='/bonds/issue'>
                                 <BasicButton wMin>
-                                    <span className='font-medium text-xl'>Issue Bonds</span>
+                                    <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
                                 </BasicButton>
                             </Link>
                             <Link href='/bonds/explore'>
                                 <BasicButton wMin isWhiteBorder>
-                                    <span className='font-medium text-xl'>Explore Bonds</span>
+                                    <span className='font-medium px-4 py-0.5'>Explore Bonds</span>
                                 </BasicButton>
                             </Link>
                         </div>
@@ -68,27 +68,29 @@ function StatisticsBox({classAttributes, value, title}: { value: string, title: 
 
 
 function BondCards() {
+
+    const [params, setParams] = useState<ContractQuery>({
+        limit: 12
+    })
+    const [contracts, setContracts] = useState<ContractBasicFormat[]>([])
+
+    useEffect(() => {
+        ContractAPI.getContractsBasic(params).then(response => setContracts(response))
+    }, [])
+
     return <>
-        <div
-            className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
-            <div className='relative'>
+        <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
+            <div className='relative w-full'>
                 <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
-                    <BondCard info={BOND_CARDS[0]}/>
-                    <BondCard info={BOND_CARDS[2]}/>
-                    <BondCard info={BOND_CARDS[1]}/>
-                    <BondCard info={BOND_CARDS[0]}/>
-                    <BondCard info={BOND_CARDS[1]}/>
-                    <BondCard info={BOND_CARDS[2]}/>
+                    {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
                 </div>
-                <div
-                    className='absolute top-[70%] left-0 h-[30%] w-full bg-gradient-to-b from-transparent to-black z-20'/>
+                <div className='absolute top-[70%] left-0 h-[30%] w-full bg-gradient-to-b from-transparent to-black z-20'/>
             </div>
             <Link href='/bonds/explore'>
                 <div className="flex w-min">
                     <BasicButton>
-                        <div className='flex items-center gap-2'>
-                            <span className='font-medium text-xl'>Explore More Bonds</span>
-                            <ArrowCurveSVG color='#000'/>
+                        <div className='flex items-center px-4 py-0.5 gap-2'>
+                            <span className='font-medium'>Explore More Bonds</span>
                         </div>
                     </BasicButton>
                 </div>
@@ -260,8 +262,7 @@ function BondsExplanation() {
                 <div className='flex flex-col gap-8'>
                     <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
                     <h4 className='text-2xl'>Bond Redemption</h4>
-                    <p className='text-neutral-300 text-sm'>In this final phase, the bond reaches its maturity. The
-                        bondholder, now with the bond represented as an NFT, presents it to redeem their investment.
+                    <p className='text-neutral-300 text-sm'>The bondholder, now with the bond represented as an NFT, presents it to redeem their investment.
                         Upon redemption, the total return is transferred to the bondholder. This marks the successful
                         conclusion of the bond contract, fulfilling the investment cycle</p>
                 </div>
@@ -278,9 +279,9 @@ function SectionEnd() {
             <h3 className='text-5xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey at Amet Finance</h3>
             <p className='text-sm text-stone-300'>Connect with like-minded individuals, gain insights, and stay updated on the latest trends and opportunities.</p>
             <Link href={URLS.Discord} target="_blank">
-                <div className='flex gap-3 items-center bg-white px-8 p-3 rounded-3xl text-black'>
+                <div className='flex gap-3 items-center bg-white px-8 p-2.5 rounded-3xl text-black'>
                     <DiscordIcon color='#000' size={32}/>
-                    <span className='font-medium text-xl'>Join Our Discord</span>
+                    <span className='font-medium'>Join Our Discord</span>
                 </div>
             </Link>
         </div>

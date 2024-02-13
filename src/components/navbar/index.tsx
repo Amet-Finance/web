@@ -149,6 +149,12 @@ function WalletComponent() {
                 chainId: Number(network.chain?.id),
                 isConnected: true
             })
+        } else {
+            setAccountInfo({
+                address: "",
+                chainId: 0,
+                isConnected: false
+            })
         }
     }, [account.address, account.isConnected, network.chain?.id])
 
@@ -156,9 +162,7 @@ function WalletComponent() {
     return <>
         <div onClick={() => web3Modal.open()} className='cursor-pointer text-white'>
             {
-                accountInfo.isConnected ?
-                    <ConnectedComponent accountInfo={accountInfo}/>
-                    : <BasicButton>Connect</BasicButton>
+                accountInfo.isConnected ? <ConnectedComponent accountInfo={accountInfo}/> : <ConnectWalletComponent/>
             }
         </div>
     </>
@@ -171,11 +175,18 @@ function ConnectedComponent({accountInfo}: { accountInfo: AccountInfo }) {
 
     return <>
         <BasicButton>
-            <Image src={chainIcon}
-                   alt={chain?.name || ""}
-                   width={25} height={25}
-                   className='cursor-pointer rounded-full p-0 m-0'/>
-            <span>{shorten(accountInfo.address, 4)}</span>
+            <div className='flex items-center gap-2'>
+                <Image src={chainIcon}
+                       alt={chain?.name || ""}
+                       width={25} height={25}
+                       className='cursor-pointer rounded-full p-0 m-0'/>
+                <span>{shorten(accountInfo.address, 4)}</span>
+            </div>
         </BasicButton>
     </>
+}
+
+
+function ConnectWalletComponent() {
+    return <BasicButton wMin><span className='px-4'>Connect</span></BasicButton>
 }

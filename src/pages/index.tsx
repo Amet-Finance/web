@@ -6,9 +6,5 @@ export default function HomePage() {
 }
 
 export function getStaticProps() {
-    return {
-        props: {
-            pageId: PageId.MainPage,
-        }
-    }
+    return {props: {pageId: PageId.MainPage}}
 }

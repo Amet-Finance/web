@@ -1,10 +1,10 @@
 import {toBN} from "@/modules/web3/util";
 
-function format(number: number) {
+function format(number: number, maxDigestsForSmallNumbers = 4) {
 
     if (number < 1) {
-        if (number.toString().length > 4) {
-            return number.toFixed(4)
+        if (number.toString().length > maxDigestsForSmallNumbers) {
+            return number.toFixed(maxDigestsForSmallNumbers)
         }
         return number;
     }

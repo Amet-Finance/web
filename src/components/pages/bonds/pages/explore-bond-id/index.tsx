@@ -7,16 +7,20 @@ import {formatTime} from "@/modules/utils/dates";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {shorten} from "@/modules/web3/util";
 import {shortenString} from "@/modules/utils/string";
-import {formatLargeNumber} from "@/modules/utils/numbers";
+import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
 import {useState} from "react";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {URLS} from "@/modules/utils/urls";
+import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import makeBlockie from "ethereum-blockies-base64";
 
-export default function ExploreBondId({bondDetailed}: { bondDetailed: BondDetailed }) {
+export default function ExploreBondId({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+
+    console.log(bondDetailed)
+    if(!bondDetailed) return null;
 
     const {contractInfo, contractDescription, contractStats} = bondDetailed;
-
     // todo write a useEffect to update accordingly
 
     return <>
@@ -59,15 +63,15 @@ function StatisticsContainer({contractStats}: { contractStats: BondContractStats
 
     return <>
         <div className='grid grid-cols-4 gap-4 w-full'>
-            <Container title='Bond Score' value={score.toString()}/>
-            <Container title='Secured Percentage' value={`${securedPercentage}%`}/>
+            <Container title='Bond Score' value={`${format(score, 2)}`}/>
+            <Container title='Secured Percentage' value={`${format(securedPercentage, 2)}%`}/>
             <Container title='Issuer Score' value={`${issuerScore}`}/>
             <Container title='Unique Holders' value={`${uniqueHolders}`}/>
         </div>
     </>
 }
 
-function MainContainer({bondDetailed}: { bondDetailed: BondDetailed }) {
+function MainContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
     return <>
         <div className='grid grid-cols-12 w-full gap-4 h-full'>
             <MainDetailsContainer bondDetailed={bondDetailed}/>
@@ -76,12 +80,12 @@ function MainContainer({bondDetailed}: { bondDetailed: BondDetailed }) {
     </>
 }
 
-function MainDetailsContainer({bondDetailed}: { bondDetailed: BondDetailed }) {
+function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
     const {contractInfo, contractStats} = bondDetailed;
 
     const {
+        _id,
         issuer,
-        chainId,
         investment,
         interest,
         total,
@@ -91,19 +95,25 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: BondDetailed }) {
         issuanceDate
     } = contractInfo;
 
+    const [contractAddress, chainId] = _id.split("_")
+
     const {tbv} = contractStats;
 
-    const maturityPeriodTime = formatTime(BlockTimes[contractInfo.chainId] * maturityPeriod, true, true, true)
+    const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriod, true, true, true)
     const chain = getChain(chainId)
-    const chainIcon = getChainIcon(chainId)
+    const chainIcon = getChainIcon(chainId);
+
+    const interestIcon = interest.icon || makeBlockie(interest._id)
+    const issuanceDateInFormat = new Date(issuanceDate);
+    const issuanceDateClean = `${issuanceDateInFormat.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})} ${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
     return <>
         <div
             className='flex flex-col gap-4 col-span-8 bg-neutral-950 rounded-3xl p-8 pt-4 border border-neutral-900 w-full'>
             <div className='flex justify-between items-center w-full'>
-                {/*    bitcoin icon and etc*/}
+
                 <div className='flex gap-2'>
-                    <Image src={interest.icon} alt={interest.name} width={64} height={64}/>
+                    <Image src={interestIcon} alt={interest.name} width={64} height={64} className='object-contain rounded-full'/>
                     <div className='flex flex-col'>
                         <span className='text-3xl font-bold'>{interest.name}</span>
                         <span className='font-thin text-neutral-400'>{investment.symbol} - {interest.symbol}</span>
@@ -157,7 +167,7 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: BondDetailed }) {
                         <span className='underline'>{shorten(issuer, 5)}</span>
                     </Link>
                 </div>
-                <span className='text-neutral-400'>{issuanceDate.toUTCString()}</span>
+                <span className='text-neutral-400'>{issuanceDateClean}</span>
             </div>
         </div>
     </>

@@ -5,20 +5,18 @@ import CongratulationsSVG from "../../../public/svg/congratulations";
 import XmarkSVG from "../../../public/svg/xmark";
 import {closeModal} from "@/store/redux/modal";
 import {getChain} from "@/modules/utils/wallet-connect";
+import {IssueBondSuccessAdditional} from "@/components/modals/type";
 
 export default function IssuedBondSuccessModal() {
-    const generalState = useSelector((item: RootState) => item.general);
-    const chain = getChain(generalState.chainId);
+
     const modalState = useSelector((item: RootState) => item.modal)
 
+    const additional: IssueBondSuccessAdditional = modalState.additional as any;
 
-    const additional = modalState.additional;
-
-    const bondInfo = additional?.bondInfo
-    const transaction = additional?.transaction;
     const decoded = additional?.decoded
+    const chainId = additional.chainId
 
-    const url = `/bonds/explore/${chain?.id}/${decoded?.contractAddress}`
+    const url = `/bonds/explore/${chainId}/${decoded?.contractAddress}`
 
     return <>
         <div className='relative flex flex-col items-center rounded-4xl p-3 px-1 max-w-[500px] text-center z-20 gap-4'>
