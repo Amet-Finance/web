@@ -101,7 +101,7 @@ function OnChainBondsSection() {
     return <>
         <div className='flex flex-col justify-center items-center gap-24 py-44 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='flex flex-col items-center gap-5 px-4'>
-                <h2 className='md:text-6xl sm:text-4xl font-bold text-center'>On-Chain Bonds: Smart, Secure,
+                <h2 className='md:text-5xl sm:text-4xl font-bold text-center'>On-Chain Bonds: Smart, Secure,
                     Streamlined</h2>
                 <p className='text-center text-neutral-400 text-sm'>{`Step into the future of finance with
                     On-Chain
@@ -134,7 +134,7 @@ function BondProperties() {
             className='flex flex-col justify-center items-center rounded-[4rem] py-12 gap-4 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
             <div className='flex justify-between items-center w-full gap-24'>
                 <div className='flex flex-col gap-8 z-10 w-full'>
-                    <h3 className='md:text-6xl sm:text-4xl font-bold'>Initiate Your Bonds Issuance</h3>
+                    <h3 className='md:text-4xl sm:text-3xl font-bold'>Initiate Your Bonds Issuance</h3>
                     <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Strategize Your Investment:</span>
@@ -167,7 +167,7 @@ function BondProperties() {
                        width={2000} height={2000}
                        className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
                 <div className='flex flex-col gap-8 z-10'>
-                    <h3 className='md:text-6xl sm:text-4xl font-bold'>Discover and Acquire Bonds</h3>
+                    <h3 className='md:text-4xl sm:text-3xl font-bold'>Discover and Acquire Bonds</h3>
                     <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Explore Bond Offerings:</span>
