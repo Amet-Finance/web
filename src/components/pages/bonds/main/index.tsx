@@ -8,14 +8,16 @@ import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import Loading from "@/components/utils/loading";
 
 export default function Bonds() {
     return <>
         <div className='flex flex-col w-full'>
             <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
-                <div className='relative flex justify-between w-full gap-12  py-24 rounded-[4rem]'>
+                <div className='relative flex justify-between items-end w-full gap-12  py-24 rounded-[4rem]'>
                     <div className='flex flex-col w-full gap-12 '>
-                        <h1 className='text-5xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain Bonds</h1>
+                        <h1 className='text-7xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain
+                            Bonds</h1>
                         <div className='h-px w-1/4 bg-neutral-500'/>
                         <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex gap-5'>
@@ -59,7 +61,7 @@ function Statistics() {
 function StatisticsBox({classAttributes, value, title}: { value: string, title: string, classAttributes?: string }) {
     return <>
         <div
-            className={"flex flex-col justify-end p-8 w-full gap-2 h-full bg-gradient-to-b from-neutral-900 to-black rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 " + classAttributes}>
+            className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black " + classAttributes}>
             <span className='text-3xl font-bold'>{value}</span>
             <span className='text-neutral-500 font-medium text-sm'>{title}</span>
         </div>
@@ -69,23 +71,23 @@ function StatisticsBox({classAttributes, value, title}: { value: string, title: 
 
 function BondCards() {
 
-    const [params, setParams] = useState<ContractQuery>({
-        limit: 12
-    })
+    const [isLoading, setLoading] = useState(false);
+    const [params, setParams] = useState<ContractQuery>({limit: 12})
     const [contracts, setContracts] = useState<ContractBasicFormat[]>([])
 
     useEffect(() => {
-        ContractAPI.getContractsBasic(params).then(response => setContracts(response))
-    }, [])
+        const requestContracts = () => ContractAPI.getContractsBasic(params).then(response => Boolean(response) && setContracts(response))
+
+        setLoading(true)
+        requestContracts().then(() => setLoading(false))
+
+        const interval = setInterval(requestContracts, 15000)
+        return () => clearInterval(interval);
+    }, [params])
 
     return <>
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
-            <div className='relative w-full'>
-                <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
-                    {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
-                </div>
-                <div className='absolute top-[70%] left-0 h-[30%] w-full bg-gradient-to-b from-transparent to-black z-20'/>
-            </div>
+            {isLoading ? <Loader/> : <ContractsContainer contracts={contracts}/>}
             <Link href='/bonds/explore'>
                 <div className="flex w-min">
                     <BasicButton>
@@ -95,6 +97,21 @@ function BondCards() {
                     </BasicButton>
                 </div>
             </Link>
+        </div>
+    </>
+}
+
+function Loader() {
+    return <div className='p-12'><Loading percent={-50}/></div>
+}
+
+function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
+    return <>
+        <div className='relative w-full'>
+            <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
+                {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
+            </div>
+            <div className='absolute top-[70%] left-0 h-[30%] w-full bg-gradient-to-b from-transparent to-black z-20'/>
         </div>
     </>
 }

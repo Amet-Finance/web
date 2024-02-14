@@ -1,4 +1,3 @@
-import {BondContractStats, BondDetailed} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import ArrowCurveSVG from "../../../../../../public/svg/utils/arrow-curve";
 import RefreshSVG from "../../../../../../public/svg/utils/refresh";
 import Image from "next/image";
@@ -14,6 +13,8 @@ import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {URLS} from "@/modules/utils/urls";
 import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
+import {tColor} from "@/components/pages/bonds/utils/colors";
+import WarningSVG from "../../../../../../public/svg/warning";
 
 export default function ExploreBondId({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
 
@@ -26,7 +27,7 @@ export default function ExploreBondId({bondDetailed}: { bondDetailed: ContractEx
     return <>
         <div className='flex flex-col gap-4 w-full px-52 py-24'>
             <HeadlineContainer/>
-            <StatisticsContainer contractStats={contractStats}/>
+            <StatisticsContainer bondDetailed={bondDetailed}/>
             <MainContainer bondDetailed={bondDetailed}/>
         </div>
     </>
@@ -44,17 +45,19 @@ function HeadlineContainer() {
     </>
 }
 
-function StatisticsContainer({contractStats}: { contractStats: BondContractStats }) {
+function StatisticsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
 
+    const {contractInfo, contractStats} = bondDetailed
     const {score, securedPercentage, issuerScore, uniqueHolders} = contractStats;
+    const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.total : 0;
 
-    function Container({title, value}: { title: string, value: string }) {
+    function Container({title, value, valueColor}: { title: string, value: string, valueColor: string }) {
         return <>
             <div
                 className='flex flex-col items-end gap-4 bg-neutral-950 rounded-3xl p-6 pt-2 pr-2 border border-neutral-900'>
                 <div className='w-min bg-neutral-800 p-4 rounded-full'><ArrowCurveSVG color='#fff'/></div>
                 <div className='flex flex-col w-full gap-1'>
-                    <span className='text-5xl font-bold'>{value}</span>
+                    <span className={`text-5xl font-bold ${valueColor}`}>{value}</span>
                     <span className='text-xs'>{title}</span>
                 </div>
             </div>
@@ -63,10 +66,16 @@ function StatisticsContainer({contractStats}: { contractStats: BondContractStats
 
     return <>
         <div className='grid grid-cols-4 gap-4 w-full'>
-            <Container title='Bond Score' value={`${format(score, 2)}`}/>
-            <Container title='Secured Percentage' value={`${format(securedPercentage, 2)}%`}/>
-            <Container title='Issuer Score' value={`${issuerScore}`}/>
-            <Container title='Unique Holders' value={`${uniqueHolders}`}/>
+            <Container title='Bond Score'
+                       value={`${format(score, 2)}`}
+                       valueColor={tColor(score * 10)}/>
+            <Container title='Secured Percentage'
+                       value={`${format(securedPercentage, 2)}%`}
+                       valueColor={tColor(securedPercentage)}/>
+            <Container title='Issuer Score' value={`${issuerScore}`}
+                       valueColor={tColor(issuerScore * 10)}/>
+            <Container title='Unique Holders' value={`${uniqueHolders}`}
+                       valueColor={tColor(holdersIndex * 100)}/>
         </div>
     </>
 }
@@ -110,29 +119,32 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFo
     return <>
         <div
             className='flex flex-col gap-4 col-span-8 bg-neutral-950 rounded-3xl p-8 pt-4 border border-neutral-900 w-full'>
-            <div className='flex justify-between items-center w-full'>
-
-                <div className='flex gap-2'>
-                    <Image src={interestIcon} alt={interest.name} width={64} height={64} className='object-contain rounded-full'/>
-                    <div className='flex flex-col'>
-                        <span className='text-3xl font-bold'>{interest.name}</span>
-                        <span className='font-thin text-neutral-400'>{investment.symbol} - {interest.symbol}</span>
+            <div className='flex flex-col gap-2 w-full'>
+                <div className='flex justify-between items-center w-full'>
+                    <div className='flex gap-2'>
+                        <Image src={interestIcon} alt={interest.name} width={64} height={64}
+                               className='object-contain rounded-full'/>
+                        <div className='flex flex-col'>
+                            <span className='text-3xl font-bold'>{interest.name}</span>
+                            <span className='font-thin text-neutral-400'>{investment.symbol} - {interest.symbol}</span>
+                        </div>
+                        <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>ZCB</span>
+                        {/*    todo add star here as well */}
                     </div>
-                    <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>ZCB</span>
-                    {/*    todo add star here as well */}
+                    <div className='flex flex-col items-end'>
+                        <div className='flex gap-1 items-center'>
+                            <div className='p-1 rounded-full bg-green-500'/>
+                            <span className='text-green-500'>Live</span>
+                        </div>
+                        <div className='flex flex-col '>
+                            <span className='text-xl font-semibold text-end'>{total}/{purchased}/{redeemed}</span>
+                            <span className='text-xs text-neutral-400 font-light'>Total/Purchased/Redeemed</span>
+                        </div>
+
+                    </div>
                 </div>
-
-                <div className='flex flex-col items-end'>
-                    <div className='flex gap-1 items-center'>
-                        <div className='p-1 rounded-full bg-green-500'/>
-                        <span className='text-green-500'>Live</span>
-                    </div>
-                    <div className='flex flex-col '>
-                        <span className='text-xl font-semibold text-end'>{total}/{purchased}/{redeemed}</span>
-                        <span className='text-xs text-neutral-400 font-light'>Total/Purchased/Redeemed</span>
-                    </div>
-
-                </div>
+                {!Boolean(interest.isVerified) && <NotVerifiedAsset title={"Interest"}/>}
+                {!Boolean(investment.isVerified) && <NotVerifiedAsset title={"Investment"}/>}
             </div>
             <div className='h-px w-full bg-neutral-800'/>
             <div className='grid grid-cols-3 gap-y-12 mt-8 w-full'>
@@ -169,6 +181,15 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFo
                 </div>
                 <span className='text-neutral-400'>{issuanceDateClean}</span>
             </div>
+        </div>
+    </>
+}
+
+function NotVerifiedAsset({title}: { title: string }) {
+    return <>
+        <div className='flex items-center gap-2 px-4 py-1 border w-min whitespace-nowrap rounded-md border-w1 cursor-pointer'>
+            <WarningSVG/>
+            <span className='text-red-500 text-sm font-light'><b>Caution</b>: {title} token has not been verified. Please proceed carefully!</span>
         </div>
     </>
 }
