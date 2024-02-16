@@ -1,5 +1,10 @@
 import {BondFinancialAttributeInfo} from "@/components/pages/bonds/utils/bond-card/type";
 
+type ExploreIdQueryParams = {
+    contractAddress: string,
+    chainId: number,
+}
+
 type BondContractDescription = {
     name: string,
     description: string,
@@ -51,6 +56,7 @@ type BondDetailed = {
 
 
 export type  {
+    ExploreIdQueryParams,
     BondDetailed,
     BondContractInfo,
     BondContractDescription,

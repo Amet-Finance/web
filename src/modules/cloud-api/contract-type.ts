@@ -68,11 +68,16 @@ type ContractExtendedFormat = {
     lastUpdated: Date
 }
 
+type ContractExtendedFormatV2 = ContractExtendedFormat & {
+    refreshDate: Date
+}
+
 export type  {
     ContractEssentialFormat,
     ContractDescription,
     FinancialAttributeInfo,
     ContractQuery,
     ContractBasicFormat,
-    ContractExtendedFormat
+    ContractExtendedFormat,
+    ContractExtendedFormatV2
 }

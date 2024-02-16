@@ -14,7 +14,7 @@ export default function Bonds() {
     return <>
         <div className='flex flex-col w-full'>
             <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
-                <div className='relative flex justify-between items-end w-full gap-12  py-24 rounded-[4rem]'>
+                <div className='relative flex lg:flex-row sm:flex-col lg:items-end sm:items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
                     <div className='flex flex-col w-full gap-12 '>
                         <h1 className='text-7xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain
                             Bonds</h1>
@@ -48,7 +48,7 @@ function Statistics() {
     const totalRedeemed = formatLargeNumber(6822).toString()
 
     return <>
-        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 min-w-max h-min hollow-shadow '>
+        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 min-w-max h-min hollow-shadow w-full '>
             <StatisticsBox value="38" title="Total Issued" classAttributes="col-span-1 row-span-1"/>
             <StatisticsBox value="$261,241" title="Total Volume" classAttributes='col-span-1 row-span-2 pr-16'/>
             <StatisticsBox value="789" title="Total Purchased" classAttributes='col-span-1 row-span-2'/>

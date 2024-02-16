@@ -1,18 +1,22 @@
 import {getChain} from "@/modules/utils/wallet-connect";
 import ExploreBondId from "@/components/pages/bonds/pages/explore-bond-id";
-import {BondDetailed} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import ContractAPI from "@/modules/cloud-api/contract-api";
+import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
 // {bondInfoDetailed}: { bondInfoDetailed: DetailedBondResponse }
-export default function ExploreIdPage({bondInfoDetailed}: {bondInfoDetailed: ContractExtendedFormat}) {
-    return <ExploreBondId bondDetailed={bondInfoDetailed}/>
+export default function ExploreIdPage({bondInfoDetailed, queryParams}: {bondInfoDetailed: ContractExtendedFormat, queryParams: ExploreIdQueryParams}) {
+    return <ExploreBondId bondDetailedTmp={bondInfoDetailed} queryParams={queryParams}/>
 }
 
 export async function getServerSideProps({query}: any) {
 
     const props: any = {
         pageId: "ExploreIdPage",
+        queryParams: {
+            contractAddress: query.contractAddress,
+            chainId: query.chainId,
+        }
     }
 
     const contractAddress = query.contractAddress;
@@ -22,8 +26,6 @@ export async function getServerSideProps({query}: any) {
     if (chain && contractAddress) {
 
         const contracts = await ContractAPI.getContractsExtended({chainId: chain.id, contractAddresses: [contractAddress]});
-        console.log(chain, contractAddress)
-        console.log(contracts)
         if(!contracts || !contracts.length) return {props}
 
 
@@ -37,15 +39,10 @@ export async function getServerSideProps({query}: any) {
             meta.title = contractDescription.name
 
             const detailDescription = contractDescription?.details?.description;
-            if (detailDescription && detailDescription.length > 5) {
-                meta.description = detailDescription;
-            }
+            if (detailDescription && detailDescription.length > 5) meta.description = detailDescription;
         }
 
-        props.bondInfoDetailed = {
-            ...bondInfoDetailed,
-            lastUpdated: Date.now()
-        };
+        props.bondInfoDetailed = bondInfoDetailed;
         props.meta = meta;
     }
 

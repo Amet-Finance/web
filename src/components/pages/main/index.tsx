@@ -35,17 +35,19 @@ function LandingSection() {
         <div
             className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 min-h-[90vh]'>
             <div
-                className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center  w-full'>
-                <h1 className='xl1:text-8xl lg:text-7xl md:text-8xl sm:text-6xl font-bold leading-snug'>Simplified Bond
+                className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center '>
+                <h1 className='xl1:text-8xl lg:text-7xl md:text-8xl sm:text-5xl font-bold leading-snug max-w-7xl'>Simplified
+                    Bond
                     Investments for Everyone</h1>
                 <div className='h-px w-1/4 bg-neutral-400'/>
-                <p className='text-neutral-400 max-w-xl text-sm'>Welcome to the world of effortless on-chain bond
+                <p className='text-neutral-400 max-w-xl md:text-sm sm:text-xs'>Welcome to the world of effortless
+                    on-chain bond
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
                 <Link href='/bonds' className='relative flex lg:w-1/3 sm:w-full'>
                     <BasicButton>
-                        <span className='font-semibold px-4 py-0.5'>Get Started</span>
+                        <span className='px-4 py-1'>Get Started</span>
                     </BasicButton>
                 </Link>
             </div>
@@ -68,9 +70,11 @@ function LandingSection() {
                     </div>
                 </div>
             </div>
-            <div className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer' onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
+            <div
+                className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer -translate-y-2.5'
+                onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
                 <span className='text-xs text-neutral-400'>Read More</span>
-                <ArrowBasicSVG classname='stroke-neutral-400 scale-[100%]'/>
+                <ArrowBasicSVG classname='stroke-neutral-400 scale-[80%]'/>
             </div>
         </div>
     </>
@@ -152,7 +156,7 @@ function BondProperties() {
                     </div>
                     <Link href='/bonds/issue'>
                         <BasicButton wMin>
-                            <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
+                            <span className='px-4 py-1'>Issue Bonds</span>
                         </BasicButton>
                     </Link>
                 </div>
@@ -185,7 +189,7 @@ function BondProperties() {
                     </div>
                     <Link href='/bonds/explore'>
                         <BasicButton wMin>
-                            <span className='font-medium px-4 py-0.5'>Explore Bonds</span>
+                            <span className='px-4 py-1'>Explore Bonds</span>
                         </BasicButton>
                     </Link>
                 </div>
@@ -206,7 +210,7 @@ function TradeOnChainBondsSection() {
                     options by trading bonds just like you would any valued NFT.</p>
                 <Link href={URLS.Docs_Trade_Bonds} target='_blank'>
                     <BasicButton wMin>
-                        <span className='font-medium px-4 py-0.5'>Learn More in Our Docs</span>
+                        <span className='px-4 py-1'>Learn More in Our Docs</span>
                     </BasicButton>
                 </Link>
             </div>
@@ -365,7 +369,7 @@ function Partnerships() {
                 <BasicButton wMin>
                     <div className='flex gap-2 items-center px-4 p-0.5 rounded-3xl text-black'>
                         <DiscordIcon color='#000' size={32}/>
-                        <span className='font-medium '>Join Our Discord</span>
+                        <span>Join Our Discord</span>
                     </div>
                 </BasicButton>
             </Link>

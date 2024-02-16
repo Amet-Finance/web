@@ -8,30 +8,77 @@ import {shorten} from "@/modules/web3/util";
 import {shortenString} from "@/modules/utils/string";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {URLS} from "@/modules/utils/urls";
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedFormat, ContractExtendedFormatV2} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import WarningSVG from "../../../../../../public/svg/warning";
+import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
+import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond-id/utils";
+import {Chart, registerables} from "chart.js";
 
-export default function ExploreBondId({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+const UPDATE_INTERVAL = 5000;
 
-    console.log(bondDetailed)
-    if(!bondDetailed) return null;
+export default function ExploreBondId({bondDetailedTmp, queryParams}: {
+    bondDetailedTmp: ContractExtendedFormat,
+    queryParams: ExploreIdQueryParams
+}) {
+
+    const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({
+        ...(bondDetailedTmp || {}),
+        refreshDate: new Date()
+    })
+    const [isLoading, setLoading] = useState(!Boolean(bondDetailedTmp))
+
+    useEffect(() => {
+        const updater = () => fetchContractExtended(queryParams).then(contract => {
+            if (contract) {
+                setBondDetailed({...contract, refreshDate: new Date()})
+                setLoading(false)
+            }
+        })
+
+        const interval = setInterval(updater, UPDATE_INTERVAL)
+        return () => clearInterval(interval);
+    }, [bondDetailed.lastUpdated])
+
+    if (isLoading) return <LoadingScreen/>
 
     const {contractInfo, contractDescription, contractStats} = bondDetailed;
-    // todo write a useEffect to update accordingly
 
     return <>
         <div className='flex flex-col gap-4 w-full px-52 py-24'>
             <HeadlineContainer/>
             <StatisticsContainer bondDetailed={bondDetailed}/>
             <MainContainer bondDetailed={bondDetailed}/>
+            <GraphsContainer bondDetailed={bondDetailed}/>
         </div>
     </>
 }
+
+function LoadingScreen() {
+    const [percentage, setPercentage] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => setPercentage(percentage + Math.round(Math.random() * 10)), UPDATE_INTERVAL / 20);
+        return () => clearInterval(interval)
+    }, [percentage]);
+
+    return <>
+        <div className='flex gap-2 items-end w-full h-screen xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+            <div className='-translate-y-28'>
+                <div className='flex items-start'>
+                    <span className='text-9xl font-bold'>{percentage}</span>
+                    <span className='text-2xl font-bold'>%</span>
+                </div>
+                <span className='text-sm text-neutral-500'>Loading the contract information...</span>
+            </div>
+        </div>
+    </>
+}
+
 
 function HeadlineContainer() {
     return <>
@@ -158,10 +205,10 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFo
                 </div>
                 <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
                     <div className='flex items-center gap-2'>
-                        <Image src={chainIcon} alt={chain?.name || ""} width={42} height={42}/>
+                        <Image src={chainIcon} alt={chain?.name || ""} width={32} height={32}/>
                         <span className='text-2xl font-bold'>{shortenString(chain?.name || "", 10)}</span>
                     </div>
-                    <span className='text-sm text-neutral-400'>Investment</span>
+                    <span className='text-sm text-neutral-400'>Chain</span>
                 </div>
                 <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
                     <span className='text-2xl font-bold'>{interest.amountClean} {interest.symbol}</span>
@@ -278,4 +325,106 @@ function ManageTab() {
 
 function ReferralRewardsTab() {
     return <><span>ReferralRewardsTab Ping</span></>
+}
+
+
+function GraphsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+
+    const Container = ({children}: any) => (
+        <div className='col-span-1 flex flex-col gap-4 w-full p-4 border border-w1 rounded-3xl'>{children}</div>)
+
+    return <>
+        <div className='grid grid-cols-2 gap-4'>
+            <Container>
+                <div className='flex justify-between w-full'>
+                    <span className='font-medium text-xl'>Purchase Statistics</span>
+                    <div className='flex flex-col items-end'>
+                        <span className='text-2xl font-bold'>$23.4k</span>
+                        <p className='text-neutral-500 text-sm'>Today <span className='text-green-500'>(+2.4%)</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart bgColor="#fff"/>
+            </Container>
+            <Container>
+                <div className='flex justify-between w-full'>
+                    <span className='font-medium text-xl'>Redeem Statistics</span>
+                    <div className='flex flex-col items-end'>
+                        <span className='text-2xl font-bold'>$42.4k</span>
+                        <p className='text-neutral-500 text-sm'>Today <span className='text-green-500'>(+1.4%)</span>
+                        </p>
+                    </div>
+                </div>
+                <BarChart bgColor='rgb(34 197 94)'/>
+            </Container>
+        </div>
+    </>
+}
+
+
+function BarChart({bgColor}: { bgColor: string }) {
+    const chartRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (!chartRef.current) return;
+        const options = {
+            responsive: true,
+            plugins: {legend: {display: false}},
+            scales: {
+                x: {
+                    grid: {
+                        display: false, // Hide grid lines for x-axis
+                        offset: true
+                    },
+                    ticks: {
+                        display: false, // Hide ticks for x-axis
+                    },
+                },
+                y: {
+                    grid: {
+                        display: false,
+                        offset: true
+                    },
+                    ticks: {
+                        display: false, // Hide ticks for x-axis
+                    },
+                }
+
+            },
+        };
+
+        const data = [10, 30, 32, 35, 42, 50, 48, 52, 55, 34, 35, 35, 60];
+        Chart.register(...registerables)
+        const chart = new Chart(chartRef.current, {
+            type: "bar",
+            data: {
+                labels: data,
+                datasets: [
+                    {
+                        label: 'Total Bonds Issued',
+                        data,
+                        backgroundColor: bgColor,
+                        borderColor: '#858585',
+                        borderWidth: 0,
+                        borderRadius: 0,
+                        barThickness: 5
+                    },
+                ],
+            },
+            options: options
+        });
+
+        return () => chart.destroy()
+    }, [bgColor])
+
+    return <>
+        <div className='w-full'>
+            <canvas ref={chartRef} className='max-h-60'/>
+            <div className='flex justify-between'>
+                <span className='text-sm text-neutral-600'>May 30</span>
+                <span className='text-sm text-neutral-600'>May 30</span>
+                <span className='text-sm text-neutral-600'>May 30</span>
+            </div>
+        </div>
+    </>
 }

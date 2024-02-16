@@ -21,5 +21,5 @@ jobs:
         username: ${{ secrets.USERNAME_MAIN }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd ~/web-v2
-          git pull && npm i && npm run build && pm2 restart 4
+          cd ~/web
+          git pull && npm i && npm run build && pm2 restart 0
