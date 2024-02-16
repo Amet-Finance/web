@@ -1,257 +1,192 @@
-import Styles from "./index.module.css";
-import Link from "next/link";
 import AmetLogo from "../../../public/svg/amet-logo";
 import {useEffect, useRef, useState} from "react";
-import * as AccountSlice from "@/store/redux/account";
+import {useAccount, useNetwork} from "wagmi";
+import {shorten} from "@/modules/web3/util";
+import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import Image from "next/image";
+import {AccountInfo, LinkBase, LinkExtended} from "@/components/navbar/types";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
+import makeBlockie from "ethereum-blockies-base64";
+import {zeroAddress} from "viem";
+import {NAV_LINKS} from "@/components/navbar/constants";
+import Link from "next/link";
+import {BasicButton} from "@/components/utils/buttons";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
-import Image from "next/image";
-import {useWeb3Modal} from '@web3modal/wagmi/react'
-
-import {useAccount, useDisconnect, useNetwork} from "wagmi";
-import {CHAINS, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
-import {NAV_ITEMS} from "@/components/navbar/constants";
-import {shorten} from "@/modules/web3/util";
-import {nop} from "@/modules/utils/function";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import GeneralState from "@/store/redux/general";
 
 
 export default function Navbar() {
-    const {address} = useAccount();
-    const network = useNetwork();
 
-    const generalState = useSelector((item: RootState) => item.general);
-    const chain = getChain(generalState.chainId);
 
-    useEffect(() => {
-        if (address && generalState.chainId) {
-            AccountSlice.initBalance(address, generalState.chainId).catch(nop)
-        }
-    }, [address, chain]);
+    const [isDarkBg, setDarkBg] = useState(false);
+    const bgClass = isDarkBg ? " bg-black" : ""
 
     useEffect(() => {
-        if (address && network.chain?.id) {
-            GeneralState.switchGeneralChain(network.chain.id)
-        }
-    }, [address]);
+        const handleY = () => setDarkBg(window.scrollY > 100);
+        window.addEventListener("scroll", handleY)
+        return () => window.removeEventListener('scroll', handleY)
+    }, []);
 
     return <>
-        <DesktopNav/>
-        <MobileNav/>
-    </>
-}
-
-function DesktopNav() {
-    return <>
-        <nav className='relative justify-between items-center px-20 py-3 w-full md:flex sm:hidden'>
-            <div className='flex items-center gap-8 z-50'>
-                <AmetLogo/>
-                <div className='flex items-center gap-6'>
-                    {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
-                </div>
-            </div>
-            <WalletState/>
-        </nav>
-    </>
-}
-
-function MobileNav() {
-    const [isVisible, setVisible] = useState(false);
-
-    const changeVisibility = () => setVisible(!isVisible)
-
-    return <>
-        <nav className="relative  justify-between items-center px-8 py-3 w-full md:hidden sm:flex">
+        <nav
+            className={"fixed flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8 " + bgClass}>
             <AmetLogo/>
-            <div className='flex items-center z-50'>
-                {!isVisible ? <BurgerSVG onClick={changeVisibility}/> : <XmarkSVG onClick={changeVisibility}/>}
-            </div>
-            {
-                Boolean(isVisible) && <MobileLinks changeVisibility={changeVisibility}/>
-            }
+            <DesktopNavbar/>
+            <MobileNavbar/>
         </nav>
     </>
 }
 
-function MobileLinks({changeVisibility}: any) {
+function DesktopNavbar() {
     return <>
-        <div
-            className='fixed left-0 top-0 w-full h-screen bg-black z-10 flex flex-col items-start p-0 px-8 gap-8'>
-            <div className='flex flex-col items-start gap-4 mt-32' onClick={changeVisibility}>
-                {NAV_ITEMS.map((item: any, index: number) => <NavItem item={item} key={index}/>)}
-            </div>
-            <WalletState changeVisibility={changeVisibility} isMobile/>
+        <div className='md:flex sm:hidden items-center gap-16'>
+            <Links/>
+            <WalletComponent/>
         </div>
     </>
 }
 
-function NavItem({item}: any) {
+function MobileNavbar() {
+    const [isOpen, setOpen] = useState(false);
+    const openOrClose = () => setOpen(!isOpen)
+    const boxRef = useRef<any>()
 
-    const {title, defaultUrl, defaultTarget, links} = item;
+    useEffect(() => {
+        const handleClickOutside = (event: any) => {
+            if (boxRef.current && boxRef.current.contains(event.target)) setOpen(false)
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [boxRef]);
 
     return <>
-        <div className={Styles.navItem}>
-            <Link href={defaultUrl} target={defaultTarget || "_self"}>
-                <span className={`${Styles.navHover} ${Styles.top}`}>{title}</span>
-            </Link>
+        <div className='md:hidden sm:flex w-full justify-end'>
+            {isOpen ? <XmarkSVG onClick={openOrClose}/> : <BurgerSVG onClick={openOrClose}/>}
             {
-                links?.length &&
-                <>
-                    <div className={Styles.navDropDown}>
-                        {links.map((item: any, index: number) => <NavLink link={item} key={index}/>)}
+                isOpen && <>
+                    <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-6 h-full py-24'
+                         ref={boxRef}>
+                        <div>
+                            {
+                                NAV_LINKS.map((linkExtended, index) => <LinkBuilderMobile linkExtended={linkExtended}
+                                                                                          key={index}/>)
+                            }
+                        </div>
+                        <div className='flex justify-center items-center w-full'>
+                            <WalletComponent/>
+                        </div>
                     </div>
-                </>}
+                </>
+            }
         </div>
     </>
 }
 
-function NavLink({link}: any) {
+function Links() {
     return <>
-        <Link href={link.url} target={link.target || "_self"}>
-            <span className={Styles.navHover}>{link.name}</span>
+        <div className='flex items-center gap-7'>
+            {NAV_LINKS.map((linkExtended, index) => <LinkBuilder linkExtended={linkExtended} key={index}/>)}
+        </div>
+    </>
+}
+
+function LinkBuilder({linkExtended}: { linkExtended: LinkExtended}) {
+    return <>
+        <div className='group relative'>
+            <LinkBase linkBase={linkExtended} isExtended={true}/>
+            {
+                linkExtended.subLinks?.length && <>
+                    <div
+                        className={'group-hover:flex hidden flex-col gap-4 justify-center  absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
+                        {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={index}
+                                                                                  isExtended={false}/>)}
+                    </div>
+                </>
+            }
+        </div>
+    </>
+}
+
+function LinkBuilderMobile({linkExtended}: { linkExtended: LinkExtended }) {
+    return <>
+        <div className='group relative'>
+            <LinkBase linkBase={linkExtended} isExtended={true}/>
+            {
+                linkExtended.subLinks?.length && <>
+                    <div
+                        className='flex flex-col gap-4 justify-center py-4'>
+                        {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={index}
+                                                                                  isExtended={false}/>)}
+                    </div>
+                </>
+            }
+        </div>
+    </>
+}
+
+function LinkBase({linkBase, isExtended}: { linkBase: LinkBase, isExtended?: boolean }) {
+    return <>
+        <Link href={linkBase.href} target={linkBase.target || "_self"}>
+            <span
+                className={`text-neutral-400 hover:text-white  whitespace-nowrap ${!isExtended && " px-4"}`}>{linkBase.title}</span>
         </Link>
     </>
 }
 
+function WalletComponent() {
 
-function WalletState({changeVisibility, isMobile}: { changeVisibility?: any, isMobile?: boolean }) {
-    const account = useAccount()
-    const [address, setAddress] = useState<string | undefined>('')
+    const [accountInfo, setAccountInfo] = useState({} as AccountInfo)
 
-    useEffect(() => setAddress(account.address), [account.address, account.isConnected]);
-
-    return <>
-        <div className={'relative flex items-center ' + (isMobile ? " gap-0" : " gap-2")}>
-            <Chains/>
-            {address ? <ConnectedState isMobile/> : <ConnectButton changeVisibility={changeVisibility}/>}
-        </div>
-    </>
-}
-
-function ConnectButton({changeVisibility}: any) {
-    const {open} = useWeb3Modal()
-
-
-    async function connect() {
-        await open();
-        if (changeVisibility) changeVisibility();
-    }
-
-
-    return <>
-        <button className="border border-w1 rounded px-4 py-1.5 cursor-pointer m-0 hover:bg-white hover:text-black"
-                onClick={connect}>Connect
-        </button>
-    </>
-}
-
-function ConnectedState({isMobile}: { isMobile?: boolean }) {
-    const {address} = useAccount();
-    const boxRef = useRef<any>()
-    const [isEnabled, setEnabled] = useState(false);
-    const enable = () => setEnabled(!isEnabled)
+    const web3Modal = useWeb3Modal();
+    const account = useAccount();
+    const network = useNetwork();
 
     useEffect(() => {
-        const handleClickOutside = (event: Event) => {
-            if (boxRef.current && !boxRef.current.contains(event.target)) {
-                setEnabled(false);
+        if (account.isConnected) {
+            setAccountInfo({
+                address: `${account.address}`,
+                chainId: Number(network.chain?.id),
+                isConnected: true
+            })
+        } else {
+            setAccountInfo({
+                address: "",
+                chainId: 0,
+                isConnected: false
+            })
+        }
+    }, [account.address, account.isConnected, network.chain?.id])
+
+
+    return <>
+        <div onClick={() => web3Modal.open()} className='cursor-pointer text-white'>
+            {
+                accountInfo.isConnected ? <ConnectedComponent accountInfo={accountInfo}/> : <ConnectWalletComponent/>
             }
-        };
+        </div>
+    </>
 
-        document.addEventListener('click', handleClickOutside);
+}
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [boxRef]);
+function ConnectedComponent({accountInfo}: { accountInfo: AccountInfo }) {
+    const chain = getChain(accountInfo.chainId);
+    const chainIcon = chain ? getChainIcon(chain?.id) : makeBlockie(zeroAddress);
 
     return <>
-        <div className="relative" ref={boxRef}>
-            <button className='border border-w1 rounded px-4 py-1.5 cursor-pointer m-0'
-                    onClick={enable}>{shorten(address, 5)}</button>
-            <WalletDropDown enableHandler={[isEnabled, setEnabled, enable]}/>
-        </div>
+        <BasicButton>
+            <div className='flex items-center gap-2'>
+                <Image src={chainIcon}
+                       alt={chain?.name || ""}
+                       width={25} height={25}
+                       className='cursor-pointer rounded-full p-0 m-0'/>
+                <span>{shorten(accountInfo.address, 4)}</span>
+            </div>
+        </BasicButton>
     </>
 }
 
-function WalletDropDown({enableHandler}: { enableHandler: any }) {
-    const {open} = useWeb3Modal();
-    const {address} = useAccount()
-    const {disconnect} = useDisconnect()
-    const [isEnabled, setEnabled, enable] = enableHandler;
-    const dropStyles = `${Styles.addressDropDown} ${isEnabled && Styles.enabledDrop}`
 
-    if (!isEnabled) {
-        return null;
-    }
-
-    return <>
-        <div className={dropStyles + " bg-black border border-w1 rounded gap-1"} onClick={enable}>
-            <button className='w-full hover:bg-g6 p-2 py-1 rounded' onClick={() => open()}>Account</button>
-            <Link href={`/address/${address}`} className='w-full hover:bg-g6 p-2 py-1 rounded'>
-                <button className='w-full'>Dashboard</button>
-            </Link>
-            <Link href="/referral" className='w-full hover:bg-g6 p-2 py-1 rounded'>
-                <button className='w-full'>Referral</button>
-            </Link>
-            <button className='w-full hover:bg-g6 p-2 py-1 rounded' onClick={() => disconnect?.()}>Disconnect</button>
-        </div>
-    </>
-}
-
-function Chains() {
-    const [isOpen, setOpen] = useState(false)
-    const boxRef = useRef<any>()
-
-    const generalState = useSelector((item: RootState) => item.general);
-    const chain = getChain(generalState.chainId);
-
-    const change = () => setOpen(!isOpen)
-
-    useEffect(() => {
-        const handleClickOutside = (event: Event) => {
-            if (boxRef.current && !boxRef.current.contains(event.target)) {
-                setOpen(false);
-            }
-        };
-
-        document.addEventListener('click', handleClickOutside);
-
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, [boxRef]);
-
-    return <>
-        <div className='relative flex flex-col p-2' ref={boxRef}>
-            <Image src={getChainIcon(chain?.id)}
-                   alt={chain?.name || ""}
-                   width={30} height={30}
-                   className='cursor-pointer'
-                   onClick={change}/>
-            {isOpen && <ChainsDropDown change={change}/>}
-        </div>
-    </>
-}
-
-function ChainsDropDown({change}: any) {
-    return <>
-        <div className='
-        absolute top-14 right-0 min-w-max flex flex-col bg-b1 px-3 py-1 rounded z-40 max-h-36 overflow-x-auto
-        md:left-auto sm:left-0 border border-w1
-        '
-             onClick={change}>
-            {CHAINS.map(chain => <Chain chain={chain} key={chain.id}/>)}
-        </div>
-    </>
-}
-
-function Chain({chain}: any) {
-    return <>
-        <div className='flex gap-2 items-center hover:bg-b2 cursor-pointer p-2 rounded'
-             onClick={() => GeneralState.switchGeneralChain(chain.id)}>
-            <Image src={getChainIcon(chain.id)} alt={chain.name} width={22} height={22} className='cursor-pointer'/>
-            <span className='text-sm'>{chain.name}</span>
-        </div>
-    </>
+function ConnectWalletComponent() {
+    return <BasicButton wMin><span className='px-4'>Connect</span></BasicButton>
 }

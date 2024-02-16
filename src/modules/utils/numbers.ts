@@ -1,10 +1,10 @@
 import {toBN} from "@/modules/web3/util";
 
-function format(number: number) {
+function format(number: number, maxDigestsForSmallNumbers = 4) {
 
     if (number < 1) {
-        if (number.toString().length > 4) {
-            return number.toFixed(4)
+        if (number.toString().length > maxDigestsForSmallNumbers) {
+            return number.toFixed(maxDigestsForSmallNumbers)
         }
         return number;
     }
@@ -27,7 +27,7 @@ function format(number: number) {
     return parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
 }
 
-function formatLargeNumber(number: number) {
+function formatLargeNumber(number: number, includeThousand?: boolean) {
     const trillion = 1000000000000; // 1 trillion
     const billion = 1000000000;  // 1 billion
     const million = 1000000;  // 1 million
@@ -41,8 +41,10 @@ function formatLargeNumber(number: number) {
         return (number / billion).toFixed(1) + 'B';
     } else if (number >= million) {
         return (number / million).toFixed(1) + 'M';
+    } else if (number >= thousand && includeThousand) {
+        return (number / thousand).toFixed(1) + 'K';
     } else {
-        return number.toString();
+        return format(number);
     }
 }
 

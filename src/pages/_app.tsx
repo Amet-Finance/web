@@ -27,7 +27,9 @@ export default function App({Component, pageProps}: AppProps) {
                 <main className={"flex flex-col justify-between min-h-screen " + montserrat.className}>
                     <TopAnnouncement/>
                     <Navbar/>
-                    <Component {...pageProps} />
+                    <div className='z-10 mt-16'>
+                        <Component {...pageProps} />
+                    </div>
                     <Footer/>
                 </main>
                 <ModalHandler/>

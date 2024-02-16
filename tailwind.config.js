@@ -57,7 +57,7 @@ module.exports = {
             },
             fontSize: {
                 mm: "0.6rem"
-            }
+            },
         }
     },
     plugins: [],

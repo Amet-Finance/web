@@ -4,7 +4,7 @@ import {getProvider} from "@/modules/web3";
 
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {getTokenBalance} from "@/modules/web3/tokens";
-import {BondInfoDetailed, IssuerContractInfo} from "@/modules/web3/type";
+import {BondInfoDetailed, IssuerContractInfoDetailed} from "@/modules/web3/type";
 import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
@@ -28,21 +28,19 @@ function getIssuerContractInstance(chain: Chain) {
     })
 }
 
-async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfo> {
+async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDetailed> {
     const contract = getIssuerContractInstance(chain)
 
-    const creationFee = await contract.read.creationFee();
-    const creationFeePercentage = await contract.read.creationFeePercentage();
-    const isPaused = await contract.read.isPaused();
-    const normalizedAmount = Number(creationFee) / 10 ** chain.nativeCurrency.decimals;
-    const issuanceFeeForUI = `${normalizedAmount} ${chain.nativeCurrency.symbol}`;
+    const issuanceFee: any = await contract.read.issuanceFee();
+    const contractPackedInfo: any = await contract.read.contractPackedInfo();
+    const normalizedAmount = Number(issuanceFee) / 10 ** chain.nativeCurrency.decimals;
 
     return {
-        issuanceFeeForUI,
-        creationFee: Number(creationFee),
-        creationFeeHex: `0x${Number(creationFee).toString(16)}`,
-        creationFeePercentage: Number(creationFeePercentage),
-        isPaused: isPaused === true
+        issuanceFee: Number(issuanceFee),
+        issuanceFeeUI: `${normalizedAmount} ${chain.nativeCurrency.symbol}`,
+        purchaseFeePercentage: Number(contractPackedInfo[0]) / 10,
+        earlyRedemptionFeePercentage: Number(contractPackedInfo[1]) / 10,
+        isPaused: contractPackedInfo[2],
     }
 }
 
@@ -192,21 +190,23 @@ function decreaseRedeemLockPeriod(chain: Chain, contractAddress: string, newPeri
 function decode(transaction: TransactionReceipt): {} {
     let result: { [key: string]: any } = {};
 
-    transaction.logs.forEach((log) => {
+    for (const log of transaction.logs) {
+        try {
+            const decoded = decodeEventLog({
+                abi: ZCB_Issuer_ABI,
+                data: log.data,
+                topics: log.topics
+            })
 
-        const decoded = decodeEventLog({
-            abi: ZCB_Issuer_ABI,
-            data: log.data,
-            topics: log.topics
-        })
-
-        if (decoded.eventName === "Create") {
-            result = {
-                ...result,
-                ...decoded.args
+            if (decoded.eventName === "Issue") {
+                result = {
+                    ...result,
+                    ...decoded.args
+                }
             }
+        } catch (e) {
         }
-    });
+    }
 
     return result;
 }
@@ -224,6 +224,7 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
 
 
 export {
+    getIssuerContractInstance,
     getIssuerContractInfo,
     issueBonds,
     purchase,

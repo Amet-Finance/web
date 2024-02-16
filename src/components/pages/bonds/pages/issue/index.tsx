@@ -1,418 +1,205 @@
-import Styles from "./index.module.css";
-import Image from "next/image";
 import {useEffect, useRef, useState} from "react";
-import {dayInSec, formatTime, hourInSec, monthInSec, yearInSec} from "@/modules/utils/dates";
-import {BondInfo, TokenDetails} from "@/components/pages/bonds/pages/issue/type";
+import {
+    BondAndTokenData,
+    BondAndTokenDataWithType,
+    BondCombinedData,
+    BondData,
+    BondInfoForIssuance
+} from "@/components/pages/bonds/pages/issue/type";
+import {Chain, useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
+import InfoBox from "@/components/utils/info-box";
+import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
+import Image from "next/image";
+import {shortenString} from "@/modules/utils/string";
+import {formatTime} from "@/modules/utils/dates";
+import {formatLargeNumber} from "@/modules/utils/numbers";
+import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
+import CloudAPI from "@/modules/cloud-api";
+import makeBlockie from "ethereum-blockies-base64";
+import {isAddress, zeroAddress} from "viem";
+import {IssuerContractInfoDetailed} from "@/modules/web3/type";
+import {getIssuerContractInfo} from "@/modules/web3/zcb";
+import {getTokenBalance} from "@/modules/web3/tokens";
+import BigNumber from "bignumber.js";
+import {polygonMumbai} from "wagmi/chains";
+import VerifiedSVG from "../../../../../../public/svg/verified";
 import Loading from "@/components/utils/loading";
-import {TxTypes, ZCB_ISSUER_CONTRACTS, ZERO_ADDRESS} from "@/modules/web3/constants";
+import WarningSVG from "../../../../../../public/svg/warning";
+import {BlockTimes, TxTypes} from "@/modules/web3/constants";
+import {toast} from "react-toastify";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {toast} from "react-toastify";
-import {format} from "@/modules/utils/numbers";
-import WarningSVG from "../../../../../../public/svg/warning";
-import ClockSVG from "../../../../../../public/svg/clock";
-import {join} from "@/modules/utils/styles";
-import TypeSVG from "../../../../../../public/svg/type";
-import TotalSVG from "../../../../../../public/svg/total";
-import {URLS} from "@/modules/utils/urls";
-import Link from "next/link";
-import {IssuerContractInfo, TokenResponseDetailed} from "@/modules/web3/type";
-import {Chain, useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
-import {getContractInfoByType, trackTransaction} from "@/modules/web3";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {getIssuerContractInfo} from "@/modules/web3/zcb";
-import InfoBox from "@/components/utils/info-box";
-import CloudAPI from "@/modules/cloud-api";
-import {BondTokenInfo, InfoSections} from "@/components/pages/bonds/pages/issue/constants";
-import {getChain} from "@/modules/utils/wallet-connect";
-import makeBlockie from "ethereum-blockies-base64";
-import VerifiedSVG from "../../../../../../public/svg/verified";
-import {nop} from "@/modules/utils/function";
-import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 
 
 export default function Issue() {
-
-    const {address} = useAccount();
-    const generalState = useSelector((item: RootState) => item.general);
-    const chain = getChain(generalState.chainId);
-
-    const network = useNetwork();
-    const {switchNetworkAsync} = useSwitchNetwork({
-        chainId: chain?.id
-    });
-    const {open} = useWeb3Modal()
-
-    const [additionalInfo, setAdditionalInfo] = useState({} as IssuerContractInfo)
-    const [bondInfo, setBondInfo] = useState({total: 0, redeemLockPeriod: 0} as BondInfo);
-
+    const [bondInfo, setBondInfo] = useState({chainId: polygonMumbai.id} as BondInfoForIssuance);
     const [tokens, setTokens] = useState({} as TokensResponse)
-    const [investmentTokenInfo, setInvestmentTokenInfo] = useState({} as TokenResponseDetailed)
-    const [interestTokenInfo, setInterestTokenInfo] = useState({} as TokenResponseDetailed)
-    const bondsHandler = [bondInfo, setBondInfo]
+    const [issuerContractInfo, setIssuerContractInfo] = useState({} as IssuerContractInfoDetailed)
 
+    const bondInfoHandler: any = [bondInfo, setBondInfo];
+    const tokensHandler: any = [tokens, setTokens];
 
-    const contractInfo = getContractInfoByType(chain, TxTypes.IssueBond, {
-        bondInfo: {
-            ...bondInfo,
-            investmentTokenInfo,
-            interestTokenInfo
-        }, additionalInfo
+    useEffect(() => {
+        const chain = getChain(bondInfo.chainId);
+        if (chain) {
+            CloudAPI.getTokens({
+                params: {
+                    contractAddresses: [],
+                    chainId: bondInfo.chainId,
+                    verified: true
+                }
+            })
+                .then((response) => {
+                    if (response) setTokens(response)
+                })
+
+            getIssuerContractInfo(chain)
+                .then(response => setIssuerContractInfo(response))
+                .catch(error => console.log(error))
+        }
+    }, [bondInfo.chainId]);
+
+    return <>
+        <div className='grid grid-cols-10 gap-6 lg1:px-40 lg:px-12 md:px-12 sm:px-2 py-32'>
+            <IssuerContainer bondInfoHandler={bondInfoHandler}
+                             tokensHandler={tokensHandler}
+                             issuerContractInfo={issuerContractInfo}/>
+            <PreviewContainer bondInfoHandler={bondInfoHandler}
+                              tokensHandler={tokensHandler}
+                              issuerContractInfo={issuerContractInfo}/>
+        </div>
+    </>
+}
+
+function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
+
+    const [bondInfo] = bondInfoHandler;
+    const [tokens] = tokensHandler
+    const network = useNetwork();
+    const chain = getChain(bondInfo.chainId);
+    const {switchNetworkAsync} = useSwitchNetwork();
+
+    const config = getContractInfoByType(chain, TxTypes.IssueBond, {bondInfo, tokens, issuerContractInfo})
+    const {sendTransactionAsync, data} = useSendTransaction({
+        to: config.to,
+        data: config.data,
+        value: config.value
     })
 
-    const {isLoading, sendTransactionAsync} = useSendTransaction({
-        to: contractInfo.to,
-        value: BigInt(contractInfo.value || 0) || undefined,
-        data: contractInfo.data,
-    })
-
-
-    async function submit() {
+    async function issueBonds() {
         try {
-
-            if (additionalInfo.isPaused) {
-                return toast.error("Issuing is paused at the moment")
-            }
-
-            if (
-                !bondInfo.investmentToken ||
-                !bondInfo.interestToken ||
-                !bondInfo.total ||
-                !bondInfo.redeemLockPeriod ||
-                !bondInfo.investmentTokenAmount ||
-                !bondInfo.interestTokenAmount
-            ) {
-                return toast.error(`Please fill all the empty inputs`)
-            }
-
-
-            if (investmentTokenInfo?.unidentified) {
-                return toast.error(`We could not identify the Investment token`)
-            }
-
-            if (interestTokenInfo?.unidentified) {
-                toast.error(`We could not identify the Interest token`)
-                return;
-            }
-
-            if (!address) {
-                return open()
-            }
-
-            if (network.chain?.id !== chain?.id) {
-                await switchNetworkAsync?.();
-            }
-
+            if (!chain) return toast.error("Please select correct chain")
+            if (network.chain?.id !== chain.id) await switchNetworkAsync?.(chain.id);
+            if (!bondInfo.total || bondInfo.total <= 0) return toast.error("Total Bonds must be greater than 0")
+            if (!Number.isFinite(bondInfo.maturityPeriod) || bondInfo.maturityPeriod <= 0) return toast.error("Maturity Period must be greater than 0")
+            if (!isAddress(bondInfo.investmentToken) || !tokens[bondInfo.investmentToken]) return toast.error("Investment token is undefined")
+            if (!isAddress(bondInfo.interestToken) || !tokens[bondInfo.interestToken]) return toast.error("Interest token is undefined")
 
             const response = await sendTransactionAsync();
-            if (response?.hash && chain) {
-                const txResponse = await trackTransaction(chain, response?.hash)
-                if (txResponse) {
-                    const {transaction, decoded} = txResponse
-                    return openModal(ModalTypes.IssuedBondSuccess, {
-                        bondInfo,
-                        transaction,
-                        decoded
-                    })
-                }
-
-            }
-
+            const result = await trackTransaction(chain, response.hash)
+            openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id})
         } catch (error: any) {
-            // toast.error(error.message)
+
         }
     }
 
-    function onChange(event: Event | any) {
+
+    return <>
+        <div
+            className='lg:col-span-6 sm:col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 sm:px-6 lg:py-8 md:py-6 sm:py-4 bg-neutral-950'>
+            <div className='flex flex-col gap-2'>
+                <h1 className='text-2xl font-bold'>Issue Your Bonds: Simple and Swift</h1>
+                <p className='text-xs text-zinc-600'>Our streamlined form guides you through each step to
+                    issue your bonds seamlessly. Just fill in the details - from bond type to maturity period - and
+                    set the parameters that suit your financial strategy.</p>
+            </div>
+            <div className='h-px w-full bg-zinc-800'/>
+            <IssuanceForm bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <div className='flex flex-col gap-2'>
+                <p className='text-sm text-neutral-600'>By issuing bond you agree with our Privacy policy and Terms
+                    of use.</p>
+                <button className='px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white' onClick={issueBonds}>
+                    Issue Bonds
+                    {
+                        Boolean(issuerContractInfo.issuanceFeeUI) &&
+                        <span className='text-red-500'>({issuerContractInfo.issuanceFeeUI})</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </>
+}
+
+function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
+    const [bondInfo, setBondInfo] = bondInfoHandler;
+
+    function update(event: any) {
         let {id, value, type} = event.target;
-        if (type === 'number') {
+
+        if (type === "number") {
             value = Number(value)
         }
 
         setBondInfo({
             ...bondInfo,
-            [id]: value || 0
+            [id]: value
         })
-    }
-
-
-    function getToken(chain: Chain | undefined, type: string): {
-        interval: NodeJS.Timeout,
-        timeout: NodeJS.Timeout
-    } | undefined {
-
-        const isInvestment = type === "investmentToken";
-        const contractAddressTmp = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
-        const setToken = isInvestment ? setInvestmentTokenInfo : setInterestTokenInfo;
-
-        const contractAddress = (contractAddressTmp || "").toLowerCase();
-        const oppositeContractAddress = isInvestment ? bondInfo.interestToken : bondInfo.investmentToken;
-        const oppositeTokenInfo = isInvestment ? interestTokenInfo : investmentTokenInfo;
-
-
-        if ((oppositeContractAddress || "").toLowerCase() === contractAddress && oppositeTokenInfo) {
-            setToken(oppositeTokenInfo);
-            return;
-        }
-
-
-        if (!contractAddress || !chain) {
-            setToken({} as any);
-            return;
-        }
-
-
-        const requestToAPI = async () => {
-            const params = {
-                address,
-                chainId: chain.id,
-                contractAddresses: [contractAddress],
-                returnBalance: Boolean(address)
-            }
-            const tokenInfoObject = await CloudAPI.getTokensDetailed({params})
-            const tokenInfo = tokenInfoObject?.[contractAddress.toLowerCase()];
-            if (tokenInfo) {
-                setToken({...tokenInfo})
-            } else {
-                setToken({...token, unidentified: true})
-            }
-        }
-
-        console.log('Getting token info', contractAddress)
-
-        const token: TokenResponseDetailed = {
-            _id: "",
-            balance: 0,
-            balanceClean: "",
-            isVerified: false,
-            isLoading: true,
-            name: "",
-            symbol: "",
-            decimals: 0,
-            icon: ""
-        }
-
-        setToken(token);
-
-        const timeout = setTimeout(requestToAPI, 1500);
-
-
-        const interval = setInterval(async () => {
-
-            const params = {
-                address,
-                chainId: chain.id,
-                contractAddresses: [contractAddress],
-                returnBalance: Boolean(address)
-            }
-            const tokenInfoObject = await CloudAPI.getTokensDetailed({params})
-            const tokenInfo = tokenInfoObject?.[contractAddress.toLowerCase()];
-            if (tokenInfo) {
-                setToken({...tokenInfo})
-            } else {
-                setToken({...token, unidentified: true})
-            }
-        }, 10000);
-
-        return {
-            interval,
-            timeout
-        }
 
     }
 
-    useEffect(() => {
-        if (chain && ZCB_ISSUER_CONTRACTS[chain.id]) {
-            getIssuerContractInfo(chain)
-                .then(response => {
-                    if (response) {
-                        setAdditionalInfo({...additionalInfo, ...response})
-                    }
-                });
-        }
-    }, [chain])
-
-    useEffect(() => {
-        const timer = getToken(chain, "interestToken");
-        return () => {
-            clearTimeout(timer?.timeout)
-            clearInterval(timer?.interval)
-        }
-    }, [chain, address, bondInfo.interestToken])
-
-    useEffect(() => {
-        const timer = getToken(chain, "investmentToken");
-        return () => {
-            clearTimeout(timer?.timeout)
-            clearInterval(timer?.interval)
-        }
-    }, [chain, address, bondInfo.investmentToken])
-
-    useEffect(() => {
-        if (!chain?.id) return;
-        const params = {
-            chainId: chain?.id,
-            contractAddresses: [],
-            verified: true
-        }
-
-        CloudAPI.getTokens({params})
-            .then(tokensTmp => setTokens(tokensTmp))
-            .catch(nop);
-    }, [chain])
-
-
-    const totalRaised: number = (bondInfo.investmentTokenAmount || 0) * (bondInfo.total || 0);
-    const totalInterest: number = (bondInfo.interestTokenAmount || 0) * (bondInfo.total || 0);
 
     return <>
-        <main className={Styles.container}>
-            <div className={Styles.bondContainer}>
-                <div className={Styles.form}>
-                    <div className={Styles.formTexts}>
-                        <h2 className='text-2xl font-bold'>Begin Bond Creation</h2>
-                        <span className="text-g text-sm">Initiate the issuance of your bonds. Set investment token, total bonds, interest token, and redeem lock period to shape your financial strategy</span>
-                        <div className={Styles.formLine}/>
-                    </div>
-
-                    <div className="grid gap-4 w-full lg:grid-cols-2 sm:grid-cols-1">
-                        <div className="flex flex-col justify-between gap-2">
-                            <InfoBox info={InfoSections.Total}>
-                                <span>Total</span>
-                            </InfoBox>
-                            <input type="number"
-                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
-                                   autoFocus
-                                   id='total'
-                                   placeholder="Total bonds" onChange={onChange}/>
-                        </div>
-                        <RedeemLockPeriod bondsHandler={bondsHandler}/>
-                        <TokenManagement
-                            config={{id: 'investmentToken', title: "Investment Token", info: InfoSections.Investment}}
-                            bondInfo={bondInfo}
-                            tokens={tokens}
-                            onChange={onChange}/>
-                        <TokenManagement
-                            config={{id: 'interestToken', title: "Interest Token", info: InfoSections.Interest}}
-                            bondInfo={bondInfo}
-                            tokens={tokens}
-                            onChange={onChange}/>
-
-                        <div className="flex flex-col justify-between gap-2">
-                            <InfoBox info={InfoSections.InvestmentAmount}>
-                                <span>Investment Amount</span>
-                            </InfoBox>
-                            <input type="number"
-                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
-                                   id="investmentTokenAmount"
-                                   onChange={onChange}
-                                   placeholder="Investment amount per bond"/>
-                        </div>
-
-                        <div className="flex flex-col justify-between gap-2">
-                            <InfoBox info={InfoSections.InterestAmount}>
-                                <span className='w-max'>Interest Amount</span>
-                            </InfoBox>
-                            <input type="number"
-                                   className="placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm"
-                                   id="interestTokenAmount"
-                                   onChange={onChange}
-                                   placeholder="Interest amount per bond"/>
-                        </div>
-
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                        <p className="text-g3 text-xs">
-                            By issuing bond you agree with our&nbsp;
-                            <Link href={URLS.PrivacyPolicy} target="_blank"><u>Privacy policy</u></Link>
-                            &nbsp;and&nbsp;
-                            <Link href={URLS.TermsOfService} target="_blank"><u>Terms of use.</u></Link>
-                        </p>
-                        <button
-                            className="flex justify-center gap-2 items-center border border-w1 py-3 p-4 w-full font-medium rounded hover:bg-white hover:text-black"
-                            onClick={submit}> {isLoading && <Loading percent={70}/>} Issue bonds
-                            {Boolean(additionalInfo.issuanceFeeForUI) &&
-                                <span className='text-red-500'>({additionalInfo.issuanceFeeForUI})</span>}
-                        </button>
-                    </div>
-                </div>
-                <div className={Styles.form}>
-                    <div className={join([Styles.formTexts, "lg:w-[400px] md:w-full"])}>
-                        <h2 className='text-2xl font-bold'>Review Bond Details</h2>
-                        <span className="text-g text-sm">Ensure accuracy and make any adjustments if needed.</span>
-                        <div className={Styles.formLine}/>
-                    </div>
-                    <div className="flex flex-col justify-between gap-2 w-full text-sm lg:max-w-lg md:max-w-none">
-                        <div className={Styles.assets}>
-                            <div className={Styles.section}>
-                                <TotalSVG/>
-                                <span>Total:</span>
-                            </div>
-                            <span className='font-bold'>{bondInfo.total}</span>
-                        </div>
-                        <div className={Styles.assets}>
-                            <div className={Styles.section}>
-                                <TypeSVG/>
-                                <span>Type:</span>
-                            </div>
-                            <InfoBox info={InfoSections.Type}>
-                                <p className='font-bold text-end w-full'>ZCB(Zero Coupon Bond)</p>
-                            </InfoBox>
-                        </div>
-                        <div className={Styles.assets}>
-                            <div className={Styles.section}>
-                                <ClockSVG/>
-                                <span>Redeem Lock Period:</span>
-                            </div>
-                            <span
-                                className='font-bold whitespace-nowrap'>{formatTime(bondInfo.redeemLockPeriod || 0, true) || 0}</span>
-                        </div>
-                    </div>
-
-                    <div className='flex flex-col gap-2 w-full'>
-                        <TokenDetails type={BondTokenInfo.Investment}
-                                      additionalInfo={additionalInfo}
-                                      total={totalRaised}
-                                      tokenInfo={investmentTokenInfo}/>
-                        <TokenDetails type={BondTokenInfo.Interest}
-                                      additionalInfo={additionalInfo}
-                                      total={totalInterest}
-                                      tokenInfo={interestTokenInfo}/>
-                    </div>
-
-
-                </div>
+        <div className='grid grid-cols-12 gap-4 mt-4'>
+            <div className='col-span-4 w-full flex flex-col gap-3'>
+                <InfoBox info={InfoSections.Total}><span
+                    className='text-white text-md font-medium'>Total:</span></InfoBox>
+                <BasicInput id='total'
+                            onChange={update}
+                            placeholder='Total amount of Bonds'/>
             </div>
-        </main>
+            <MaturityPeriodSelector bondInfoHandler={bondInfoHandler}/>
+            <ChainSelector bondInfoHandler={bondInfoHandler}/>
+            <TokenSelector type='investmentToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <TokenSelector type='interestToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <div className='col-span-6 w-full flex flex-col justify-between gap-3'>
+                <InfoBox info={InfoSections.InvestmentAmount}>
+                    <span className='text-white text-md font-medium'>Investment Amount:</span>
+                </InfoBox>
+                <BasicInput id="investmentAmount"
+                            placeholder='Investment amount per bond'
+                            onChange={update}/>
+            </div>
+            <div className='col-span-6 w-full flex flex-col justify-between gap-3'>
+                <InfoBox info={InfoSections.InterestAmount}>
+                    <span className='text-white text-md font-medium'>Interest Amount:</span>
+                </InfoBox>
+                <BasicInput id="interestAmount"
+                            placeholder='Interest amount per bond'
+                            onChange={update}/>
+            </div>
+        </div>
     </>
 }
 
-function TokenManagement({config, bondInfo, tokens, onChange}: {
-    config: { id: string, title: string, info: any },
-    bondInfo: BondInfo,
-    tokens: TokensResponse,
-    onChange: any
-}) {
-    const {title, info} = config;
+function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataWithType) {
 
+    const isInvestment = type === 'investmentToken'
+    const title = isInvestment ? "Investment Token" : "Interest Token";
+    const placeholder = `${title} Contract Address`
+    const infoObject = isInvestment ? InfoSections.InvestmentToken : InfoSections.InterestToken
 
-    const isInterest = config.id === 'interestToken'
-    const value = isInterest ? bondInfo.interestToken : bondInfo.investmentToken;
-    const tokenExists = Boolean(Object.values(tokens || {}).length)
+    const {address} = useAccount();
+    const [bondInfo, setBondInfo] = bondInfoHandler;
+    const [tokens, setTokens] = tokensHandler;
+    const [isOpen, setOpen] = useState(false);
+    const inputRef = useRef<any>()
+    const boxRef = useRef<any>(null)
 
-    const boxRef = useRef<any>()
-    const [isOpen, setOpen] = useState(false)
-    const openOrClose = () => setOpen(!isOpen);
-    const select = (contractAddress: string) => onChange({
-        target: {
-            id: config.id,
-            value: contractAddress,
-            type: "string"
-        }
-    });
+    const tokenAddress = ((isInvestment ? bondInfo.investmentToken : bondInfo.interestToken) || "").toLowerCase();
+    const tokensArray = Object.values(tokens)
+
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
@@ -423,273 +210,433 @@ function TokenManagement({config, bondInfo, tokens, onChange}: {
 
         document.addEventListener('click', handleClickOutside);
 
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
+        return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
 
-    const showSelector = isOpen && tokenExists;
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (!tokens[tokenAddress] && tokenAddress) {
+                CloudAPI.getTokensDetailed({
+                    chainId: bondInfo.chainId,
+                    contractAddresses: [tokenAddress]
+                }).then(tokensResponse => {
+                    const token = tokensResponse[tokenAddress]
+                    if (token) {
+                        setTokens({...tokens, [tokenAddress]: token})
+                    } else {
+                        setTokens({...tokens, [tokenAddress]: {unidentified: true}})
+                    }
+                })
+            }
+        }, 2000)
 
-    return <>
-        <div className="relative flex flex-col justify-between gap-2" ref={boxRef} onClick={openOrClose}>
-            <InfoBox info={info}>
-                <span>{title}</span>
-            </InfoBox>
-            <input type="text"
-                   className={"placeholder:text-g2 px-4 py-3 bg-transparent border border-w1 border-solid rounded text-white w-full text-sm " + (showSelector && " rounded-b-none")}
-                   id={config.id}
-                   value={value || ""}
-                   onChange={onChange}
-                   autoComplete="off"
-                   placeholder={`${config.title} contract address`}/>
-            {showSelector && <TokensSelector tokens={tokens} select={select}/>}
-        </div>
-    </>
-}
+        return () => clearTimeout(timeout)
+    }, [bondInfo.chainId, tokenAddress, address]);
 
-
-function TokensSelector({tokens, select}: { tokens: TokensResponse, select: any }) {
-
-    const Token = ({token}: { token: TokenResponse }) => {
-        const icon = token.icon || makeBlockie(token._id);
-        const name = token.name || ""
-        const symbol = token.symbol;
-
-        return <>
-            <div className='flex items-center gap-2 cursor-pointer px-4 hover:bg-g6 py-1.5'
-                 onClick={() => select(token._id)}>
-                <Image src={icon} alt={name} width={24} height={24} className='rounded-full'/>
-                <p>{name} <span className='text-g'>({symbol})</span></p>
-            </div>
-        </>
+    const setTokenType = (contractAddress: string) => setBondInfo({
+        ...bondInfo,
+        [type]: (contractAddress || "").toLowerCase()
+    })
+    const changeInput = (event: any) => setTokenType(event.target.value)
+    const openOrClose = () => setOpen(!isOpen)
+    const selectToken = (contractAddress: string) => {
+        setTokenType(contractAddress)
+        inputRef.current.value = contractAddress;
+        setOpen(false);
     }
 
-    return <>
-        <div
-            className='absolute flex flex-col gap-0.5 top-full left-0 w-full z-50  bg-b5 rounded max-h-28 overflow-y-auto border border-w1 border-t-0 rounded-t-none'>
-            {Object.values(tokens).map(token => <Token token={token} key={token._id}/>)}
-        </div>
-    </>
-}
 
-function TokenDetails({tokenInfo, type, total, additionalInfo}: {
-    tokenInfo: TokenResponseDetailed,
-    type: string,
-    total: number,
-    additionalInfo: any
-}) {
-
-    if (!Object.keys(tokenInfo).length || tokenInfo?._id?.toLowerCase() === ZERO_ADDRESS) {
-        return null;
-    }
-
-    const isLoading = tokenInfo?.isLoading && !tokenInfo.unidentified
 
     return <>
-        <div className="flex flex-col gap-2 bg-b4 rounded px-4 py-3 lg:w-[400px] lg:max-w-lg md:w-full">
+        <div className='relative col-span-6 w-full flex flex-col justify-between gap-3 h-full' ref={boxRef}>
+            <InfoBox info={infoObject}><span className='text-white text-md font-medium'>{title}:</span></InfoBox>
+            <input type='text'
+                   className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
+                   placeholder={placeholder}
+                   ref={inputRef}
+                   onClick={openOrClose}
+                   onChange={changeInput}/>
             {
-                isLoading ?
-                    <div className='flex justify-center items-center'><Loading/></div> :
-                    <OperationDetails tokenInfo={tokenInfo} total={total} type={type}
-                                      additionalInfo={additionalInfo}/>
+                Boolean(tokensArray.length) && isOpen && <>
+                    <div
+                        className='absolute flex flex-col gap-1 bg-[#131313] w-full border border-w1 rounded-md top-full left-0 z-10'>
+                        {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
+                    </div>
+                </>
             }
         </div>
     </>
 }
 
-function OperationDetails({tokenInfo, total, type, additionalInfo}: TokenDetails) {
+function TokenForSelector({token, onClick}: { token: TokenResponse, onClick: any }) {
 
-    const isInterest = type === BondTokenInfo.Interest
-    const icon = tokenInfo?.icon || "";
-    const name = tokenInfo?.name || ""
-    const symbol = tokenInfo?.symbol;
-    const balance = tokenInfo?.balance;
-    const balanceClean = tokenInfo?.balanceClean;
-    const title = isInterest ? "Interest" : "Investment"
-    const actionTitle = isInterest ? "Total Returned" : "Total Received"
-
-    const info = {
-        text: isInterest ? "Total Returned displays the sum of interest tokens to be distributed among bondholders." : "Total Received represents the amount of investment funds collected for your bonds.",
-        url: URLS.FAQ_IOB
-    }
-
-
-    const token = {
-        name,
-        icon,
-        balanceClean,
-        balance,
-        symbol,
-        actionTitle,
-        total,
-        type
-    }
+    const iconSrc = token.icon || makeBlockie(zeroAddress);
 
     return <>
-        <div className="flex items-center gap-2">
-            <InfoBox info={info}>
-                <span className='font-bold'>{title}</span>
-            </InfoBox>
-        </div>
-        <div className="flex flex-col gap-2">
-            <Token tokenInfo={tokenInfo} type={type} total={total} additionalInfo={additionalInfo}/>
+        <div className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800'
+             onClick={() => onClick(token._id)}>
+            <Image src={iconSrc} alt={token.name} width={22} height={22}
+                   className='rounded-full border border-neutral-400'/>
+            <p className='text-neutral-300 text-sm'>{token.name} <span
+                className='text-neutral-500'>({token.symbol})</span></p>
         </div>
     </>
 }
 
-function Token({tokenInfo, type, total, additionalInfo}: {
-    tokenInfo: TokenResponseDetailed,
-    type: string,
-    total: number,
-    additionalInfo: IssuerContractInfo
-}) {
-
-    if (tokenInfo.unidentified) {
-        return <NotIdentified/>
+function MaturityPeriodSelector({bondInfoHandler}: BondData) {
+    const [bondInfo, setBondInfo] = bondInfoHandler;
+    const Types: { [key: string]: string } = {
+        Hours: "hours",
+        Days: "days",
+        Months: "months",
+        Blocks: "blocks"
+    }
+    const Timers = {
+        [Types.Hours]: 60 * 60,
+        [Types.Days]: 24 * 60 * 60,
+        [Types.Months]: 30 * 24 * 60 * 60,
+        [Types.Blocks]: 1
     }
 
-    const icon = tokenInfo.icon || makeBlockie(tokenInfo._id);
-    const name = tokenInfo.name || ""
-    const symbol = tokenInfo.symbol;
-    const balance = tokenInfo.balance;
-    const balanceClean = Number(tokenInfo?.balanceClean);
-    const title = type === BondTokenInfo.Interest ? "Interest" : "Investment"
-    const actionTitle = type === BondTokenInfo.Interest ? "Total Returned" : "Total Received"
+    const inputRef = useRef<any>(null);
+    const boxRef = useRef<any>(null)
+    const [type, setType] = useState(Types.Days)
+    const [isOpen, setOpen] = useState(false);
 
-    const isInterest = type === BondTokenInfo.Interest
-    const totalClassName = isInterest ? "text-red-500" : "text-green-500";
-    const sign = isInterest ? '-' : '+';
-    const normalizedCreationFee = additionalInfo.creationFeePercentage / 10
-    const totalReceived = isInterest ? total : (total - (total * normalizedCreationFee) / 100)
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
 
+        document.addEventListener('click', handleClickOutside);
+
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [boxRef]);
+
+    const openOrClose = () => setOpen(!isOpen)
+
+    function updateMaturityPeriod(type: string, value: number) {
+        const preValue = Timers[type] * Number(value)
+        if (!BlockTimes[bondInfo.chainId]) return toast.error("Please select the chain first!")
+
+        const maturityPeriod = type === Types.Blocks ? preValue : preValue / BlockTimes[bondInfo.chainId]
+        setBondInfo({...bondInfo, maturityPeriod})
+    }
+
+    const changeType = (event: any) => {
+        const type = event.target.id
+        setType(type)
+        updateMaturityPeriod(type, inputRef.current.value)
+        openOrClose()
+    }
+
+    function changeTime(event: any) {
+        const {value} = event.target;
+        updateMaturityPeriod(type, value)
+    }
 
     return <>
-        <div className="flex items-center gap-2">
-            <div className={Styles.tokenDetails}>
-                <Image src={icon} alt={name} width={32} height={32} className='rounded-full'/>
-                <div className="flex flex-col">
-                    <div className='flex items-center gap-2'>
-                        <p>{name}</p>
-                        {tokenInfo.isVerified ? <VerifiedSVG/> : <WarningSVG/>}
-                    </div>
-                    {
-                        Number.isFinite(balanceClean) &&
-                        <span
-                            className={Styles.secondaryText}>Balance: {format(Number(balanceClean))} {symbol}</span>
-                    }
+        <div className='md:col-span-4 sm:col-span-8 w-full flex flex-col gap-3'>
+            <InfoBox info={InfoSections.MaturityPeriod}><span className='text-white text-md font-medium'>Maturity Period:</span></InfoBox>
+            <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
+                <input type="number"
+                       id='day'
+                       placeholder="Choose Maturity Period"
+                       onChange={changeTime}
+                       ref={inputRef}
+                       className='bg-transparent col-span-4 placeholder:text-[#3C3C3C] pl-4 py-3'/>
+
+                <div className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
+                     onClick={openOrClose} ref={boxRef}>
+                    <span className='text-center w-full capitalize'>{type}</span>
+                </div>
+                {
+                    isOpen && <>
+                        <div
+                            className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
+                            {
+                                Object.keys(Types)
+                                    .map(key => <><span
+                                            className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
+                                            id={Types[key]} onClick={changeType}>{key}</span>
+                                        </>
+                                    )
+                            }
+                        </div>
+                    </>
+                }
+            </div>
+        </div>
+    </>
+}
+
+function ChainSelector({bondInfoHandler}: BondData) {
+    const [bondInfo, setBondInfo] = bondInfoHandler;
+    const [isOpen, setOpen] = useState(false);
+    const boxRef = useRef<any>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (event: Event) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [boxRef]);
+
+
+    const openOrClose = () => setOpen(!isOpen)
+    const selectChain = (chainId: number) => setBondInfo({...bondInfo, chainId})
+
+    const chainInfo = getChain(bondInfo.chainId)
+
+    return <>
+        <div className='md:col-span-4 sm:col-span-12 w-full relative flex flex-col justify-center gap-3' ref={boxRef}>
+            <InfoBox info={InfoSections.Chain}><span className='text-white text-md font-medium'>Chain:</span></InfoBox>
+
+            <div
+                className='flex justify-start items-center bg-[#131313] rounded-md px-4 py-2 cursor-pointer h-full'
+                onClick={openOrClose}>
+                <div className='flex gap-2 items-center'>
+                    <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""}
+                                   width={24}
+                                   height={24}/>
+                    <span className='text-sm font-medium'>{shortenString(chainInfo?.name || "", 15)}</span>
+                </div>
+                <div
+                    className={`${isOpen ? "flex" : "hidden"} absolute flex-col bg-[#131313] border border-w1 rounded-md left-0 top-full z-10 w-full`}>
+                    {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
                 </div>
             </div>
         </div>
-        <div className={Styles.formLine}/>
-        <div className='flex flex-col gap-0.5'>
-            <div className='flex items-center gap-2'>
-                <span className='font-bold'>{actionTitle}:</span>
-                <span className={totalClassName}><b>{sign}{format(totalReceived)} {symbol}</b></span>
-            </div>
-            {!isInterest &&
-                <span className='text-xs text-g'>We charge {normalizedCreationFee}% on every purchased bond.</span>}
+    </>
+}
+
+function ChainContainer({chain, selectChain}: { chain: Chain, selectChain: any }) {
+    return <>
+        <div className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2'
+             onClick={() => selectChain(chain.id)}>
+            <Image src={`/svg/chains/${chain.id}.svg`} alt={chain.name} width={24} height={24}/>
+            <span
+                className='text-sm font-medium min-w-full'>{shortenString(chain.name || "", 20)}</span>
         </div>
     </>
 }
 
-function NotIdentified() {
-    const generalState = useSelector((item: RootState) => item.general);
-    const chain = getChain(generalState.chainId);
+
+function PreviewContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
+    return <>
+        <div
+            className='lg:col-span-4 sm:col-span-12 flex flex-col gap-8 rounded-3xl md:px-12 sm:px-6 py-8 bg-neutral-950'>
+            <div className='flex flex-col gap-2'>
+                <h2 className='text-2xl font-bold'>Preview Your Bonds</h2>
+                <p className='text-xs text-zinc-600'>This real-time snapshot allows you to review and
+                    fine-tune every aspect of your bonds before finalizing.</p>
+            </div>
+            <div className='h-px w-full bg-zinc-800'/>
+            <Preview bondInfoHandler={bondInfoHandler}
+                     tokensHandler={tokensHandler}
+                     issuerContractInfo={issuerContractInfo}/>
+        </div>
+    </>
+}
+
+function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
+
+    const [bondInfo, setBondInfo] = bondInfoHandler;
+    const [tokens, setTokens] = tokensHandler;
+
+    const chainInfo = getChain(bondInfo.chainId)
+
+    const maturityPeriodTime = (BlockTimes[bondInfo.chainId] * bondInfo.maturityPeriod) || 0
+    const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
     return <>
-        <div className="flex lg:items-center md:items-start gap-4 lg:max-w-lg md:max-w-none">
+        <div className='grid grid-cols-12 mt-4 gap-4'>
+            {
+                Number.isFinite(bondInfo.total) && <>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                         title={bondInfo.total.toString()}>
+                        <span className='text-2xl font-medium'>{formatLargeNumber(bondInfo.total)}</span>
+                        <span className='text-neutral-500 text-xs'>Total</span>
+                    </div>
+                </>
+            }
+            {
+                Number.isFinite(bondInfo.maturityPeriod) && bondInfo.maturityPeriod > 0 && <>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                         title={maturityPeriodStr}>
+                        <span
+                            className='text-2xl whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
+                        <span className='text-neutral-500 text-xs'>Maturity Period</span>
+                    </div>
+                </>
+            }
+            {
+                Number.isFinite(bondInfo.chainId) && <>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
+                        <div className='flex gap-2 items-center texee'>
+                            <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""} width={24}
+                                   height={24}/>
+                            <span className='text-2xl font-medium'>{shortenString(chainInfo?.name || "", 5)}</span>
+                        </div>
+                        <span className='text-neutral-500 text-xs'>Chain</span>
+                    </div>
+                </>
+            }
+            {
+                Boolean(bondInfo.investmentToken) &&
+                <TokenPreview
+                    type='investmentToken'
+                    token={tokens[bondInfo.investmentToken]}
+                    issuerContractInfo={issuerContractInfo}
+                    bondInfo={bondInfo}/>
+            }
+            {
+                Boolean(bondInfo.interestToken) &&
+                <TokenPreview type='interestToken'
+                              token={tokens[bondInfo.interestToken]}
+                              issuerContractInfo={issuerContractInfo}
+                              bondInfo={bondInfo}/>
+            }
+        </div>
+    </>
+}
+
+
+function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
+    type: string,
+    token: TokenResponse,
+    bondInfo: BondInfoForIssuance,
+    issuerContractInfo: IssuerContractInfoDetailed
+}) {
+
+    const {address} = useAccount();
+    const chain = getChain(bondInfo.chainId)
+    const isInvestment = type === "investmentToken";
+    const tokenAddress = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
+    const [balance, setBalance] = useState({
+        value: 0,
+        isLoading: false
+    });
+
+    useEffect(() => {
+        if (chain && address && token) {
+            setBalance({
+                value: 0,
+                isLoading: true
+            });
+
+            const interval = setInterval(() => {
+                getTokenBalance(chain, tokenAddress, address)
+                    .then(response => {
+                        const balanceClean = BigNumber(response).div(BigNumber(10).pow(token.decimals));
+                        setBalance({
+                            value: balanceClean.toNumber(),
+                            isLoading: false
+                        });
+                    })
+                    .catch(error => {
+                        console.error(`getTokenBalance`, error.message)
+                        setBalance({
+                            value: 0,
+                            isLoading: false
+                        });
+                    })
+            }, 10000)
+            return () => clearInterval(interval)
+        }
+    }, [chain, address, token, tokenAddress]);
+
+    const title = isInvestment ? "Investment" : "Interest";
+    const amountTitle = isInvestment ? "Total Received" : "Total Returned"
+
+    if (!token) {
+        if (isAddress(tokenAddress)) return <TokenContainer><Loading/></TokenContainer>
+        else if (!isAddress(tokenAddress)) return <UnidentifiedToken chain={chain}/>
+        else return null
+    }
+
+    if (token.unidentified) {
+        return <UnidentifiedToken chain={chain}/>
+    }
+
+    const iconSrc = token.icon || makeBlockie(zeroAddress);
+    const total = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
+
+    return <>
+        <TokenContainer>
+            <span className='text-xl font-medium'>{title}:</span>
+            <div className='flex items-center gap-4'>
+                <Image src={iconSrc} alt={token.name} width={32} height={32}
+                       className='object-contain rounded-full border border-neutral-400'/>
+                <div className='flex flex-col gap-1'>
+                    <div className='flex items-center gap-2'>
+                        <p className='text-sm'>{token.name} <span>({token.symbol})</span></p>
+                        {token.isVerified && <VerifiedSVG/>}
+                    </div>
+                    <span className='text-xs text-neutral-400'>
+                        Balance: {balance.isLoading ? <Loading percent={85}/> : balance.value + token.symbol}</span>
+                </div>
+            </div>
+            {
+                Boolean(total) && <>
+                    <div className='h-px bg-neutral-900 w-full'/>
+                    <div className='flex flex-col'>
+                        <p>{amountTitle}: <span
+                            className={`${isInvestment ? "text-green-500" : "text-red-500"} font-bold`}>{total} {token.symbol}</span>
+                        </p>
+                        {isInvestment &&
+                            <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseFeePercentage}% on every purchased bond.</span>}
+                    </div>
+                </>
+            }
+        </TokenContainer>
+    </>
+}
+
+function TokenContainer({children}: { children?: any }) {
+    return <>
+        <div
+            className='col-span-12 w-full flex flex-col gap-2 cursor-pointer bg-neutral-900 rounded-xl px-4 py-2'>{children}</div>
+    </>
+}
+
+function UnidentifiedToken({chain}: { chain?: Chain }) {
+    return <TokenContainer>
+        <div className='flex justify-start gap-1 cursor-pointer'>
             <p className='text-sm'>
                 Could not identify the token, make sure the contract is correct for
                 <span className="text-red-500 font-bold"> {chain?.name} network</span>
             </p>
             <WarningSVG/>
         </div>
-    </>
+    </TokenContainer>
 }
 
 
-function RedeemLockPeriod({bondsHandler}: any) {
-    const [bondInfo, setBondsInfo] = bondsHandler;
-
-    const [timer, setTimer] = useState({
-        hour: 0,
-        day: 0,
-        month: 0,
-        year: 0
-    })
-
-    const change = (event: any) => {
-        setTimer({
-            ...timer,
-            [event.target.id]: Number(event.target.value)
-        })
-    }
-
-    const focusInnerInput = (event: Event | any) => {
-        const input = event.currentTarget.querySelector('input');
-        if (input) {
-            input.focus();
-        }
-    }
-
-    useEffect(() => {
-        const action = setTimeout(() => {
-            let total = 0
-            total += (timer.hour || 0) * hourInSec
-            total += (timer.day || 0) * dayInSec
-            total += (timer.month || 0) * monthInSec
-            total += (timer.year || 0) * yearInSec
-
-            setBondsInfo({
-                ...bondInfo,
-                redeemLockPeriod: total
-            })
-        }, 100)
-
-        return () => {
-            clearTimeout(action)
-        }
-    }, [timer])
-
-
+function BasicInput({id, type, className, onChange, onClick, ref, placeholder}: {
+    id?: string,
+    type?: string,
+    className?: string,
+    onChange?: any,
+    placeholder?: string,
+    onClick?: any,
+    ref?: any,
+}) {
     return <>
-        <div className="flex flex-col  gap-2 w-full">
-            <InfoBox info={InfoSections.Redeem}>
-                <span>Redeem</span>
-            </InfoBox>
-            <div className="flex items-center h-full gap-2">
-                <div
-                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                    onClick={focusInnerInput}>
-                    <span className="text-g3">Hour</span>
-                    <input type="number"
-                           className={Styles.timeInput}
-                           id='hour' defaultValue={timer.hour}
-                           onChange={change}/>
-                </div>
-                <div
-                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                    onClick={focusInnerInput}>
-                    <span className={Styles.gray1}>Day</span>
-                    <input type="number" className={Styles.timeInput} id='day' defaultValue={timer.day}
-                           onChange={change}/>
-                </div>
-                <div
-                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                    onClick={focusInnerInput}>
-                    <span className={Styles.gray1}>Month</span>
-                    <input type="number" className={Styles.timeInput} id='month' defaultValue={timer.month}
-                           onChange={change}/>
-                </div>
-                <div
-                    className="flex flex-col items-center justify-center bg-transparent border border-w1 border-solid rounded text-white text-xs h-full"
-                    onClick={focusInnerInput}>
-                    <span className={Styles.gray1}>Year</span>
-                    <input type="number" className={Styles.timeInput} id='year' defaultValue={timer.year}
-                           onChange={change}/>
-                </div>
-            </div>
-        </div>
+        <input id={id}
+               type={"number" || type}
+               className={'bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base ' + className}
+               onClick={onClick}
+               ref={ref}
+               placeholder={placeholder}
+               onChange={onChange}/>
     </>
 }

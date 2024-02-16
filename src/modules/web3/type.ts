@@ -1,11 +1,14 @@
 import {TokenResponse} from "@/modules/cloud-api/type";
 
 type IssuerContractInfo = {
-    issuanceFeeForUI: string,
-    creationFee: number,
-    creationFeeHex: string,
-    creationFeePercentage: number,
-    isPaused: boolean
+    issuanceFee: number
+    purchaseFeePercentage: number
+    earlyRedemptionFeePercentage: number;
+    isPaused: boolean;
+}
+
+type IssuerContractInfoDetailed = IssuerContractInfo & {
+    issuanceFeeUI: string
 }
 
 type BondInfoDetailed = {
@@ -67,16 +70,18 @@ type TokenResponseDetailed = TokenResponseBalance & {
 type ContractInfoType = {
     to: string
     data: `0x${string}`,
-    value?: string
+    value?: bigint
 }
 
 export type {
     IssuerContractInfo,
+    IssuerContractInfoDetailed,
     BondInfoDetailed,
     BondDescription,
     TokenInfo,
     TokenResponseBalance,
     TokenResponseDetailed,
     ExplorerTypes,
-    ContractInfoType
+    ContractInfoType,
+
 }

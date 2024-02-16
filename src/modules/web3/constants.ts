@@ -3,14 +3,14 @@ import {bsc, manta, optimism, polygon, polygonMumbai, polygonZkEvm, zetachainAth
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    [polygon.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [polygonZkEvm.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [optimism.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [bsc.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-
-    [zetachainAthensTestnet.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    // [polygonMumbai.id]: "0x90A18D3DfCe4ef0A263C28d00AfD2135424c1678",
+    // [polygon.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    // [polygonZkEvm.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    // [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    // [optimism.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    // [bsc.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    //
+    // [zetachainAthensTestnet.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
+    [polygonMumbai.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
 }
 
 const TxTypes = {
@@ -32,9 +32,15 @@ const TransactionMessages = {
     pending: `Pending Transaction`
 }
 
+const BlockTimes: any = {
+    [polygon.id]: 2,
+    [polygonMumbai.id]: 4
+}
+
 export {
     ZCB_ISSUER_CONTRACTS,
     ZERO_ADDRESS,
     TxTypes,
-    TransactionMessages
+    TransactionMessages,
+    BlockTimes
 }

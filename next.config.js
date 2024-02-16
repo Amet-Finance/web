@@ -2,9 +2,17 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        remotePatterns: [{
+        remotePatterns: [
+            {
             hostname: 'storage.amet.finance'
-        }]
+            },
+            {
+            hostname: "static.coinstats.app"
+            },
+            {
+                hostname: "miro.medium.com"
+            }
+        ],
     }
 }
 

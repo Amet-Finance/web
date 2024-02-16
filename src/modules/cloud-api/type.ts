@@ -27,12 +27,14 @@ type TokenResponse = {
     symbol: string,
     decimals: number,
     isVerified: boolean,
-    icon?: string
+    icon?: string,
+    unidentified?: boolean,
 }
 
 type TokensResponse = {
     [contractLowerCased: string]: TokenResponse
 }
+
 type TokenBalance = {
     balance: string,
     balanceClean: number,
@@ -97,5 +99,6 @@ export type  {
     TokenResponse,
     TokensResponse,
     BondDetailedAPIParams,
-    DetailedBondResponse
+    DetailedBondResponse,
+    SecurityDetails
 }

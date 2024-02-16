@@ -9,6 +9,7 @@ import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
+import ZcbIssuerController from "@/modules/web3/zcb/v2/issuer";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -25,8 +26,8 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.IssueBond: {
                 return {
                     to: ZCB_ISSUER_CONTRACTS[chain.id],
-                    data: ZCB.issueBonds(chain, config.bondInfo),
-                    value: config.additionalInfo.creationFeeHex
+                    data: ZcbIssuerController.issueBonds(chain, config.bondInfo, config.tokens),
+                    value: BigInt(config.issuerContractInfo.issuanceFee)
                 }
             }
             case TxTypes.ApproveToken: {
@@ -88,10 +89,10 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             }
         }
     } catch (error: any) {
-        // console.log(`getContractInfoByType| ${txType}`, error.message)
+        console.log(`getContractInfoByType| ${txType}`, error.message)
         return {
             to: "",
-            value: "0",
+            value: BigInt(0),
             data: "0x"
         }
     }

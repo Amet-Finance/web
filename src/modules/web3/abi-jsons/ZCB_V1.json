@@ -3,53 +3,80 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "vault",
+        "name": "_initialIssuer",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "issuer",
+        "name": "_initialVault",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint40",
+            "name": "total",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "purchased",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "redeemed",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "uniqueBondIndex",
+            "type": "uint40"
+          },
+          {
+            "internalType": "uint40",
+            "name": "maturityPeriod",
+            "type": "uint40"
+          },
+          {
+            "internalType": "bool",
+            "name": "isSettled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "purchaseFeePercentage",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "earlyRedemptionFeePercentage",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct CoreTypes.BondInfo",
+        "name": "_initialBondInfo",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "_initialInvestmentToken",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "total",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "redeemLockPeriod",
+        "name": "_initialInvestmentAmount",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "investmentToken",
+        "name": "_initialInterestToken",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "investmentTokenAmount",
+        "name": "_initialInterestAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "interestToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "interestTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "feePercentage",
-        "type": "uint16"
-      },
-      {
-        "internalType": "string",
-        "name": "denomination",
-        "type": "string"
       }
     ],
     "stateMutability": "nonpayable",
@@ -86,24 +113,13 @@
       },
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "balance",
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "ERC721IncorrectOwner",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "needed",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -111,7 +127,7 @@
         "type": "uint256"
       }
     ],
-    "name": "ERC721InsufficientApproval",
+    "name": "ERC1155InsufficientBalance",
     "type": "error"
   },
   {
@@ -122,7 +138,23 @@
         "type": "address"
       }
     ],
-    "name": "ERC721InvalidApprover",
+    "name": "ERC1155InvalidApprover",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "idsLength",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "valuesLength",
+        "type": "uint256"
+      }
+    ],
+    "name": "ERC1155InvalidArrayLength",
     "type": "error"
   },
   {
@@ -133,18 +165,7 @@
         "type": "address"
       }
     ],
-    "name": "ERC721InvalidOperator",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "ERC721InvalidOwner",
+    "name": "ERC1155InvalidOperator",
     "type": "error"
   },
   {
@@ -155,7 +176,7 @@
         "type": "address"
       }
     ],
-    "name": "ERC721InvalidReceiver",
+    "name": "ERC1155InvalidReceiver",
     "type": "error"
   },
   {
@@ -166,18 +187,23 @@
         "type": "address"
       }
     ],
-    "name": "ERC721InvalidSender",
+    "name": "ERC1155InvalidSender",
     "type": "error"
   },
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
       }
     ],
-    "name": "ERC721NonexistentToken",
+    "name": "ERC1155MissingApprovalForAll",
     "type": "error"
   },
   {
@@ -186,13 +212,36 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "InvalidOperation",
+    "inputs": [
+      {
+        "internalType": "enum ZeroCouponBonds.OperationCodes",
+        "name": "code",
+        "type": "uint8"
+      }
+    ],
+    "name": "OperationFailed",
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "OnlyOwner",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
     "type": "error"
   },
   {
@@ -228,32 +277,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "approved",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
+        "name": "account",
         "type": "address"
       },
       {
@@ -277,95 +301,48 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
+        "internalType": "uint40",
+        "name": "maturityPeriod",
+        "type": "uint40"
       }
     ],
-    "name": "BondsBurnt",
+    "name": "DecreaseMaturityPeriod",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "name": "BondsIssued",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "uri",
-        "type": "string"
-      }
-    ],
-    "name": "ChangeBaseURI",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "newFeePercentage",
-        "type": "uint16"
-      }
-    ],
-    "name": "ChangeFeePercentage",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "newAddress",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "name": "ChangeOwner",
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "SettleContract",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "newAddress",
+        "name": "operator",
         "type": "address"
-      }
-    ],
-    "name": "ChangeVaultAddress",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newRedeemLockPeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "DecreasedRedeemLockPeriod",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+      },
       {
         "indexed": true,
         "internalType": "address",
@@ -379,13 +356,56 @@
         "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "TransferBatch",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "value",
         "type": "uint256"
       }
     ],
-    "name": "Transfer",
+    "name": "TransferSingle",
     "type": "event"
   },
   {
@@ -393,51 +413,44 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "indexed": true,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "id",
         "type": "uint256"
       }
     ],
-    "name": "WithdrawRemaining",
+    "name": "URI",
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "AMET_VAULT",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint40",
+        "name": "total",
+        "type": "uint40"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "UpdateBondSupply",
+    "type": "event"
   },
   {
     "inputs": [
       {
         "internalType": "address",
-        "name": "to",
+        "name": "account",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "id",
         "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
       }
     ],
     "name": "balanceOf",
@@ -454,90 +467,123 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
       }
     ],
-    "name": "burnUnsoldBonds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "balanceOfBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bondInfo",
+    "outputs": [
+      {
+        "internalType": "uint40",
+        "name": "total",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "purchased",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "redeemed",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "uniqueBondIndex",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "maturityPeriod",
+        "type": "uint40"
+      },
+      {
+        "internalType": "bool",
+        "name": "isSettled",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint8",
+        "name": "purchaseFeePercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "earlyRedemptionFeePercentage",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "uri",
-        "type": "string"
-      }
-    ],
-    "name": "changeBaseURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newAddress",
-        "type": "address"
-      }
-    ],
-    "name": "changeOwner",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_vaultAddress",
-        "type": "address"
-      }
-    ],
-    "name": "changeVaultAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "percentage",
-        "type": "uint16"
-      }
-    ],
-    "name": "decreaseFeePercentage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_newRedeemLockPeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "decreaseRedeemLockPeriod",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
+        "internalType": "uint40",
         "name": "tokenId",
+        "type": "uint40"
+      }
+    ],
+    "name": "bondPurchaseBlocks",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "blockNumber",
         "type": "uint256"
       }
     ],
-    "name": "getApproved",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint40",
+        "name": "newMaturityPeriod",
+        "type": "uint40"
+      }
+    ],
+    "name": "decreaseMaturityPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "interestAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "interestToken",
     "outputs": [
       {
         "internalType": "address",
@@ -550,58 +596,8 @@
   },
   {
     "inputs": [],
-    "name": "getInfo",
+    "name": "investmentAmount",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      },
       {
         "internalType": "uint256",
         "name": "",
@@ -612,19 +608,13 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "tokenIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "getTokensPurchaseDates",
+    "inputs": [],
+    "name": "investmentToken",
     "outputs": [
       {
-        "internalType": "uint256[]",
+        "internalType": "address",
         "name": "",
-        "type": "uint256[]"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -634,7 +624,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "account",
         "type": "address"
       },
       {
@@ -655,40 +645,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "name": "issueBonds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "ownerOf",
+    "name": "owner",
     "outputs": [
       {
         "internalType": "address",
@@ -702,9 +660,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint40",
         "name": "count",
-        "type": "uint256"
+        "type": "uint40"
+      },
+      {
+        "internalType": "address",
+        "name": "referrer",
+        "type": "address"
       }
     ],
     "name": "purchase",
@@ -715,9 +678,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
-        "name": "tokenIds",
-        "type": "uint256[]"
+        "internalType": "uint40[]",
+        "name": "bondIndexes",
+        "type": "uint40[]"
+      },
+      {
+        "internalType": "uint40",
+        "name": "redemptionCount",
+        "type": "uint40"
+      },
+      {
+        "internalType": "bool",
+        "name": "isCapitulation",
+        "type": "bool"
       }
     ],
     "name": "redeem",
@@ -726,6 +699,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -738,12 +718,22 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
-    "name": "safeTransferFrom",
+    "name": "safeBatchTransferFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -762,7 +752,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
         "type": "uint256"
       },
       {
@@ -795,6 +790,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "settleContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes4",
@@ -814,63 +816,72 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "from",
+        "name": "newOwner",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
       }
     ],
-    "name": "transferFrom",
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint40",
+        "name": "total",
+        "type": "uint40"
+      }
+    ],
+    "name": "updateBondSupply",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "uri",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "withdrawRemaining",
+    "name": "vault",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "toAddress",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawExcessInterest",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

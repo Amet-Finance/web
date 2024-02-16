@@ -1,33 +1,22 @@
+import {LinkExtended} from "@/components/navbar/types";
 import {URLS} from "@/modules/utils/urls";
 
-const NAV_ITEMS: { title: string, defaultUrl: string, defaultTarget?: string, links?: { url: string, name: string }[] }[] = [
+const NAV_LINKS: LinkExtended[] = [
     {
         title: "Bonds",
-        defaultUrl: "/bonds",
-        links: [
-            {
-                url: '/bonds/issue',
-                name: "Issue"
-            },
-            {
-                url: '/bonds/explore',
-                name: "Explore"
-            },
-
+        href: "/bonds",
+        subLinks: [
+            {title: "Issue", href: "/bonds/issue"},
+            {title: "Explore", href: "/bonds/explore"}
         ]
     },
-    // todo temp hide unless Kyberswap exploit is solved
-    // {
-    //     title: "Swap",
-    //     defaultUrl: '/swap'
-    // },
     {
-        title: "Documentation",
-        defaultUrl: URLS.Docs,
-        defaultTarget: "_blank"
+        title: "Documents",
+        href: URLS.Docs,
+        target: "_blank"
     }
 ]
 
 export {
-    NAV_ITEMS
+    NAV_LINKS
 }

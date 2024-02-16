@@ -11,12 +11,22 @@ const InfoSections = {
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    Investment: {
+    MaturityPeriod: {
+        text: "The duration after which bonds can be redeemed.",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    Chain: {
+        text: "The chain where the bonds should be issued",
+        link: URLS.FAQ_IOB,
+        isBlank: true
+    },
+    InvestmentToken: {
         text: "The contract address of the investment token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    Interest: {
+    InterestToken: {
         text: "The contract address of the interest token.",
         link: URLS.FAQ_IOB,
         isBlank: true
@@ -28,11 +38,6 @@ const InfoSections = {
     },
     InterestAmount: {
         text: "The total return per bond in the interest token.",
-        link: URLS.FAQ_IOB,
-        isBlank: true
-    },
-    Redeem: {
-        text: "The duration after which bonds can be redeemed.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },

@@ -2,14 +2,19 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "_creationFeePercentage",
-        "type": "uint16"
+        "internalType": "uint256",
+        "name": "_initialIssuanceFee",
+        "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "_creationFee",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "_initialVaultPurchaseFeePercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_initialEarlyRedemptionFeePercentage",
+        "type": "uint8"
       }
     ],
     "stateMutability": "nonpayable",
@@ -22,7 +27,7 @@
   },
   {
     "inputs": [],
-    "name": "CreationFeeMissing",
+    "name": "MissingFee",
     "type": "error"
   },
   {
@@ -48,22 +53,27 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "ZeroAddress",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "enum ZeroCouponBondsIssuer.FeeTypes",
+        "name": "feeType",
+        "type": "uint8"
+      },
       {
         "indexed": false,
         "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isPercentage",
-        "type": "bool"
       }
     ],
-    "name": "ChangeFee",
+    "name": "FeeChanged",
     "type": "event"
   },
   {
@@ -72,17 +82,11 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "issuer",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "contractAddress",
         "type": "address"
       }
     ],
-    "name": "Create",
+    "name": "Issue",
     "type": "event"
   },
   {
@@ -114,18 +118,31 @@
         "type": "bool"
       }
     ],
-    "name": "PauseState",
+    "name": "PauseChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newVault",
+        "type": "address"
+      }
+    ],
+    "name": "VaultChanged",
     "type": "event"
   },
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "fee",
+        "type": "uint8"
       }
     ],
-    "name": "changeCreationFee",
+    "name": "changeEarlyRedemptionFeePercentage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -133,12 +150,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "percent",
-        "type": "uint16"
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
       }
     ],
-    "name": "changeCreationFeePercentage",
+    "name": "changeIssuanceFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -147,11 +164,11 @@
     "inputs": [
       {
         "internalType": "bool",
-        "name": "_pause",
+        "name": "isPaused",
         "type": "bool"
       }
     ],
-    "name": "changePauseState",
+    "name": "changePausedState",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -159,79 +176,116 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_total",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_redeemLockPeriod",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_investmentToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_investmentTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_interestToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_interestTokenAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
+        "internalType": "uint8",
+        "name": "fee",
+        "type": "uint8"
       }
     ],
-    "name": "create",
+    "name": "changePurchaseFeePercentage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newVault",
+        "type": "address"
+      }
+    ],
+    "name": "changeVaultAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "contractPackedInfo",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "purchaseFeePercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "earlyRedemptionFeePercentage",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "isPaused",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "issuanceFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint40",
+        "name": "total",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "maturityPeriod",
+        "type": "uint40"
+      },
+      {
+        "internalType": "address",
+        "name": "investmentToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "investmentAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "interestToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "interestAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "issueBondContract",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "creationFee",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "bondContract",
+        "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "creationFeePercentage",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isPaused",
+    "name": "issuedContracts",
     "outputs": [
       {
         "internalType": "bool",
-        "name": "",
+        "name": "exists",
         "type": "bool"
       }
     ],
@@ -272,21 +326,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "vault",
+    "outputs": [
       {
         "internalType": "address",
-        "name": "toAddress",
+        "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       }
     ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   }
 ]
