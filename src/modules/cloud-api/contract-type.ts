@@ -72,12 +72,25 @@ type ContractExtendedFormatV2 = ContractExtendedFormat & {
     refreshDate: Date
 }
 
+
+type DescriptionEditParams = {
+    _id: string
+    address :string,
+    signature: string,
+    message: string,
+    title: string,
+    description: string
+}
+
 export type  {
     ContractEssentialFormat,
     ContractDescription,
+    ContractExtendedInfoFormat,
+    ContractStats,
     FinancialAttributeInfo,
     ContractQuery,
     ContractBasicFormat,
     ContractExtendedFormat,
-    ContractExtendedFormatV2
+    ContractExtendedFormatV2,
+    DescriptionEditParams
 }

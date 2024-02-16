@@ -11,13 +11,22 @@ import Link from "next/link";
 import {useEffect, useRef, useState} from "react";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {URLS} from "@/modules/utils/urls";
-import {ContractExtendedFormat, ContractExtendedFormatV2} from "@/modules/cloud-api/contract-type";
+import {
+    ContractExtendedFormat,
+    ContractExtendedFormatV2,
+    DescriptionEditParams
+} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import WarningSVG from "../../../../../../public/svg/warning";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import {Chart, registerables} from "chart.js";
+import EditSVG from "../../../../../../public/svg/utils/edit";
+import {useAccount, useSignMessage} from "wagmi";
+import {Simulate} from "react-dom/test-utils";
+import ContractAPI from "@/modules/cloud-api/contract-api";
+import input = Simulate.input;
 
 const UPDATE_INTERVAL = 5000;
 
@@ -54,6 +63,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: {
             <StatisticsContainer bondDetailed={bondDetailed}/>
             <MainContainer bondDetailed={bondDetailed}/>
             <GraphsContainer bondDetailed={bondDetailed}/>
+            <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
         </div>
     </>
 }
@@ -425,6 +435,95 @@ function BarChart({bgColor}: { bgColor: string }) {
                 <span className='text-sm text-neutral-600'>May 30</span>
                 <span className='text-sm text-neutral-600'>May 30</span>
             </div>
+        </div>
+    </>
+}
+
+function DescriptionContainer({bondDetailed, setBondDetailed}: {
+    bondDetailed: ContractExtendedFormat,
+    setBondDetailed: (contractExtendedFormat: any) => any
+}) {
+
+    const {contractInfo, contractDescription} = bondDetailed;
+
+    const message = `To ensure the security of your bond description update, please sign this request with your wallet. This signature is needed to verify the authenticity of the modification. Make sure to review the changes before signing. Your signature helps maintain the integrity of the information on the Amet Finance platform\n\nContract: ${contractInfo._id.toLowerCase()} \nNonce: ${Date.now()}`;
+
+    const {address} = useAccount();
+    const [isHidden, setHidden] = useState(true);
+    const [isEditMode, setEditMode] = useState(false);
+    const [descriptionDetails, setDescriptionDetails] = useState({
+        title: "",
+        description: ""
+    })
+    const isIssuer = contractInfo.issuer.toLowerCase() === address?.toLocaleLowerCase()
+
+    const {signMessageAsync} = useSignMessage({message});
+
+    useEffect(() => {
+        if (contractDescription.details || isIssuer) {
+            if (!contractDescription.details && isIssuer) setEditMode(true)
+            setHidden(false);
+        }
+    }, [address, contractDescription?.details, isIssuer]);
+
+    if (isHidden) return null;
+
+    function edit(event: any) {
+        const {id, value} = event.target;
+        setDescriptionDetails({
+            ...descriptionDetails,
+            [id]: value
+        })
+    }
+
+    async function updateDescription() {
+        if (!address) {
+            return;
+        }
+
+        const signature = await signMessageAsync?.()
+
+        const params: DescriptionEditParams = {
+            _id: contractInfo._id,
+            address: address,
+            message: message,
+            title: descriptionDetails.title,
+            description: descriptionDetails.description,
+            signature,
+        }
+        const descriptionUpdated = await ContractAPI.updateContractDescription(params);
+        setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
+
+    }
+
+    return <>
+        <div className='flex flex-col gap-4 w-full p-8 border border-w1 rounded-3xl'>
+            <div className='flex justify-between items-center'>
+                {
+                    isEditMode ?
+                        <input type="text"
+                               className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
+                               id='title'
+                               onChange={edit}
+                               placeholder='Title'/> :
+                        <h1 className='text-2xl font-bold'>{contractDescription.details?.title}</h1>
+                }
+                {
+                    isEditMode ?
+                        <span onClick={updateDescription}>Save</span> :
+                        <EditSVG onClick={() => setEditMode(true)}/>
+                }
+            </div>
+            {
+                isEditMode ?
+                    <textarea
+                        rows={1}
+                        onChange={edit}
+                        id='description'
+                        className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
+                        placeholder='Desribe you bonds, the purpose and etc..'/> :
+                    <p className='text-sm text-neutral-400'>{contractDescription.details?.description}</p>
+            }
         </div>
     </>
 }

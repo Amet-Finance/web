@@ -4,7 +4,6 @@ import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
-// {bondInfoDetailed}: { bondInfoDetailed: DetailedBondResponse }
 export default function ExploreIdPage({bondInfoDetailed, queryParams}: {bondInfoDetailed: ContractExtendedFormat, queryParams: ExploreIdQueryParams}) {
     return <ExploreBondId bondDetailedTmp={bondInfoDetailed} queryParams={queryParams}/>
 }

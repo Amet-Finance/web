@@ -1,6 +1,12 @@
 import {API_URL, ResponseFormat} from "@/modules/cloud-api/constants";
-import {requestAPI} from "@/modules/cloud-api/util";
-import {ContractBasicFormat, ContractExtendedFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {patchAPI, requestAPI} from "@/modules/cloud-api/util";
+import {
+    ContractBasicFormat,
+    ContractDescription,
+    ContractExtendedFormat,
+    ContractQuery,
+    DescriptionEditParams
+} from "@/modules/cloud-api/contract-type";
 
 async function getContractsBasic(params: ContractQuery): Promise<ContractBasicFormat[]> {
     const bondsAPI = `${API_URL}/v2/contract`
@@ -39,9 +45,23 @@ async function getContractsExtended(params: ContractQuery): Promise<ContractExte
     return response?.data;
 }
 
+async function updateContractDescription(params: DescriptionEditParams): Promise<ContractDescription> {
+    return await patchAPI({
+        url: `${API_URL}/v2/contract/description`,
+        body: params,
+        params: {
+            address: params.address,
+            signature: params.signature,
+            message: params.message
+        }
+    });
+}
+
+
 const ContractAPI = {
     getContractsBasic,
-    getContractsExtended
+    getContractsExtended,
+    updateContractDescription
 }
 
 export default ContractAPI;
