@@ -13,26 +13,19 @@ import Link from "next/link";
 import {BasicButton} from "@/components/utils/buttons";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
+import TopAnnouncement from "@/components/announcements/top-announcement";
 
 
 export default function Navbar() {
 
-
-    const [isDarkBg, setDarkBg] = useState(false);
-    const bgClass = isDarkBg ? " bg-black" : ""
-
-    useEffect(() => {
-        const handleY = () => setDarkBg(window.scrollY > 100);
-        window.addEventListener("scroll", handleY)
-        return () => window.removeEventListener('scroll', handleY)
-    }, []);
-
     return <>
-        <nav
-            className={"fixed flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8 " + bgClass}>
-            <AmetLogo/>
-            <DesktopNavbar/>
-            <MobileNavbar/>
+        <nav className="fixed flex flex-col w-full bg-black z-50">
+            <TopAnnouncement/>
+            <div className='flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+                <AmetLogo/>
+                <DesktopNavbar/>
+                <MobileNavbar/>
+            </div>
         </nav>
     </>
 }
