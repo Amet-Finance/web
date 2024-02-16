@@ -22,7 +22,9 @@ type BalanceAPIParams = {
 }
 
 type TokenResponse = {
-    _id: string,
+    _id: string, //0x13a8398fdf48055209186b93920d50eca5703bf0_80001
+    contractAddress: string,
+    chainId: number,
     name: string,
     symbol: string,
     decimals: number,

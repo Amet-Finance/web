@@ -9,6 +9,7 @@ import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
 import {decodeEventLog, encodeFunctionData, getContract, parseAbiItem, TransactionReceipt} from 'viem'
+import AmetVaultController from "@/modules/web3/zcb/v2/vault";
 
 function getContractInstance(chain: Chain, contractAddress: string) {
     const provider = getProvider(chain)
@@ -31,7 +32,11 @@ function getIssuerContractInstance(chain: Chain) {
 async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDetailed> {
     const contract = getIssuerContractInstance(chain)
 
-    const issuanceFee: any = await contract.read.issuanceFee();
+    const valutAddress = await contract.read.vault();
+    const vaultContract = AmetVaultController.getVaultContractInstance(chain, valutAddress);
+
+    const issuanceFee: any = await vaultContract.read.issuanceFee();
+
     const contractPackedInfo: any = await contract.read.contractPackedInfo();
     const normalizedAmount = Number(issuanceFee) / 10 ** chain.nativeCurrency.decimals;
 

@@ -24,9 +24,8 @@ import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond
 import {Chart, registerables} from "chart.js";
 import EditSVG from "../../../../../../public/svg/utils/edit";
 import {useAccount, useSignMessage} from "wagmi";
-import {Simulate} from "react-dom/test-utils";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import input = Simulate.input;
+import SaveSVG from "../../../../../../public/svg/utils/save";
 
 const UPDATE_INTERVAL = 5000;
 
@@ -477,22 +476,26 @@ function DescriptionContainer({bondDetailed, setBondDetailed}: {
     }
 
     async function updateDescription() {
-        if (!address) {
-            return;
-        }
+        try {
+            if (!address) {
+                return;
+            }
 
-        const signature = await signMessageAsync?.()
+            const signature = await signMessageAsync?.()
 
-        const params: DescriptionEditParams = {
-            _id: contractInfo._id,
-            address: address,
-            message: message,
-            title: descriptionDetails.title,
-            description: descriptionDetails.description,
-            signature,
+            const params: DescriptionEditParams = {
+                _id: contractInfo._id,
+                address: address,
+                message: message,
+                title: descriptionDetails.title,
+                description: descriptionDetails.description,
+                signature,
+            }
+            const descriptionUpdated = await ContractAPI.updateContractDescription(params);
+            setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
+        } catch (error: any) {
+            console.log(error)
         }
-        const descriptionUpdated = await ContractAPI.updateContractDescription(params);
-        setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
 
     }
 
@@ -510,7 +513,7 @@ function DescriptionContainer({bondDetailed, setBondDetailed}: {
                 }
                 {
                     isEditMode ?
-                        <span onClick={updateDescription}>Save</span> :
+                        <SaveSVG onClick={updateDescription}/> :
                         <EditSVG onClick={() => setEditMode(true)}/>
                 }
             </div>

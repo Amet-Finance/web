@@ -275,7 +275,7 @@ function TokenForSelector({token, onClick}: { token: TokenResponse, onClick: any
 
     return <>
         <div className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800'
-             onClick={() => onClick(token._id)}>
+             onClick={() => onClick(token.contractAddress)}>
             <Image src={iconSrc} alt={token.name} width={22} height={22}
                    className='rounded-full border border-neutral-400'/>
             <p className='text-neutral-300 text-sm'>{token.name} <span
