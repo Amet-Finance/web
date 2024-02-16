@@ -27,7 +27,7 @@ import {useAccount, useSignMessage} from "wagmi";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import SaveSVG from "../../../../../../public/svg/utils/save";
 
-const UPDATE_INTERVAL = 5000;
+const UPDATE_INTERVAL = 25000;
 
 export default function ExploreBondId({bondDetailedTmp, queryParams}: {
     bondDetailedTmp: ContractExtendedFormat,
@@ -58,7 +58,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: {
 
     return <>
         <div className='flex flex-col gap-4 w-full px-52 py-24'>
-            <HeadlineContainer/>
+            <HeadlineContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
             <StatisticsContainer bondDetailed={bondDetailed}/>
             <MainContainer bondDetailed={bondDetailed}/>
             <GraphsContainer bondDetailed={bondDetailed}/>
@@ -89,13 +89,32 @@ function LoadingScreen() {
 }
 
 
-function HeadlineContainer() {
+function HeadlineContainer({bondDetailed, setBondDetailed}: {
+    bondDetailed: ContractExtendedFormatV2,
+    setBondDetailed: (d: any) => any
+}) {
+    const [secondsPassed, setSecondsPassed] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSecondsPassed(Math.round((Date.now() - bondDetailed.refreshDate.getTime()) / 1000))
+        }, 500)
+        return () => clearInterval(interval)
+    }, [bondDetailed.refreshDate]);
+
+    function refresh() {
+        setBondDetailed({
+            ...bondDetailed,
+            refreshDate: new Date()
+        })
+    }
+
     return <>
         <div className='flex justify-between'>
             <span/>
             <div className='flex items-center gap-2 px-2'>
-                <RefreshSVG isSmall={true}/>
-                <span className='text-neutral-600 text-xs'>25s</span>
+                <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>
+                <RefreshSVG isSmall={true} onClick={refresh}/>
             </div>
         </div>
     </>
