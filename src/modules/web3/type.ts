@@ -55,7 +55,7 @@ type TokenInfo = {
 }
 
 
-type ExplorerTypes = "token" | "address"
+type ExplorerTypes = "token" | "address" | "hash"
 
 type TokenResponseBalance = TokenResponse & {
     balance: number,

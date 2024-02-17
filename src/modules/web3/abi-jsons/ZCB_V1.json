@@ -7,11 +7,6 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "_initialVault",
-        "type": "address"
-      },
-      {
         "components": [
           {
             "internalType": "uint40",
@@ -269,6 +264,11 @@
       }
     ],
     "name": "StringsInsufficientHexLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroAddress",
     "type": "error"
   },
   {
@@ -646,6 +646,19 @@
   },
   {
     "inputs": [],
+    "name": "issuerContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -702,7 +715,7 @@
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -855,19 +868,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "vault",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

@@ -2,11 +2,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_initialIssuanceFee",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint8",
         "name": "_initialVaultPurchaseFeePercentage",
         "type": "uint8"
@@ -23,11 +18,6 @@
   {
     "inputs": [],
     "name": "ContractPaused",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "MissingFee",
     "type": "error"
   },
   {
@@ -113,9 +103,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bool",
+        "internalType": "uint8",
         "name": "isPaused",
-        "type": "bool"
+        "type": "uint8"
       }
     ],
     "name": "PauseChanged",
@@ -150,22 +140,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeIssuanceFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bool",
+        "internalType": "uint8",
         "name": "isPaused",
-        "type": "bool"
+        "type": "uint8"
       }
     ],
     "name": "changePausedState",
@@ -214,22 +191,9 @@
         "type": "uint8"
       },
       {
-        "internalType": "bool",
+        "internalType": "uint8",
         "name": "isPaused",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "issuanceFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "type": "uint8"
       }
     ],
     "stateMutability": "view",

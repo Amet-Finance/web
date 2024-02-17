@@ -62,7 +62,7 @@ export default function Issue() {
     }, [bondInfo.chainId]);
 
     return <>
-        <div className='grid grid-cols-10 gap-6 lg1:px-40 lg:px-12 md:px-12 sm:px-2 py-32'>
+        <div className='grid grid-cols-10 gap-6 md:py-32 sm:py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-0'>
             <IssuerContainer bondInfoHandler={bondInfoHandler}
                              tokensHandler={tokensHandler}
                              issuerContractInfo={issuerContractInfo}/>
@@ -82,7 +82,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
     const {switchNetworkAsync} = useSwitchNetwork();
 
     const config = getContractInfoByType(chain, TxTypes.IssueBond, {bondInfo, tokens, issuerContractInfo})
-    const {sendTransactionAsync, data} = useSendTransaction({
+    const {sendTransactionAsync} = useSendTransaction({
         to: config.to,
         data: config.data,
         value: config.value
@@ -108,7 +108,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
 
     return <>
         <div
-            className='lg:col-span-6 sm:col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 sm:px-6 lg:py-8 md:py-6 sm:py-4 bg-neutral-950'>
+            className='lg1:col-span-6 sm:col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 sm:px-6 lg:py-8 md:py-6 sm:py-4 bg-neutral-950'>
             <div className='flex flex-col gap-2'>
                 <h1 className='text-2xl font-bold'>Issue Your Bonds: Simple and Swift</h1>
                 <p className='text-xs text-zinc-600'>Our streamlined form guides you through each step to
@@ -163,7 +163,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
             <ChainSelector bondInfoHandler={bondInfoHandler}/>
             <TokenSelector type='investmentToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
             <TokenSelector type='interestToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
-            <div className='col-span-6 w-full flex flex-col justify-between gap-3'>
+            <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
                 <InfoBox info={InfoSections.InvestmentAmount}>
                     <span className='text-white text-md font-medium'>Investment Amount:</span>
                 </InfoBox>
@@ -171,7 +171,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
                             placeholder='Investment amount per bond'
                             onChange={update}/>
             </div>
-            <div className='col-span-6 w-full flex flex-col justify-between gap-3'>
+            <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
                 <InfoBox info={InfoSections.InterestAmount}>
                     <span className='text-white text-md font-medium'>Interest Amount:</span>
                 </InfoBox>
@@ -221,18 +221,20 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                     chainId: bondInfo.chainId,
                     contractAddresses: [tokenAddress]
                 }).then(tokensResponse => {
-                    const token = tokensResponse[tokenAddress]
-                    if (token) {
-                        setTokens({...tokens, [tokenAddress]: token})
-                    } else {
-                        setTokens({...tokens, [tokenAddress]: {unidentified: true}})
+                    if (tokensResponse) {
+                        const token = tokensResponse[tokenAddress]
+                        if (token) {
+                            setTokens({...tokens, [tokenAddress]: token})
+                        } else {
+                            setTokens({...tokens, [tokenAddress]: {unidentified: true}})
+                        }
                     }
                 })
             }
         }, 2000)
 
         return () => clearTimeout(timeout)
-    }, [bondInfo.chainId, tokenAddress, address]);
+    }, [bondInfo.chainId, tokenAddress, address, tokens, setTokens]);
 
     const setTokenType = (contractAddress: string) => setBondInfo({
         ...bondInfo,
@@ -249,7 +251,8 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
 
 
     return <>
-        <div className='relative col-span-6 w-full flex flex-col justify-between gap-3 h-full' ref={boxRef}>
+        <div className='relative md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3 h-full'
+             ref={boxRef}>
             <InfoBox info={infoObject}><span className='text-white text-md font-medium'>{title}:</span></InfoBox>
             <input type='text'
                    className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
@@ -433,7 +436,7 @@ function ChainContainer({chain, selectChain}: { chain: Chain, selectChain: any }
 function PreviewContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
     return <>
         <div
-            className='lg:col-span-4 sm:col-span-12 flex flex-col gap-8 rounded-3xl md:px-12 sm:px-6 py-8 bg-neutral-950'>
+            className='lg1:col-span-4 sm:col-span-12 flex flex-col gap-8 rounded-3xl md:px-12 sm:px-6 py-8 bg-neutral-950'>
             <div className='flex flex-col gap-2'>
                 <h2 className='text-2xl font-bold'>Preview Your Bonds</h2>
                 <p className='text-xs text-zinc-600'>This real-time snapshot allows you to review and
@@ -449,8 +452,8 @@ function PreviewContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: 
 
 function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
 
-    const [bondInfo, setBondInfo] = bondInfoHandler;
-    const [tokens, setTokens] = tokensHandler;
+    const [bondInfo] = bondInfoHandler;
+    const [tokens] = tokensHandler;
 
     const chainInfo = getChain(bondInfo.chainId)
 
@@ -482,7 +485,8 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
                 Number.isFinite(bondInfo.chainId) && <>
                     <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
                         <div className='flex gap-2 items-center texee'>
-                            <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""} width={24}
+                            <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""}
+                                   width={24}
                                    height={24}/>
                             <span className='text-2xl font-medium'>{shortenString(chainInfo?.name || "", 5)}</span>
                         </div>

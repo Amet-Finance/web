@@ -10,6 +10,7 @@ import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
 import ZcbIssuerController from "@/modules/web3/zcb/v2/issuer";
+import ZcbController from "@/modules/web3/zcb/v2";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -39,7 +40,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.PurchaseBonds: {
                 return {
                     to: config.contractAddress,
-                    data: ZCB.purchase(chain, config.contractAddress, config.count)
+                    data: ZcbController.purchase(chain, config.contractAddress, config.count, config.referrer)
                 }
             }
             case TxTypes.RedeemBonds: {

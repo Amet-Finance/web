@@ -1,10 +1,10 @@
 import ArrowCurveSVG from "../../../../../../public/svg/utils/arrow-curve";
 import RefreshSVG from "../../../../../../public/svg/utils/refresh";
 import Image from "next/image";
-import {BlockTimes} from "@/modules/web3/constants";
+import {BlockTimes, TxTypes} from "@/modules/web3/constants";
 import {formatTime} from "@/modules/utils/dates";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
-import {shorten} from "@/modules/web3/util";
+import {getExplorer, shorten} from "@/modules/web3/util";
 import {shortenString} from "@/modules/utils/string";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
@@ -14,18 +14,23 @@ import {URLS} from "@/modules/utils/urls";
 import {
     ContractExtendedFormat,
     ContractExtendedFormatV2,
+    ContractExtendedInfoFormat,
     DescriptionEditParams
 } from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import WarningSVG from "../../../../../../public/svg/warning";
-import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
-import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond-id/utils";
+import {ExploreIdQueryParams, LogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
+import {fetchContractExtended, getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import {Chart, registerables} from "chart.js";
 import EditSVG from "../../../../../../public/svg/utils/edit";
-import {useAccount, useSignMessage} from "wagmi";
+import {useAccount, useNetwork, useSendTransaction, useSignMessage, useSwitchNetwork} from "wagmi";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import SaveSVG from "../../../../../../public/svg/utils/save";
+import BigNumber from "bignumber.js";
+import {getAllowance} from "@/modules/web3/tokens";
+import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {toast} from "react-toastify";
 
 const UPDATE_INTERVAL = 25000;
 
@@ -34,35 +39,37 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: {
     queryParams: ExploreIdQueryParams
 }) {
 
-    const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({
-        ...(bondDetailedTmp || {}),
-        refreshDate: new Date()
-    })
+    const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({...(bondDetailedTmp || {})})
+    const [updateIndex, setUpdateIndex] = useState(0);
+    const [refreshDate, setRefreshDate] = useState<Date>();
     const [isLoading, setLoading] = useState(!Boolean(bondDetailedTmp))
 
     useEffect(() => {
-        const updater = () => fetchContractExtended(queryParams).then(contract => {
-            if (contract) {
-                setBondDetailed({...contract, refreshDate: new Date()})
-                setLoading(false)
-            }
-        })
+        const updater = () => fetchContractExtended(queryParams)
+            .then(contract => {
+                setRefreshDate(new Date())
+                if (contract && JSON.stringify(contract) !== JSON.stringify(bondDetailed)) setBondDetailed({...contract});
+            })
+            .finally(() => setLoading(false))
 
+        updater()
         const interval = setInterval(updater, UPDATE_INTERVAL)
         return () => clearInterval(interval);
-    }, [bondDetailed.lastUpdated])
+    }, [bondDetailed, updateIndex, queryParams])
 
     if (isLoading) return <LoadingScreen/>
 
     const {contractInfo, contractDescription, contractStats} = bondDetailed;
+    const refreshHandler = [refreshDate, setUpdateIndex]
 
     return <>
-        <div className='flex flex-col gap-4 w-full px-52 py-24'>
-            <HeadlineContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
+        <div className='flex flex-col gap-4 w-full xl1:px-52 lg:px-24 md:px-12 sm:px-8 py-24'>
+            <HeadlineContainer refreshHandler={refreshHandler}/>
             <StatisticsContainer bondDetailed={bondDetailed}/>
             <MainContainer bondDetailed={bondDetailed}/>
             <GraphsContainer bondDetailed={bondDetailed}/>
             <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
+            <RecentActivityContainer contractInfo={contractInfo}/>
         </div>
     </>
 }
@@ -89,24 +96,19 @@ function LoadingScreen() {
 }
 
 
-function HeadlineContainer({bondDetailed, setBondDetailed}: {
-    bondDetailed: ContractExtendedFormatV2,
-    setBondDetailed: (d: any) => any
-}) {
+function HeadlineContainer({refreshHandler}: { refreshHandler: any[] }) {
+    const [refreshDate, setUpdateIndex] = refreshHandler
     const [secondsPassed, setSecondsPassed] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setSecondsPassed(Math.round((Date.now() - bondDetailed.refreshDate.getTime()) / 1000))
+            setSecondsPassed(Math.round((Date.now() - refreshDate?.getTime()) / 1000))
         }, 500)
         return () => clearInterval(interval)
-    }, [bondDetailed.refreshDate]);
+    }, [refreshDate]);
 
     function refresh() {
-        setBondDetailed({
-            ...bondDetailed,
-            refreshDate: new Date()
-        })
+        setUpdateIndex(Math.random() * 10)
     }
 
     return <>
@@ -129,7 +131,7 @@ function StatisticsContainer({bondDetailed}: { bondDetailed: ContractExtendedFor
     function Container({title, value, valueColor}: { title: string, value: string, valueColor: string }) {
         return <>
             <div
-                className='flex flex-col items-end gap-4 bg-neutral-950 rounded-3xl p-6 pt-2 pr-2 border border-neutral-900'>
+                className='flex flex-col items-end gap-4 bg-neutral-950 rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 sm:col-span-2'>
                 <div className='w-min bg-neutral-800 p-4 rounded-full'><ArrowCurveSVG color='#fff'/></div>
                 <div className='flex flex-col w-full gap-1'>
                     <span className={`text-5xl font-bold ${valueColor}`}>{value}</span>
@@ -159,7 +161,7 @@ function MainContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat })
     return <>
         <div className='grid grid-cols-12 w-full gap-4 h-full'>
             <MainDetailsContainer bondDetailed={bondDetailed}/>
-            <ActionsContainer/>
+            <ActionsContainer contractInfo={bondDetailed.contractInfo}/>
         </div>
     </>
 }
@@ -193,7 +195,7 @@ function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFo
 
     return <>
         <div
-            className='flex flex-col gap-4 col-span-8 bg-neutral-950 rounded-3xl p-8 pt-4 border border-neutral-900 w-full'>
+            className='flex flex-col gap-4 lg:col-span-8 sm:col-span-12 bg-neutral-950 rounded-3xl p-8 pt-4 border border-neutral-900 w-full'>
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center w-full'>
                     <div className='flex gap-2'>
@@ -269,7 +271,7 @@ function NotVerifiedAsset({title}: { title: string }) {
     </>
 }
 
-function ActionsContainer() {
+function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
     const Tabs = {
         Purchase: "Purchase",
@@ -292,7 +294,7 @@ function ActionsContainer() {
     function TabSelector({title}: { title: string }) {
         switch (title) {
             case Tabs.Purchase:
-                return <PurchaseTab/>
+                return <PurchaseTab contractInfo={contractInfo}/>
             case Tabs.Redeem:
                 return <RedeemTab/>
             case Tabs.More.Manage:
@@ -305,7 +307,8 @@ function ActionsContainer() {
     }
 
     return <>
-        <div className='col-span-4 flex flex-col bg-neutral-950 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
+        <div
+            className='lg:col-span-4 sm:col-span-12 flex flex-col gap-12 bg-neutral-950 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
             <div className='flex gap-4 items-center'>
                 <Tab title={Tabs.Purchase}/>
                 <Tab title={Tabs.Redeem}/>
@@ -329,16 +332,88 @@ function ActionsContainer() {
 }
 
 
-function PurchaseTab() {
+function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+
+    const {_id, investment, total, purchased} = contractInfo;
+    const [contractAddress, chainId] = _id.toLowerCase().split("_");
+    const {address} = useAccount();
+    const network = useNetwork();
+    const {switchNetworkAsync} = useSwitchNetwork({chainId: Number(chainId)});
+    const chain = getChain(chainId)
+
+    const TitleTypes = {
+        Purchase: "Purchase",
+        Approve: "Approve",
+        NotEnough: "Not Enough Bonds to Purchas"
+    }
+
+    const [isLoading, setLoading] = useState(false)
+    const [allowance, setAllowance] = useState("0")
+    const [amount, setAmount] = useState(0);
+
+    const currentAllowance = BigNumber(allowance.toString())
+    const required = BigNumber(amount).times(BigNumber(investment.amount))
+    const needed = currentAllowance.minus(required);
+
+    const isApprove = needed.isLessThan(BigNumber(0))
+
+    let blockClick = false
+
+    let title = isApprove ? TitleTypes.Approve : TitleTypes.Purchase
+    if (purchased + amount > total) {
+        title = TitleTypes.NotEnough
+        blockClick = true
+    }
+
+
+    const transactionType = isApprove ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
+    const config = isApprove ?
+        {contractAddress: investment.contractAddress, spender: contractAddress, value: needed.abs().toString()} :
+        {contractAddress: contractAddress, count: amount}
+
+    // todo add referrer when purchasing from query param
+    const txConfig = getContractInfoByType(chain, transactionType, config)
+    const {sendTransactionAsync} = useSendTransaction(txConfig)
+
+    useEffect(() => {
+        if (chain && address) {
+            setLoading(true)
+            getAllowance(chain, investment.contractAddress, address, contractAddress)
+                .then(response => setAllowance(response.toString()))
+                .finally(() => setLoading(false))
+        }
+    }, [amount, chain, address, contractAddress, investment.contractAddress]);
+
+    function onChange(event: any) {
+        const {value} = event.target;
+        setAmount(Number(value))
+    }
+
+    async function submit() {
+        if (blockClick) return;
+        if (!chain) return toast.error("Please select correct chain")
+        if (network.chain?.id !== chain.id) await switchNetworkAsync?.(chain.id);
+
+        const response = await sendTransactionAsync();
+        const result = await trackTransaction(chain, response.hash);
+        console.log(result)
+    }
+
     return <>
         <div className='flex flex-col gap-4 justify-end w-full'>
             <div className='flex flex-col gap-2'>
-                <input type="number"
-                       className='bg-transparent border border-neutral-800 rounded-md py-1.5 px-4 placeholder:text-neutral-600'
-                       placeholder='Type the amount of bonds '/>
-                <p className='text-xs text-neutral-600'>You confirm that you have read and understood the <Link href={URLS.TermsOfService} target="_blank"><u>Terms and Conditions.</u></Link></p>
+                <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                    <input type="number"
+                           id='amount'
+                           className='bg-transparent placeholder:text-neutral-600 w-full'
+                           onChange={onChange}
+                           placeholder='Type the amount of bonds '/>
+                </div>
+                <p className='text-xs text-neutral-600'>You confirm that you have read and understood the <Link
+                    href={URLS.TermsOfService} target="_blank"><u>Terms and Conditions.</u></Link></p>
             </div>
-            <button className='bg-white w-full text-black rounded-full py-1.5 font-medium'>Purchase</button>
+            <button className='bg-white w-full text-black rounded-full py-1.5 font-medium'
+                    onClick={submit}>{title}</button>
         </div>
     </>
 }
@@ -357,9 +432,9 @@ function ReferralRewardsTab() {
 
 
 function GraphsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
-
     const Container = ({children}: any) => (
-        <div className='col-span-1 flex flex-col gap-4 w-full p-4 border border-w1 rounded-3xl'>{children}</div>)
+        <div
+            className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-4 border border-w1 rounded-3xl'>{children}</div>)
 
     return <>
         <div className='grid grid-cols-2 gap-4'>
@@ -547,6 +622,102 @@ function DescriptionContainer({bondDetailed, setBondDetailed}: {
                         placeholder='Desribe you bonds, the purpose and etc..'/> :
                     <p className='text-sm text-neutral-400'>{contractDescription.details?.description}</p>
             }
+        </div>
+    </>
+}
+
+
+function RecentActivityContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+
+    const ActivityTypes = {
+        All: "All",
+        My: "My Activity"
+    }
+
+    const [contractAddress, chainId] = contractInfo._id.split("_");
+
+    const [activityType, setActivityType] = useState(ActivityTypes.All)
+    const [logs, setLogs] = useState<LogFormat[]>([]);
+
+
+    useEffect(() => {
+        getPastLogs(contractInfo, setLogs)
+    }, [contractInfo]);
+
+
+    return <>
+        <div className='flex flex-col gap-12 border border-w1 w-full rounded-3xl p-8'>
+            <div className='flex justify-between items-center'>
+                <span className='text-xl font-medium'>Recent Activity</span>
+                <div className='flex items-center border border-white rounded-3xl cursor-pointer'>
+                    {
+                        Object.values(ActivityTypes).map(title => (<>
+                            <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-white text-black"}`}
+                                  onClick={() => setActivityType(title)}>{title}</span>
+                        </>))
+                    }
+                </div>
+            </div>
+            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-y-auto'>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400'>From</span>
+                </div>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400'>To</span>
+                </div>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400'>Type</span>
+                </div>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400'>Value</span>
+                </div>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400'>Block</span>
+                </div>
+                <div className='col-span-1 text-sm'>
+                    <span className='text-neutral-400 '>Hash</span>
+                </div>
+                {logs.map(log => <LogContainer chainId={Number(chainId)} log={log} key={log.hash}/>)}
+            </div>
+        </div>
+    </>
+}
+
+
+function LogContainer({chainId, log}: { chainId: number, log: LogFormat }) {
+
+    const hashUrl = getExplorer(chainId, "hash", log.hash)
+    let typeClass;
+
+    if (log.type === "Redeem") {
+        typeClass = "bg-green-950 text-green-500"
+    } else if (log.type === "Purchase") {
+        typeClass = "bg-red-950 text-red-500"
+    } else {
+        typeClass = "bg-neutral-800 text-neutral-200"
+    }
+
+    return <>
+        <div className='h-px col-span-6 bg-neutral-600 w-full'/>
+        <div className='col-span-1 text-sm '>
+            <span className='text-neutral-200'>{shorten(log.from, 5)}</span>
+        </div>
+        <div className='col-span-1 text-sm'>
+            <span className='text-neutral-200'>{shorten(log.to, 5)}</span>
+        </div>
+        <div className='col-span-1 text-sm w-full'>
+            <span className={`${typeClass} px-3 py-1.5 rounded-full`}>{log.type}</span>
+        </div>
+        <div className='col-span-1 text-sm'>
+            <span className='text-neutral-200'>{log.value}</span>
+        </div>
+        <div className='col-span-1 text-sm'>
+            <span className='text-neutral-200'>{log.block}</span>
+        </div>
+        <div className='col-span-1 text-sm'>
+            <Link href={hashUrl} target='_blank'>
+                <span className='text-neutral-200 underline'>{shorten(log.hash)}</span>
+            </Link>
         </div>
     </>
 }

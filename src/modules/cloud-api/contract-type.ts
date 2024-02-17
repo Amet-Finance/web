@@ -69,7 +69,7 @@ type ContractExtendedFormat = {
 }
 
 type ContractExtendedFormatV2 = ContractExtendedFormat & {
-    refreshDate: Date
+
 }
 
 

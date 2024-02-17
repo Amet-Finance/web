@@ -19,6 +19,9 @@ function getExplorer(chainId: number | undefined, type: ExplorerTypes, value: st
         case "address" : {
             return `${chain?.blockExplorers?.default.url}/address/${value}`
         }
+        case "hash": {
+            return `${chain?.blockExplorers?.default.url}/tx/${value}`
+        }
     }
 }
 
