@@ -54,6 +54,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
         investment: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "USD Coin",
             "symbol": "USDC",
             "icon": "https://storage.amet.finance/icons/usdc.png",
@@ -64,6 +66,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
         },
         interest: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "USD Coin",
             "symbol": "USDC",
             "icon": "https://storage.amet.finance/icons/usdc.png",
@@ -89,6 +93,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
         investment: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Tether USD",
             "symbol": "USDT",
             "icon": "https://storage.amet.finance/icons/usdc.png",
@@ -99,6 +105,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
         },
         interest: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Solana",
             "symbol": "SOL",
             "icon": "https://storage.amet.finance/icons/solana.png",
@@ -124,6 +132,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
         investment: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Tether USD",
             "symbol": "USDT",
             "icon": "https://storage.amet.finance/icons/usdc.png",
@@ -134,6 +144,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
         },
         interest: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Shiba Inu",
             "symbol": "SHIB",
             "icon": "https://storage.amet.finance/icons/shib.png",
@@ -159,6 +171,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
         investment: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Tether USD",
             "symbol": "USDT",
             "icon": "https://storage.amet.finance/icons/usdc.png",
@@ -169,6 +183,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
         },
         interest: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            chainId: 80001,
             "name": "Bitcoin",
             "symbol": "BTC",
             "icon": "https://storage.amet.finance/icons/bitcoin.png",
