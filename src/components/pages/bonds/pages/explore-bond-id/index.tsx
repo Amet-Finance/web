@@ -512,6 +512,7 @@ function DescriptionContainer({bondDetailed, setBondDetailed}: {
             }
             const descriptionUpdated = await ContractAPI.updateContractDescription(params);
             setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
+            setEditMode(false);
         } catch (error: any) {
             console.log(error)
         }
