@@ -1,6 +1,7 @@
-export default function Loading({percent}: { percent?: number }) {
+export default function Loading({percent, color}: { percent?: number, color?: string }) {
+    color = color || "#fff"
     percent = percent || 0;
-    let witdthMain = 62 - ((62 * percent) / 100)
+    let widthMain = 62 - ((62 * percent) / 100)
     let width = 52 - ((52 * percent) / 100)
     let border = 6 - ((6 * percent) / 100)
 
@@ -15,8 +16,8 @@ export default function Loading({percent}: { percent?: number }) {
           .lds-ring {
             display: inline-block;
             position: relative;
-            width: ${witdthMain}px;
-            height: ${witdthMain}px;
+            width: ${widthMain}px;
+            height: ${widthMain}px;
           }
 
           .lds-ring div {
@@ -26,10 +27,10 @@ export default function Loading({percent}: { percent?: number }) {
             width: ${width}px;
             height: ${width}px;
             margin: ${border}px;
-            border: ${border}px solid #fff;
+            border: ${border}px solid ${color};
             border-radius: 50%;
             animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            border-color: #fff transparent transparent transparent;
+            border-color: ${color} transparent transparent transparent;
           }
 
           .lds-ring div:nth-child(1) {

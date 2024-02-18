@@ -24,12 +24,12 @@ export default function Bonds() {
                         <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
                         <div className='flex md:flex-row sm:flex-col gap-5 w-full'>
                             <Link href='/bonds/issue' className='w-full'>
-                                <BasicButton>
+                                <BasicButton hFull>
                                     <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
                                 </BasicButton>
                             </Link>
                             <Link href='/bonds/explore' className='w-full'>
-                                <BasicButton isWhiteBorder>
+                                <BasicButton isWhiteBorder hFull>
                                     <span className='font-medium px-4 py-2.5'>Explore Bonds</span>
                                 </BasicButton>
                             </Link>

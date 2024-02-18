@@ -3,8 +3,7 @@ import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
 import {getProvider} from "@/modules/web3";
 
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import {getTokenBalance} from "@/modules/web3/tokens";
-import {BondInfoDetailed, IssuerContractInfoDetailed} from "@/modules/web3/type";
+import { IssuerContractInfoDetailed} from "@/modules/web3/type";
 import {Chain} from "wagmi";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
@@ -48,48 +47,6 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
         isPaused: contractPackedInfo[2],
     }
 }
-
-async function getBondInfo(chain: Chain, contractAddress: string): Promise<BondInfoDetailed> {
-    const contract = getContractInstance(chain, contractAddress);
-    const info: any = await contract.read.getInfo();
-
-    const [
-        issuer, total,
-        purchased, redeemed,
-        redeemLockPeriod, investmentToken,
-        investmentTokenAmount, interestToken,
-        interestTokenAmount, feePercentage,
-        issuanceDate
-    ] = Object.values(info) as any;
-
-    return {
-        _id: contractAddress,
-        chainId: chain.id,
-        issuer: issuer,
-        total: Number(total),
-        purchased: Number(purchased),
-        redeemed: Number(redeemed),
-        redeemLockPeriod: Number(redeemLockPeriod),
-        investmentToken: investmentToken,
-        investmentTokenAmount: investmentTokenAmount.toString(),
-        interestToken: interestToken,
-        interestTokenAmount: interestTokenAmount.toString(),
-        interestTokenBalance: await getTokenBalance(chain, interestToken, contractAddress),
-        feePercentage: Number(feePercentage),
-        issuanceDate: Number(issuanceDate)
-    };
-}
-
-async function getBondName(chain: any, contractAddress: string) {
-    const contract = getContractInstance(chain, contractAddress);
-    return await contract.read.name();
-}
-
-async function getTokensPurchaseDates(chain: any, contractAddress: string, tokenIds: number[]): Promise<string[]> {
-    const contract = getContractInstance(chain, contractAddress);
-    return await contract.read.getTokensPurchaseDates([tokenIds]) as string[];
-}
-
 
 function issueBonds(chain: Chain, bondInfo: BondInfo) {
     const {
@@ -245,8 +202,5 @@ export {
     decreaseRedeemLockPeriod,
     issueMoreBonds,
     decode,
-    getBondInfo,
-    getTokensPurchaseDates,
-    getBondName,
     getTransferActivity
 }

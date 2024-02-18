@@ -11,35 +11,6 @@ type IssuerContractInfoDetailed = IssuerContractInfo & {
     issuanceFeeUI: string
 }
 
-type BondInfoDetailed = {
-    _id: string,
-    chainId: number,
-    issuer: string,
-    total: number,
-    purchased: number,
-    redeemed: number,
-    redeemLockPeriod: number,
-    investmentToken: string,
-    investmentTokenAmount: string,
-    interestToken: string,
-    interestTokenAmount: number,
-    interestTokenBalance: string,
-    feePercentage: number,
-    issuanceDate: number
-}
-
-type BondDescription = {
-    name: string,
-    description: string
-    external_url: string,
-    image: string,
-    details?: {
-        title?: string,
-        description?: string
-    }
-}
-
-
 type TokenInfo = {
     contractAddress: string,
     name: string,
@@ -76,8 +47,6 @@ type ContractInfoType = {
 export type {
     IssuerContractInfo,
     IssuerContractInfoDetailed,
-    BondInfoDetailed,
-    BondDescription,
     TokenInfo,
     TokenResponseBalance,
     TokenResponseDetailed,

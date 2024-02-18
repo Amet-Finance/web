@@ -1,13 +1,12 @@
 import {requestAPI} from "@/modules/cloud-api/util";
 import {API_URL} from "@/modules/cloud-api/constants";
-import {BalanceAPIParams, TokensResponse} from "@/modules/cloud-api/type";
+import {TokensResponse} from "@/modules/cloud-api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 
-async function getBalance({address, chainId}: BalanceAPIParams) {
+async function getBalance(address: string): Promise<{[contractId: string]: {[id: string]: number}}> {
     const balanceAPI = `${API_URL}/v1/balance/${address}`
     const response = await requestAPI({
-        url: balanceAPI,
-        params: {chainId}
+        url: balanceAPI
     });
     return response?.data;
 }

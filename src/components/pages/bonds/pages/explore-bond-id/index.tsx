@@ -31,6 +31,9 @@ import BigNumber from "bignumber.js";
 import {getAllowance} from "@/modules/web3/tokens";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {toast} from "react-toastify";
+import {BasicButton} from "@/components/utils/buttons";
+import Loading from "@/components/utils/loading";
+import CloudAPI from "@/modules/cloud-api";
 
 const UPDATE_INTERVAL = 25000;
 
@@ -273,6 +276,8 @@ function NotVerifiedAsset({title}: { title: string }) {
 
 function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
+    const {address} = useAccount();
+    const [balance, setBalance] = useState({});
     const Tabs = {
         Purchase: "Purchase",
         Redeem: "Redeem",
@@ -281,14 +286,30 @@ function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFo
             ReferralRewards: "Referral Rewards"
         }
     }
+    const [selected, setSelected] = useState(Tabs.Purchase);
 
-    const [selected, setSelected] = useState(Tabs.Purchase)
+    const total = Object.values(balance[contractInfo._id] || {}).reduce((acc: number, value: number) => acc += value, 0);
 
-    function Tab({title, className}: { title: string, className?: string }) {
+    // todo can optimize here as well, get only for that _id
+    useEffect(() => {
+        if (address) {
+            CloudAPI.getBalance(address)
+                .then(response => {
+                    if (response[contractInfo._id]) {
+                        setBalance({
+                            [contractInfo._id]: response[contractInfo._id]
+                        })
+                    }
+                })
+        }
+    }, [address, contractInfo._id]);
+
+
+    function Tab({title, titleSecondary, className}: { title: string, titleSecondary?: string, className?: string }) {
         return <>
             <span
                 className={`cursor-pointer text-neutral-400 whitespace-nowrap first-letter:uppercase hover:text-white ${className} ${selected === title && "text-white"}`}
-                onClick={() => setSelected(title)}>{title}</span></>
+                onClick={() => setSelected(title)}>{title}{titleSecondary}</span></>
     }
 
     function TabSelector({title}: { title: string }) {
@@ -296,7 +317,7 @@ function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFo
             case Tabs.Purchase:
                 return <PurchaseTab contractInfo={contractInfo}/>
             case Tabs.Redeem:
-                return <RedeemTab/>
+                return <RedeemTab contractInfo={contractInfo}/>
             case Tabs.More.Manage:
                 return <ManageTab/>
             case Tabs.More.ReferralRewards:
@@ -311,7 +332,7 @@ function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFo
             className='lg:col-span-4 sm:col-span-12 flex flex-col gap-12 bg-neutral-950 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
             <div className='flex gap-4 items-center'>
                 <Tab title={Tabs.Purchase}/>
-                <Tab title={Tabs.Redeem}/>
+                <Tab title={Tabs.Redeem} titleSecondary={`(${total})`}/>
                 <div className='group relative'>
                     <div className='group flex gap-1 items-center cursor-pointer'>
                         <span className='text-neutral-400 group-hover:text-white'>More</span>
@@ -347,7 +368,7 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
         NotEnough: "Not Enough Bonds to Purchas"
     }
 
-    const [isLoading, setLoading] = useState(false)
+    const [isLoadingEffect, setLoadingEffect] = useState(false)
     const [allowance, setAllowance] = useState("0")
     const [amount, setAmount] = useState(0);
 
@@ -373,14 +394,14 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
 
     // todo add referrer when purchasing from query param
     const txConfig = getContractInfoByType(chain, transactionType, config)
-    const {sendTransactionAsync} = useSendTransaction(txConfig)
+    const {sendTransactionAsync, isLoading} = useSendTransaction(txConfig)
 
     useEffect(() => {
         if (chain && address) {
-            setLoading(true)
+            setLoadingEffect(true)
             getAllowance(chain, investment.contractAddress, address, contractAddress)
                 .then(response => setAllowance(response.toString()))
-                .finally(() => setLoading(false))
+                .finally(() => setLoadingEffect(false))
         }
     }, [amount, chain, address, contractAddress, investment.contractAddress]);
 
@@ -400,6 +421,56 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     }
 
     return <>
+        <div className='flex flex-col gap-4 justify-between w-full'>
+            <div className='flex flex-col'>
+
+            </div>
+            <div className='flex flex-col gap-4'>
+                <div className='flex flex-col gap-2'>
+                    <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                        <input type="number"
+                               id='amount'
+                               className='bg-transparent placeholder:text-neutral-600 w-full'
+                               onChange={onChange}
+                               placeholder='Enter Number of Bonds to Purchase'/>
+                    </div>
+                    <p className='text-xs text-neutral-600'>You confirm that you have read and understood the <Link
+                        href={URLS.TermsOfService} target="_blank"><u>Terms and Conditions.</u></Link></p>
+                </div>
+                <BasicButton onClick={submit}>
+                    <div className='flex items-center gap-2'>
+                        {(isLoading || isLoadingEffect) && <Loading percent={75} color="#000"/>}
+                        {title}
+                    </div>
+                </BasicButton>
+            </div>
+        </div>
+    </>
+}
+
+function RedeemTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+
+    const [amount, setAmount] = useState(0);
+
+    let blockClick = false;
+    let title = `Redeem`
+
+    function onChange(event: any) {
+        const {value} = event.target;
+        setAmount(Number(value))
+    }
+
+    async function submit() {
+        if (blockClick) return;
+        // if (!chain) return toast.error("Please select correct chain")
+        // if (network.chain?.id !== chain.id) await switchNetworkAsync?.(chain.id);
+
+        // const response = await sendTransactionAsync();
+        // const result = await trackTransaction(chain, response.hash);
+        // console.log(result)
+    }
+
+    return <>
         <div className='flex flex-col gap-4 justify-end w-full'>
             <div className='flex flex-col gap-2'>
                 <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
@@ -407,19 +478,14 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
                            id='amount'
                            className='bg-transparent placeholder:text-neutral-600 w-full'
                            onChange={onChange}
-                           placeholder='Type the amount of bonds '/>
+                           placeholder='Enter Number of Bonds to Redeem'/>
                 </div>
                 <p className='text-xs text-neutral-600'>You confirm that you have read and understood the <Link
                     href={URLS.TermsOfService} target="_blank"><u>Terms and Conditions.</u></Link></p>
             </div>
-            <button className='bg-white w-full text-black rounded-full py-1.5 font-medium'
-                    onClick={submit}>{title}</button>
+            <BasicButton onClick={submit}>{title}</BasicButton>
         </div>
     </>
-}
-
-function RedeemTab() {
-    return <><span>RedeemTab Ping</span></>
 }
 
 function ManageTab() {
