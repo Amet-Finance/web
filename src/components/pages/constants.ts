@@ -1,6 +1,7 @@
 const PageId = {
     MainPage: "MainPage",
-    BondsPage: "BondsPage"
+    BondsPage: "BondsPage",
+    ExplorePage: "ExplorePage"
 }
 
 export {

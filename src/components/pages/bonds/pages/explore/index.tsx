@@ -1,7 +1,9 @@
 import BondCard from "@/components/pages/bonds/utils/bond-card";
-import {BOND_CARDS} from "@/components/pages/main/constants";
 import SearchSVG from "../../../../../../public/svg/utils/search";
 import FilterSVG from "../../../../../../public/svg/utils/filter";
+import {useEffect, useState} from "react";
+import ContractAPI from "@/modules/cloud-api/contract-api";
+import {ContractBasicFormat} from "@/modules/cloud-api/contract-type";
 
 export default function Explore() {
     return <>
@@ -27,18 +29,26 @@ export default function Explore() {
                     </div>
                 </div>
                 <div className='grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-2'>
-                    <BondCard info={BOND_CARDS[0]}/>
-                    <BondCard info={BOND_CARDS[1]}/>
-                    <BondCard info={BOND_CARDS[2]}/>
-                    <BondCard info={BOND_CARDS[3]}/>
-                    <BondCard info={BOND_CARDS[3]}/>
-                    <BondCard info={BOND_CARDS[2]}/>
-                    <BondCard info={BOND_CARDS[2]}/>
-                    <BondCard info={BOND_CARDS[0]}/>
-                    <BondCard info={BOND_CARDS[1]}/>
-                    <BondCard info={BOND_CARDS[3]}/>
+                    <BondCards/>
                 </div>
             </div>
         </div>
+    </>
+}
+
+
+function BondCards() {
+
+    const [contracts, setContracts] = useState<ContractBasicFormat[]>([])
+
+    useEffect(() => {
+        const params = {}
+        ContractAPI.getContractsBasic(params).then(result => {
+            if (result?.length) setContracts(result)
+        })
+    }, []);
+
+    return <>
+        {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
     </>
 }
