@@ -33,9 +33,8 @@ function LandingSection() {
 
     return <>
         <div
-            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 min-h-[90vh]'>
-            <div
-                className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center '>
+            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 md:min-h-[90vh] sm:min-h-[75vh]'>
+            <div className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center '>
                 <h1 className='xl1:text-8xl lg:text-7xl md:text-8xl sm:text-5xl font-bold leading-snug max-w-7xl'>Simplified
                     Bond
                     Investments for Everyone</h1>
@@ -47,7 +46,7 @@ function LandingSection() {
                     investments are no longer complex and exclusive.</p>
                 <Link href='/bonds' className='relative flex lg:w-1/3 sm:w-full'>
                     <BasicButton>
-                        <span className='px-4 py-1'>Get Started</span>
+                        <span className='px-4 py-0.5'>Get Started</span>
                     </BasicButton>
                 </Link>
             </div>

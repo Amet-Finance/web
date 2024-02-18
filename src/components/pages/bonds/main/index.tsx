@@ -15,20 +15,22 @@ export default function Bonds() {
         <div className='flex flex-col w-full'>
             <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
                 <div className='relative flex lg:flex-row sm:flex-col lg:items-end sm:items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
-                    <div className='flex flex-col w-full gap-12 '>
-                        <h1 className='text-7xl font-bold max-2w-xl'>Unlock Financial Possibilities <br/> with on-chain
+                    <div
+                        className='flex flex-col md:items-start sm:items-center md:text-start sm:text-center w-full gap-12 '>
+                        <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold max-2w-xl'>Unlock Financial
+                            Possibilities <br/> with on-chain
                             Bonds</h1>
                         <div className='h-px w-1/4 bg-neutral-500'/>
                         <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
-                        <div className='flex gap-5'>
-                            <Link href='/bonds/issue'>
-                                <BasicButton wMin>
+                        <div className='flex md:flex-row sm:flex-col gap-5 w-full'>
+                            <Link href='/bonds/issue' className='w-full'>
+                                <BasicButton>
                                     <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
                                 </BasicButton>
                             </Link>
-                            <Link href='/bonds/explore'>
-                                <BasicButton wMin isWhiteBorder>
-                                    <span className='font-medium px-4 py-0.5'>Explore Bonds</span>
+                            <Link href='/bonds/explore' className='w-full'>
+                                <BasicButton isWhiteBorder>
+                                    <span className='font-medium px-4 py-2.5'>Explore Bonds</span>
                                 </BasicButton>
                             </Link>
                         </div>
@@ -48,12 +50,12 @@ function Statistics() {
     const totalRedeemed = formatLargeNumber(6822).toString()
 
     return <>
-        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 min-w-max h-min hollow-shadow w-full '>
+        <div className='relative grid grid-cols-2 grid-rows-3 gap-4  h-min hollow-shadow w-full '>
             <StatisticsBox value="38" title="Total Issued" classAttributes="col-span-1 row-span-1"/>
             <StatisticsBox value="$261,241" title="Total Volume" classAttributes='col-span-1 row-span-2 pr-16'/>
             <StatisticsBox value="789" title="Total Purchased" classAttributes='col-span-1 row-span-2'/>
             <StatisticsBox value={totalRedeemed} title="Total Redeemed" classAttributes='col-span-1 row-span-1 pr-16'/>
-            <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px]"/>
+            <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px] "/>
         </div>
     </>
 }
@@ -61,9 +63,9 @@ function Statistics() {
 function StatisticsBox({classAttributes, value, title}: { value: string, title: string, classAttributes?: string }) {
     return <>
         <div
-            className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black " + classAttributes}>
-            <span className='text-3xl font-bold'>{value}</span>
-            <span className='text-neutral-500 font-medium text-sm'>{title}</span>
+            className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black overflow-x-auto" + classAttributes}>
+            <span className='md:text-3xl sm:text-xl font-bold'>{value}</span>
+            <span className='text-neutral-500 font-medium md:text-sm sm:text-xs'>{title}</span>
         </div>
     </>
 }
@@ -118,8 +120,6 @@ function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
 
 function BondsExplanation() {
 
-    // 1. How much people made with Amet Finance?
-    // 2.
     function TVL() {
         const chartRef = useRef<any>(null);
 
@@ -199,7 +199,7 @@ function BondsExplanation() {
         }, [])
 
         return <>
-            <div className="w-80 h-80 bg-white rounded-3xl">
+            <div className="bg-white rounded-3xl h-full w-full">
                 <div className='flex justify-between items-center px-5 py-6'>
                     <div className='flex flex-col text-black'>
                         <span className='text-base font-medium'>Total Value Locked</span>
@@ -218,10 +218,47 @@ function BondsExplanation() {
         </>
     }
 
+    const lifecycleAttributes = [
+        {
+            title: "Issuing Bonds",
+            text: `This is the first step where the bond is created and offered
+                    to the market. The issuer sets the terms including the bond’s total amount, interest rate, and
+                    maturity period, officially initiating the bond offering`
+        },
+        {
+            title: "Bond Acquisition",
+            text: `In this phase, investors acquire the bonds by paying the
+                        issuer the bond price. This process mobilizes funds for the issuer, while investors receive a
+                        financial instrument promising future returns`
+        },
+        {
+            title: `Bond Growth Phase`,
+            text: `During this phase, the bond is held by the investors. Over
+                        this period, the bond accrues interest at the predetermined rate. It is a time of growth for the
+                        investment, leading up to its maturity date`
+        },
+        {
+            title: `Bond Redemption`,
+            text: `The bondholder, now with the bond represented as an NFT, presents it to redeem their investment.
+                        Upon redemption, the total return is transferred to the bondholder. This marks the successful
+                        conclusion of the bond contract, fulfilling the investment cycle`
+        }
+    ]
+
+    function LifecycleContainer({item}: { item: { text: string, title: string } }) {
+        return <>
+            <div className='md:col-span-1 sm:col-span-4 flex flex-col gap-8'>
+                <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
+                <h4 className='text-2xl'>{item.title}</h4>
+                <p className='text-neutral-300 text-sm'>{item.text}</p>
+            </div>
+        </>
+    }
+
     return <>
         <div className='flex flex-col gap-40'>
-            <div className='flex justify-between'>
-                <div className='flex flex-col max-w-xl gap-8'>
+            <div className='flex gap-12 justify-between xl1:flex-row sm:flex-col items-center'>
+                <div className='flex flex-col md:max-w-xl sm:max-w-none gap-8'>
                     <h2 className='text-4xl font-medium'>Why Issue On-Chain Bonds?</h2>
                     <p className='text-neutral-400 text-sm'>{`Issuing on-chain bonds presents a unique opportunity for both entities and individuals seeking a simple yet effective way to raise capital. This method stands out for its straightforward process, offering a clear alternative to the intricacies of other financing methods. It allows issuers to reach a wider pool of investors, tapping into a market eager for stable and predictable investment options. By choosing to issue on-chain bonds, you open the door to hassle-free capital generation, providing a win-win for both issuers and investors looking for clarity and opportunity in the financial landscape.`}
                     </p>
@@ -229,62 +266,33 @@ function BondsExplanation() {
                         <BasicButton wMin>Issue Bonds</BasicButton>
                     </Link>
                 </div>
-                <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black'>
-                    <div className='col-span-6 row-span-2 '>
+                <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black w-fit'>
+                    <div className='md:col-span-6 sm:col-span-12 row-span-2 w-full '>
                         <TVL/>
                     </div>
-                    <div className='col-span-3 row-span-1 bg-white rounded-3xl'>
+                    <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-white rounded-3xl'>
                         <div className='flex flex-col justify-center items-center h-full'>
                             <span className='text-black text-center font-medium text-base'>Active Users</span>
                             <span className='text-3xl font-bold'>{formatLargeNumber(4251)}</span>
                         </div>
                     </div>
-                    <div className='col-span-3 row-span-1 bg-stone-900 rounded-3xl text-white'>
+                    <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
                         <div className='flex flex-col justify-center items-center h-full'>
                             <span className='text-center font-medium text-base'>Max Return</span>
                             <span className='text-3xl font-bold'>x{150}</span>
                         </div>
                     </div>
-                    <div className='col-span-6 row-span-2 bg-stone-900 rounded-3xl text-white'>
+                    <div className='md:col-span-6 sm:col-span-12 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
                         <div className='flex flex-col justify-center h-full px-6'>
                             <span className='font-medium text-base'>Realised Gains</span>
                             <span className='text-3xl font-bold'>${formatLargeNumber(2524251)}</span>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div className='grid grid-cols-4 gap-12'>
-                <div className='flex flex-col gap-8'>
-                    <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Issuing Bonds</h4>
-                    <p className='text-neutral-300 text-sm'>This is the first step where the bond is created and offered
-                        to the market. The issuer sets the terms including the bond’s total amount, interest rate, and
-                        maturity period, officially initiating the bond offering</p>
-                </div>
-                <div className='flex flex-col gap-8'>
-                    <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Bond Acquisition</h4>
-                    <p className='text-neutral-300 text-sm'>In this phase, investors acquire the bonds by paying the
-                        issuer the bond price. This process mobilizes funds for the issuer, while investors receive a
-                        financial instrument promising future returns</p>
-                </div>
-                <div className='flex flex-col gap-8'>
-                    <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Bond Growth Phase</h4>
-                    <p className='text-neutral-300 text-sm'>During this phase, the bond is held by the investors. Over
-                        this period, the bond accrues interest at the predetermined rate. It is a time of growth for the
-                        investment, leading up to its maturity date</p>
-                </div>
-                <div className='flex flex-col gap-8'>
-                    <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                    <h4 className='text-2xl'>Bond Redemption</h4>
-                    <p className='text-neutral-300 text-sm'>The bondholder, now with the bond represented as an NFT, presents it to redeem their investment.
-                        Upon redemption, the total return is transferred to the bondholder. This marks the successful
-                        conclusion of the bond contract, fulfilling the investment cycle</p>
-                </div>
+                {lifecycleAttributes.map(item => <LifecycleContainer item={item} key={item.title}/>)}
             </div>
-
         </div>
     </>
 }
@@ -293,8 +301,8 @@ function BondsExplanation() {
 function SectionEnd() {
     return <>
         <div className='flex flex-col justify-center items-center bg-zinc-950 w-full py-32 gap-8'>
-            <h3 className='text-5xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey at Amet Finance</h3>
-            <p className='text-sm text-stone-300'>Connect with like-minded individuals, gain insights, and stay updated on the latest trends and opportunities.</p>
+            <h3 className='md:text-5xl sm:text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey at Amet Finance</h3>
+            <p className='md:text-sm sm:text-xs text-stone-300 text-center'>Connect with like-minded individuals, gain insights, and stay updated on the latest trends and opportunities.</p>
             <Link href={URLS.Discord} target="_blank">
                 <div className='flex gap-3 items-center bg-white px-8 p-2.5 rounded-3xl text-black'>
                     <DiscordIcon color='#000' size={32}/>
