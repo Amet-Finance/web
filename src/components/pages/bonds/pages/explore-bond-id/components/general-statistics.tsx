@@ -63,15 +63,19 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
         if (isLoadingLogs) {
             return <>
                 <div
-                    className='md:col-span-1 sm:col-span-2 flex justify-center items-center w-full p-4 border border-neutral-900 rounded-3xl bg-neutral-950'>
+                    className='md:col-span-1 sm:col-span-2 flex justify-center items-center w-full p-4 border border-neutral-900 rounded-3xl'>
                     <Loading/>
                 </div>
             </>
         }
 
+
+        const centerIndex = Math.round(data.length / 2)
+        const blocks = [data[0]?.block, data[centerIndex]?.block, data[data.length - 1]?.block]
+
         return <>
             <div
-                className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-4 border border-neutral-900 rounded-3xl bg-neutral-950'>
+                className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
 
                 <div className='flex justify-between w-full'>
                     <span className='font-medium text-xl'>{type} Statistics</span>
@@ -84,6 +88,9 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
                     </div>
                 </div>
                 <BarChart bgColor={bgColor} data={data}/>
+                <div className='flex justify-between'>
+                    {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
+                </div>
             </div>
         </>
     }
@@ -150,16 +157,11 @@ function BarChart({bgColor, data}: { bgColor: string, data: ActionLogFormat[] })
         });
 
         return () => chart.destroy()
-    }, [bgColor])
+    }, [bgColor, data])
 
     return <>
         <div className='w-full'>
             <canvas ref={chartRef} className='max-h-60'/>
-            <div className='flex justify-between'>
-                <span className='text-sm text-neutral-600'>May 30</span>
-                <span className='text-sm text-neutral-600'>May 30</span>
-                <span className='text-sm text-neutral-600'>May 30</span>
-            </div>
         </div>
     </>
 }
@@ -187,16 +189,16 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
     }
 
     return <>
-        <div className='flex flex-col gap-8 border border-neutral-900 w-full rounded-3xl p-8 bg-neutral-950'>
+        <div className='flex flex-col gap-8 border border-neutral-900 w-full rounded-3xl p-8'>
             <div className='flex justify-between items-center'>
                 <div className='flex items-center gap-4'>
                     <span className='text-xl font-medium'>Recent Activity</span>
                     <RefreshSVG isLoading={isLoadingLogs} isSmall/>
                 </div>
-                <div className='flex items-center border border-white rounded-3xl cursor-pointer'>
+                <div className='flex items-center border border-neutral-900 rounded-3xl cursor-pointer'>
                     {
                         Object.values(ActivityTypes).map(title => (<>
-                <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-white text-black"}`}
+                <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-neutral-900"}`}
                       onClick={() => setActivityType(title)}>{title}</span>
                         </>))
                     }

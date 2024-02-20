@@ -78,7 +78,7 @@ export default function ActionsContainer({contractInfo}: { contractInfo: Contrac
 
     return <>
         <div
-            className='lg:col-span-4 sm:col-span-12 flex flex-col gap-12 bg-neutral-950 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
+            className='lg:col-span-4 sm:col-span-12 flex flex-col gap-12 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
     <div className='flex gap-4 items-center'>
     <Tab title={Tabs.Purchase}/>
     <Tab title={Tabs.Redeem} titleSecondary={`(${total})`}/>

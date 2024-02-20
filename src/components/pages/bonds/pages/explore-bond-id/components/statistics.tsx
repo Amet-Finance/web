@@ -12,7 +12,7 @@ export default function StatisticsContainer({bondDetailed}: { bondDetailed: Cont
     function Container({title, value, valueColor}: { title: string, value: string, valueColor: string }) {
         return <>
             <div
-                className='flex flex-col items-end gap-4 bg-neutral-950 rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 sm:col-span-2'>
+                className='flex flex-col items-end gap-4  rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 sm:col-span-2'>
                 <div className='w-min bg-neutral-800 p-4 rounded-full'><ArrowCurveSVG color='#fff'/></div>
                 <div className='flex flex-col w-full gap-1'>
                     <span className={`text-5xl font-bold ${valueColor}`}>{value}</span>

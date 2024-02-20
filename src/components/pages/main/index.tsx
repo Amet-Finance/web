@@ -326,11 +326,11 @@ function Partnerships() {
             alt: "Manta Network",
             src: "/pngs/manta-partner.png"
         },
-        {
-            url: URLS.others.Polygon,
-            alt: "Polygon zkEVM",
-            src: "/pngs/polygon-zkevm-partner.png"
-        },
+        // {
+        //     url: URLS.others.Polygon,
+        //     alt: "Polygon zkEVM",
+        //     src: "/pngs/polygon-zkevm-partner.png"
+        // },
         {
             url: URLS.others.Polygon,
             alt: "Polygon",
@@ -354,12 +354,12 @@ function Partnerships() {
                     unique expertise and value to our platform. Discover the synergy that makes our service stand out in
                     the world of finance</p>
             </div>
-            <div className='grid grid-cols-8 md:gap-20 sm:gap-12'>
+            <div className='grid grid-cols-6 md:gap-20 sm:gap-12'>
                 {
                     partners.map((item) => (<>
                         <Link href={item.url} target="_blank"
-                              className='flex justify-center lg1:col-span-2 md:col-span-4 sm:col-span-4'>
-                            <Image src={item.src} alt={item.alt} width={200} height={50} className='object-contain'/>
+                              className='flex justify-center md:col-span-2 sm:col-span-6'>
+                            <Image src={item.src} alt={item.alt} width={200} height={50} className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
                         </Link>
                     </>))
                 }
