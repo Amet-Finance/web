@@ -15,6 +15,7 @@ import {URLS} from "@/modules/utils/urls";
 import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import {useRouter} from "next/router";
 
 export default function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
@@ -102,6 +103,7 @@ export default function ActionsContainer({contractInfo}: { contractInfo: Contrac
 }
 
 function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+    // todo add referrer when purchasing from query param
 
     const {_id, investment, total, purchased} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
@@ -109,6 +111,7 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork({chainId: Number(chainId)});
     const chain = getChain(chainId)
+    const router = useRouter();
 
     const TitleTypes = {
         Purchase: "Purchase",
@@ -137,16 +140,17 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     if (purchasingMoreThenAllowed) title = TitleTypes.NotEnough
     if (isSoldOut) title = TitleTypes.SoldOut
 
-
+    const initialReferrer = `${router.query.ref}`
+    const referrer = initialReferrer.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
     const transactionType = isApprove ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
     const config = isApprove ?
-        {contractAddress: investment.contractAddress, spender: contractAddress, value: required.abs().toString()} :
-        {contractAddress: contractAddress, count: amount}
+        {contractAddress: investment.contractAddress, spender: contractAddress, value: `0x${required.toString(16)}`} :
+        {contractAddress: contractAddress, count: amount, referrer: referrer}
 
-    // todo add referrer when purchasing from query param
     const txConfig = getContractInfoByType(chain, transactionType, config)
     const {sendTransactionAsync, isLoading} = useSendTransaction(txConfig)
 
+    console.log(config)
     useEffect(() => {
         if (chain && address) {
             setLoadingEffect(true)
@@ -251,6 +255,8 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
         return () => clearInterval(interval);
     }, [chain, contractAddress, interest.contractAddress, interest.decimals]);
 
+
+    console.log(bondIndexes, redemptionCount)
     function onChange(event: any) {
         const value = Number(event.target.value);
 
@@ -258,11 +264,14 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
         const indexes: string[] = []
 
 
+        console.log(contractBalance)
         for (const tokenId in contractBalance) {
             if (!valueLeft) break;
 
-            valueLeft -= Number(contractBalance[tokenId])
-            indexes.push(tokenId)
+            if (Number(contractBalance[tokenId])) {
+                valueLeft -= Number(contractBalance[tokenId])
+                indexes.push(tokenId)
+            }
 
             if (valueLeft <= 0) {
                 break;

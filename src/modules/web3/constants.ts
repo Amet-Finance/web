@@ -10,7 +10,7 @@ const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
     // [bsc.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     //
     // [zetachainAthensTestnet.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [polygonMumbai.id]: "0xE1Aa12fAB16Ef8E3b09be483B9c7861aBA637E68",
+    [polygonMumbai.id]: "0x8F013B542A0487ed7B4Eb51cD8f3A0fF59AafAEe",
 }
 
 const TxTypes = {

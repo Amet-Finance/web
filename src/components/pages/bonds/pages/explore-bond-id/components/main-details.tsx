@@ -74,10 +74,10 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                                     <span className='text-md font-semibold'>{redeemed}</span>
                                     <span className='text-xs text-neutral-400 font-light'>Redeemed</span>
                                 </div>
-                                <div className='relative w-full col-span-3'>
-                                    <div className='absolute h-[4px] bg-green-900 rounded-full z-20' style={{width: `${redeemedPercentage}%`}}/>
-                                    <div className='absolute h-[4px] bg-green-500 rounded-full z-10' style={{width: `${purchasedPercentage}%`}}/>
-                                    <div className='absolute h-[4px] bg-white rounded-full w-full'/>
+                                <div className='relative w-full col-span-3 h-0.5'>
+                                    <div className='absolute h-full bg-green-900 rounded-full z-20' style={{width: `${redeemedPercentage}%`}}/>
+                                    <div className='absolute h-full bg-green-500 rounded-full z-10' style={{width: `${purchasedPercentage}%`}}/>
+                                    <div className='absolute h-full bg-white rounded-full w-full'/>
                                 </div>
                             </div>
                         </div>

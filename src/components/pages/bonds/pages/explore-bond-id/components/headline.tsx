@@ -1,9 +1,30 @@
 import {useEffect, useState} from "react";
 import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
+import CopySVG from "../../../../../../../public/svg/utils/copy";
+import {useAccount} from "wagmi";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {toast} from "react-toastify";
 
 export default function HeadlineContainer({refreshHandler}: { refreshHandler: any[] }) {
     const [refreshDate, setUpdateIndex] = refreshHandler
     const [secondsPassed, setSecondsPassed] = useState(0);
+    const {address} = useAccount();
+    const {open} = useWeb3Modal();
+
+    function refresh() {
+        setUpdateIndex(Math.random() * 10)
+    }
+
+    function copyReferralCode() {
+        if (!address) {
+            return open();
+        }
+
+        const url = `${location.href.toLowerCase()}?ref=${address.toLowerCase()}`
+        navigator.clipboard.writeText(url)
+            .then(() => toast("Referral url was successfully copied to your clipboard."))
+            .catch(() => toast.error("An error has occurred."))
+    }
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -12,13 +33,13 @@ export default function HeadlineContainer({refreshHandler}: { refreshHandler: an
         return () => clearInterval(interval)
     }, [refreshDate]);
 
-    function refresh() {
-        setUpdateIndex(Math.random() * 10)
-    }
-
     return <>
         <div className='flex justify-between'>
-            <span/>
+            <div className='flex  items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
+                 onClick={copyReferralCode}>
+                <CopySVG/>
+                <span className='text-neutral-600 text-sm'>Copy your referral code!</span>
+            </div>
             <div className='flex items-center gap-2 px-2'>
                 <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>
                 <RefreshSVG isSmall={true} onClick={refresh}/>

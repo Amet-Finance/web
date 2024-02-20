@@ -165,7 +165,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
             <TokenSelector type='interestToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
             <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
                 <InfoBox info={InfoSections.InvestmentAmount}>
-                    <span className='text-white text-md font-medium'>Investment Amount:</span>
+                    <span className='text-white text-md font-medium whitespace-nowrap'>Investment Amount:</span>
                 </InfoBox>
                 <BasicInput id="investmentAmount"
                             placeholder='Investment amount per bond'
@@ -173,7 +173,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
             </div>
             <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
                 <InfoBox info={InfoSections.InterestAmount}>
-                    <span className='text-white text-md font-medium'>Interest Amount:</span>
+                    <span className='text-white text-md font-medium whitespace-nowrap'>Interest Amount:</span>
                 </InfoBox>
                 <BasicInput id="interestAmount"
                             placeholder='Interest amount per bond'
@@ -253,7 +253,8 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     return <>
         <div className='relative md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3 h-full'
              ref={boxRef}>
-            <InfoBox info={infoObject}><span className='text-white text-md font-medium'>{title}:</span></InfoBox>
+            <InfoBox info={infoObject}><span
+                className='text-white text-md font-medium whitespace-nowrap'>{title}:</span></InfoBox>
             <input type='text'
                    className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
                    placeholder={placeholder}
@@ -343,7 +344,8 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
 
     return <>
         <div className='md:col-span-4 sm:col-span-8 w-full flex flex-col gap-3'>
-            <InfoBox info={InfoSections.MaturityPeriod}><span className='text-white text-md font-medium'>Maturity Period:</span></InfoBox>
+            <InfoBox info={InfoSections.MaturityPeriod}><span
+                className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
             <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
                 <input type="number"
                        id='day'
@@ -572,7 +574,9 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
     }
 
     const iconSrc = token.icon || makeBlockie(zeroAddress);
-    const total = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
+    let totalTmp = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
+    const total = isInvestment ? totalTmp - ((totalTmp * issuerContractInfo.purchaseFeePercentage) / 100) : totalTmp
+
 
     return <>
         <TokenContainer>

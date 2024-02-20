@@ -35,16 +35,16 @@ function LandingSection() {
         <div
             className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 md:min-h-[90vh] sm:min-h-[75vh]'>
             <div className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center '>
-                <h1 className='xl1:text-8xl lg:text-7xl md:text-8xl sm:text-5xl font-bold leading-snug max-w-7xl'>Simplified
+                <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold leading-snug max-w-7xl'>Simplified
                     Bond
                     Investments for Everyone</h1>
-                <div className='h-px w-1/4 bg-neutral-400'/>
+                <div className='h-px w-1/4 bg-neutral-500'/>
                 <p className='text-neutral-400 max-w-xl md:text-sm sm:text-xs'>Welcome to the world of effortless
                     on-chain bond
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
-                <Link href='/bonds' className='relative flex lg:w-1/3 sm:w-full'>
+                <Link href='/bonds' className='relative flex lg:w-min sm:w-full'>
                     <BasicButton>
                         <span className='px-4 py-0.5'>Get Started</span>
                     </BasicButton>
