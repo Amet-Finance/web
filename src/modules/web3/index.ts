@@ -46,7 +46,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.RedeemBonds: {
                 return {
                     to: config.contractAddress,
-                    data: ZCB.redeem(chain, config.contractAddress, config.tokenIds)
+                    data: ZcbController.redeem(chain, config.contractAddress, config.bondIndexes, config.redemptionCount, config.isCapitulation)
                 }
             }
             case TxTypes.TransferERC20: {

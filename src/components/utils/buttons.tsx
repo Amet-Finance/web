@@ -1,11 +1,12 @@
-export function BasicButton({children, isBgWhite, isBgGrey, isWhiteBorder, onClick, wMin, hFull}: {
+export function BasicButton({children, isBgWhite, isBgGrey, isWhiteBorder, onClick, wMin, hFull, isBlocked}: {
     children: any,
     isBgWhite?: boolean,
     isBgGrey?: boolean,
     isWhiteBorder?: boolean,
     onClick?: any,
     wMin?: boolean,
-    hFull?: boolean
+    hFull?: boolean,
+    isBlocked?: boolean
 }) {
 
     let classOnBg = (!isBgWhite ? 'bg-white hover:bg-neutral-300 text-black ' : 'bg-black hover:bg-neutral-800 text-white ') + "px-8 py-2.5"
@@ -19,9 +20,12 @@ export function BasicButton({children, isBgWhite, isBgGrey, isWhiteBorder, onCli
     if(wMin) classOnBg += " w-min"
     if (hFull) classOnBg += " h-full"
 
+    classOnBg += `${isBlocked ? " cursor-not-allowed" : " cursor-pointer"}`
+
+
     return (<>
         <button
-            className={`w-full ${classOnBg} flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium cursor-pointer px-8`}
+            className={`w-full ${classOnBg} flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium px-8 `}
             onClick={onClick}>
             {children}
         </button>

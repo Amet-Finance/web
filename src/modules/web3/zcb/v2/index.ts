@@ -27,9 +27,24 @@ function purchase(chain: Chain, contractAddress: string, count: number, referrer
     })
 }
 
+function redeem(chain: Chain, contractAddress: string, bondIndexes: string[], redemptionCount: number, isCapitulation?: boolean) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'redeem',
+        args: [
+            bondIndexes,
+            redemptionCount,
+            Boolean(isCapitulation)
+        ]
+    })
+}
+
 const ZcbController = {
     getContractInstance,
-    purchase
+    purchase,
+    redeem
 }
 
 export default ZcbController;

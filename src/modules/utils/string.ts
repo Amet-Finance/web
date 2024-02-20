@@ -1,5 +1,5 @@
-function shortenString(str: string, int?: number) {
-    return (int && str.length > int) ? str.slice(0, int) + '...' : str
+function shortenString(str: string|undefined, int?: number) {
+    return (str && int && str.length > int) ? str.slice(0, int) + '...' : str
 }
 
 export {

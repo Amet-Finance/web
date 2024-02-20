@@ -3,12 +3,14 @@ import ZCB_ABI from '../abi-jsons/ZCB_V1.json'
 import {getProvider} from "@/modules/web3";
 
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
-import { IssuerContractInfoDetailed} from "@/modules/web3/type";
+import {IssuerContractInfoDetailed} from "@/modules/web3/type";
 import {Chain} from "wagmi";
-import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
+import {ZCB_ISSUER_CONTRACTS, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {mulBigNumber} from "@/modules/utils/numbers";
 import {decodeEventLog, encodeFunctionData, getContract, parseAbi, TransactionReceipt} from 'viem'
 import AmetVaultController from "@/modules/web3/zcb/v2/vault";
+import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
+import {LogTypes} from "@/modules/web3/zcb/v2/constants";
 
 function getContractInstance(chain: Chain, contractAddress: string) {
     const provider = getProvider(chain)
@@ -175,10 +177,10 @@ function decode(transaction: TransactionReceipt): {} {
 }
 
 
-async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint) {
-    const provider = getProvider(chain)
+async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ActionLogFormat[]> {
 
-    return await provider.getLogs({
+    const provider = getProvider(chain)
+    const logs = await provider.getLogs({
         address: contractAddress as any,
         events: parseAbi([
             'event TransferBatch(address indexed, address indexed, address indexed, uint256[], uint256[])',
@@ -186,6 +188,32 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
         ]),
         fromBlock: fromBlock,
         toBlock: toBlock
+    })
+
+    return logs.map(log => {
+        const operator = log.args[0]
+        const from = log.args[1] || ""
+        const to = log.args[2] || ""
+        const ids = log.args[3] || []
+        const counts = log.args[4] || []
+
+        const totalCount = Array.isArray(counts) ? counts.reduce((acc: bigint, item: bigint) => acc += item, BigInt(0)) : counts
+
+        let type = LogTypes.Transfer;
+        if (from.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+            type = LogTypes.Purchase
+        } else if (to.toLowerCase() === ZERO_ADDRESS.toLowerCase()) {
+            type = LogTypes.Redeem
+        }
+
+        return {
+            from: from || "",
+            to: to || "",
+            block: Number(log.blockNumber),
+            hash: log.transactionHash,
+            type: type,
+            count: Number(totalCount)
+        } as ActionLogFormat
     })
 }
 

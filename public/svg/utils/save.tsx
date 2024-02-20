@@ -1,6 +1,6 @@
 export default function SaveSVG({onClick}: {onClick: () => any}) {
     return <>
-        <svg width="18" height="18" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick} className='cursor-pointer'>
+        <svg width="18" height="18" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick} className='cursor-pointer w-fit'>
             <path fillRule="evenodd" clipRule="evenodd"
                   d="M0.349609 0.999609C0.349609 0.640624 0.640624 0.349609 0.999609 0.349609H21.9996C22.3586 0.349609 22.6496 0.640624 22.6496 0.999609V24.9996C22.6496 25.2431 22.5136 25.4661 22.2971 25.5775C22.0806 25.689 21.8201 25.6701 21.6219 25.5286L11.7593 18.4871L1.36447 25.5375C1.16531 25.6726 0.907817 25.6866 0.695192 25.5739C0.482567 25.4612 0.349609 25.2403 0.349609 24.9996V0.999609ZM1.64961 1.64961V23.7733L11.404 17.1573C11.629 17.0047 11.9252 17.0083 12.1465 17.1663L21.3496 23.7369V1.64961H1.64961Z"
                   fill="#7A7A7A"/>
