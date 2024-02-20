@@ -27,7 +27,7 @@ const {
 
 async function initBalance(address: string | undefined, chainId: number) {
     if (address) {
-        const balance = await CloudAPI.getBalance({address, chainId});
+        const balance = await CloudAPI.getBalance(address);
         if (balance) {
             delete balance._id;
             store.dispatch(updateBalance({balance, chainId}))
