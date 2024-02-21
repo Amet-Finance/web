@@ -9,6 +9,8 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
 import Loading from "@/components/utils/loading";
+import CloudAPI from "@/modules/cloud-api";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 
 export default function Bonds() {
     return <>
@@ -47,25 +49,72 @@ export default function Bonds() {
 
 function Statistics() {
 
-    const totalRedeemed = formatLargeNumber(6822).toString()
+    const [isLoading, setLoading] = useState(true)
+    const [statistics, setStatistics] = useState({
+        purchased: 0,
+        redeemed: 0,
+        volumeUSD: 0,
+        issued: 0
+    })
+
+    useEffect(() => {
+        setLoading(true);
+        const updater = () => {
+            CloudAPI.getStatistics()
+                .then(response => {
+                    if (response) setStatistics(response)
+                }).finally(() => setLoading(false))
+        }
+
+        updater()
+
+        const interval = setInterval(updater, UPDATE_INTERVAL);
+        return () => clearInterval(interval);
+    }, []);
+
+
+    const totalVolume = `$${formatLargeNumber(statistics.volumeUSD, true).toString()}`
 
     return <>
         <div className='relative grid grid-cols-2 grid-rows-3 gap-4  h-min hollow-shadow w-full '>
-            <StatisticsBox value="38" title="Total Issued" classAttributes="col-span-1 row-span-1"/>
-            <StatisticsBox value="$261,241" title="Total Volume" classAttributes='col-span-1 row-span-2 pr-16'/>
-            <StatisticsBox value="789" title="Total Purchased" classAttributes='col-span-1 row-span-2'/>
-            <StatisticsBox value={totalRedeemed} title="Total Redeemed" classAttributes='col-span-1 row-span-1 pr-16'/>
+            <StatisticsBox value={statistics.issued}
+                           isLoading={isLoading}
+                           title="Total Issued"
+                           classAttributes="col-span-1 row-span-1"/>
+            <StatisticsBox value={totalVolume}
+                           isLoading={isLoading}
+                           title="Total Volume"
+                           classAttributes='col-span-1 row-span-2 pr-16'/>
+            <StatisticsBox value={statistics.purchased}
+                           isLoading={isLoading}
+                           title="Total Purchased"
+                           classAttributes='col-span-1 row-span-2'/>
+            <StatisticsBox value={statistics.redeemed}
+                           isLoading={isLoading}
+                           title="Total Redeemed"
+                           classAttributes='col-span-1 row-span-1 pr-16'/>
             <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px] "/>
         </div>
     </>
 }
 
-function StatisticsBox({classAttributes, value, title}: { value: string, title: string, classAttributes?: string }) {
+function StatisticsBox({classAttributes, value, title, isLoading}: {
+    value: string | number,
+    title: string,
+    classAttributes?: string
+    isLoading: boolean
+}) {
     return <>
         <div
             className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black overflow-x-auto" + classAttributes}>
-            <span className='md:text-3xl sm:text-xl font-bold'>{value}</span>
-            <span className='text-neutral-500 font-medium md:text-sm sm:text-xs'>{title}</span>
+            {
+                isLoading ?
+                    <Loading/> :
+                    <div className='flex flex-col gap-2'>
+                        <span className='md:text-3xl sm:text-xl font-bold'>{value}</span>
+                        <span className='text-neutral-500 font-medium md:text-sm sm:text-xs'>{title}</span>
+                    </div>
+            }
         </div>
     </>
 }

@@ -11,6 +11,14 @@ async function getBalance(address: string): Promise<{[contractId: string]: {[id:
     return response?.data;
 }
 
+async function getStatistics() {
+    const api = `${API_URL}/v1/statistics`
+    const response = await requestAPI({
+        url: api
+    });
+    return response?.data;
+}
+
 async function getTokens({params}: {
     params: { chainId: number, contractAddresses: string[], verified?: boolean }
 }): Promise<TokensResponse> {
@@ -45,6 +53,7 @@ async function getTokensDetailed(params: {
 
 const CloudAPI = {
     getBalance,
+    getStatistics,
     getTokens,
     getTokensDetailed,
 }
