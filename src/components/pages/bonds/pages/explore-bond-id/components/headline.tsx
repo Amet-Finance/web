@@ -38,7 +38,7 @@ export default function HeadlineContainer({refreshHandler}: { refreshHandler: an
             <div className='flex  items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
                  onClick={copyReferralCode}>
                 <CopySVG/>
-                <span className='text-neutral-600 text-sm'>Copy your referral code!</span>
+                <span className='text-neutral-600 text-sm'>Copy Your Referral URL!</span>
             </div>
             <div className='flex items-center gap-2 px-2'>
                 <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>
