@@ -13,7 +13,7 @@ import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {formatTime} from "@/modules/utils/dates";
-import {formatLargeNumber} from "@/modules/utils/numbers";
+import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 import CloudAPI from "@/modules/cloud-api";
 import makeBlockie from "ethereum-blockies-base64";
@@ -598,7 +598,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
                     <div className='h-px bg-neutral-900 w-full'/>
                     <div className='flex flex-col'>
                         <p>{amountTitle}: <span
-                            className={`${isInvestment ? "text-green-500" : "text-red-500"} font-bold`}>{total} {token.symbol}</span>
+                            className={`${isInvestment ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
                         </p>
                         {isInvestment &&
                             <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseFeePercentage}% on every purchased bond.</span>}

@@ -18,6 +18,7 @@ function getIssuerContractInstance(chain: Chain) {
 }
 
 function issueBonds(chain: Chain, bondInfo: BondInfoForIssuance, tokens: TokensResponse) {
+    console.log(bondInfo)
     // for total and etc... check uint40
     const investmentTokenInfo = tokens[bondInfo.investmentToken]
     const interestTokenInfo = tokens[bondInfo.interestToken]
@@ -32,9 +33,9 @@ function issueBonds(chain: Chain, bondInfo: BondInfoForIssuance, tokens: TokensR
             bondInfo.total,
             bondInfo.maturityPeriod,
             bondInfo.investmentToken,
-            BigInt(investmentAmount.toString()),
+            BigInt(`0x${investmentAmount.toString(16)}`),
             bondInfo.interestToken,
-            BigInt(interestAmount.toString())
+            BigInt(`0x${interestAmount.toString(16)}`)
         ]
     })
 }

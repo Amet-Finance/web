@@ -25,9 +25,11 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
         const updater = () => fetchContractExtended(queryParams)
             .then(contract => {
                 setRefreshDate(new Date())
-                if (contract && JSON.stringify(contract) !== JSON.stringify(bondDetailed)) setBondDetailed({...contract});
+                if (contract && JSON.stringify(contract) !== JSON.stringify(bondDetailed)) {
+                    setBondDetailed({...contract});
+                    setLoading(false);
+                }
             })
-            .finally(() => setLoading(false))
 
         updater().catch(nop)
         const interval = setInterval(updater, UPDATE_INTERVAL)
