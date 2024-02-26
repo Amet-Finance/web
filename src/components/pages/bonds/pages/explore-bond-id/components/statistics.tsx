@@ -8,7 +8,7 @@ export default function StatisticsContainer({bondDetailed}: { bondDetailed: Cont
 
     const {contractInfo, contractStats} = bondDetailed
     const {score, securedPercentage, issuerScore, uniqueHolders} = contractStats;
-    const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.total : 0;
+    const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.totalBonds : 0;
 
     function Container({title, value, valueColor, info}: {
         title: string,
