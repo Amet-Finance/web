@@ -1,13 +1,10 @@
 import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
 import BigNumber from "bignumber.js";
-import {BlockTimes} from "@/modules/web3/constants";
-
 
 function toBN(value: number | string) {
     return BigNumber(value)
 }
-
 
 function getExplorer(chainId: number | undefined, type: ExplorerTypes, value: string) {
     const chain = getChain(chainId || defaultChain.id)

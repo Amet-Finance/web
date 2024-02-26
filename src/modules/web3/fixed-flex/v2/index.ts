@@ -1,7 +1,7 @@
 import {Chain} from "wagmi";
 import {getProvider} from "@/modules/web3";
 import {encodeFunctionData, getContract, isAddress, parseAbi} from "viem";
-import ZCB_ABI from "@/modules/web3/fixed-flex/abi-jsons/Bond.json";
+import ZCB_ABI from "@/modules/web3/fixed-flex/v2/abi-jsons/Bond.json";
 import {ZERO_ADDRESS} from "@/modules/web3/constants";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";

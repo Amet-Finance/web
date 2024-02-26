@@ -26,7 +26,6 @@ type TokenInfo = {
     isFake?: boolean
 }
 
-
 type ExplorerTypes = "token" | "address" | "hash"
 
 type TokenResponseBalance = TokenResponse & {

@@ -1,7 +1,7 @@
 import {Chain} from "wagmi";
 import {getProvider} from "@/modules/web3";
 import {getContract} from "viem";
-import VAULT_ABI from "@/modules/web3/fixed-flex/abi-jsons/Vault.json";
+import VAULT_ABI from "@/modules/web3/fixed-flex/v2/abi-jsons/Vault.json";
 
 function getVaultContractInstance(chain: Chain, vaultAddress: `string`|any) {
     const provider = getProvider(chain)

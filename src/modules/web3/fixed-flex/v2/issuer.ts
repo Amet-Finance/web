@@ -2,7 +2,7 @@ import {Chain} from "wagmi";
 import {getProvider} from "@/modules/web3";
 import {decodeEventLog, encodeFunctionData, getContract, TransactionReceipt} from "viem";
 import {ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
-import ISSUER_ABI from "@/modules/web3/fixed-flex/abi-jsons/Issuer.json";
+import ISSUER_ABI from "@/modules/web3/fixed-flex/v2/abi-jsons/Issuer.json";
 import BigNumber from "bignumber.js";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
