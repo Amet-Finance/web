@@ -17,17 +17,17 @@ type FinancialAttributeInfo = TokenResponse & {
 type ContractEssentialFormat = {
     _id: string, // combination of contractAddress and chainId
 
-    total: number,
+    totalBonds: number,
     purchased: number,
     redeemed: number,
-    maturityPeriod: number,
+    maturityPeriodInBlocks: number,
 
-    investment: FinancialAttributeInfo,
-    interest: FinancialAttributeInfo,
+    purchase: FinancialAttributeInfo,
+    payout: FinancialAttributeInfo,
 
     issuer: string,
+    owner: string,
     issuanceDate: Date,
-
 }
 
 type ContractBasicFormat = ContractEssentialFormat & {
@@ -56,8 +56,6 @@ type ContractStats = {
 
 type ContractExtendedInfoFormat = ContractEssentialFormat & {
     isSettled: boolean,
-    purchaseFeePercentage: number,
-    earlyRedemptionFeePercentage: number,
     issuanceBlock: number,
 }
 

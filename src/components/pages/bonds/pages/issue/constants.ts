@@ -1,7 +1,7 @@
 import {URLS} from "@/modules/utils/urls";
 
 const BondTokenInfo = {
-    Investment: 'investmentToken',
+    Investment: 'PurchaseToken',
     Interest: 'interestToken'
 }
 
@@ -21,22 +21,22 @@ const InfoSections = {
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    InvestmentToken: {
+    PurchaseToken: {
         text: "The contract address of the investment token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    InterestToken: {
+    PayoutToken: {
         text: "The contract address of the interest token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    InvestmentAmount: {
+    PurchaseAmount: {
         text: "The price per bond in the investment token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    InterestAmount: {
+    PayoutAmount: {
         text: "The total return per bond in the interest token.",
         link: URLS.FAQ_IOB,
         isBlank: true

@@ -105,7 +105,7 @@ export default function ActionsContainer({contractInfo}: { contractInfo: Contrac
 function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
     // todo add referrer when purchasing from query param
 
-    const {_id, investment, total, purchased} = contractInfo;
+    const {_id, purchase, totalBonds, purchased} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
     const network = useNetwork();
@@ -125,14 +125,14 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     const [amount, setAmount] = useState(0);
 
     const currentAllowance = BigNumber(allowance.toString())
-    const required = BigNumber(amount).times(BigNumber(investment.amount))
+    const required = BigNumber(amount).times(BigNumber(purchase.amount))
     const needed = currentAllowance.minus(required);
 
     const isApprove = needed.isLessThan(BigNumber(0))
-    const isSoldOut = total === purchased;
+    const isSoldOut = totalBonds === purchased;
 
 
-    const purchasingMoreThenAllowed = purchased + amount > total
+    const purchasingMoreThenAllowed = purchased + amount > totalBonds
     let blockClick = purchasingMoreThenAllowed || amount <= 0
 
     let title = TitleTypes.Purchase
@@ -144,7 +144,7 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     const referrer = initialReferrer.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
     const transactionType = isApprove ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
     const config = isApprove ?
-        {contractAddress: investment.contractAddress, spender: contractAddress, value: `0x${required.toString(16)}`} :
+        {contractAddress: purchase.contractAddress, spender: contractAddress, value: `0x${required.toString(16)}`} :
         {contractAddress: contractAddress, count: amount, referrer: referrer}
 
     const txConfig = getContractInfoByType(chain, transactionType, config)
@@ -154,11 +154,11 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     useEffect(() => {
         if (chain && address) {
             setLoadingEffect(true)
-            getAllowance(chain, investment.contractAddress, address, contractAddress)
+            getAllowance(chain, purchase.contractAddress, address, contractAddress)
                 .then(response => setAllowance(response.toString()))
                 .finally(() => setLoadingEffect(false))
         }
-    }, [amount, chain, address, contractAddress, investment.contractAddress]);
+    }, [amount, chain, address, contractAddress, purchase.contractAddress]);
 
     function onChange(event: any) {
         const {value} = event.target;
@@ -209,7 +209,7 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
 
 function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfoFormat, balance: Balance }) {
 
-    const {_id, interest} = contractInfo;
+    const {_id, payout} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_")
     const chain = getChain(chainId)
 
@@ -222,7 +222,7 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
 
     const contractBalance = balance[_id] || {}
     const totalBalance = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
-    const notEnoughLiquidity = interestBalance < redemptionCount * interest.amountClean
+    const notEnoughLiquidity = interestBalance < redemptionCount * payout.amountClean
     const redeemingMoreThenAvailable = redemptionCount > totalBalance
 
     const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || redemptionCount <= 0;
@@ -243,9 +243,9 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
     useEffect(() => {
         const getLiquidity = () => {
             if (chain) {
-                getTokenBalance(chain, interest.contractAddress, contractAddress)
+                getTokenBalance(chain, payout.contractAddress, contractAddress)
                     .then(response => {
-                        setInterestBalance(BigNumber(response.toString()).div(BigNumber(10).pow(BigNumber(interest.decimals))).toNumber())
+                        setInterestBalance(BigNumber(response.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber())
                     })
             }
         }
@@ -253,7 +253,7 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
         getLiquidity();
         const interval = setInterval(getLiquidity, UPDATE_INTERVAL);
         return () => clearInterval(interval);
-    }, [chain, contractAddress, interest.contractAddress, interest.decimals]);
+    }, [chain, contractAddress, payout.contractAddress, payout.decimals]);
 
 
     console.log(bondIndexes, redemptionCount)

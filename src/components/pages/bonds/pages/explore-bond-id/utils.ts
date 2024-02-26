@@ -5,8 +5,9 @@ import {toast} from "react-toastify";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractExtendedFormat, ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
 import {getProvider} from "@/modules/web3";
-import {getTransferActivity} from "@/modules/web3/zcb";
 import {sleep} from "@/modules/utils/dates";
+import ZcbController from "@/modules/web3/fixed-flex/v2";
+
 
 async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise<ContractExtendedFormat | undefined> {
     const chain = getChain(queryParams.chainId);
@@ -46,7 +47,7 @@ async function getPastLogs(contractInfo: ContractExtendedInfoFormat, setLogs: an
     for (let block = blockNumber; block > 0;) {
         const fromBlock = block - FIXED_BLOCK
         await sleep(1000);
-        const logs = await getTransferActivity(chain, contractAddress, fromBlock, block)
+        const logs = await ZcbController.getTransferActivity(chain, contractAddress, fromBlock, block)
         block = fromBlock;
 
         if (logs.length) {

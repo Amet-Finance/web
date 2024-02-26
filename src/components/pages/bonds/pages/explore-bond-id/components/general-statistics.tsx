@@ -6,11 +6,11 @@ import {nop} from "@/modules/utils/function";
 import {useAccount} from "wagmi";
 import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
-import {LogTypes} from "@/modules/web3/zcb/v2/constants";
 import Link from "next/link";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import Loading from "@/components/utils/loading";
+import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
 
 export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
     const [logs, setLogs] = useState<ActionLogFormat[]>([])
@@ -33,7 +33,7 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
     isLoadingLogs: boolean
 }) {
 
-    const {investment, interest} = contractInfo;
+    const {purchase, payout} = contractInfo;
     let totalPurchased = 0
     let totalRedeemed = 0
 
@@ -42,10 +42,10 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
 
     logs.forEach(log => {
         if (log.type === LogTypes.Purchase) {
-            totalPurchased += (log.count * investment.amountClean);
+            totalPurchased += (log.count * purchase.amountClean);
             purchased.push(log);
         } else if (log.type === LogTypes.Redeem) {
-            totalRedeemed += (log.count * interest.amountClean);
+            totalRedeemed += (log.count * payout.amountClean);
             redeemed.push(log);
         }
     })
@@ -58,7 +58,7 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
     function Container({type, total, data}: { type: string, total: number, data: ActionLogFormat[] }) {
         const isPurchase = type === StatisticsTypes.Purchase
         const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
-        const asset = isPurchase ? investment : interest
+        const asset = isPurchase ? purchase : payout
 
         if (isLoadingLogs) {
             return <>
@@ -239,7 +239,7 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
 
 function LogContainer({contractInfo, log}: { contractInfo: ContractExtendedInfoFormat, log: ActionLogFormat }) {
 
-    const {_id, interest, investment} = contractInfo;
+    const {_id, purchase, payout} = contractInfo;
     const [_, chainId] = _id;
 
     const hashUrl = getExplorer(Number(chainId), "hash", log.hash)
@@ -247,10 +247,10 @@ function LogContainer({contractInfo, log}: { contractInfo: ContractExtendedInfoF
 
     if (log.type === LogTypes.Redeem) {
         typeClass = "bg-green-950 text-green-500"
-        value = `${interest.amountClean * log.count} ${interest.symbol}`
+        value = `${payout.amountClean * log.count} ${payout.symbol}`
     } else if (log.type === LogTypes.Purchase) {
         typeClass = "bg-red-950 text-red-500"
-        value = `${investment.amountClean * log.count} ${investment.symbol}`
+        value = `${purchase.amountClean * log.count} ${purchase.symbol}`
     } else {
         typeClass = "bg-neutral-800 text-neutral-200"
     }

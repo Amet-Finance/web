@@ -8,18 +8,19 @@ import {formatTime} from "@/modules/utils/dates";
 import {ContractBasicFormat} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
+import {DecoratorHandler} from "undici-types";
 
 export default function BondCard({info, link}: { info: ContractBasicFormat, link?: string }) {
     const {
         _id,
         redeemed,
         purchased,
-        total,
-        interest,
-        investment,
+        totalBonds,
+        payout,
+        purchase,
         score,
         tbv,
-        maturityPeriod,
+        maturityPeriodInBlocks,
         issuer,
         issuanceDate
     } = info;
@@ -29,16 +30,16 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
 
     const scoreColor = tColor(score * 10)
 
-    const redeemedPercentage = Math.round(redeemed * 100 / total);
-    const purchasedPercentage = Math.round(purchased * 100 / total);
+    const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
+    const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
 
-    const maturityPeriodClean = (BlockTimes[chainId] || 1) * maturityPeriod
+    const maturityPeriodClean = (BlockTimes[chainId] || 1) * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
-    const interestIcon = interest.icon || makeBlockie(contractAddress);
+    const payoutIcon = payout.icon || makeBlockie(contractAddress);
 
-    const interestSymbolShort = shortenString(interest.symbol, 5)
-    const investmentSymbolShort = shortenString(investment.symbol, 5)
+    const payoutSymbolShort = shortenString(payout.symbol, 5)
+    const purchaseSymbolShort = shortenString(purchase.symbol, 5)
 
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})} ${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
@@ -49,15 +50,15 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
                 <div className='flex justify-between w-full z-10'>
                     <div className='flex items-start gap-2'>
                         <div className='flex items-center gap-2 w-full whitespace-nowrap'>
-                            <Image src={interestIcon}
-                                   alt={interest.name}
+                            <Image src={payoutIcon}
+                                   alt={payout.name}
                                    width={1000}
                                    height={1000}
                                    className='object-contain w-[38px] rounded-full'/>
                             <div className='flex flex-col items-start'>
-                                <span className='text-lg font-bold'>{interest.name}</span>
+                                <span className='text-lg font-bold'>{payout.name}</span>
                                 <span
-                                    className='text-xs text-neutral-500'>{investmentSymbolShort} - {interestSymbolShort}</span>
+                                    className='text-xs text-neutral-500'>{purchaseSymbolShort} - {payoutSymbolShort}</span>
                             </div>
                         </div>
                         <span className='px-3 py-1 bg-stone-700 rounded-full text-xs'>ZCB</span>
@@ -71,13 +72,13 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
                     <div className='flex justify-between items-stretch  whitespace-nowrap'>
                         <div className='flex flex-col justify-end items-center'>
                             <span
-                                className='text-md font-semibold'>{formatLargeNumber(investment.amountClean, true)} {investmentSymbolShort}</span>
-                            <span className='text-xs text-neutral-500'>Investment</span>
+                                className='text-md font-semibold'>{formatLargeNumber(purchase.amountClean, true)} {purchaseSymbolShort}</span>
+                            <span className='text-xs text-neutral-500'>Purchase</span>
                         </div>
                         <div className='flex flex-col justify-end items-center'>
                             <span
-                                className='text-md font-semibold'>{formatLargeNumber(interest.amountClean, true)} {interestSymbolShort}</span>
-                            <span className='text-xs text-neutral-500'>Total Return</span>
+                                className='text-md font-semibold'>{formatLargeNumber(payout.amountClean, true)} {payoutSymbolShort}</span>
+                            <span className='text-xs text-neutral-500'>Payout</span>
                         </div>
                         <div className='flex flex-col justify-end items-center'>
                             <span className='text-md font-semibold'>{maturityInTime}</span>

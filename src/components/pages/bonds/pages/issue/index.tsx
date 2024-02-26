@@ -19,7 +19,7 @@ import CloudAPI from "@/modules/cloud-api";
 import makeBlockie from "ethereum-blockies-base64";
 import {isAddress, zeroAddress} from "viem";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
-import {getIssuerContractInfo} from "@/modules/web3/zcb";
+
 import {getTokenBalance} from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
 import {polygonMumbai} from "wagmi/chains";
@@ -31,6 +31,7 @@ import {toast} from "react-toastify";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
+import ZcbIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 
 
 export default function Issue() {
@@ -55,8 +56,11 @@ export default function Issue() {
                     if (response) setTokens(response)
                 })
 
-            getIssuerContractInfo(chain)
-                .then(response => setIssuerContractInfo(response))
+            ZcbIssuerController.getIssuerContractInfo(chain)
+                .then(response => {
+                    console.log(`response`, response);
+                    setIssuerContractInfo(response)
+                })
                 .catch(error => console.log(error))
         }
     }, [bondInfo.chainId]);
@@ -92,11 +96,11 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
         try {
             if (!chain) return toast.error("Please select correct chain")
             if (network.chain?.id !== chain.id) await switchNetworkAsync?.(chain.id);
-            if (!bondInfo.total || bondInfo.total <= 0) return toast.error("Total Bonds must be greater than 0")
-            if (!Number.isFinite(bondInfo.maturityPeriod) || bondInfo.maturityPeriod <= 0) return toast.error("Maturity Period must be greater than 0")
-            if (!isAddress(bondInfo.investmentToken) || !tokens[bondInfo.investmentToken]) return toast.error("Investment token is undefined")
-            if (!isAddress(bondInfo.interestToken) || !tokens[bondInfo.interestToken]) return toast.error("Interest token is undefined")
-
+            if (!bondInfo.totalBonds || bondInfo.totalBonds <= 0) return toast.error("Total Bonds must be greater than 0")
+            if (!Number.isFinite(bondInfo.maturityPeriodInBlocks) || bondInfo.maturityPeriodInBlocks <= 0) return toast.error("Maturity Period must be greater than 0")
+            if (!isAddress(bondInfo.purchaseToken) || !tokens[bondInfo.purchaseToken]) return toast.error("purchase token is undefined")
+            if (!isAddress(bondInfo.payoutToken) || !tokens[bondInfo.payoutToken]) return toast.error("payout token is undefined")
+            console.log(config);
             const response = await sendTransactionAsync();
             const result = await trackTransaction(chain, response.hash)
             openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id})
@@ -155,28 +159,28 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
             <div className='col-span-4 w-full flex flex-col gap-3'>
                 <InfoBox info={InfoSections.Total}><span
                     className='text-white text-md font-medium'>Total:</span></InfoBox>
-                <BasicInput id='total'
+                <BasicInput id='totalBonds'
                             onChange={update}
                             placeholder='Total amount of Bonds'/>
             </div>
             <MaturityPeriodSelector bondInfoHandler={bondInfoHandler}/>
             <ChainSelector bondInfoHandler={bondInfoHandler}/>
-            <TokenSelector type='investmentToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
-            <TokenSelector type='interestToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <TokenSelector type='purchaseToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <TokenSelector type='payoutToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
             <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
-                <InfoBox info={InfoSections.InvestmentAmount}>
-                    <span className='text-white text-md font-medium whitespace-nowrap'>Investment Amount:</span>
+                <InfoBox info={InfoSections.PurchaseAmount}>
+                    <span className='text-white text-md font-medium whitespace-nowrap'>Purchase Amount:</span>
                 </InfoBox>
-                <BasicInput id="investmentAmount"
-                            placeholder='Investment amount per bond'
+                <BasicInput id="purchaseAmount"
+                            placeholder='purchase amount per bond'
                             onChange={update}/>
             </div>
             <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
-                <InfoBox info={InfoSections.InterestAmount}>
-                    <span className='text-white text-md font-medium whitespace-nowrap'>Interest Amount:</span>
+                <InfoBox info={InfoSections.PayoutAmount}>
+                    <span className='text-white text-md font-medium whitespace-nowrap'>Payout Amount:</span>
                 </InfoBox>
-                <BasicInput id="interestAmount"
-                            placeholder='Interest amount per bond'
+                <BasicInput id="payoutAmount"
+                            placeholder='payout amount per bond'
                             onChange={update}/>
             </div>
         </div>
@@ -185,10 +189,10 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
 
 function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataWithType) {
 
-    const isInvestment = type === 'investmentToken'
-    const title = isInvestment ? "Investment Token" : "Interest Token";
+    const isPurchase = type === 'purchaseToken'
+    const title = isPurchase ? "Purchase Token" : "Payout Token";
     const placeholder = `${title} Contract Address`
-    const infoObject = isInvestment ? InfoSections.InvestmentToken : InfoSections.InterestToken
+    const infoObject = isPurchase ? InfoSections.PurchaseToken : InfoSections.PayoutToken
 
     const {address} = useAccount();
     const [bondInfo, setBondInfo] = bondInfoHandler;
@@ -197,7 +201,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     const inputRef = useRef<any>()
     const boxRef = useRef<any>(null)
 
-    const tokenAddress = ((isInvestment ? bondInfo.investmentToken : bondInfo.interestToken) || "").toLowerCase();
+    const tokenAddress = ((isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken) || "").toLowerCase();
     const tokensArray = Object.values(tokens)
 
 
@@ -326,8 +330,8 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         const preValue = Timers[type] * Number(value)
         if (!BlockTimes[bondInfo.chainId]) return toast.error("Please select the chain first!")
 
-        const maturityPeriod = type === Types.Blocks ? preValue : preValue / BlockTimes[bondInfo.chainId]
-        setBondInfo({...bondInfo, maturityPeriod})
+        const maturityPeriodInBlocks = type === Types.Blocks ? preValue : preValue / BlockTimes[bondInfo.chainId]
+        setBondInfo({...bondInfo, maturityPeriodInBlocks})
     }
 
     const changeType = (event: any) => {
@@ -459,22 +463,22 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
 
     const chainInfo = getChain(bondInfo.chainId)
 
-    const maturityPeriodTime = (BlockTimes[bondInfo.chainId] * bondInfo.maturityPeriod) || 0
+    const maturityPeriodTime = (BlockTimes[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
     return <>
         <div className='grid grid-cols-12 mt-4 gap-4'>
             {
-                Number.isFinite(bondInfo.total) && <>
+                Number.isFinite(bondInfo.totalBonds) && <>
                     <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                         title={bondInfo.total.toString()}>
-                        <span className='text-2xl font-medium'>{formatLargeNumber(bondInfo.total)}</span>
+                         title={bondInfo.totalBonds.toString()}>
+                        <span className='text-2xl font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
                         <span className='text-neutral-500 text-xs'>Total</span>
                     </div>
                 </>
             }
             {
-                Number.isFinite(bondInfo.maturityPeriod) && bondInfo.maturityPeriod > 0 && <>
+                Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0 && <>
                     <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
                          title={maturityPeriodStr}>
                         <span
@@ -497,17 +501,17 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
                 </>
             }
             {
-                Boolean(bondInfo.investmentToken) &&
+                Boolean(bondInfo.purchaseToken) &&
                 <TokenPreview
-                    type='investmentToken'
-                    token={tokens[bondInfo.investmentToken]}
+                    type='purchaseToken'
+                    token={tokens[bondInfo.purchaseToken]}
                     issuerContractInfo={issuerContractInfo}
                     bondInfo={bondInfo}/>
             }
             {
-                Boolean(bondInfo.interestToken) &&
-                <TokenPreview type='interestToken'
-                              token={tokens[bondInfo.interestToken]}
+                Boolean(bondInfo.payoutToken) &&
+                <TokenPreview type='payoutToken'
+                              token={tokens[bondInfo.payoutToken]}
                               issuerContractInfo={issuerContractInfo}
                               bondInfo={bondInfo}/>
             }
@@ -525,8 +529,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
 
     const {address} = useAccount();
     const chain = getChain(bondInfo.chainId)
-    const isInvestment = type === "investmentToken";
-    const tokenAddress = isInvestment ? bondInfo.investmentToken : bondInfo.interestToken;
+    const ispurchase = type === "purchaseToken";
+    const tokenAddress = ispurchase ? bondInfo.purchaseToken : bondInfo.payoutToken;
     const [balance, setBalance] = useState({
         value: 0,
         isLoading: false
@@ -560,8 +564,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
         }
     }, [chain, address, token, tokenAddress]);
 
-    const title = isInvestment ? "Investment" : "Interest";
-    const amountTitle = isInvestment ? "Total Received" : "Total Returned"
+    const title = ispurchase ? "purchase" : "payout";
+    const amountTitle = ispurchase ? "Total Received" : "Total Returned"
 
     if (!token) {
         if (isAddress(tokenAddress)) return <TokenContainer><Loading/></TokenContainer>
@@ -574,8 +578,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
     }
 
     const iconSrc = token.icon || makeBlockie(zeroAddress);
-    let totalTmp = bondInfo.total * (isInvestment ? bondInfo.investmentAmount : bondInfo.interestAmount) || 0;
-    const total = isInvestment ? totalTmp - ((totalTmp * issuerContractInfo.purchaseFeePercentage) / 100) : totalTmp
+    let totalTmp = bondInfo.totalBonds * (ispurchase ? bondInfo.purchaseAmount : bondInfo.payoutAmount) || 0;
+    const total = ispurchase ? totalTmp - ((totalTmp * issuerContractInfo.purchaseRate) / 100) : totalTmp
 
 
     return <>
@@ -598,10 +602,10 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
                     <div className='h-px bg-neutral-900 w-full'/>
                     <div className='flex flex-col'>
                         <p>{amountTitle}: <span
-                            className={`${isInvestment ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
+                            className={`${ispurchase ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
                         </p>
-                        {isInvestment &&
-                            <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseFeePercentage}% on every purchased bond.</span>}
+                        {ispurchase &&
+                            <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>}
                     </div>
                 </>
             }

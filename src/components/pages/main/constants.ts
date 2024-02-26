@@ -32,7 +32,7 @@ const FAQ_QUESTIONS: Question[] = [
     },
     {
         title: "Can I earn passive income through Amet Finance?",
-        answer: "Absolutely! By investing in bonds through Amet Finance, you can earn passive income. The platform offers various bonds with different maturity periods and interest rates, catering to different investment strategies."
+        answer: "Absolutely! By investing in bonds through Amet Finance, you can earn passive income. The platform offers various bonds with different maturity periods and payout rates, catering to different purchase strategies."
     },
     {
         title: "What makes Amet Finance's approach to bond issuance unique?",
@@ -40,19 +40,21 @@ const FAQ_QUESTIONS: Question[] = [
     },
     {
         title: "How does tokenization of bonds as NFTs benefit investors?",
-        answer: "Tokenizing bonds as NFTs on Amet Finance allows for greater flexibility in trading, provides unique ownership rights, and opens up new markets for bond trading on NFT platforms, enhancing liquidity and investment opportunities."
+        answer: "Tokenizing bonds as NFTs on Amet Finance allows for greater flexibility in trading, provides unique ownership rights, and opens up new markets for bond trading on NFT platforms, enhancing liquidity and purchase opportunities."
     },
     {
         title: "What strategies can I employ for bond trading on Amet Finance?",
-        answer: "Amet Finance supports various trading strategies, from long-term investment in stable bonds to active trading of bonds on secondary markets. Our platform provides the tools and data needed to make informed decisions."
+        answer: "Amet Finance supports various trading strategies, from long-term purchase in stable bonds to active trading of bonds on secondary markets. Our platform provides the tools and data needed to make informed decisions."
     }
 ]
 
 const BOND_CARDS: ContractBasicFormat[] = [
     {
         _id: "0x1",
+        issuer: "0x21451254Fas124",
+        owner: "0x0",
 
-        investment: {
+        purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -64,7 +66,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amount: "10",
             amountClean: 100
         },
-        interest: {
+        payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -77,21 +79,22 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amountClean: 150
         },
 
-        total: 100,
+        totalBonds: 100,
         purchased: 50,
         redeemed: 20,
 
-        maturityPeriod: 300,
+        maturityPeriodInBlocks: 300,
 
-        issuer: "0x21451254Fas124",
+
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
         score: 8.9,
         tbv: 8000
     },
     {
         _id: "0x1",
-
-        investment: {
+        issuer: "0x21451254Fas124",
+        owner: "0x0",
+        purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -103,7 +106,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amount: "10",
             amountClean: 1200
         },
-        interest: {
+        payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -116,21 +119,23 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amountClean: 20
         },
 
-        total: 100,
+        totalBonds: 100,
         purchased: 80,
         redeemed: 25,
 
-        maturityPeriod: 300,
+        maturityPeriodInBlocks: 300,
 
-        issuer: "0x32AC51254FDe3",
+
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
         score: 9.2,
         tbv: 131000
     },
     {
         _id: "0x1",
+        issuer: "0x21451254Fas124",
+        owner: "0x0",
 
-        investment: {
+        purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -142,7 +147,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amount: "10",
             amountClean: 200
         },
-        interest: {
+        payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -155,21 +160,21 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amountClean: 31350000
         },
 
-        total: 100,
+        totalBonds: 100,
         purchased: 10,
         redeemed: 0,
 
-        maturityPeriod: 120000,
+        maturityPeriodInBlocks: 120000,
 
-        issuer: "0x32AC51254FDe3",
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
         score: 9.8,
         tbv: 2100
     },
     {
         _id: "0x1",
-
-        investment: {
+        issuer: "0x21451254Fas124",
+        owner: "0x0",
+        purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -181,7 +186,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amount: "10",
             amountClean: 400
         },
-        interest: {
+        payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
@@ -194,14 +199,13 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amountClean: 0.01
         },
 
-        total: 100,
+        totalBonds: 100,
         purchased: 80,
         redeemed: 30,
 
-        maturityPeriod: 120000,
+        maturityPeriodInBlocks: 120000,
         tbv: 52350,
 
-        issuer: "0x32AC51254FDe3",
         issuanceDate: new Date("Tue Feb 13 2024 12:33:05 GMT+0400 (Armenia Standard Time)"),
         score: 9.8
     }

@@ -1,7 +1,5 @@
 import {TransactionMessages, TxTypes, ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
-import * as ZCB from "@/modules/web3/zcb";
 import * as TokensWeb3 from './tokens';
-import * as Tokens from './tokens';
 
 import {sleep} from "@/modules/utils/dates";
 import {Chain} from "wagmi";
@@ -9,8 +7,8 @@ import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
-import ZcbIssuerController from "@/modules/web3/zcb/v2/issuer";
-import ZcbController from "@/modules/web3/zcb/v2";
+import ZcbIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
+import ZcbController from "@/modules/web3/fixed-flex/v2";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -50,40 +48,40 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 }
             }
             case TxTypes.TransferERC20: {
-                return {
-                    to: config.contractAddress,
-                    data: Tokens.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
-                };
+                // return {
+                //     to: config.contractAddress,
+                //     data: Tokens.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
+                // };
             }
             case TxTypes.WithdrawRemaining: {
-                return {
-                    to: config.contractAddress,
-                    data: ZCB.withdrawRemaining(chain, config.contractAddress)
-                }
+                // return {
+                //     to: config.contractAddress,
+                //     data: ZCB.withdrawRemaining(chain, config.contractAddress)
+                // }
             }
             case TxTypes.ChangeOwner: {
-                return {
-                    to: config.contractAddress,
-                    data: ZCB.changeOwner(chain, config.contractAddress, config.newAddress)
-                }
+                // return {
+                //     to: config.contractAddress,
+                //     data: ZCB.changeOwner(chain, config.contractAddress, config.newAddress)
+                // }
             }
             case TxTypes.IssueMoreBonds: {
-                return {
-                    to: config.contractAddress,
-                    data: ZCB.issueMoreBonds(chain, config.contractAddress, config.amount)
-                }
+                // return {
+                //     to: config.contractAddress,
+                //     data: ZCB.issueMoreBonds(chain, config.contractAddress, config.amount)
+                // }
             }
             case TxTypes.BurnUnsoldBonds: {
-                return {
-                    to: config.contractAddress,
-                    data: ZCB.burnUnsoldBonds(chain, config.contractAddress, config.amount)
-                }
+                // return {
+                //     to: config.contractAddress,
+                //     data: ZCB.burnUnsoldBonds(chain, config.contractAddress, config.amount)
+                // }
             }
             case TxTypes.DecreaseRedeemLockPeriod: {
-                return {
-                    to: config.contractAddress,
-                    data: ZCB.decreaseRedeemLockPeriod(chain, config.contractAddress, config.newPeriod)
-                }
+                // return {
+                //     to: config.contractAddress,
+                //     data: ZCB.decreaseRedeemLockPeriod(chain, config.contractAddress, config.newPeriod)
+                // }
             }
             default: {
                 throw Error("Invalid type")
@@ -143,7 +141,7 @@ async function decodeTransactionLogs(transaction: TransactionReceipt) {
 
     switch (true) {
         case isZcbIssuer: {
-            const decoded = ZCB.decode(transaction);
+            const decoded = ZcbIssuerController.decode(transaction);
             return {
                 transaction,
                 decoded

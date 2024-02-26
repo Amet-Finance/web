@@ -2,13 +2,13 @@ import {IssuerContractInfoDetailed, TokenInfo, TokenResponseDetailed} from "@/mo
 import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
 
 type BondInfoForIssuance = {
-    total: number,
-    maturityPeriod: number,
+    totalBonds: number,
+    maturityPeriodInBlocks: number,
     chainId: number,
-    investmentToken: string,
-    investmentAmount: number,
-    interestToken: string,
-    interestAmount: number
+    purchaseToken: string,
+    purchaseAmount: number,
+    payoutToken: string,
+    payoutAmount: number
 }
 
 type BondData = {
@@ -27,25 +27,6 @@ type BondCombinedData = BondAndTokenData & {
     issuerContractInfo: IssuerContractInfoDetailed
 }
 
-
-type BondGeneral = {
-    _id: string;
-    chainId: string;
-    issuer: string;
-    total: number;
-    purchased: number;
-    redeemed: number;
-    redeemLockPeriod: number;
-    investmentToken: string;
-    investmentTokenAmount: number;
-    investmentTokenInfo: TokenResponse;
-    interestToken: string;
-    interestTokenAmount: number;
-    interestTokenInfo: TokenResponse;
-    issuanceDate: number;
-    trending?: boolean
-}
-
 type BondInfo = {
     _id: string;
     issuer: string;
@@ -61,14 +42,6 @@ type BondInfo = {
     interestTokenInfo?: TokenResponseDetailed | undefined;
 }
 
-type TokenDetails = {
-    tokenInfo: TokenResponseDetailed,
-    total: number,
-    isLoading?: boolean,
-    type: string,
-    additionalInfo: any
-}
-
 
 export type  {
     BondInfoForIssuance,
@@ -77,8 +50,5 @@ export type  {
     BondAndTokenDataWithType,
     BondAndTokenData,
 
-
-    BondGeneral,
     BondInfo,
-    TokenDetails,
 }

@@ -16,12 +16,12 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const {
         _id,
         issuer,
-        investment,
-        interest,
-        total,
+        purchase,
+        payout,
+        totalBonds,
         purchased,
         redeemed,
-        maturityPeriod,
+        maturityPeriodInBlocks,
         issuanceDate
     } = contractInfo;
 
@@ -29,16 +29,16 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
 
     const {tbv} = contractStats;
 
-    const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriod, true, true, true)
+    const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriodInBlocks, true, true, true)
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
 
-    const interestIcon = interest.icon || makeBlockie(interest._id)
+    const payoutIcon = payout.icon || makeBlockie(payout._id)
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
-    const redeemedPercentage = Math.round(redeemed * 100 / total);
-    const purchasedPercentage = Math.round(purchased * 100 / total);
+    const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
+    const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
 
 
     return <>
@@ -47,12 +47,12 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center w-full'>
                     <div className='flex gap-2'>
-                        <Image src={interestIcon} alt={interest.name} width={48} height={48}
+                        <Image src={payoutIcon} alt={payout.name} width={48} height={48}
                                className='object-contain rounded-full'/>
                         <div className='flex flex-col'>
-                            <span className='text-2xl font-bold'>{interest.name}</span>
+                            <span className='text-2xl font-bold'>{payout.name}</span>
                             <span
-                                className='font-thin text-neutral-400 text-sm'>{investment.symbol} - {interest.symbol}</span>
+                                className='font-thin text-neutral-400 text-sm'>{purchase.symbol} - {payout.symbol}</span>
                         </div>
                         <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>ZCB</span>
                     </div>
@@ -61,7 +61,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                             <div className='relative grid grid-cols-3 items-end rounded-t-md gap-x-2'>
                                 <div
                                     className='flex flex-col items-center px-2 py-1.5 cursor-pointer'>
-                                    <span className='text-md font-semibold'>{total}</span>
+                                    <span className='text-md font-semibold'>{totalBonds}</span>
                                     <span className='text-xs text-neutral-400 font-light'>Total Bonds</span>
                                 </div>
                                 <div
@@ -84,15 +84,15 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
 
                     </div>
                 </div>
-                {!Boolean(interest.isVerified) && <NotVerifiedAsset title={"Interest"}/>}
-                {!Boolean(investment.isVerified) && <NotVerifiedAsset title={"Investment"}/>}
+                {!Boolean(payout.isVerified) && <NotVerifiedAsset title={"payout"}/>}
+                {!Boolean(purchase.isVerified) && <NotVerifiedAsset title={"purchase"}/>}
             </div>
 
             <div className='flex flex-col gap-8'>
                 <div className='grid grid-cols-3 gap-y-12 mt-8 w-full p-4'>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
-                        <span className='text-2xl font-bold'>{investment.amountClean} {investment.symbol}</span>
-                        <span className='text-sm text-neutral-400'>Investment</span>
+                        <span className='text-2xl font-bold'>{purchase.amountClean} {purchase.symbol}</span>
+                        <span className='text-sm text-neutral-400'>Purchase</span>
                     </div>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
                         <span className='text-2xl font-bold'>{maturityPeriodTime}</span>
@@ -106,8 +106,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                         <span className='text-sm text-neutral-400'>Chain</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
-                        <span className='text-2xl font-bold'>{interest.amountClean} {interest.symbol}</span>
-                        <span className='text-sm text-neutral-400'>Interest</span>
+                        <span className='text-2xl font-bold'>{payout.amountClean} {payout.symbol}</span>
+                        <span className='text-sm text-neutral-400'>Payout</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
                         <span className='text-2xl font-bold'>${formatLargeNumber(tbv, true)}</span>

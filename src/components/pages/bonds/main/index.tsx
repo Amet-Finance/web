@@ -63,7 +63,8 @@ function Statistics() {
             CloudAPI.getStatistics()
                 .then(response => {
                     if (response) setStatistics(response)
-                }).finally(() => setLoading(false))
+                })
+                .finally(() => setLoading(false))
         }
 
         updater()

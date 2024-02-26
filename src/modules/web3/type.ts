@@ -2,8 +2,9 @@ import {TokenResponse} from "@/modules/cloud-api/type";
 
 type IssuerContractInfo = {
     issuanceFee: number
-    purchaseFeePercentage: number
-    earlyRedemptionFeePercentage: number;
+    purchaseRate: number
+    earlyRedemptionRate: number;
+    referrerRewardRate: number,
     isPaused: boolean;
 }
 

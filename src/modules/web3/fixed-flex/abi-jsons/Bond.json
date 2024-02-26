@@ -3,74 +3,37 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_initialIssuer",
+        "name": "issuer",
         "type": "address"
       },
       {
-        "components": [
-          {
-            "internalType": "uint40",
-            "name": "total",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "purchased",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "redeemed",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "uniqueBondIndex",
-            "type": "uint40"
-          },
-          {
-            "internalType": "uint40",
-            "name": "maturityPeriod",
-            "type": "uint40"
-          },
-          {
-            "internalType": "bool",
-            "name": "isSettled",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint8",
-            "name": "purchaseFeePercentage",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "earlyRedemptionFeePercentage",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct CoreTypes.BondInfo",
-        "name": "_initialBondInfo",
-        "type": "tuple"
+        "internalType": "uint40",
+        "name": "initialTotalBonds",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "initialMaturityInBlocks",
+        "type": "uint40"
       },
       {
         "internalType": "address",
-        "name": "_initialInvestmentToken",
+        "name": "initialPurchaseTokenAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_initialInvestmentAmount",
+        "name": "initialPurchaseAmount",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_initialInterestToken",
+        "name": "initialPayoutTokenAddress",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_initialInterestAmount",
+        "name": "initialPayoutAmount",
         "type": "uint256"
       }
     ],
@@ -207,9 +170,14 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "MathOverflowedMulDiv",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
-        "internalType": "enum ZeroCouponBonds.OperationCodes",
+        "internalType": "enum Errors.Code",
         "name": "code",
         "type": "uint8"
       }
@@ -240,6 +208,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -264,11 +237,6 @@
       }
     ],
     "name": "StringsInsufficientHexLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZeroAddress",
     "type": "error"
   },
   {
@@ -302,7 +270,7 @@
       {
         "indexed": false,
         "internalType": "uint40",
-        "name": "maturityPeriod",
+        "name": "maturityPeriodInBlocks",
         "type": "uint40"
       }
     ],
@@ -433,11 +401,24 @@
       {
         "indexed": false,
         "internalType": "uint40",
-        "name": "total",
+        "name": "totalBonds",
         "type": "uint40"
       }
     ],
     "name": "UpdateBondSupply",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "excessPayout",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawExcessPayout",
     "type": "event"
   },
   {
@@ -489,77 +470,10 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "bondInfo",
-    "outputs": [
-      {
-        "internalType": "uint40",
-        "name": "total",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "purchased",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "redeemed",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "uniqueBondIndex",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "maturityPeriod",
-        "type": "uint40"
-      },
-      {
-        "internalType": "bool",
-        "name": "isSettled",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint8",
-        "name": "purchaseFeePercentage",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "earlyRedemptionFeePercentage",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint40",
-        "name": "tokenId",
-        "type": "uint40"
-      }
-    ],
-    "name": "bondPurchaseBlocks",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "blockNumber",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint40",
-        "name": "newMaturityPeriod",
+        "name": "maturityPeriodInBlocks",
         "type": "uint40"
       }
     ],
@@ -570,51 +484,17 @@
   },
   {
     "inputs": [],
-    "name": "interestAmount",
+    "name": "getSettledPurchaseDetails",
     "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "interestToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "investmentAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "investmentToken",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -646,12 +526,37 @@
   },
   {
     "inputs": [],
-    "name": "issuerContract",
+    "name": "lifecycle",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "uint40",
+        "name": "totalBonds",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "purchased",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "redeemed",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "uniqueBondIndex",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "maturityPeriodInBlocks",
+        "type": "uint40"
+      },
+      {
+        "internalType": "bool",
+        "name": "isSettled",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -671,10 +576,36 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "payoutAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "payoutToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint40",
-        "name": "count",
+        "name": "quantity",
         "type": "uint40"
       },
       {
@@ -689,6 +620,51 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "purchaseAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint40",
+        "name": "uniqueIndex",
+        "type": "uint40"
+      }
+    ],
+    "name": "purchaseBlocks",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "blockNumber",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "purchaseToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint40[]",
@@ -697,7 +673,7 @@
       },
       {
         "internalType": "uint40",
-        "name": "redemptionCount",
+        "name": "quantity",
         "type": "uint40"
       },
       {
@@ -804,7 +780,7 @@
   },
   {
     "inputs": [],
-    "name": "settleContract",
+    "name": "settle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -845,7 +821,7 @@
     "inputs": [
       {
         "internalType": "uint40",
-        "name": "total",
+        "name": "totalBonds",
         "type": "uint40"
       }
     ],
@@ -874,14 +850,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "toAddress",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawExcessInterest",
+    "inputs": [],
+    "name": "withdrawExcessPayout",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

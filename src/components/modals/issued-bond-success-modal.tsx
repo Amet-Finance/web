@@ -16,7 +16,7 @@ export default function IssuedBondSuccessModal() {
     const decoded = additional?.decoded
     const chainId = additional.chainId
 
-    const url = `/bonds/explore/${chainId}/${decoded?.contractAddress}`
+    const url = `/bonds/explore/${chainId}/${decoded?.bondAddress}`
 
     return <>
         <div className='relative flex flex-col items-center rounded-4xl p-3 px-1 max-w-[500px] text-center z-20 gap-4'>

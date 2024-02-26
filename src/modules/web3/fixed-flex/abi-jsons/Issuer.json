@@ -1,23 +1,18 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "_initialVaultPurchaseFeePercentage",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "_initialEarlyRedemptionFeePercentage",
-        "type": "uint8"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "ContractPaused",
+    "inputs": [
+      {
+        "internalType": "enum Errors.Code",
+        "name": "code",
+        "type": "uint8"
+      }
+    ],
+    "name": "OperationFailed",
     "type": "error"
   },
   {
@@ -43,40 +38,16 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ZeroAddress",
-    "type": "error"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
         "indexed": false,
-        "internalType": "enum ZeroCouponBondsIssuer.FeeTypes",
-        "name": "feeType",
-        "type": "uint8"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "FeeChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
-        "name": "contractAddress",
+        "name": "bondAddress",
         "type": "address"
       }
     ],
-    "name": "Issue",
+    "name": "BondIssued",
     "type": "event"
   },
   {
@@ -103,9 +74,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint8",
-        "name": "isPaused",
-        "type": "uint8"
+        "internalType": "bool",
+        "name": "_isPaused",
+        "type": "bool"
       }
     ],
     "name": "PauseChanged",
@@ -117,7 +88,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "newVault",
+        "name": "vaultAddress",
         "type": "address"
       }
     ],
@@ -127,22 +98,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
-        "name": "fee",
-        "type": "uint8"
-      }
-    ],
-    "name": "changeEarlyRedemptionFeePercentage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "isPaused",
-        "type": "uint8"
+        "internalType": "bool",
+        "name": "pausedState",
+        "type": "bool"
       }
     ],
     "name": "changePausedState",
@@ -153,107 +111,65 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
-        "name": "fee",
-        "type": "uint8"
-      }
-    ],
-    "name": "changePurchaseFeePercentage",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "newVault",
+        "name": "vaultAddress",
         "type": "address"
       }
     ],
-    "name": "changeVaultAddress",
+    "name": "changeVault",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "contractPackedInfo",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "purchaseFeePercentage",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "earlyRedemptionFeePercentage",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint8",
-        "name": "isPaused",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint40",
-        "name": "total",
-        "type": "uint40"
-      },
-      {
-        "internalType": "uint40",
-        "name": "maturityPeriod",
-        "type": "uint40"
-      },
-      {
-        "internalType": "address",
-        "name": "investmentToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "investmentAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "interestToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "interestAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "issueBondContract",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "bondContract",
-        "type": "address"
-      }
-    ],
-    "name": "issuedContracts",
+    "name": "isPaused",
     "outputs": [
       {
         "internalType": "bool",
-        "name": "exists",
+        "name": "",
         "type": "bool"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint40",
+        "name": "totalBonds",
+        "type": "uint40"
+      },
+      {
+        "internalType": "uint40",
+        "name": "maturityInBlocks",
+        "type": "uint40"
+      },
+      {
+        "internalType": "address",
+        "name": "purchaseTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "purchaseAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "payoutTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "payoutAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "issue",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -273,7 +189,7 @@
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -294,7 +210,7 @@
     "name": "vault",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IVault",
         "name": "",
         "type": "address"
       }
