@@ -2,7 +2,7 @@ import {bsc, manta, optimism, polygon, polygonMumbai, polygonZkEvm, zetachainAth
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const ZCB_ISSUER_CONTRACTS: { [chainId: number]: string } = {
+const FIXED_FLEX_ISSUER_CONTRACTS: { [chainId: number]: string } = {
     // [polygon.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     // [polygonZkEvm.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     // [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
@@ -38,7 +38,7 @@ const BlockTimes: any = {
 }
 
 export {
-    ZCB_ISSUER_CONTRACTS,
+    FIXED_FLEX_ISSUER_CONTRACTS,
     ZERO_ADDRESS,
     TxTypes,
     TransactionMessages,

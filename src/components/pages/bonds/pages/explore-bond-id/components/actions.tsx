@@ -3,7 +3,6 @@ import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagm
 import {useEffect, useState} from "react";
 import {Balance} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import CloudAPI from "@/modules/cloud-api";
-import ArrowBasicSVG from "../../../../../../../public/svg/utils/arrow-basic";
 import {getChain} from "@/modules/utils/wallet-connect";
 import BigNumber from "bignumber.js";
 import {TxTypes} from "@/modules/web3/constants";
@@ -15,6 +14,7 @@ import {URLS} from "@/modules/utils/urls";
 import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import ArrowBasicSVG from "../../../../../../../public/svg/utils/arrow-basic";
 import {useRouter} from "next/router";
 
 export default function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
@@ -80,31 +80,29 @@ export default function ActionsContainer({contractInfo}: { contractInfo: Contrac
     return <>
         <div
             className='lg:col-span-4 sm:col-span-12 flex flex-col gap-12 rounded-3xl p-8 py-4 border border-neutral-900 w-full h-full'>
-    <div className='flex gap-4 items-center'>
-    <Tab title={Tabs.Purchase}/>
-    <Tab title={Tabs.Redeem} titleSecondary={`(${total})`}/>
-    <div className='group relative'>
-    <div className='group flex gap-1 items-center cursor-pointer'>
-    <span className='text-neutral-400 group-hover:text-white'>More</span>
-        <ArrowBasicSVG sPercentage={-25} classname='stroke-neutral-400 group-hover:stroke-white'/>
+            <div className='flex gap-4 items-center'>
+                <Tab title={Tabs.Purchase}/>
+                <Tab title={Tabs.Redeem} titleSecondary={`(${total})`}/>
+                <div className='group relative'>
+                    <div className='group flex gap-1 items-center cursor-pointer'>
+                        <span className='text-neutral-400 group-hover:text-white'>More</span>
+                        <ArrowBasicSVG sPercentage={-25} classname='stroke-neutral-400 group-hover:stroke-white'/>
+                    </div>
+                    <div
+                        className='group-hover:flex absolute top-full right-0 hidden flex-col bg-neutral-900 p-2 gap-2 rounded-lg'>
+                        {Object.values(Tabs.More).map(title => <Tab title={title} key={title}
+                                                                    className="hover:bg-neutral-800 px-2 rounded-md"/>)}
+                    </div>
+                </div>
+            </div>
+            <div className='flex w-full h-full'>
+                <TabSelector title={selected}/>
+            </div>
         </div>
-        <div
-    className='group-hover:flex absolute top-full right-0 hidden flex-col bg-neutral-900 p-2 gap-2 rounded-lg'>
-        {Object.values(Tabs.More).map(title => <Tab title={title} key={title}
-            className="hover:bg-neutral-800 px-2 rounded-md"/>)}
-    </div>
-    </div>
-    </div>
-    <div className='flex w-full h-full'>
-    <TabSelector title={selected}/>
-    </div>
-    </div>
     </>
 }
 
 function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
-    // todo add referrer when purchasing from query param
-
     const {_id, purchase, totalBonds, purchased} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
@@ -150,7 +148,6 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     const txConfig = getContractInfoByType(chain, transactionType, config)
     const {sendTransactionAsync, isLoading} = useSendTransaction(txConfig)
 
-    console.log(config)
     useEffect(() => {
         if (chain && address) {
             setLoadingEffect(true)
@@ -163,6 +160,13 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
     function onChange(event: any) {
         const {value} = event.target;
         setAmount(Number(value))
+    }
+
+    function setPercentage(percent: number) {
+        const left = totalBonds - purchased;
+        if (left) {
+            setAmount(Math.floor(left * percent / 100))
+        }
     }
 
     async function submit() {
@@ -179,31 +183,36 @@ function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat 
         }
     }
 
+
     return <>
         <div className='flex flex-col gap-4 justify-between w-full'>
-    <div className='flex flex-col'>
-
-        </div>
+            <span/>
         <div className='flex flex-col gap-4'>
-    <div className='flex flex-col gap-2'>
-    <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
-    <input type="number"
-    id='amount'
-    className='bg-transparent placeholder:text-neutral-600 w-full'
-    onChange={onChange}
-    placeholder='Enter Number of Bonds to Purchase'/>
+            <div className='flex flex-col gap-2'>
+                <div
+                    className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                    <input type="number"
+                           id='amount'
+                           className='bg-transparent placeholder:text-neutral-600 w-full'
+                           value={amount || ""}
+                           onChange={onChange}
+                           placeholder='Enter Number of Bonds to Purchase'/>
+                </div>
+                <Percentages setter={setPercentage}/>
+                <p className='text-xs text-neutral-600'>
+                    <span>By purchasing, you agree to the </span>
+                    <Link href={URLS.TermsOfService} target="_blank">
+                        <u>Terms and Conditions.</u></Link>
+                </p>
+            </div>
+            <BasicButton onClick={submit} isBlocked={blockClick}>
+                <div className='flex items-center gap-2'>
+                    {(isLoading) && <Loading percent={75} color="#000"/>}
+                    {title}
+                </div>
+            </BasicButton>
         </div>
-        <p className='text-xs text-neutral-600'>You confirm that you have read and understood the <Link
-    href={URLS.TermsOfService} target="_blank"><u>Terms and Conditions.</u></Link></p>
-    </div>
-    <BasicButton onClick={submit} isBlocked={blockClick}>
-    <div className='flex items-center gap-2'>
-    {(isLoading) && <Loading percent={75} color="#000"/>}
-    {title}
-    </div>
-    </BasicButton>
-    </div>
-    </div>
+        </div>
     </>
 }
 
@@ -321,6 +330,24 @@ function RedeemTab({contractInfo, balance}: { contractInfo: ContractExtendedInfo
     </div>
     </BasicButton>
     </div>
+    </>
+}
+
+function Percentages({setter}: { setter: any }) {
+    const percentages = [5, 15, 35, 50, 75, 100];
+
+    return <>
+        <div className='flex justify-between items-center gap-1'>
+            {percentages.map(percent => <Percentage percent={percent} setter={setter} key={percent}/>)}
+        </div>
+    </>
+}
+
+function Percentage({percent, setter}: { percent: number, setter: any }) {
+    return <>
+        <span
+            className='border border-neutral-900 w-full text-center rounded-md text-sm hover:bg-neutral-800 cursor-pointer'
+            onClick={() => setter(percent)}>{percent}%</span>
     </>
 }
 

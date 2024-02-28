@@ -30,6 +30,7 @@ const URLS = {
 
 
     DiscordProposals: "https://discord.gg/HXkTHxX3pZ",
+    DiscordTicket: "https://discord.gg/gcyZddv8Dj",
 
 
     others: {

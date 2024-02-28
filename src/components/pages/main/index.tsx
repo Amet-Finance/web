@@ -345,6 +345,16 @@ function Partnerships() {
 
     ]
 
+    function TargetLink({item}: any) {
+        return <>
+            <Link href={item.url} target="_blank"
+                  className='flex justify-center md:col-span-2 sm:col-span-6'>
+                <Image src={item.src} alt={item.alt} width={200} height={50}
+                       className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
+            </Link>
+        </>
+    }
+
     return <>
         <div
             className='flex flex-col justify-center gap-24 py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-8 items-center bg-neutral-950'>
@@ -355,14 +365,7 @@ function Partnerships() {
                     the world of finance</p>
             </div>
             <div className='grid grid-cols-6 md:gap-20 sm:gap-12'>
-                {
-                    partners.map((item) => (<>
-                        <Link href={item.url} target="_blank"
-                              className='flex justify-center md:col-span-2 sm:col-span-6'>
-                            <Image src={item.src} alt={item.alt} width={200} height={50} className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
-                        </Link>
-                    </>))
-                }
+                {partners.map((item) => <TargetLink item={item} key={item.url}/>)}
             </div>
             <Link href={URLS.Discord} target="_blank">
                 <BasicButton wMin>

@@ -129,7 +129,8 @@ function BondCards() {
 
     useEffect(() => {
         const params = {}
-        ContractAPI.getContractsBasic(params).then(result => {
+        ContractAPI.getContractsBasic(params)
+            .then(result => {
             if (result?.length) setContracts(result)
         })
     }, []);

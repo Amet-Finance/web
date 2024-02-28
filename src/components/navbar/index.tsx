@@ -1,10 +1,8 @@
 import AmetLogo from "../../../public/svg/amet-logo";
 import {useEffect, useRef, useState} from "react";
-import {useAccount, useNetwork} from "wagmi";
-import {shorten} from "@/modules/web3/util";
+import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
-import Image from "next/image";
-import {AccountInfo, LinkBase, LinkExtended} from "@/components/navbar/types";
+import {LinkBase, LinkExtended} from "@/components/navbar/types";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import makeBlockie from "ethereum-blockies-base64";
 import {zeroAddress} from "viem";
@@ -14,6 +12,17 @@ import {BasicButton} from "@/components/utils/buttons";
 import BurgerSVG from "../../../public/svg/burger";
 import XmarkSVG from "../../../public/svg/xmark";
 import TopAnnouncement from "@/components/announcements/top-announcement";
+import {shorten} from "@/modules/web3/util";
+import Image from "next/image";
+import SettingsSVG from "../../../public/svg/utils/settings";
+import DisconnectSVG from "../../../public/svg/utils/disconnect";
+import {URLS} from "@/modules/utils/urls";
+import {toast} from "react-toastify";
+import {AccountController} from "@web3modal/core";
+import {shortenString} from "@/modules/utils/string";
+import CopySVG from "../../../public/svg/utils/copy";
+import {copyToClipboard} from "@/modules/utils/address";
+import {format} from "@/modules/utils/numbers";
 
 
 export default function Navbar() {
@@ -58,7 +67,7 @@ function MobileNavbar() {
             {isOpen ? <XmarkSVG onClick={openOrClose}/> : <BurgerSVG onClick={openOrClose}/>}
             {
                 isOpen && <>
-                    <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-6 h-full py-24'
+                    <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
                          ref={boxRef}>
                         <div>
                             {
@@ -128,58 +137,138 @@ function LinkBase({linkBase, isExtended}: { linkBase: LinkBase, isExtended?: boo
 }
 
 function WalletComponent() {
-
-    const [accountInfo, setAccountInfo] = useState({} as AccountInfo)
-
-    const web3Modal = useWeb3Modal();
-    const account = useAccount();
-    const network = useNetwork();
+    const {isConnected} = useAccount();
+    const [isOpen, setOpen] = useState(false);
 
     useEffect(() => {
-        if (account.isConnected) {
-            setAccountInfo({
-                address: `${account.address}`,
-                chainId: Number(network.chain?.id),
-                isConnected: true
-            })
-        } else {
-            setAccountInfo({
-                address: "",
-                chainId: 0,
-                isConnected: false
-            })
-        }
-    }, [account.address, account.isConnected, network.chain?.id])
+        setOpen(isConnected);
+    }, [isConnected]);
 
-
-    return <>
-        <div onClick={() => web3Modal.open()} className='cursor-pointer text-white'>
-            {
-                accountInfo.isConnected ? <ConnectedComponent accountInfo={accountInfo}/> : <ConnectWalletComponent/>
-            }
+    return (
+        <div className='cursor-pointer text-white'>
+            {isOpen ? <ConnectedComponent/> : <ConnectWalletComponent/>}
         </div>
-    </>
-
+    );
 }
 
-function ConnectedComponent({accountInfo}: { accountInfo: AccountInfo }) {
-    const chain = getChain(accountInfo.chainId);
+function ConnectedComponent() {
+
+
+    const accountState = AccountController.state;
+
+    const network = useNetwork();
+    const chain = getChain(network.chain?.id);
+    const [isOpen, setOpen] = useState(false);
+    const boxRef = useRef<any>();
+
     const chainIcon = chain ? getChainIcon(chain?.id) : makeBlockie(zeroAddress);
+    const openOrClose = () => setOpen(!isOpen);
+
+    useEffect(() => {
+        const handleClickOutside = (event: any) => {
+            if (boxRef.current && !boxRef.current.contains(event.target)) setOpen(false)
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside)
+    }, [boxRef]);
 
     return <>
-        <BasicButton>
-            <div className='flex items-center gap-2'>
-                <Image src={chainIcon}
-                       alt={chain?.name || ""}
-                       width={25} height={25}
-                       className='cursor-pointer rounded-full p-0 m-0'/>
-                <span>{shorten(accountInfo.address, 4)}</span>
+
+        <div className='relative text-black' ref={boxRef}>
+            <BasicButton onClick={openOrClose}>
+                <div className='flex items-center gap-2'>
+                    <Image src={chainIcon}
+                           alt={chain?.name || ""}
+                           width={25} height={25}
+                           className='cursor-pointer rounded-full p-0 m-0'/>
+                    <span>{shorten(accountState.address, 4)}</span>
+                </div>
+            </BasicButton>
+            {isOpen && <Portfolio setOpen={setOpen}/>}
+        </div>
+
+    </>
+}
+
+function Portfolio({setOpen}: { setOpen: any }) {
+    const accountState = AccountController.state
+    const address = accountState.address || "";
+
+    const icon = accountState.profileImage || makeBlockie(address);
+    const name = accountState.profileName || "";
+    const {disconnect} = useDisconnect()
+
+    function disconnectWallet() {
+        setOpen(false);
+        disconnect();
+    }
+
+    return <>
+        <div className='absolute right-0 top-[120%] bg-white rounded-3xl w-[200%]'>
+            <div className='flex flex-col gap-8 w-full px-6 py-4'>
+                <div className='flex justify-between gap-24 items-center'>
+                    <div className='flex items-center gap-2'>
+                        <Image src={icon}
+                               alt={address}
+                               width={42} height={42}
+                               className='cursor-pointer rounded-full p-0 m-0 border border-neutral-500'/>
+                        <div className='flex flex-col gap-0'>
+                            {
+                                Boolean(name) && <>
+                                    <div className='group flex items-center gap-1'
+                                         onClick={() => copyToClipboard(name, `Name`)}>
+                                        <span className='whitespace-nowrap font-medium'>{shortenString(name, 22)}</span>
+                                        <div className='group-hover:flex hidden'><CopySVG/></div>
+                                    </div>
+
+                                </>
+                            }
+                            <div className='group flex items-center gap-1'
+                                 onClick={() => copyToClipboard(address, `Address`)}>
+                                <span className='text-sm text-neutral-800 font-light'>{shorten(address, 6)}</span>
+                                <div className='group-hover:flex hidden'><CopySVG size={10}/></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-1'>
+                        <div className='p-1.5 hover:bg-neutral-300 rounded-md'
+                             onClick={() => toast.error("Settings is not working")}>
+                            <SettingsSVG color="#000"/>
+                        </div>
+                        <div className='p-1.5 hover:bg-neutral-300 rounded-md' onClick={disconnectWallet}>
+                            <DisconnectSVG/>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex flex-col'>
+                    <span
+                        className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>
+                    <span className='text-sm text-green-500'>$0.00 (0.0%)</span>
+                </div>
+                <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
+                    <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                        <span>Portfolio</span>
+                    </Link>
+                    <Link href={`/address/${address}?tab=watchlist`}
+                          className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                        <span>Watchlist</span>
+                    </Link>
+                </div>
+                <div className='flex items-center gap-1 justify-center text-xs text-center text-neutral-800'>
+                    <span>Need assistance?</span>
+                    <Link href={URLS.DiscordTicket} target='_blank'>
+                        <span className='underline'>Create a ticket!</span>
+                    </Link>
+                </div>
             </div>
-        </BasicButton>
+        </div>
     </>
 }
 
 
 function ConnectWalletComponent() {
-    return <BasicButton wMin><span className='px-4'>Connect</span></BasicButton>
+    const web3Modal = useWeb3Modal();
+
+    return <BasicButton wMin onClick={() => web3Modal.open()}><span className='px-4'>Connect</span></BasicButton>
 }

@@ -31,7 +31,7 @@ function getChainIcon(chainId: string | number | undefined) {
     return `/svg/chains/${chainId}.svg`;
 }
 
-function getChain(chainId: string | number): Chain|undefined {
+function getChain(chainId: string | number| undefined): Chain|undefined {
     return CHAINS.find(item => item.id === Number(chainId))
 }
 

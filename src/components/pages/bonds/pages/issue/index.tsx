@@ -31,7 +31,7 @@ import {toast} from "react-toastify";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import ZcbIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
+import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 
 
 export default function Issue() {
@@ -56,7 +56,7 @@ export default function Issue() {
                     if (response) setTokens(response)
                 })
 
-            ZcbIssuerController.getIssuerContractInfo(chain)
+            FixedFlexIssuerController.getIssuerContractInfo(chain)
                 .then(response => {
                     console.log(`response`, response);
                     setIssuerContractInfo(response)
@@ -529,8 +529,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
 
     const {address} = useAccount();
     const chain = getChain(bondInfo.chainId)
-    const ispurchase = type === "purchaseToken";
-    const tokenAddress = ispurchase ? bondInfo.purchaseToken : bondInfo.payoutToken;
+    const isPurchase = type === "purchaseToken";
+    const tokenAddress = isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken;
     const [balance, setBalance] = useState({
         value: 0,
         isLoading: false
@@ -564,8 +564,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
         }
     }, [chain, address, token, tokenAddress]);
 
-    const title = ispurchase ? "purchase" : "payout";
-    const amountTitle = ispurchase ? "Total Received" : "Total Returned"
+    const title = isPurchase ? "Purchase" : "Payout";
+    const amountTitle = isPurchase ? "Total Purchase Amount" : "Total Payout Amount"
 
     if (!token) {
         if (isAddress(tokenAddress)) return <TokenContainer><Loading/></TokenContainer>
@@ -578,8 +578,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
     }
 
     const iconSrc = token.icon || makeBlockie(zeroAddress);
-    let totalTmp = bondInfo.totalBonds * (ispurchase ? bondInfo.purchaseAmount : bondInfo.payoutAmount) || 0;
-    const total = ispurchase ? totalTmp - ((totalTmp * issuerContractInfo.purchaseRate) / 100) : totalTmp
+    let totalTmp = bondInfo.totalBonds * (isPurchase ? bondInfo.purchaseAmount : bondInfo.payoutAmount) || 0;
+    const total = isPurchase ? totalTmp - ((totalTmp * issuerContractInfo.purchaseRate) / 100) : totalTmp
 
 
     return <>
@@ -602,9 +602,9 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
                     <div className='h-px bg-neutral-900 w-full'/>
                     <div className='flex flex-col'>
                         <p>{amountTitle}: <span
-                            className={`${ispurchase ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
+                            className={`${isPurchase ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
                         </p>
-                        {ispurchase &&
+                        {isPurchase &&
                             <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>}
                     </div>
                 </>

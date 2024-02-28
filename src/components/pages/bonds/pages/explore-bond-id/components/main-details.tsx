@@ -54,7 +54,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                             <span
                                 className='font-thin text-neutral-400 text-sm'>{purchase.symbol} - {payout.symbol}</span>
                         </div>
-                        <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>ZCB</span>
+                        <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>Fixed Flex</span>
                     </div>
                     <div className='flex flex-col items-end'>
                         <div className='flex flex-col '>
@@ -91,7 +91,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
             <div className='flex flex-col gap-8'>
                 <div className='grid grid-cols-3 gap-y-12 mt-8 w-full p-4'>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
-                        <span className='text-2xl font-bold'>{purchase.amountClean} {purchase.symbol}</span>
+                        <span className='text-2xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
                         <span className='text-sm text-neutral-400'>Purchase</span>
                     </div>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
@@ -106,7 +106,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                         <span className='text-sm text-neutral-400'>Chain</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
-                        <span className='text-2xl font-bold'>{payout.amountClean} {payout.symbol}</span>
+                        <span className='text-2xl font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
                         <span className='text-sm text-neutral-400'>Payout</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>

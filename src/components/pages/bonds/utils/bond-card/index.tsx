@@ -8,7 +8,6 @@ import {formatTime} from "@/modules/utils/dates";
 import {ContractBasicFormat} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
-import {DecoratorHandler} from "undici-types";
 
 export default function BondCard({info, link}: { info: ContractBasicFormat, link?: string }) {
     const {
@@ -61,11 +60,12 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
                                     className='text-xs text-neutral-500'>{purchaseSymbolShort} - {payoutSymbolShort}</span>
                             </div>
                         </div>
-                        <span className='px-3 py-1 bg-stone-700 rounded-full text-xs'>ZCB</span>
+                        <span
+                            className='px-3 py-1 bg-stone-700 rounded-full text-mm whitespace-nowrap'>Fixed Flex</span>
                     </div>
                     <div className='flex flex-col items-end'>
-                        <span className={`text-2xl font-bold ${scoreColor}`}>{format(score || 0, 2)}</span>
-                        <span className='text-neutral-500 text-xs'>Score</span>
+                        <span className={`text-xl font-bold ${scoreColor}`}>{format(score || 0, 2)}</span>
+                        <span className='text-neutral-500 text-mm'>Score</span>
                     </div>
                 </div>
                 <div className='flex flex-col gap-4 z-10'>

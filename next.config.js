@@ -8,6 +8,9 @@ const nextConfig = {
             },
             {
                 hostname: "miro.medium.com"
+            },
+            {
+                hostname: "euc.li"
             }
         ],
     }

@@ -1,4 +1,4 @@
-import {TransactionMessages, TxTypes, ZCB_ISSUER_CONTRACTS} from "@/modules/web3/constants";
+import {FIXED_FLEX_ISSUER_CONTRACTS, TransactionMessages, TxTypes} from "@/modules/web3/constants";
 import * as TokensWeb3 from './tokens';
 
 import {sleep} from "@/modules/utils/dates";
@@ -7,8 +7,8 @@ import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
-import ZcbIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
-import ZcbController from "@/modules/web3/fixed-flex/v2";
+import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
+import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -24,8 +24,8 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
         switch (txType) {
             case TxTypes.IssueBond: {
                 return {
-                    to: ZCB_ISSUER_CONTRACTS[chain.id],
-                    data: ZcbIssuerController.issueBonds(chain, config.bondInfo, config.tokens),
+                    to: FIXED_FLEX_ISSUER_CONTRACTS[chain.id],
+                    data: FixedFlexIssuerController.issueBonds(chain, config.bondInfo, config.tokens),
                     value: BigInt(config.issuerContractInfo.issuanceFee)
                 }
             }
@@ -38,13 +38,13 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.PurchaseBonds: {
                 return {
                     to: config.contractAddress,
-                    data: ZcbController.purchase(chain, config.contractAddress, config.count, config.referrer)
+                    data: FixedFlexController.purchase(chain, config.contractAddress, config.count, config.referrer)
                 }
             }
             case TxTypes.RedeemBonds: {
                 return {
                     to: config.contractAddress,
-                    data: ZcbController.redeem(chain, config.contractAddress, config.bondIndexes, config.redemptionCount, config.isCapitulation)
+                    data: FixedFlexController.redeem(chain, config.contractAddress, config.bondIndexes, config.redemptionCount, config.isCapitulation)
                 }
             }
             case TxTypes.TransferERC20: {
@@ -137,11 +137,13 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 
 async function decodeTransactionLogs(transaction: TransactionReceipt) {
 
-    const isZcbIssuer = Object.values(ZCB_ISSUER_CONTRACTS).some(address => address.toLowerCase() === transaction.to?.toLowerCase())
+    const isFixedFlexIssuer = Object
+        .values(FIXED_FLEX_ISSUER_CONTRACTS)
+        .some(address => address.toLowerCase() === transaction.to?.toLowerCase())
 
     switch (true) {
-        case isZcbIssuer: {
-            const decoded = ZcbIssuerController.decode(transaction);
+        case isFixedFlexIssuer: {
+            const decoded = FixedFlexIssuerController.decode(transaction);
             return {
                 transaction,
                 decoded

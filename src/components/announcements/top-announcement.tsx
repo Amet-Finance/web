@@ -10,7 +10,6 @@ export default function TopAnnouncement() {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const isHidden = getConfig();
-            console.log(`isHidden`, isHidden)
             setHidden(isHidden)
         }
     }, [])

@@ -1,7 +1,7 @@
 import {Chain} from "wagmi";
 import {getProvider} from "@/modules/web3";
 import {encodeFunctionData, getContract, isAddress, parseAbi} from "viem";
-import ZCB_ABI from "@/modules/web3/fixed-flex/v2/abi-jsons/Bond.json";
+import FIXED_FLEX_BOND_ABI from "@/modules/web3/fixed-flex/v2/abi-jsons/Bond.json";
 import {ZERO_ADDRESS} from "@/modules/web3/constants";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
@@ -10,7 +10,7 @@ function getContractInstance(chain: Chain, contractAddress: string) {
     const provider = getProvider(chain)
     return getContract({
         address: contractAddress as any,
-        abi: ZCB_ABI,
+        abi: FIXED_FLEX_BOND_ABI,
         publicClient: provider
     })
 }
@@ -83,11 +83,11 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
     })
 }
 
-const ZcbController = {
+const FixedFlexController = {
     getContractInstance,
     purchase,
     redeem,
     getTransferActivity
 }
 
-export default ZcbController;
+export default FixedFlexController;
