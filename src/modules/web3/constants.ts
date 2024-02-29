@@ -18,6 +18,9 @@ const TxTypes = {
     ApproveToken: 'approve-token',
     PurchaseBonds: 'purchase-bonds',
     RedeemBonds: 'redeem-bonds',
+    Settle: 'settle',
+    ClaimReferralRewards: 'claim-referral-rewards',
+
     TransferERC20: "transfer-erc20",
     WithdrawRemaining: 'withdraw-remaining',
     ChangeOwner: 'change-owner',

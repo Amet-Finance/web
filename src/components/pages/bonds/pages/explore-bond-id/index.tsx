@@ -3,16 +3,17 @@ import {ContractExtendedFormatV2} from "@/modules/cloud-api/contract-type";
 import {ExploreBondIdType} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import GeneralStatisticsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/general-statistics";
-import ActionsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/actions";
+import ActionsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/actions/index";
 import DescriptionContainer from "@/components/pages/bonds/pages/explore-bond-id/components/description";
 import HeadlineContainer from "@/components/pages/bonds/pages/explore-bond-id/components/headline";
 import StatisticsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/statistics";
 import MainDetailsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/main-details";
 import LoadingScreen from "@/components/pages/bonds/pages/explore-bond-id/components/loading-screen";
 import {nop} from "@/modules/utils/function";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 
-const UPDATE_INTERVAL = 25000;
-
+// todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
+// on top and tell that this bond is officially finished 
 export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBondIdType) {
 
     const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({...(bondDetailedTmp || {})})

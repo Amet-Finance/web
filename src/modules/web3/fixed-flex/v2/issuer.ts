@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 import {TokensResponse} from "@/modules/cloud-api/type";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
-import AmetVaultController from "@/modules/web3/fixed-flex/v2/vault";
+import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 
 function getIssuerContractInstance(chain: Chain) {
     const provider = getProvider(chain)
@@ -49,7 +49,7 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
 
     const isPaused = await contract.read.isPaused();
     const valutAddress = await contract.read.vault();
-    const vaultContract = AmetVaultController.getVaultContractInstance(chain, valutAddress);
+    const vaultContract = FixedFlexVaultController.getVaultContractInstance(chain, valutAddress);
 
     const issuanceFee: any = await vaultContract.read.issuanceFee();
     const initialBondFeeDetails: any = await vaultContract.read.initialBondFeeDetails()

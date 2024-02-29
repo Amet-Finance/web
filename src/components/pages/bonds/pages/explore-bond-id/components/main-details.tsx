@@ -7,8 +7,10 @@ import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
-import {shorten} from "@/modules/web3/util";
+import {getExplorer, shorten} from "@/modules/web3/util";
 import WarningSVG from "../../../../../../../public/svg/warning";
+import InfoBox from "@/components/utils/info-box";
+import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 
 export default function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
     const {contractInfo, contractStats} = bondDetailed;
@@ -40,19 +42,31 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
     const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
 
+    const purchaseTokenExplorer = getExplorer(chainId, "token", purchase.contractAddress);
+    const payoutTokenExplorer = getExplorer(chainId, "token", payout.contractAddress);
+
 
     return <>
         <div
             className='flex flex-col gap-8 lg:col-span-8 sm:col-span-12  rounded-3xl p-8 pt-4 border border-neutral-900 w-full'>
-            <div className='flex flex-col gap-2 w-full'>
+            <div className='flex flex-col gap-4 w-full'>
                 <div className='flex justify-between items-center w-full'>
                     <div className='flex gap-2'>
                         <Image src={payoutIcon} alt={payout.name} width={48} height={48}
                                className='object-contain rounded-full'/>
                         <div className='flex flex-col'>
                             <span className='text-2xl font-bold'>{payout.name}</span>
-                            <span
-                                className='font-thin text-neutral-400 text-sm'>{purchase.symbol} - {payout.symbol}</span>
+                            <div className='flex gap-1 items-center cursor-pointer'>
+                                <Link href={purchaseTokenExplorer} target="_blank">
+                                    <span
+                                        className='font-thin text-neutral-400 text-sm hover:underline underline-offset-2'>{purchase.symbol}</span>
+                                </Link>
+                                <span className='font-thin text-neutral-400 text-sm'>-</span>
+                                <Link href={payoutTokenExplorer} target="_blank">
+                                    <span
+                                        className='font-thin text-neutral-400 text-sm hover:underline underline-offset-2'>{payout.symbol}</span>
+                                </Link>
+                            </div>
                         </div>
                         <span className='bg-neutral-900 h-min px-3 py-1 rounded-full text-neutral-400'>Fixed Flex</span>
                     </div>
@@ -61,17 +75,17 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                             <div className='relative grid grid-cols-3 items-end rounded-t-md gap-x-2'>
                                 <div
                                     className='flex flex-col items-center px-2 py-1.5 cursor-pointer'>
-                                    <span className='text-md font-semibold'>{totalBonds}</span>
+                                    <span className='text-md font-semibold'>{formatLargeNumber(totalBonds)}</span>
                                     <span className='text-xs text-neutral-400 font-light'>Total Bonds</span>
                                 </div>
                                 <div
                                     className='flex flex-col items-center px-2 py-1.5 cursor-pointer'>
-                                    <span className='text-md font-semibold'>{purchased}</span>
+                                    <span className='text-md font-semibold'>{formatLargeNumber(purchased)}</span>
                                     <span className='text-xs text-neutral-400 font-light'>Purchased</span>
                                 </div>
                                 <div
                                     className='flex flex-col items-center px-2 py-1.5 cursor-pointer rounded-tr-md'>
-                                    <span className='text-md font-semibold'>{redeemed}</span>
+                                    <span className='text-md font-semibold'>{formatLargeNumber(redeemed)}</span>
                                     <span className='text-xs text-neutral-400 font-light'>Redeemed</span>
                                 </div>
                                 <div className='relative w-full col-span-3 h-0.5'>
@@ -84,8 +98,11 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
 
                     </div>
                 </div>
-                {!Boolean(payout.isVerified) && <NotVerifiedAsset title={"payout"}/>}
-                {!Boolean(purchase.isVerified) && <NotVerifiedAsset title={"purchase"}/>}
+                <div className='flex flex-col gap-1'>
+                    {!Boolean(payout.isVerified) && <NotVerifiedAsset title={"Payout"}/>}
+                    {!Boolean(purchase.isVerified) && <NotVerifiedAsset title={"Purchase"}/>}
+                    {contractInfo.isSettled && <SettledContract/>}
+                </div>
             </div>
 
             <div className='flex flex-col gap-8'>
@@ -125,6 +142,16 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                 </div>
             </div>
 
+        </div>
+    </>
+}
+
+function SettledContract() {
+    return <>
+        <div className='border border-green-700  w-min rounded-md text-sm font-medium'>
+            <InfoBox info={InfoSections.Settled} className='w-[400%]' parentClassName="pr-4 py-1">
+                <span className='text-green-500 px-4'>Settled</span>
+            </InfoBox>
         </div>
     </>
 }

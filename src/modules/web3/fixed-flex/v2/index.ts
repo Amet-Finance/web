@@ -43,6 +43,16 @@ function redeem(chain: Chain, contractAddress: string, bondIndexes: string[], re
     })
 }
 
+function settle(chain: Chain, contractAddress: string) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'settle',
+        args: []
+    })
+}
+
 async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ActionLogFormat[]> {
 
     const provider = getProvider(chain)
@@ -87,6 +97,7 @@ const FixedFlexController = {
     getContractInstance,
     purchase,
     redeem,
+    settle,
     getTransferActivity
 }
 

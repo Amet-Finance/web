@@ -10,10 +10,12 @@ type InfoData = {
 type InfoBox = {
     children: any,
     info: InfoData,
-    isRight?: boolean
+    isRight?: boolean,
+    className?: string,
+    parentClassName?: string,
 }
 
-export default function InfoBox({children, info, isRight}: InfoBox) {
+export default function InfoBox({children, info, isRight, className, parentClassName}: InfoBox) {
 
     const isBlank = info.isBlank || !info.link;
 
@@ -23,7 +25,7 @@ export default function InfoBox({children, info, isRight}: InfoBox) {
     return <>
         <div className="relative flex items-center gap-1 w-full">
             {children}
-            <div className='flex justify-end group w-full'>
+            <div className={`flex justify-end group w-full ${parentClassName}`}>
                 <Link href={url} target={target} title='Click to learn more!'>
                     <svg
                         width="20px"
@@ -39,7 +41,7 @@ export default function InfoBox({children, info, isRight}: InfoBox) {
                 {
                     (Boolean(info?.text)) && <>
                         <div
-                            className={`group-hover:flex hidden absolute top-[130%] bg-neutral-700 border border-neutral-600 rounded-md px-3 p-1 z-50 h-max ${isRight ? "right-0 " : "left-0"}`}>
+                            className={`${className} group-hover:flex hidden absolute top-[130%] bg-neutral-700 border border-neutral-600 rounded-md px-3 p-1 z-50 h-max ${isRight ? "right-0 " : "left-0"}`}>
                             <span className='text-sm font-medium'>{info?.text}</span>
                         </div>
                     </>

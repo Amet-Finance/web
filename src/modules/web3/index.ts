@@ -9,6 +9,7 @@ import {createPublicClient, http, TransactionReceipt} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
 import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import FixedFlexController from "@/modules/web3/fixed-flex/v2";
+import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -45,6 +46,18 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 return {
                     to: config.contractAddress,
                     data: FixedFlexController.redeem(chain, config.contractAddress, config.bondIndexes, config.redemptionCount, config.isCapitulation)
+                }
+            }
+            case TxTypes.Settle: {
+                return {
+                    to: config.contractAddress,
+                    data: FixedFlexController.settle(chain, config.contractAddress)
+                }
+            }
+            case TxTypes.ClaimReferralRewards: {
+                return {
+                    to: config.vaultAddress,
+                    data: FixedFlexVaultController.claimReferralRewards(chain, config.vaultAddress, config.contractAddress)
                 }
             }
             case TxTypes.TransferERC20: {

@@ -1,4 +1,4 @@
-import {defaultChain, getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
 import BigNumber from "bignumber.js";
 
@@ -6,8 +6,8 @@ function toBN(value: number | string) {
     return BigNumber(value)
 }
 
-function getExplorer(chainId: number | undefined, type: ExplorerTypes, value: string) {
-    const chain = getChain(chainId || defaultChain.id)
+function getExplorer(chainId: number | string | undefined, type: ExplorerTypes, value: string) {
+    const chain = getChain(chainId)
 
     switch (type) {
         case "token": {

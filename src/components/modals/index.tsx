@@ -7,6 +7,7 @@ import Quiz from "@/components/modals/quiz";
 import BondEditDescription from "@/components/modals/bond-edit-description";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import ClaimReferralRewards from "@/components/modals/claim-referral-rewards";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -61,6 +62,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.BondEditDescription: {
             return <BondEditDescription additional={additional}/>
+        }
+        case ModalTypes.ClaimReferralRewards: {
+            return <ClaimReferralRewards additional={additional}/>
         }
     }
 }
