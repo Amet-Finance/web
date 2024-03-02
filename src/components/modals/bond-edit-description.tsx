@@ -5,7 +5,7 @@ import {API_URL} from "@/modules/cloud-api/constants";
 import {useState} from "react";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
-import XmarkSVG from "../../../public/svg/xmark";
+import XmarkSVG from "../../../public/svg/utils/xmark";
 import {closeModal} from "@/store/redux/modal";
 import {DetailedBondResponse} from "@/modules/cloud-api/type";
 

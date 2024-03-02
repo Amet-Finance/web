@@ -1,4 +1,4 @@
-import XmarkSVG from "../../../public/svg/xmark";
+import XmarkSVG from "../../../public/svg/utils/xmark";
 import {useEffect, useState} from "react";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";

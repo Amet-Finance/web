@@ -20,12 +20,12 @@ import makeBlockie from "ethereum-blockies-base64";
 import {isAddress, zeroAddress} from "viem";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
 
-import {getTokenBalance} from "@/modules/web3/tokens";
+import TokenController from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
 import {polygonMumbai} from "wagmi/chains";
-import VerifiedSVG from "../../../../../../public/svg/verified";
+import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import Loading from "@/components/utils/loading";
-import WarningSVG from "../../../../../../public/svg/warning";
+import WarningSVG from "../../../../../../public/svg/utils/warning";
 import {BlockTimes, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
@@ -172,7 +172,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
                     <span className='text-white text-md font-medium whitespace-nowrap'>Purchase Amount:</span>
                 </InfoBox>
                 <BasicInput id="purchaseAmount"
-                            placeholder='purchase amount per bond'
+                            placeholder='Purchase Amount Per Bond'
                             onChange={update}/>
             </div>
             <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
@@ -180,7 +180,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
                     <span className='text-white text-md font-medium whitespace-nowrap'>Payout Amount:</span>
                 </InfoBox>
                 <BasicInput id="payoutAmount"
-                            placeholder='payout amount per bond'
+                            placeholder='Payout Amount Per Bond'
                             onChange={update}/>
             </div>
         </div>
@@ -544,7 +544,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: {
             });
 
             const interval = setInterval(() => {
-                getTokenBalance(chain, tokenAddress, address)
+                TokenController.getTokenBalance(chain, tokenAddress, address)
                     .then(response => {
                         const balanceClean = BigNumber(response).div(BigNumber(10).pow(token.decimals));
                         setBalance({

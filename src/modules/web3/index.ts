@@ -10,6 +10,7 @@ import {ContractInfoType} from "@/modules/web3/type";
 import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
+import TokenController from "./tokens";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
@@ -33,7 +34,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
             case TxTypes.ApproveToken: {
                 return {
                     to: config.contractAddress,
-                    data: TokensWeb3.approve(chain, config.contractAddress, config.spender, BigInt(config.value))
+                    data: TokenController.approve(chain, config.contractAddress, config.spender, BigInt(config.value))
                 }
             }
             case TxTypes.PurchaseBonds: {
@@ -61,17 +62,25 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 }
             }
             case TxTypes.TransferERC20: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: Tokens.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
-                // };
+                return {
+                    to: config.contractAddress,
+                    data: TokenController.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
+                };
             }
-            case TxTypes.WithdrawRemaining: {
+
+            case TxTypes.WithdrawExcessPayout: {
+                return {
+                    to: config.contractAddress,
+                    data: FixedFlexController.withdrawExcessPayout(chain, config.contractAddress)
+                }
+            }
+            case TxTypes.UpdateBondSupply: {
                 // return {
                 //     to: config.contractAddress,
-                //     data: ZCB.withdrawRemaining(chain, config.contractAddress)
+                //     data: FixedFlexController.withdrawExcessPayout(chain, config.contractAddress)
                 // }
             }
+
             case TxTypes.ChangeOwner: {
                 // return {
                 //     to: config.contractAddress,

@@ -5,13 +5,14 @@ import {useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {useEffect, useState} from "react";
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {TxTypes} from "@/modules/web3/constants";
-import {getTokenBalance} from "@/modules/web3/tokens";
+import TokenController from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {toast} from "react-toastify";
 import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
 // todo add maturity period block if bond is not mature
 // todo add capitulation as well
@@ -35,8 +36,10 @@ export default function RedeemTab({contractInfo, balance}: {
     const contractBalance = balance[_id] || {}
     const totalBalance = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
 
-    const notEnoughLiquidity = interestBalance < redemptionCount * payout.amountClean
+    const totalRedeemAmount = redemptionCount * payout.amountClean
+    const notEnoughLiquidity = totalRedeemAmount > interestBalance
     const redeemingMoreThenAvailable = redemptionCount > totalBalance
+
 
     const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || redemptionCount <= 0;
     let title = "Redeem"
@@ -57,7 +60,7 @@ export default function RedeemTab({contractInfo, balance}: {
     useEffect(() => {
         const getLiquidity = () => {
             if (chain) {
-                getTokenBalance(chain, payout.contractAddress, contractAddress)
+               TokenController.getTokenBalance(chain, payout.contractAddress, contractAddress)
                     .then(response => {
                         setInterestBalance(BigNumber(response.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber())
                     })
@@ -127,6 +130,15 @@ export default function RedeemTab({contractInfo, balance}: {
 
     return <>
         <div className='flex flex-col gap-4 justify-end w-full'>
+            {
+                Boolean(totalRedeemAmount) && <>
+                    <div
+                        className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-green-500 h-full'>
+                            <span className='text-4xl font-bold whitespace-nowrap'>+{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
+                        <span className='text-xs whitespace-nowrap'>Total Redeem Amount:</span>
+                    </div>
+                </>
+            }
             <div className='flex flex-col gap-2'>
                 <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
                     <input type="number"

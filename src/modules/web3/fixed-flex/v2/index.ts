@@ -53,6 +53,16 @@ function settle(chain: Chain, contractAddress: string) {
     })
 }
 
+function withdrawExcessPayout(chain: Chain, contractAddress: string) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'withdrawExcessPayout',
+        args: []
+    })
+}
+
 async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ActionLogFormat[]> {
 
     const provider = getProvider(chain)
@@ -98,6 +108,7 @@ const FixedFlexController = {
     purchase,
     redeem,
     settle,
+    withdrawExcessPayout,
     getTransferActivity
 }
 

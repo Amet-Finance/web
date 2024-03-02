@@ -1,6 +1,6 @@
 export default function ClockSVG() {
     return <>
-        <svg width="24" height="23" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="23" height="23" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg">
             <mask id="mask0_160_1001" style={{maskType: "luminance"}} maskUnits="userSpaceOnUse" x="0" y="0" width="31"
                   height="30">
                 <path d="M0.107422 -2.09808e-05H30.1074V29.8811H0.107422V-2.09808e-05Z" fill="white"/>

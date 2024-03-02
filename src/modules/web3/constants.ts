@@ -20,9 +20,10 @@ const TxTypes = {
     RedeemBonds: 'redeem-bonds',
     Settle: 'settle',
     ClaimReferralRewards: 'claim-referral-rewards',
-
     TransferERC20: "transfer-erc20",
-    WithdrawRemaining: 'withdraw-remaining',
+    WithdrawExcessPayout: "withdraw-excess-payout",
+    UpdateBondSupply: 'update-bond-supply',
+
     ChangeOwner: 'change-owner',
     IssueMoreBonds: 'issue-more-bonds',
     BurnUnsoldBonds: 'burn-unsold-bonds',

@@ -1,4 +1,4 @@
-export default function SaveSVG({onClick}: {onClick: () => any}) {
+export default function SaveSVG({onClick}: {onClick?: () => any}) {
     return <>
         <svg width="18" height="18" viewBox="0 0 23 26" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={onClick} className='cursor-pointer w-fit'>
             <path fillRule="evenodd" clipRule="evenodd"

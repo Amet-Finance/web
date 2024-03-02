@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
-import XmarkSVG from "../../../public/svg/xmark";
+import XmarkSVG from "../../../public/svg/utils/xmark";
 import {closeModal} from "@/store/redux/modal";
-import CongratulationsSVG from "../../../public/svg/congratulations";
+import CongratulationsSVG from "../../../public/svg/utils/congratulations";
 
 const States = {
     Nope: 'nope',

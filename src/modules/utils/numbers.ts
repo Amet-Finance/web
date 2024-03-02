@@ -27,22 +27,22 @@ function format(number: number, maxDigestsForSmallNumbers = 4) {
     return parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
 }
 
-function formatLargeNumber(number: number, includeThousand?: boolean) {
+function formatLargeNumber(number: number, includeThousand?: boolean, maxFixedLength = 1) {
     const trillion = 1000000000000; // 1 trillion
     const billion = 1000000000;  // 1 billion
     const million = 1000000;  // 1 million
     const thousand = 1000; // 1 thousand
 
     if (number >= 10 * trillion) {
-        return (number / 10 * trillion).toFixed(1) + 'T';
+        return (number / 10 * trillion).toFixed(maxFixedLength) + 'T';
     } else if (number >= trillion) {
-        return (number / trillion).toFixed(1) + 'T';
+        return (number / trillion).toFixed(maxFixedLength) + 'T';
     } else if (number >= billion) {
-        return (number / billion).toFixed(1) + 'B';
+        return (number / billion).toFixed(maxFixedLength) + 'B';
     } else if (number >= million) {
-        return (number / million).toFixed(1) + 'M';
+        return (number / million).toFixed(maxFixedLength) + 'M';
     } else if (number >= thousand && includeThousand) {
-        return (number / thousand).toFixed(1) + 'K';
+        return (number / thousand).toFixed(maxFixedLength) + 'K';
     } else {
         return format(number);
     }

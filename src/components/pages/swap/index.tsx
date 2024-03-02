@@ -10,7 +10,7 @@ import {bsc, polygon, polygonZkEvm} from "wagmi/chains";
 import makeBlockie from "ethereum-blockies-base64";
 import CloudAPI from "@/modules/cloud-api";
 import Link from "next/link";
-import XmarkSVG from "../../../../public/svg/xmark";
+import XmarkSVG from "../../../../public/svg/utils/xmark";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import RefreshSVG from "../../../../public/svg/utils/refresh";
 import SettingsSVG from "../../../../public/svg/utils/settings";
@@ -19,13 +19,6 @@ import {TxTypes, ZERO_ADDRESS} from "@/modules/web3/constants";
 import {Result, TokenSelectorComponent} from "@/components/pages/swap/type";
 import InfoBox from "@/components/utils/info-box";
 import {URLS} from "@/modules/utils/urls";
-import {getAllowance} from "@/modules/web3/tokens";
-import {nop} from "@/modules/utils/function";
-import SwapSVG from "../../../../public/svg/utils/swap";
-import {toBN} from "@/modules/web3/util";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import {getChain} from "@/modules/utils/wallet-connect";
 
 const nativeTokenContract = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 

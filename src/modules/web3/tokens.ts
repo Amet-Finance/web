@@ -40,10 +40,12 @@ function deposit(chain: Chain, contractAddress: string, toAddress: string, value
     });
 }
 
-export {
+const TokenController = {
     getTokenContract,
     getAllowance,
     getTokenBalance,
     approve,
     deposit
 }
+
+export default TokenController;

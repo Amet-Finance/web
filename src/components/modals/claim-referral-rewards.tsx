@@ -1,5 +1,5 @@
-import CongratulationsSVG from "../../../public/svg/congratulations";
-import XmarkSVG from "../../../public/svg/xmark";
+import CongratulationsSVG from "../../../public/svg/utils/congratulations";
+import XmarkSVG from "../../../public/svg/utils/xmark";
 import {closeModal} from "@/store/redux/modal";
 import {BasicButton} from "@/components/utils/buttons";
 import {URLS} from "@/modules/utils/urls";

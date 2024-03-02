@@ -8,7 +8,7 @@ import {shortenString} from "@/modules/utils/string";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
 import {getExplorer, shorten} from "@/modules/web3/util";
-import WarningSVG from "../../../../../../../public/svg/warning";
+import WarningSVG from "../../../../../../../public/svg/utils/warning";
 import InfoBox from "@/components/utils/info-box";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 
