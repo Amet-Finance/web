@@ -52,8 +52,11 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
             <div className='flex flex-col gap-4 w-full'>
                 <div className='flex justify-between items-center w-full'>
                     <div className='flex gap-2'>
-                        <Image src={payoutIcon} alt={payout.name} width={48} height={48}
-                               className='object-contain rounded-full'/>
+                        <div className='w-12 h-12 rounded-full'>
+                            <Image src={payoutIcon} alt={payout.name}
+                                   width={1000} height={1000}
+                                   className='w-full h-full object-contain rounded-full'/>
+                        </div>
                         <div className='flex flex-col'>
                             <span className='text-2xl font-bold'>{payout.name}</span>
                             <div className='flex gap-1 items-center cursor-pointer'>

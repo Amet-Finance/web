@@ -1,13 +1,13 @@
 import {useSelector} from "react-redux";
-import Link from "next/link";
 import {RootState} from "@/store/redux/type";
 import CongratulationsSVG from "../../../public/svg/utils/congratulations";
 import XmarkSVG from "../../../public/svg/utils/xmark";
 import {closeModal} from "@/store/redux/modal";
-import {getChain} from "@/modules/utils/wallet-connect";
 import {IssueBondSuccessAdditional} from "@/components/modals/type";
+import {BasicButton} from "@/components/utils/buttons";
+import Link from "next/link";
 
-export default function IssuedBondSuccessModal() {
+export default function IssuedBondSuccess() {
 
     const modalState = useSelector((item: RootState) => item.modal)
 
@@ -25,11 +25,11 @@ export default function IssuedBondSuccessModal() {
                 <XmarkSVG onClick={closeModal} isMedium/>
             </div>
             <h1 className='text-2xl font-bold'>Congratulations</h1>
-            <p>Your bonds were successfully issued. Visit and see the live version of
-                <Link href={url} target="_blank">
-                    <span className='text-green-500'> your bonds page.</span>
-                </Link>
-            </p>
+            <p className='text-sm text-neutral-400'>Your bond has been issued successfully! To enhance trust and attract
+                purchasers, you can now deposit the payout if it is ready.</p>
+            <Link href={url} onClick={closeModal}>
+                <BasicButton>View Bond Details</BasicButton>
+            </Link>
         </div>
     </>
 }

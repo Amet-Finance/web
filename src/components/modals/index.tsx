@@ -2,7 +2,7 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {closeModal} from "@/store/redux/modal";
 import Modal, {setAppElement} from "react-modal";
 import {Montserrat} from "next/font/google";
-import IssuedBondSuccessModal from "@/components/modals/issued-bond-success-modal";
+import IssuedBondSuccess from "@/components/modals/issued-bond-success";
 import Quiz from "@/components/modals/quiz";
 import BondEditDescription from "@/components/modals/bond-edit-description";
 import {useSelector} from "react-redux";
@@ -55,7 +55,7 @@ export default function ModalHandler() {
 function ModalContent({type, additional}: { type: string, additional: any }) {
     switch (type) {
         case ModalTypes.IssuedBondSuccess: {
-            return <IssuedBondSuccessModal/>
+            return <IssuedBondSuccess/>
         }
         case ModalTypes.Quiz: {
             return <Quiz/>
