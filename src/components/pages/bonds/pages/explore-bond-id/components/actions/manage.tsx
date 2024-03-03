@@ -26,7 +26,7 @@ export default function ManageTab({contractInfo}: { contractInfo: ContractExtend
                 <span className={`col-span-3 ${baseClass}`} onClick={withdrawExcessInterest.sendTransactionAsync}>Withdraw Excess Payout
                     {withdrawExcessInterest.isLoading && <Loading percent={80}/>}</span>
                 <UpdateBondSupply contractInfo={contractInfo}/>
-                <span className={`col-span-4 ${baseClass}`}>Decrease Maturity Period</span>
+                <DecreaseMaturityPeriod contractInfo={contractInfo}/>
             </div>
         </div>
     </>
@@ -77,7 +77,9 @@ function DepositPayout({contractInfo}: { contractInfo: ContractExtendedInfoForma
                   onClick={openOrClose}>Deposit Payout {isLoading && <Loading percent={80}/>}</span>
             {
                 isOpen && <InputContainer amountHandler={amountHandler}
-                                          maxValue={maxPayout} symbol={payout.symbol}
+                                          placeholder='Enter The Payout Token Amoun'
+                                          maxValue={maxPayout}
+                                          symbol={payout.symbol}
                                           submit={submit}/>
             }
         </div>
@@ -94,12 +96,10 @@ function UpdateBondSupply({contractInfo}: { contractInfo: ContractExtendedInfoFo
     const [amount, setAmount] = useState(0);
 
     const amountHandler = [amount, setAmount];
-    const maxPayout = (totalBonds - redeemed) * payout.amountClean;
 
-    const config = getContractInfoByType(chain, TxTypes.TransferERC20, {
-        contractAddress: payout.contractAddress,
-        toAddress: contractAddress,
-        amount: `0x${BigNumber(amount).times(BigNumber(10).pow(BigNumber(payout.decimals))).toString(16)}`
+    const config = getContractInfoByType(chain, TxTypes.UpdateBondSupply, {
+        contractAddress: contractAddress,
+        count: BigInt(amount)
     })
     const {sendTransactionAsync, isLoading} = useSendTransaction({
         to: config.to,
@@ -115,6 +115,7 @@ function UpdateBondSupply({contractInfo}: { contractInfo: ContractExtendedInfoFo
     async function submit() {
         try {
             if (amount <= 0) return toast.error("Invalid amount");
+
             const response = await sendTransactionAsync();
             const result = await trackTransaction(chain, response.hash);
             console.log(result)
@@ -129,18 +130,70 @@ function UpdateBondSupply({contractInfo}: { contractInfo: ContractExtendedInfoFo
             <span className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                   onClick={openOrClose}>Update Bond Supply {isLoading && <Loading percent={80}/>}</span>
             {
-                isOpen && <InputContainer amountHandler={amountHandler}
-                                          maxValue={maxPayout}
-                                          submit={submit}/>
+                isOpen && <InputContainer amountHandler={amountHandler} submit={submit}
+                                          placeholder='Enter The Desired Bond Supply'/>
             }
         </div>
     </>
 }
 
-function InputContainer({amountHandler, maxValue, symbol, submit}: {
+function DecreaseMaturityPeriod({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+    // todo continue
+    const {_id, payout, totalBonds, purchased, redeemed} = contractInfo;
+
+    const [contractAddress, chainId] = _id.split("_");
+    const chain = getChain(chainId);
+
+    const [isOpen, setOpen] = useState(false);
+    const [amount, setAmount] = useState(0);
+
+    const amountHandler = [amount, setAmount];
+
+    const config = getContractInfoByType(chain, TxTypes.DecreaseMaturityPeriod, {
+        contractAddress: contractAddress,
+        period: BigInt(amount)
+    })
+    const {sendTransactionAsync, isLoading} = useSendTransaction({
+        to: config.to,
+        value: config.value,
+        data: config.data
+    })
+
+
+    function openOrClose() {
+        setOpen(!isOpen)
+    }
+
+    async function submit() {
+        try {
+            if (amount <= 0) return toast.error("Invalid amount");
+
+            const response = await sendTransactionAsync();
+            const result = await trackTransaction(chain, response.hash);
+            console.log(result)
+        } catch (error: any) {
+
+        }
+    }
+
+    return <>
+        <div
+            className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
+            <span className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
+                  onClick={openOrClose}>Decrease Maturity Period {isLoading && <Loading percent={80}/>}</span>
+            {
+                isOpen && <InputContainer amountHandler={amountHandler} submit={submit}
+                                          placeholder='The Desired Maturit Period In Blocks'/>
+            }
+        </div>
+    </>
+}
+
+function InputContainer({amountHandler, maxValue, symbol, submit, placeholder}: {
     amountHandler: Array<any>,
-    maxValue: number,
+    maxValue?: number,
     symbol?: string,
+    placeholder?: string
     submit: any
 }) {
     const [amount, setAmount] = amountHandler;
@@ -150,6 +203,8 @@ function InputContainer({amountHandler, maxValue, symbol, submit}: {
     }
 
     function setPercentage(percent: number) {
+        if (!maxValue) return;
+
         const value = maxValue * percent / 100
         setAmount(Math.floor(value));
     }
@@ -161,13 +216,13 @@ function InputContainer({amountHandler, maxValue, symbol, submit}: {
                        className=' w-full bg-transparent  placeholder:text-sm'
                        value={amount || ""}
                        onChange={change}
-                       placeholder='Deposit The Payout Token'/>
+                       placeholder={placeholder}/>
                 {symbol && <span>{symbol}</span>}
                 <div className='flex px-2'>
                     <SubmitSVG color='#fff' onClick={submit}/>
                 </div>
             </div>
-            <Percentages setter={setPercentage}/>
+            {Boolean(maxValue) && <Percentages setter={setPercentage}/>}
         </div>
 
     </>

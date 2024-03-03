@@ -75,10 +75,16 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 }
             }
             case TxTypes.UpdateBondSupply: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: FixedFlexController.withdrawExcessPayout(chain, config.contractAddress)
-                // }
+                return {
+                    to: config.contractAddress,
+                    data: FixedFlexController.updateBondSupply(chain, config.contractAddress, config.count)
+                }
+            }
+            case TxTypes.DecreaseMaturityPeriod: {
+                return {
+                    to: config.contractAddress,
+                    data: FixedFlexController.decreaseMaturityPeriod(chain, config.contractAddress, config.period)
+                }
             }
 
             case TxTypes.ChangeOwner: {

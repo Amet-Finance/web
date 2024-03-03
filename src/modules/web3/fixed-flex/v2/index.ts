@@ -63,6 +63,27 @@ function withdrawExcessPayout(chain: Chain, contractAddress: string) {
     })
 }
 
+function updateBondSupply(chain: Chain, contractAddress: string, count: bigint) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'updateBondSupply',
+        args: [count]
+    })
+}
+
+
+function decreaseMaturityPeriod(chain: Chain, contractAddress: string, period: bigint) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'decreaseMaturityPeriod',
+        args: [period]
+    })
+}
+
 async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ActionLogFormat[]> {
 
     const provider = getProvider(chain)
@@ -109,6 +130,8 @@ const FixedFlexController = {
     redeem,
     settle,
     withdrawExcessPayout,
+    updateBondSupply,
+    decreaseMaturityPeriod,
     getTransferActivity
 }
 

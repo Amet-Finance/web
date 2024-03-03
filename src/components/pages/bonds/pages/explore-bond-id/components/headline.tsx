@@ -5,7 +5,10 @@ import {useAccount} from "wagmi";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {toast} from "react-toastify";
 
-export default function HeadlineContainer({refreshHandler}: { refreshHandler: any[] }) {
+export default function HeadlineContainer({refreshHandler, refreshLoader}: {
+    refreshHandler: any[],
+    refreshLoader: boolean
+}) {
     const [refreshDate, setUpdateIndex] = refreshHandler
     const [secondsPassed, setSecondsPassed] = useState(0);
     const {address} = useAccount();
@@ -28,7 +31,7 @@ export default function HeadlineContainer({refreshHandler}: { refreshHandler: an
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setSecondsPassed(Math.round((Date.now() - refreshDate?.getTime()) / 1000))
+            if(refreshDate) setSecondsPassed(Math.round((Date.now() - refreshDate.getTime()) / 1000))
         }, 500)
         return () => clearInterval(interval)
     }, [refreshDate]);
@@ -42,7 +45,7 @@ export default function HeadlineContainer({refreshHandler}: { refreshHandler: an
             </div>
             <div className='flex items-center gap-2 px-2'>
                 <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>
-                <RefreshSVG isSmall={true} onClick={refresh}/>
+                <RefreshSVG isSmall={true} onClick={refresh} isLoading={refreshLoader}/>
             </div>
         </div>
     </>

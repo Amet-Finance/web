@@ -23,6 +23,7 @@ const TxTypes = {
     TransferERC20: "transfer-erc20",
     WithdrawExcessPayout: "withdraw-excess-payout",
     UpdateBondSupply: 'update-bond-supply',
+    DecreaseMaturityPeriod: 'decrease-maturity-period',
 
     ChangeOwner: 'change-owner',
     IssueMoreBonds: 'issue-more-bonds',

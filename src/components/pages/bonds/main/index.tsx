@@ -140,7 +140,7 @@ function BondCards() {
     return <>
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
             {isLoading ? <Loader/> : <ContractsContainer contracts={contracts}/>}
-            <Link href='/bonds/explore'>
+            <Link href='/bonds/explore' className='z-50'>
                 <div className="flex w-min">
                     <BasicButton>
                         <div className='flex items-center px-4 py-0.5 gap-2'>
@@ -163,7 +163,7 @@ function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
             <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
                 {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
             </div>
-            <div className='absolute top-[70%] left-0 h-[30%] w-full bg-gradient-to-b from-transparent to-black z-20'/>
+            <div className='absolute top-[85%] left-0 h-[20%] w-full bg-gradient-to-b from-transparent to-black z-30'/>
         </div>
     </>
 }
