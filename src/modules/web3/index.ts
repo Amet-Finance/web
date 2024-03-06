@@ -86,30 +86,11 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                     data: FixedFlexController.decreaseMaturityPeriod(chain, config.contractAddress, config.period)
                 }
             }
-
             case TxTypes.ChangeOwner: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: ZCB.changeOwner(chain, config.contractAddress, config.newAddress)
-                // }
-            }
-            case TxTypes.IssueMoreBonds: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: ZCB.issueMoreBonds(chain, config.contractAddress, config.amount)
-                // }
-            }
-            case TxTypes.BurnUnsoldBonds: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: ZCB.burnUnsoldBonds(chain, config.contractAddress, config.amount)
-                // }
-            }
-            case TxTypes.DecreaseRedeemLockPeriod: {
-                // return {
-                //     to: config.contractAddress,
-                //     data: ZCB.decreaseRedeemLockPeriod(chain, config.contractAddress, config.newPeriod)
-                // }
+                return {
+                    to: config.contractAddress,
+                    data: FixedFlexController.transferOwnership(chain, config.contractAddress, config.owner)
+                }
             }
             default: {
                 throw Error("Invalid type")

@@ -24,7 +24,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
         purchased,
         redeemed,
         maturityPeriodInBlocks,
-        issuanceDate
+        issuanceDate,
+        owner
     } = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_")

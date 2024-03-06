@@ -53,7 +53,7 @@ function Statistics() {
     const [statistics, setStatistics] = useState({
         purchased: 0,
         redeemed: 0,
-        volumeUSD: 0,
+        volume: 0,
         issued: 0
     })
 
@@ -74,7 +74,7 @@ function Statistics() {
     }, []);
 
 
-    const totalVolume = `$${formatLargeNumber(statistics.volumeUSD, true).toString()}`
+    const totalVolume = `$${formatLargeNumber(statistics.volume, true).toString()}`
 
     return <>
         <div className='relative grid grid-cols-2 grid-rows-3 gap-4  h-min hollow-shadow w-full '>

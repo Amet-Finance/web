@@ -41,7 +41,7 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
     const purchaseSymbolShort = shortenString(purchase.symbol, 5)
 
     const issuanceDateInFormat = new Date(issuanceDate);
-    const issuanceDateClean = `${issuanceDateInFormat.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})} ${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
+    const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
     return <>
         <Link href={url}>
@@ -95,7 +95,7 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
                         <div className='absolute h-[3px] w-full bg-white'/>
                     </div>
                     <div className='flex justify-between items-center w-full'>
-                        <span className='text-neutral-400 text-xs'>Issuer: {shorten(issuer)}</span>
+                        <span className='text-neutral-400 text-xs'>Issuer: {shorten(issuer, 5)}</span>
                         <span className='text-neutral-400 text-xs'>{issuanceDateClean}</span>
                     </div>
                 </div>

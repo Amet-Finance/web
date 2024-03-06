@@ -84,6 +84,16 @@ function decreaseMaturityPeriod(chain: Chain, contractAddress: string, period: b
     })
 }
 
+function transferOwnership(chain: Chain, contractAddress: string, owner: string) {
+    const instance = getContractInstance(chain, contractAddress);
+
+    return encodeFunctionData({
+        abi: instance.abi,
+        functionName: 'transferOwnership',
+        args: [owner]
+    })
+}
+
 async function getTransferActivity(chain: Chain, contractAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ActionLogFormat[]> {
 
     const provider = getProvider(chain)
@@ -130,6 +140,7 @@ const FixedFlexController = {
     redeem,
     settle,
     withdrawExcessPayout,
+    transferOwnership,
     updateBondSupply,
     decreaseMaturityPeriod,
     getTransferActivity

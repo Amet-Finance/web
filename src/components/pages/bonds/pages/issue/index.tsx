@@ -32,6 +32,8 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
+import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 
 export default function Issue() {
@@ -122,8 +124,13 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
             <div className='h-px w-full bg-zinc-800'/>
             <IssuanceForm bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
             <div className='flex flex-col gap-2'>
-                <p className='text-sm text-neutral-600'>By issuing bond you agree with our Privacy policy and Terms
-                    of use.</p>
+                <p className='flex items-center text-sm text-neutral-600 gap-1'>By issuing bond you agree with our
+                    <Link href={URLS.PrivacyPolicy} target="_blank">
+                        <u>Privacy policy</u>
+                    </Link> and
+                    <Link href={URLS.TermsOfService} target="_blank">
+                        <u>Terms of Service.</u>
+                    </Link></p>
                 <button className='px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white' onClick={issueBonds}>
                     Issue Bonds
                     {
