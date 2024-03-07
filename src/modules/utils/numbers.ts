@@ -28,6 +28,8 @@ function format(number: number, maxDigestsForSmallNumbers = 4) {
 }
 
 function formatLargeNumber(number: number, includeThousand?: boolean, maxFixedLength = 1) {
+    if(!Number.isFinite(number)) return 0
+
     const trillion = 1000000000000; // 1 trillion
     const billion = 1000000000;  // 1 billion
     const million = 1000000;  // 1 million
@@ -44,7 +46,7 @@ function formatLargeNumber(number: number, includeThousand?: boolean, maxFixedLe
     } else if (number >= thousand && includeThousand) {
         return (number / thousand).toFixed(maxFixedLength) + 'K';
     } else {
-        return format(number);
+        return format(number, maxFixedLength);
     }
 }
 

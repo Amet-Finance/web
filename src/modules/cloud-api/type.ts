@@ -14,66 +14,33 @@ type TokensResponse = {
     [contractLowerCased: string]: TokenResponse
 }
 
-type TokenBalance = {
-    balance: string,
-    balanceClean: number,
-    decimals: number
-}
+type GeneralStatsKey = "general-stats"
+type TBVStatsKey = "tbv-daily-stats"
 
-type BondInfoDetailed = {
-    _id: string,
-    chainId: number,
-    issuer: string,
-    total: number,
+type StatisticsTypes = GeneralStatsKey | TBVStatsKey
+
+type GeneralStatistics = {
+    _id: GeneralStatsKey,
+    issued: number,
     purchased: number,
     redeemed: number,
-    redeemLockPeriod: number,
-
-    investmentToken: string,
-    investmentTokenAmount: string,
-    investmentTokenInfo: TokenResponse,
-
-    interestToken: string,
-    interestTokenAmount: string,
-    interestTokenInfo: TokenResponse
-
-    interestTokenBalance?: TokenBalance,
-    feePercentage: number,
-    issuanceDate: number,
-    issuanceBlock: number
+    activeUsers: number,
+    maxReturn: number,
+    realisedGains: number,
+    volume: number
 }
 
-
-type Description = {
-    name: string,
-    description: string,
-    external_url: string,
-    image: string,
-    details?: {
-        title: string,
-        description: string
-    }
+type TBVStatistics = {
+    _id: TBVStatsKey,
+    values: [number, number][]
 }
-
-type SecurityDetails = {
-    securedPercentage: number,
-    issuerScore: number,
-    bondScore: number,
-    uniqueHolders: number,
-    uniqueHoldersIndex: number
-}
-
-type DetailedBondResponse = {
-    description: Description,
-    contractInfo: BondInfoDetailed,
-    securityDetails: SecurityDetails,
-    lastUpdated: number
-}
-
 
 export type  {
     TokenResponse,
     TokensResponse,
-    DetailedBondResponse,
-    SecurityDetails
+    GeneralStatistics,
+    StatisticsTypes,
+    TBVStatistics,
+    GeneralStatsKey,
+    TBVStatsKey
 }

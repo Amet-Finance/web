@@ -1,23 +1,27 @@
 import {requestAPI} from "@/modules/cloud-api/util";
 import {API_URL} from "@/modules/cloud-api/constants";
-import {TokensResponse} from "@/modules/cloud-api/type";
+import {
+    GeneralStatistics,
+    GeneralStatsKey,
+    StatisticsTypes,
+    TBVStatistics,
+    TokensResponse
+} from "@/modules/cloud-api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 
 async function getBalance(address: string): Promise<{[contractId: string]: {[id: string]: number}}> {
-    const balanceAPI = `${API_URL}/v1/balance/${address}`
-    const response = await requestAPI({
-        url: balanceAPI
-    });
+    const url = `${API_URL}/v1/balance/${address}`
+    const response = await requestAPI({url});
     return response?.data;
 }
 
-async function getStatistics() {
-    const api = `${API_URL}/v1/statistics`
-    const response = await requestAPI({
-        url: api
-    });
-    return response?.data;
+
+async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T extends GeneralStatsKey ? GeneralStatistics : TBVStatistics> {
+    const url = `${API_URL}/v1/statistics`;
+    const response = await requestAPI({url, params: {type}});
+    return response?.data as T extends GeneralStatsKey ? GeneralStatistics : TBVStatistics;
 }
+
 
 async function getTokens({params}: {
     params: { chainId: number, contractAddresses: string[], verified?: boolean }

@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, {AxiosHeaders} from "axios";
 
-async function requestAPI({url, params, headers}: any) {
+async function requestAPI({url, params, headers}: { url: string, params?: { [key: string]: any }, headers?: AxiosHeaders }) {
     try {
         const response = await axios.get(url, {params, headers})
         return response.data;

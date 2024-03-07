@@ -11,87 +11,92 @@ import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-t
 import Loading from "@/components/utils/loading";
 import CloudAPI from "@/modules/cloud-api";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import {GeneralStatistics} from "@/modules/cloud-api/type";
 
 export default function Bonds() {
-    return <>
-        <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
-                <div className='relative flex lg:flex-row sm:flex-col lg:items-end sm:items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
-                    <div
-                        className='flex flex-col md:items-start sm:items-center md:text-start sm:text-center w-full gap-12 '>
-                        <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold max-2w-xl'>Unlock Financial
-                            Possibilities <br/> with on-chain
-                            Bonds</h1>
-                        <div className='h-px w-1/4 bg-neutral-500'/>
-                        <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
-                        <div className='flex md:flex-row sm:flex-col gap-5 w-full'>
-                            <Link href='/bonds/issue'>
-                                <BasicButton hFull>
-                                    <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
-                                </BasicButton>
-                            </Link>
-                            <Link href='/bonds/explore'>
-                                <BasicButton isWhiteBorder hFull>
-                                    <span className='font-medium px-4 py-2.5'>Explore Bonds</span>
-                                </BasicButton>
-                            </Link>
-                        </div>
-                    </div>
-                    <Statistics/>
-                </div>
-                <BondCards/>
-                <BondsExplanation/>
-            </div>
-            <SectionEnd/>
-        </div>
-    </>
-}
-
-function Statistics() {
-
-    const [isLoading, setLoading] = useState(true)
-    const [statistics, setStatistics] = useState({
-        purchased: 0,
-        redeemed: 0,
-        volume: 0,
-        issued: 0
-    })
+    const [isStatisticsLoading, setStatisticsLoading] = useState(true)
+    const [statistics, setStatistics] = useState({} as GeneralStatistics)
 
     useEffect(() => {
-        setLoading(true);
+        setStatisticsLoading(true);
         const updater = () => {
-            CloudAPI.getStatistics()
+            CloudAPI.getStatistics("general-stats")
                 .then(response => {
-                    if (response) setStatistics(response)
+                    if (response) {
+                        setStatistics(response);
+                        setStatisticsLoading(false);
+                    }
                 })
-                .finally(() => setLoading(false))
-        }
 
+        }
         updater()
 
         const interval = setInterval(updater, UPDATE_INTERVAL);
         return () => clearInterval(interval);
     }, []);
 
+    return <>
+        <div className='flex flex-col w-full'>
+            <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+                <Headline statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
+                <BondCards/>
+                <BondsExplanation statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
+            </div>
+            <SectionEnd/>
+        </div>
+    </>
+}
 
-    const totalVolume = `$${formatLargeNumber(statistics.volume, true).toString()}`
+function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
+    return <>
+        <div
+            className='relative flex lg:flex-row sm:flex-col lg:items-end sm:items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
+            <div
+                className='flex flex-col md:items-start sm:items-center md:text-start sm:text-center w-full gap-12 '>
+                <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold max-2w-xl'>Unlock Financial
+                    Possibilities <br/> with on-chain
+                    Bonds</h1>
+                <div className='h-px w-1/4 bg-neutral-500'/>
+                <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
+                <div className='flex md:flex-row sm:flex-col gap-5 w-full'>
+                    <Link href='/bonds/issue'>
+                        <BasicButton hFull>
+                            <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
+                        </BasicButton>
+                    </Link>
+                    <Link href='/bonds/explore'>
+                        <BasicButton isWhiteBorder hFull>
+                            <span className='font-medium px-4 py-2.5'>Explore Bonds</span>
+                        </BasicButton>
+                    </Link>
+                </div>
+            </div>
+            <Statistics statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
+        </div>
+    </>
+}
+
+function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
+
+
+    const totalVolume = `$${formatLargeNumber((statistics.volume || 0), true).toString()}`
 
     return <>
         <div className='relative grid grid-cols-2 grid-rows-3 gap-4  h-min hollow-shadow w-full '>
             <StatisticsBox value={statistics.issued}
-                           isLoading={isLoading}
+                           isLoading={isStatisticsLoading}
                            title="Total Issued"
                            classAttributes="col-span-1 row-span-1"/>
             <StatisticsBox value={totalVolume}
-                           isLoading={isLoading}
+                           isLoading={isStatisticsLoading}
                            title="Total Volume"
                            classAttributes='col-span-1 row-span-2 pr-16'/>
             <StatisticsBox value={statistics.purchased}
-                           isLoading={isLoading}
+                           isLoading={isStatisticsLoading}
                            title="Total Purchased"
                            classAttributes='col-span-1 row-span-2'/>
             <StatisticsBox value={statistics.redeemed}
-                           isLoading={isLoading}
+                           isLoading={isStatisticsLoading}
                            title="Total Redeemed"
                            classAttributes='col-span-1 row-span-1 pr-16'/>
             <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px] "/>
@@ -133,7 +138,7 @@ function BondCards() {
         setLoading(true)
         requestContracts().then(() => setLoading(false))
 
-        const interval = setInterval(requestContracts, 15000)
+        const interval = setInterval(requestContracts, UPDATE_INTERVAL)
         return () => clearInterval(interval);
     }, [params])
 
@@ -168,105 +173,11 @@ function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
     </>
 }
 
-function BondsExplanation() {
+function BondsExplanation({statistics, isStatisticsLoading}: {
+    statistics: GeneralStatistics,
+    isStatisticsLoading: boolean
+}) {
 
-    function TVL() {
-        const chartRef = useRef<any>(null);
-
-        useEffect(() => {
-            if (!chartRef.current) return;
-            const options = {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    tooltip: {
-                        enabled: true,
-                    },
-                },
-                scales: {
-                    x: {
-                        display: false, // Completely hide the x-axis including the axis line
-                        grid: {
-                            display: false, // Hide grid lines for x-axis
-                        },
-                        ticks: {
-                            display: false, // Hide ticks for x-axis
-                        },
-                    },
-                    y: {
-                        display: false, // Completely hide the y-axis including the axis line
-                        grid: {
-                            display: false, // Hide grid lines for y-axis
-                        },
-                        ticks: {
-                            display: false, // Hide ticks for y-axis
-                        },
-                    },
-                },
-                elements: {
-                    line: {
-                        tension: 0.05 // Adjust this for line smoothness
-                    },
-                    point: {
-                        radius: 0 // This will remove the points (bullets) on the line
-                    },
-                },
-            };
-
-            const data = [10, 30, 32, 35, 42, 50, 48, 52, 55, 34, 35, 35, 60];
-            Chart.register(...registerables)
-            const chart = new Chart(chartRef.current, {
-                type: "line",
-                data: {
-                    labels: data,
-                    datasets: [
-                        {
-                            label: 'Total Bonds Issued',
-                            data,
-                            backgroundColor: (context: any) => {
-                                if (!context.chart.chartArea) return;
-
-                                const {ctx, data, chartArea: {top, bottom}} = context.chart;
-                                const gradientBg = ctx.createLinearGradient(0, top, 0, bottom)
-                                // #858585, #00000000
-                                gradientBg.addColorStop(0, "#E4E4E4")
-                                gradientBg.addColorStop(1, "#D9D9D900")
-                                return gradientBg;
-                            },
-                            borderColor: '#858585',
-                            borderWidth: 1, // you can adjust the thickness of the line here
-                            pointRadius: 0, // this wil
-                            fill: true,
-                        },
-                    ],
-                },
-                options: options
-            });
-
-            return () => chart.destroy()
-        }, [])
-
-        return <>
-            <div className="bg-white rounded-3xl h-full w-full">
-                <div className='flex justify-between items-center px-5 py-6'>
-                    <div className='flex flex-col text-black'>
-                        <span className='text-base font-medium'>Total Value Locked</span>
-                        <span className='text-3xl font-bold'>${formatLargeNumber(421522)}</span>
-                    </div>
-                    <div className='bg-neutral-200 rounded-full px-2'>
-                        <span>+5.6%</span>
-                    </div>
-                </div>
-                <div className='rounded-3xl'>
-                    <canvas ref={chartRef}/>
-                </div>
-                <div className='text-black py-3'/>
-            </div>
-
-        </>
-    }
 
     const lifecycleAttributes = [
         {
@@ -316,29 +227,7 @@ function BondsExplanation() {
                         <BasicButton wMin>Issue Bonds</BasicButton>
                     </Link>
                 </div>
-                <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black w-fit'>
-                    <div className='md:col-span-6 sm:col-span-12 row-span-2 w-full '>
-                        <TVL/>
-                    </div>
-                    <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-white rounded-3xl'>
-                        <div className='flex flex-col justify-center items-center h-full'>
-                            <span className='text-black text-center font-medium text-base'>Active Users</span>
-                            <span className='text-3xl font-bold'>{formatLargeNumber(4251)}</span>
-                        </div>
-                    </div>
-                    <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
-                        <div className='flex flex-col justify-center items-center h-full'>
-                            <span className='text-center font-medium text-base'>Max Return</span>
-                            <span className='text-3xl font-bold'>x{150}</span>
-                        </div>
-                    </div>
-                    <div className='md:col-span-6 sm:col-span-12 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
-                        <div className='flex flex-col justify-center h-full px-6'>
-                            <span className='font-medium text-base'>Realised Gains</span>
-                            <span className='text-3xl font-bold'>${formatLargeNumber(2524251)}</span>
-                        </div>
-                    </div>
-                </div>
+                <ExtendedStatistics statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
             </div>
             <div className='grid grid-cols-4 gap-12'>
                 {lifecycleAttributes.map(item => <LifecycleContainer item={item} key={item.title}/>)}
@@ -347,12 +236,181 @@ function BondsExplanation() {
     </>
 }
 
+function ExtendedStatistics({statistics, isStatisticsLoading}: {
+    statistics: GeneralStatistics,
+    isStatisticsLoading: boolean
+}) {
+
+    function Context({children, color}: { children: any, color?: string }) {
+        if (isStatisticsLoading) return <Loading color={color || "#fff"}/>
+
+        return <>
+            {children}
+        </>
+    }
+
+    return <>
+        <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black w-fit'>
+            <div className='md:col-span-6 sm:col-span-12 row-span-2 w-full '>
+                <TVL/>
+            </div>
+            <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-white rounded-3xl'>
+                <div className='flex flex-col justify-center items-center h-full'>
+                    <Context color='#000'>
+                        <span className='text-black text-center font-medium text-base'>Active Users</span>
+                        <span className='text-3xl font-bold'>{formatLargeNumber(statistics.activeUsers)}</span>
+                    </Context>
+                </div>
+            </div>
+            <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
+                <div className='flex flex-col justify-center items-center h-full'>
+                    <Context>
+                        <span className='text-center font-medium text-base'>Max Return</span>
+                        <span className='text-3xl font-bold'>x{Math.floor(statistics.maxReturn)}</span>
+                    </Context>
+                </div>
+            </div>
+            <div className='md:col-span-6 sm:col-span-12 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
+                <div className='flex flex-col justify-center h-full px-6'>
+                    <Context>
+                        <span className='font-medium text-base'>Realised Gains</span>
+                        <span
+                            className='text-3xl font-bold'>${formatLargeNumber(statistics.realisedGains, false, 4)}</span>
+                    </Context>
+                </div>
+            </div>
+        </div>
+
+    </>
+}
+
+function TVL() {
+    const chartRef = useRef<any>(null);
+    const [values, setValues] = useState<Array<number>>([]);
+
+    const currentTotal = values.length ? values[values.length - 1] : 0;
+    const previousTotal = values.length ? values[values.length - 2] : 0;
+
+    const changePercentage = previousTotal && currentTotal ? ((currentTotal - previousTotal) * 100) / previousTotal : 0
+    const change = formatLargeNumber(changePercentage, false, 2)
+
+
+    useEffect(() => {
+        const request = () => {
+            CloudAPI.getStatistics("tbv-daily-stats")
+                .then(response => {
+                    if (response) {
+                        const parsedResponse = response.values.map(item => item[1]);
+                        setValues(parsedResponse)
+                    }
+                })
+        }
+
+        request()
+        const interval = setInterval(request, UPDATE_INTERVAL);
+        return () => clearInterval(interval);
+    }, []);
+    useEffect(() => {
+        if (!chartRef.current) return;
+        const options = {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    enabled: true,
+                },
+            },
+            scales: {
+                x: {
+                    display: false, // Completely hide the x-axis including the axis line
+                    grid: {
+                        display: false, // Hide grid lines for x-axis
+                    },
+                    ticks: {
+                        display: false, // Hide ticks for x-axis
+                    },
+                },
+                y: {
+                    display: false, // Completely hide the y-axis including the axis line
+                    grid: {
+                        display: false, // Hide grid lines for y-axis
+                    },
+                    ticks: {
+                        display: false, // Hide ticks for y-axis
+                    },
+                },
+            },
+            elements: {
+                line: {
+                    tension: 0.05 // Adjust this for line smoothness
+                },
+                point: {
+                    radius: 0 // This will remove the points (bullets) on the line
+                },
+            },
+        };
+
+        Chart.register(...registerables)
+        const chart = new Chart(chartRef.current, {
+            type: "line",
+            data: {
+                labels: values,
+                datasets: [
+                    {
+                        label: 'Total Bonds Issued',
+                        data: values,
+                        backgroundColor: (context: any) => {
+                            if (!context.chart.chartArea) return;
+
+                            const {ctx, data, chartArea: {top, bottom}} = context.chart;
+                            const gradientBg = ctx.createLinearGradient(0, top, 0, bottom)
+                            // #858585, #00000000
+                            gradientBg.addColorStop(0, "#E4E4E4")
+                            gradientBg.addColorStop(1, "#D9D9D900")
+                            return gradientBg;
+                        },
+                        borderColor: '#858585',
+                        borderWidth: 1, // you can adjust the thickness of the line here
+                        pointRadius: 0, // this wil
+                        fill: true,
+                    },
+                ],
+            },
+            options: options
+        });
+
+        return () => chart.destroy()
+    }, [values])
+
+    return <>
+        <div className="bg-white rounded-3xl h-full w-full">
+            <div className='flex justify-between items-center px-5 py-6'>
+                <div className='flex flex-col text-black'>
+                    <span className='text-base font-medium'>Total Volume</span>
+                    <span className='text-3xl font-bold'>${formatLargeNumber(currentTotal)}</span>
+                </div>
+                <div className='bg-neutral-200 rounded-full px-2'>
+                    <span>{changePercentage > 0 ? "+" : ""}{change}%</span>
+                </div>
+            </div>
+            <div className='rounded-3xl'>
+                <canvas ref={chartRef}/>
+            </div>
+            <div className='text-black py-3'/>
+        </div>
+
+    </>
+}
 
 function SectionEnd() {
     return <>
         <div className='flex flex-col justify-center items-center bg-zinc-950 w-full py-32 gap-8'>
-            <h3 className='md:text-5xl sm:text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey at Amet Finance</h3>
-            <p className='md:text-sm sm:text-xs text-stone-300 text-center'>Connect with like-minded individuals, gain insights, and stay updated on the latest trends and opportunities.</p>
+            <h3 className='md:text-5xl sm:text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey
+                at Amet Finance</h3>
+            <p className='md:text-sm sm:text-xs text-stone-300 text-center'>Connect with like-minded individuals, gain
+                insights, and stay updated on the latest trends and opportunities.</p>
             <Link href={URLS.Discord} target="_blank">
                 <div className='flex gap-3 items-center bg-white px-8 p-2.5 rounded-3xl text-black'>
                     <DiscordIcon color='#000' size={32}/>
