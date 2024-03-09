@@ -1,44 +1,51 @@
 import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
-import {Balance} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
 import {useEffect, useState} from "react";
-import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {getBlockNumber, getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {TxTypes} from "@/modules/web3/constants";
-import TokenController from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
-import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {toast} from "react-toastify";
 import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
+import FixedFlexController from "@/modules/web3/fixed-flex/v2";
+import {ContractBalances} from "@/modules/cloud-api/type";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 
-// todo add maturity period block if bond is not mature
+// todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
-export default function RedeemTab({contractInfo, balance}: {
-    contractInfo: ContractExtendedInfoFormat,
-    balance: Balance
-}) {
+export default function RedeemTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
     const {_id, payout} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_")
+
     const chain = getChain(chainId)
+
+    const balances = useSelector((item: RootState) => item.account).balances;
+    const contractBalance = balances[_id] || {}
 
     const network = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork({chainId: chain?.id});
 
-    const [bondIndexes, setBondIndexes] = useState<string[]>([])
+    const [currentBlock, setCurrentBlock] = useState(BigInt(0));
+    const [purchaseBlocks, setPurchaseBlocks] = useState({})
+    const [bondIndexes, setBondIndexes] = useState([] as Array<string>)
     const [redemptionCount, setRedemptionCount] = useState(0);
-    const [interestBalance, setInterestBalance] = useState(0);
 
-    const contractBalance = balance[_id] || {}
-    const totalBalance = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
+    const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
+
+    const totalQuantity = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
+    const totalMatureQuantity = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, contractBalance, purchaseBlocks);
+    console.log(totalMatureQuantity)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
-    const redeemingMoreThenAvailable = redemptionCount > totalBalance
+    const redeemingMoreThenAvailable = redemptionCount > totalQuantity
 
 
     const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || redemptionCount <= 0;
@@ -58,22 +65,33 @@ export default function RedeemTab({contractInfo, balance}: {
 
 
     useEffect(() => {
-        const getLiquidity = () => {
-            if (chain) {
-               TokenController.getTokenBalance(chain, payout.contractAddress, contractAddress)
-                    .then(response => {
-                        setInterestBalance(BigNumber(response.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber())
+        if (chain) {
+            const request = () => {
+                getBlockNumber(chain)
+                    .then(block => {
+                        if (block) setCurrentBlock(block)
+                    })
+            }
+
+            request();
+            const interval = setInterval(request, UPDATE_INTERVAL);
+            return () => clearInterval(interval);
+        }
+    }, [chain]);
+
+    useEffect(() => {
+        if (chain) {
+            for (const tokenId in contractBalance) {
+                FixedFlexController.purchaseBlocks(chain, contractAddress, tokenId)
+                    .then(purchaseBlock => {
+                        setPurchaseBlocks({
+                            ...purchaseBlocks,
+                            [tokenId]: purchaseBlock
+                        })
                     })
             }
         }
-
-        getLiquidity();
-        const interval = setInterval(getLiquidity, UPDATE_INTERVAL);
-        return () => clearInterval(interval);
-    }, [chain, contractAddress, payout.contractAddress, payout.decimals]);
-
-
-    console.log(bondIndexes, redemptionCount)
+    }, [chain, contractAddress, contractBalance]);
 
     function onChange(event: any) {
         const value = Number(event.target.value);
@@ -81,7 +99,7 @@ export default function RedeemTab({contractInfo, balance}: {
     }
 
     function setPercentage(percent: number) {
-        const count = totalBalance ? Math.max(Math.floor(totalBalance * percent / 100), 1) : 0;
+        const count = totalQuantity ? Math.max(Math.floor(totalQuantity * percent / 100), 1) : 0;
         setCount(count)
     }
 
@@ -90,8 +108,6 @@ export default function RedeemTab({contractInfo, balance}: {
         let valueLeft = value;
         const indexes: string[] = []
 
-
-        console.log(contractBalance)
         for (const tokenId in contractBalance) {
             if (!valueLeft) break;
 
@@ -159,4 +175,19 @@ export default function RedeemTab({contractInfo, balance}: {
             </BasicButton>
         </div>
     </>
+}
+
+
+function getMatureTokenIds(currentBlock: bigint, maturityPeriodInBlocks: number, balances: ContractBalances, purchasedBlocks: any): string[] {
+
+    const matureTokenIds = []
+
+    for (const tokenId in balances) {
+        const purchasedBlock = purchasedBlocks[tokenId];
+        if (purchasedBlock && BigInt(purchasedBlock) + BigInt(maturityPeriodInBlocks) <= currentBlock) {
+            matureTokenIds.push(tokenId);
+        }
+    }
+
+    return matureTokenIds
 }

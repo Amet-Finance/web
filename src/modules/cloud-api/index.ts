@@ -1,6 +1,7 @@
 import {requestAPI} from "@/modules/cloud-api/util";
 import {API_URL} from "@/modules/cloud-api/constants";
 import {
+    Balances,
     GeneralStatistics,
     GeneralStatsKey,
     StatisticsTypes,
@@ -9,7 +10,7 @@ import {
 } from "@/modules/cloud-api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 
-async function getBalance(address: string): Promise<{[contractId: string]: {[id: string]: number}}> {
+async function getBalance(address: string): Promise<Balances> {
     const url = `${API_URL}/v1/balance/${address}`
     const response = await requestAPI({url});
     return response?.data;

@@ -14,6 +14,9 @@ import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/co
 
 // todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
 // on top and tell that this bond is officially finished
+// todo add "Get purchase token" button on purchase screen
+// todo somehow show the USD equivalent for purchase and payout
+
 export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBondIdType) {
 
     const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({...(bondDetailedTmp || {})})

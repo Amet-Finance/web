@@ -24,6 +24,7 @@ type ContractEssentialFormat = {
 
     purchase: FinancialAttributeInfo,
     payout: FinancialAttributeInfo,
+    payoutBalance: string,
 
     issuer: string,
     owner: string,
@@ -49,7 +50,6 @@ type ContractDescription = {
 type ContractStats = {
     score: number,
     securedPercentage: number,
-    payoutBalance: string,
     issuerScore: number,
     uniqueHolders: number,
     tbv: number

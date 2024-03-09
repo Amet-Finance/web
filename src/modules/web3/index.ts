@@ -1,5 +1,5 @@
 import {FIXED_FLEX_ISSUER_CONTRACTS, TransactionMessages, TxTypes} from "@/modules/web3/constants";
-import * as TokensWeb3 from './tokens';
+import TokenController from './tokens';
 
 import {sleep} from "@/modules/utils/dates";
 import {Chain} from "wagmi";
@@ -10,13 +10,17 @@ import {ContractInfoType} from "@/modules/web3/type";
 import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
-import TokenController from "./tokens";
 
 function getProvider(chain: Chain) {
     return createPublicClient({
         chain: chain,
         transport: http()
     });
+}
+
+async function getBlockNumber(chain: Chain) {
+    const provider = getProvider(chain);
+    return await provider.getBlockNumber();
 }
 
 function getContractInfoByType(chain: Chain | undefined, txType: string, config: any): ContractInfoType {
@@ -169,6 +173,7 @@ async function decodeTransactionLogs(transaction: TransactionReceipt) {
 
 export {
     getProvider,
+    getBlockNumber,
     getContractInfoByType,
     trackTransaction,
 }

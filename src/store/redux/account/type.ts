@@ -1,9 +1,7 @@
+import {Balances} from "@/modules/cloud-api/type";
+
 type Account = {
-    balance: {
-        [chainId: number]: {
-            [contractAddress: string]: any[] // tokenId[]
-        }
-    }
+    balances: Balances
 }
 
 export type {

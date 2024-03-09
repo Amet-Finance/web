@@ -23,9 +23,23 @@ import {shortenString} from "@/modules/utils/string";
 import CopySVG from "../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";
 import {format} from "@/modules/utils/numbers";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import {initBalances} from "@/store/redux/account";
+import {nop} from "@/modules/utils/function";
 
 
 export default function Navbar() {
+
+    const {address} = useAccount();
+
+    useEffect(() => {
+        if (address) {
+            initBalances(address).catch(nop)
+            const interval = setInterval(() => initBalances(address), UPDATE_INTERVAL);
+            return () => clearInterval(interval);
+        }
+    }, [address]);
+
 
     return <>
         <nav className="fixed flex flex-col w-full bg-black z-50">

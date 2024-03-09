@@ -1,13 +1,11 @@
 import {configureStore} from "@reduxjs/toolkit";
 import * as Modal from "./redux/modal"
 import * as Account from "./redux/account"
-import GeneralState from "@/store/redux/general";
 
 const store = configureStore({
     reducer: {
         modal: Modal.reducer,
-        account: Account.reducer,
-        general: GeneralState.reducer
+        account: Account.reducer
     }
     // todo open if need to hide something
     // middleware: (getDefaultMiddleware) =>

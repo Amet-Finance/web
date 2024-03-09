@@ -53,6 +53,11 @@ function settle(chain: Chain, contractAddress: string) {
     })
 }
 
+async function purchaseBlocks(chain: Chain, contractAddress: string, tokenId: number | string): Promise<bigint> {
+    const instance = getContractInstance(chain, contractAddress);
+    return await instance.read.purchaseBlocks([tokenId]) as bigint;
+}
+
 function withdrawExcessPayout(chain: Chain, contractAddress: string) {
     const instance = getContractInstance(chain, contractAddress);
 
@@ -136,6 +141,7 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
 
 const FixedFlexController = {
     getContractInstance,
+    purchaseBlocks,
     purchase,
     redeem,
     settle,

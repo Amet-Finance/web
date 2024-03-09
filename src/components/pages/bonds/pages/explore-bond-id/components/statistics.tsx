@@ -11,7 +11,7 @@ export default function StatisticsContainer({bondDetailed}: { bondDetailed: Cont
     const {score, securedPercentage, issuerScore, uniqueHolders} = contractStats;
     const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.totalBonds : 0;
 
-    const payoutBalanceClean = BigNumber(contractStats.payoutBalance).div(BigNumber(10).pow(BigNumber(contractInfo.payout.decimals))).toNumber();
+    const payoutBalanceClean = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(contractInfo.payout.decimals))).toNumber();
 
     function Container({title, value, valueTitle, valueColor, info}: {
         title: string,

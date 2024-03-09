@@ -13,6 +13,7 @@ export default function BondCard({info, link}: { info: ContractBasicFormat, link
     const {
         _id,
         redeemed,
+        owner,
         purchased,
         totalBonds,
         payout,

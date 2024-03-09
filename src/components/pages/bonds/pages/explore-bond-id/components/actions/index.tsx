@@ -1,9 +1,5 @@
 import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
-import {useAccount} from "wagmi";
 import {useEffect, useState} from "react";
-import {Balance} from "@/components/pages/bonds/pages/explore-bond-id/type";
-import CloudAPI from "@/modules/cloud-api";
-import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import Image from "next/image"
 import {getAccount} from "@wagmi/core";
 import {ActionHeadlineComponent} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
@@ -11,6 +7,8 @@ import PurchaseTab from "@/components/pages/bonds/pages/explore-bond-id/componen
 import RedeemTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/redeem";
 import ManageTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/manage";
 import ReferralTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/referral";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -21,58 +19,33 @@ const Tabs = {
 
 export default function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
-    const {address} = useAccount();
-
-    const [balance, setBalance] = useState({} as Balance);
     const [selected, setSelected] = useState(Tabs.Purchase);
     const selectionHandler = [selected, setSelected];
-
-
-
-    // todo can optimize here as well, get only for that _id
-    useEffect(() => {
-        const getBalances = () => {
-            if (address) {
-                CloudAPI.getBalance(address)
-                    .then(response => {
-                        if (response?.[contractInfo._id]) {
-                            setBalance({
-                                [contractInfo._id]: response[contractInfo._id]
-                            })
-                        }
-                    })
-            }
-        }
-
-        getBalances();
-        const interval = setInterval(getBalances, UPDATE_INTERVAL);
-        return () => clearInterval(interval);
-    }, [address, contractInfo._id]);
-
-
-
 
     return <>
         <div
             className='relative lg:col-span-4 sm:col-span-12 flex flex-col justify-between rounded-3xl p-8 py-4  border border-neutral-900 w-full h-full'>
-            <ActionsHeadline contractId={contractInfo._id} owner={contractInfo.owner} balance={balance}
-                             selectionHandler={selectionHandler}/>
+            <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
             <div className='flex w-full h-full py-4'>
-                <TabSelector title={selected} contractInfo={contractInfo} balance={balance}/>
+                <TabSelector title={selected} contractInfo={contractInfo}/>
             </div>
         </div>
     </>
 }
 
-function ActionsHeadline({contractId, owner, balance, selectionHandler}: {
-    contractId: string,
-    owner: string,
-    balance: Balance,
+function ActionsHeadline({contractInfo, selectionHandler}: {
+    contractInfo: ContractExtendedInfoFormat,
     selectionHandler: any
 }) {
 
+
+    const {_id, owner} = contractInfo;
     const [selected, setSelected] = selectionHandler;
-    const total = Object.values(balance[contractId] || {}).reduce((acc: number, value: number) => acc += value, 0);
+
+
+    const balances = useSelector((item: RootState) => item.account).balances;
+    const contractBalances = balances[_id] || {};
+    const total = Object.values(contractBalances).reduce((acc: number, value: number) => acc += value, 0);
 
     const components: ActionHeadlineComponent[] = [
         {
@@ -158,17 +131,13 @@ function HeadlineComponent({component, selected, setSelected}: {
     </>
 }
 
-function TabSelector({title, contractInfo, balance}: {
-    title: string,
-    contractInfo: ContractExtendedInfoFormat,
-    balance: Balance
-}) {
+function TabSelector({title, contractInfo}: { title: string, contractInfo: ContractExtendedInfoFormat, }) {
 
     switch (title) {
         case Tabs.Purchase:
             return <PurchaseTab contractInfo={contractInfo}/>
         case Tabs.Redeem:
-            return <RedeemTab contractInfo={contractInfo} balance={balance}/>
+            return <RedeemTab contractInfo={contractInfo}/>
         case Tabs.Manage:
             return <ManageTab contractInfo={contractInfo}/>
         case Tabs.ReferralRewards:

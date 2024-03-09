@@ -37,7 +37,7 @@ export default function Bonds() {
 
     return <>
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-32 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+            <div className='flex flex-col gap-20 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
                 <Headline statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
                 <BondCards/>
                 <BondsExplanation statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
@@ -217,7 +217,7 @@ function BondsExplanation({statistics, isStatisticsLoading}: {
     }
 
     return <>
-        <div className='flex flex-col gap-40'>
+        <div className='flex flex-col gap-40 mt-24'>
             <div className='flex gap-12 justify-between xl1:flex-row sm:flex-col items-center'>
                 <div className='flex flex-col md:max-w-xl sm:max-w-none gap-8'>
                     <h2 className='text-4xl font-medium'>Why Issue On-Chain Bonds?</h2>
@@ -275,7 +275,7 @@ function ExtendedStatistics({statistics, isStatisticsLoading}: {
                     <Context>
                         <span className='font-medium text-base'>Realised Gains</span>
                         <span
-                            className='text-3xl font-bold'>${formatLargeNumber(statistics.realisedGains, false, 4)}</span>
+                            className='text-3xl font-bold'>${formatLargeNumber(statistics.realisedGains, false, 2)}</span>
                     </Context>
                 </div>
             </div>

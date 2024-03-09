@@ -35,6 +35,14 @@ type TBVStatistics = {
     values: [number, number][]
 }
 
+type ContractBalances = {
+    [tokenId: string]: number
+}
+
+type Balances = {
+    [contractId: string]: ContractBalances
+}
+
 export type  {
     TokenResponse,
     TokensResponse,
@@ -42,5 +50,7 @@ export type  {
     StatisticsTypes,
     TBVStatistics,
     GeneralStatsKey,
-    TBVStatsKey
+    TBVStatsKey,
+    Balances,
+    ContractBalances
 }

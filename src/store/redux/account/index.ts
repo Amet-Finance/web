@@ -4,7 +4,7 @@ import {Account} from "@/store/redux/account/type";
 import CloudAPI from "../../../modules/cloud-api/index"
 
 const emptyState: Account = {
-    balance: {} // serepate by chains
+    balances: {}
 }
 
 const counterSlice = createSlice({
@@ -12,8 +12,7 @@ const counterSlice = createSlice({
     initialState: {...emptyState},
     reducers: {
         updateBalance: (state, {payload}) => {
-            const {balance, chainId} = payload;
-            state.balance[chainId] = balance;
+            if (payload) state.balances = payload;
         },
     },
 });
@@ -25,12 +24,12 @@ const {
 } = counterSlice.actions;
 
 
-async function initBalance(address: string | undefined, chainId: number) {
+async function initBalances(address: string | undefined) {
     if (address) {
-        const balance = await CloudAPI.getBalance(address);
-        if (balance) {
-            delete balance._id;
-            store.dispatch(updateBalance({balance, chainId}))
+        const balances = await CloudAPI.getBalance(address);
+        if (balances) {
+            delete balances._id;
+            store.dispatch(updateBalance(balances))
         }
     }
 }
@@ -38,5 +37,5 @@ async function initBalance(address: string | undefined, chainId: number) {
 export {
     counterSlice,
     reducer,
-    initBalance,
+    initBalances,
 }
