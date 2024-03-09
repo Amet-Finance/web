@@ -78,6 +78,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
             amount: "10",
             amountClean: 150
         },
+        payoutBalance: "0",
 
         totalBonds: 100,
         purchased: 50,
@@ -94,6 +95,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
+        payoutBalance: "0",
         purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -134,6 +136,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
+        payoutBalance: "0",
 
         purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -174,6 +177,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
+        payoutBalance: "0",
         purchase: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
