@@ -17,7 +17,7 @@ import {useTransaction} from "@/modules/utils/transaction";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
-// 4. After claiming ask him to share in Twitter with a modal or something similar
+// 4. After claiming ask him to share in Twitter with a modal or something similar content
 
 export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
 
