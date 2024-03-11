@@ -1,4 +1,4 @@
-import {bsc, manta, optimism, polygon, polygonMumbai, polygonZkEvm, zetachainAthensTestnet} from "wagmi/chains";
+import {polygon, polygonMumbai} from "wagmi/chains";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 

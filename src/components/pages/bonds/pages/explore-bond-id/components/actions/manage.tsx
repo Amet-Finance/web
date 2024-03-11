@@ -9,20 +9,18 @@ import {toast} from "react-toastify";
 import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import Loading from "@/components/utils/loading";
 import {isAddress} from "viem";
+import {useNetworkValidator} from "@/modules/utils/chain";
 
 export default function ManageTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
 
     const baseClass = "flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
-
-    const settle = useSettle(contractInfo);
     const withdrawExcessInterest = useWithdrawExcessInterest(contractInfo);
 
     return <>
         <div className='flex flex-col h-full w-full'>
             <div className='grid grid-cols-4 gap-2'>
                 <DepositPayout contractInfo={contractInfo}/>
-                <span className={baseClass} onClick={settle.sendTransactionAsync}>Settle
-                    {settle.isLoading && <Loading percent={80}/>}</span>
+                <Settle contractInfo={contractInfo}/>
                 <span className={`col-span-3 ${baseClass}`} onClick={withdrawExcessInterest.sendTransactionAsync}>Withdraw Excess Payout
                     {withdrawExcessInterest.isLoading && <Loading percent={80}/>}</span>
                 <UpdateBondSupply contractInfo={contractInfo}/>
@@ -37,6 +35,8 @@ function DepositPayout({contractInfo}: { contractInfo: ContractExtendedInfoForma
     const {_id, payout, totalBonds, purchased, redeemed} = contractInfo;
     const [contractAddress, chainId] = _id.split("_");
     const chain = getChain(chainId);
+
+    const validator = useNetworkValidator(chainId)
 
     const [isOpen, setOpen] = useState(false);
     const [amount, setAmount] = useState(0);
@@ -63,6 +63,7 @@ function DepositPayout({contractInfo}: { contractInfo: ContractExtendedInfoForma
     async function submit() {
         try {
             if (amount <= 0) return toast.error("Invalid amount");
+            await validator.validateAndSwitch();
             const response = await sendTransactionAsync();
             const result = await trackTransaction(chain, response.hash);
             console.log(result)
@@ -84,6 +85,37 @@ function DepositPayout({contractInfo}: { contractInfo: ContractExtendedInfoForma
                                           submit={submit}/>
             }
         </div>
+    </>
+}
+
+function Settle({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+    //todo add already settled
+
+    const [contractAddress, chainId] = contractInfo._id.split("_");
+    const chain = getChain(chainId);
+    const validator = useNetworkValidator(chainId)
+    const config = getContractInfoByType(chain, TxTypes.Settle, {contractAddress})
+    const {isLoading, sendTransactionAsync} = useSendTransaction({
+        to: config.to,
+        value: config.value,
+        data: config.data
+    })
+
+    async function submit() {
+        try {
+            await validator.validateAndSwitch();
+            const response = await sendTransactionAsync?.();
+            await trackTransaction(chain, response.hash);
+        } catch (error: any) {
+            console.log(error)
+        }
+    }
+
+    return <>
+    <span
+        className="flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
+        onClick={submit}>Settle
+        {isLoading && <Loading percent={80}/>}</span>
     </>
 }
 
@@ -290,28 +322,6 @@ function InputContainer({handler, maxValue, symbol, submit, placeholder, type}: 
 }
 
 
-function useSettle(contractInfo: ContractExtendedInfoFormat) {
-    const [contractAddress, chainId] = contractInfo._id.split("_");
-    const chain = getChain(chainId);
-    const config = getContractInfoByType(chain, TxTypes.Settle, {contractAddress})
-    const transaction = useSendTransaction({
-        to: config.to,
-        value: config.value,
-        data: config.data
-    })
-
-    return {
-        sendTransactionAsync: async () => {
-            try {
-                const response = await transaction.sendTransactionAsync();
-                await trackTransaction(chain, response.hash);
-            } catch (error: any) {
-                console.log(error)
-            }
-        },
-        isLoading: transaction.isLoading
-    }
-}
 
 function useWithdrawExcessInterest(contractInfo: ContractExtendedInfoFormat) {
     const [contractAddress, chainId] = contractInfo._id.split("_");

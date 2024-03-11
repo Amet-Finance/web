@@ -12,7 +12,6 @@ import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import ClockSVG from "../../../../../../../../public/svg/utils/clock";
 import {formatTime} from "@/modules/utils/dates";
 
 export default function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
@@ -109,24 +108,11 @@ export default function PurchaseTab({contractInfo}: { contractInfo: ContractExte
         <div className='flex flex-col gap-4 justify-end w-full'>
             {
                 Boolean(totalPrice) && <>
-                    <div className='grid grid-cols-4 gap-2 h-full'>
-                        <div
-                            className=' col-span-4 flex gap-2 justify-center items-center border border-neutral-900  bg-neutral-900 rounded-md px-4 py-1 h-full'>
-                            <ClockSVG/>
-                            <span
-                                className='text-neutral-200 text-xs whitespace-nowrap'>Redeem After: {maturityPeriodTime}</span>
-                        </div>
-                        <div
-                            className=' col-span-2 flex flex-col justify-end text-end border border-neutral-900 rounded-md px-4 py-1 h-full bg-red-500'>
-                            <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
-                            <span
-                                className='font-bold whitespace-nowrap'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
-                        </div>
-                        <div
-                            className=' col-span-2 flex flex-col justify-end text-end border border-neutral-900 rounded-md px-4 py-1 h-full bg-green-500'>
-                            <span className='text-xs whitespace-nowrap'>Total Redeem Amount:</span>
-                            <span className='font-bold whitespace-nowrap'>+{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                        </div>
+                    <div
+                        className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-neutral-700 h-full'>
+                        <span
+                            className='text-4xl font-bold whitespace-nowrap'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
+                        <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
                     </div>
                 </>
             }

@@ -6,6 +6,7 @@ type TokenResponse = {
     symbol: string,
     decimals: number,
     isVerified: boolean,
+    priceUsd?: number,
     icon?: string,
     unidentified?: boolean,
 }

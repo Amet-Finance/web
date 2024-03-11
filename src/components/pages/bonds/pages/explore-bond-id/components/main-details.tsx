@@ -46,6 +46,10 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const purchaseTokenExplorer = getExplorer(chainId, "token", purchase.contractAddress);
     const payoutTokenExplorer = getExplorer(chainId, "token", payout.contractAddress);
 
+    const payoutPriceUsd = payout.amountClean * (payout.priceUsd || 0);
+    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd || 0)
+    const expectedReturnPerBond = payoutPriceUsd - purchasePriceUsd;
+    const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
 
     return <>
         <div
@@ -112,7 +116,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
             <div className='flex flex-col gap-8'>
                 <div className='grid grid-cols-3 gap-y-12 mt-8 w-full p-4'>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
-                        <span className='text-2xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
+                        <span
+                            className='text-2xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
                         <span className='text-sm text-neutral-400'>Purchase</span>
                     </div>
                     <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
@@ -127,12 +132,18 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                         <span className='text-sm text-neutral-400'>Chain</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
-                        <span className='text-2xl font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
+                        <span
+                            className='text-2xl font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
                         <span className='text-sm text-neutral-400'>Payout</span>
                     </div>
                     <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
                         <span className='text-2xl font-bold'>${formatLargeNumber(tbv, true)}</span>
                         <span className='text-sm text-neutral-400'>Total Bonded Volume</span>
+                    </div>
+                    <div className='col-span-1 flex flex-col justify-end gap-1 w-full'>
+                        <span
+                            className='text-2xl font-bold text-green-500'>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
+                        <span className='text-sm text-neutral-400'>Return Per Bond</span>
                     </div>
                 </div>
                 <div className='flex items-center justify-between w-full text-sm'>
@@ -145,7 +156,6 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                     <span className='text-neutral-400'>{issuanceDateClean}</span>
                 </div>
             </div>
-
         </div>
     </>
 }

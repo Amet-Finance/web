@@ -6,10 +6,10 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
 
-function getVaultContractInstance(chain: Chain, vaultAddress: `string`|any) {
+function getVaultContractInstance(chain: Chain, vaultAddress: string) {
     const provider = getProvider(chain)
     return getContract({
-        address: vaultAddress,
+        address: vaultAddress as any,
         abi: VAULT_ABI,
         publicClient: provider
     })
@@ -17,7 +17,7 @@ function getVaultContractInstance(chain: Chain, vaultAddress: `string`|any) {
 
 async function getVault(chain: Chain) {
     const issuerContract = FixedFlexIssuerController.getIssuerContractInstance(chain);
-    const vaultAddress = await issuerContract.read.vault();
+    const vaultAddress = await issuerContract.read.vault() as string;
     return getVaultContractInstance(chain, vaultAddress);
 }
 

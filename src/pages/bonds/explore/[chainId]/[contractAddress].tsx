@@ -4,7 +4,10 @@ import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
-export default function ExploreIdPage({bondInfoDetailed, queryParams}: {bondInfoDetailed: ContractExtendedFormat, queryParams: ExploreIdQueryParams}) {
+export default function ExploreIdPage({bondInfoDetailed, queryParams}: Readonly<{
+    bondInfoDetailed: ContractExtendedFormat,
+    queryParams: ExploreIdQueryParams
+}>) {
     return <ExploreBondId bondDetailedTmp={bondInfoDetailed} queryParams={queryParams}/>
 }
 
@@ -23,26 +26,24 @@ export async function getServerSideProps({query}: any) {
 
 
     if (chain && contractAddress) {
-
         const contracts = await ContractAPI.getContractsExtended({chainId: chain.id, contractAddresses: [contractAddress]});
-        if(!contracts || !contracts.length) return {props}
+        if (contracts?.length) {
+            const bondInfoDetailed = contracts[0]
+            const {contractDescription} = bondInfoDetailed;
 
+            const meta: { title?: string, description?: string } = {};
 
-        const bondInfoDetailed = contracts[0]
-        const {contractDescription} = bondInfoDetailed;
+            if (Object.values(contractDescription).length) {
 
-        const meta: { title?: string, description?: string } = {};
+                meta.title = contractDescription.name
 
-        if (Object.values(contractDescription).length) {
+                const detailDescription = contractDescription?.details?.description;
+                if (detailDescription && detailDescription.length > 5) meta.description = detailDescription;
+            }
 
-            meta.title = contractDescription.name
-
-            const detailDescription = contractDescription?.details?.description;
-            if (detailDescription && detailDescription.length > 5) meta.description = detailDescription;
+            props.bondInfoDetailed = bondInfoDetailed;
+            props.meta = meta;
         }
-
-        props.bondInfoDetailed = bondInfoDetailed;
-        props.meta = meta;
     }
 
     return {props}

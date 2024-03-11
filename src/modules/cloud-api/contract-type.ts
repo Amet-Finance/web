@@ -67,10 +67,7 @@ type ContractExtendedFormat = {
     lastUpdated: Date
 }
 
-type ContractExtendedFormatV2 = ContractExtendedFormat & {
-
-}
-
+type ContractExtendedFormatV2 = ContractExtendedFormat
 
 type DescriptionEditParams = {
     _id: string
