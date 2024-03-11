@@ -22,7 +22,7 @@ export default function StatisticsContainer({bondDetailed}: { bondDetailed: Cont
     }) {
         return <>
             <div
-                className='flex flex-col items-end gap-4 rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 sm:col-span-2 cursor-pointer'>
+                className='flex flex-col items-end rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 sm:col-span-2 cursor-pointer'>
                 <div className='w-full p-2'>
                     <InfoBox info={info} isRight><span/></InfoBox>
                 </div>

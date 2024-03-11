@@ -90,7 +90,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     }
 
 
-    return <div className='flex flex-col gap-4 justify-end w-full'>
+    return <div className='flex flex-col gap-1 justify-end w-full'>
         {
             Boolean(totalPrice) && <div
                 className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-neutral-700 h-full'>
@@ -99,10 +99,9 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                 <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
             </div>
         }
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-2'>
             <div className='flex flex-col gap-2'>
-                <div
-                    className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                <div className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
                     <input type="number"
                            id='amount'
                            className='bg-transparent placeholder:text-neutral-600 w-full'

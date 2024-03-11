@@ -1,6 +1,5 @@
 import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
 import {getChain} from "@/modules/utils/wallet-connect";
-import {useNetwork, useSwitchNetwork} from "wagmi";
 import {useEffect, useState} from "react";
 import {getBlockNumber} from "@/modules/web3";
 import {TxTypes} from "@/modules/web3/constants";
@@ -139,7 +138,7 @@ export default function RedeemTab({contractInfo}: { contractInfo: ContractExtend
         }
     }
 
-    return <div className='flex flex-col gap-4 justify-end w-full'>
+    return <div className='flex flex-col gap-1 justify-end w-full'>
         {
             Boolean(totalRedeemAmount) && <>
                 <div
@@ -150,6 +149,7 @@ export default function RedeemTab({contractInfo}: { contractInfo: ContractExtend
                 </div>
             </>
         }
+        <div className='flex flex-col gap-2'>
         <div className='flex flex-col gap-2'>
             <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
                 <input type="number"
@@ -168,6 +168,7 @@ export default function RedeemTab({contractInfo}: { contractInfo: ContractExtend
                 {title}
             </div>
         </BasicButton>
+        </div>
     </div>
 }
 

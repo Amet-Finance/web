@@ -24,7 +24,7 @@ export default function ActionsContainer({contractInfo}: { contractInfo: Contrac
 
     return <>
         <div
-            className='relative lg:col-span-4 sm:col-span-12 flex flex-col justify-between rounded-3xl p-8 py-4  border border-neutral-900 w-full h-full'>
+            className='relative lg:col-span-4 sm:col-span-12 flex flex-col justify-between rounded-3xl p-6  border border-neutral-900 w-full h-full'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
             <div className='flex w-full h-full py-4'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>

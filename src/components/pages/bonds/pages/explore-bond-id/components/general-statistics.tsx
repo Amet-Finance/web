@@ -7,7 +7,7 @@ import {useAccount} from "wagmi";
 import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
-import {Chart, registerables} from "chart.js";
+import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
 import Loading from "@/components/utils/loading";
 import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
@@ -104,7 +104,7 @@ function Container({type, total, isLoadingLogs, data, asset}: {
                     </p>
                 </div>
             </div>
-            <BarChart bgColor={bgColor} data={data}/>
+            <BarChart bgColor={bgColor} data={data} asset={asset}/>
             <div className='flex justify-between'>
                 {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
             </div>
@@ -113,16 +113,19 @@ function Container({type, total, isLoadingLogs, data, asset}: {
 }
 
 
-function BarChart({bgColor, data}: { bgColor: string, data: ActionLogFormat[] }) {
+function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogFormat[], asset: FinancialAttributeInfo }) {
     const chartRef = useRef<any>(null);
 
     useEffect(() => {
         if (!chartRef.current) return;
-        const options = {
+
+
+        const options: ChartOptions = {
             responsive: true,
             plugins: {legend: {display: false}},
             scales: {
                 x: {
+                    beginAtZero: true,
                     grid: {
                         display: false, // Hide grid lines for x-axis
                         offset: true
@@ -132,6 +135,7 @@ function BarChart({bgColor, data}: { bgColor: string, data: ActionLogFormat[] })
                     },
                 },
                 y: {
+                    beginAtZero: true,
                     grid: {
                         display: false,
                         offset: true
@@ -144,25 +148,35 @@ function BarChart({bgColor, data}: { bgColor: string, data: ActionLogFormat[] })
             },
         };
 
+        const barPosition: Plugin = {
+            id: "barPosition",
+            // beforeDatasetDraw(chart: Chart): void {
+            //     const {data, chartArea: {left, right, width}, scales: {x, y}} = chart
+            //
+            //     const barWidth = data.labels?.length ? width / data.labels.length : 0;
+            //     chart.getDatasetMeta(0).data.forEach((dataPoint, index) => {
+            //         dataPoint.x = left + (barWidth * index)
+            //     })
+            // }
+        }
 
         Chart.register(...registerables)
         const chart = new Chart(chartRef.current, {
             type: "bar",
             data: {
-                labels: data.map(item => item.block),
+                labels: data.map(item => `Block: ${item.block}`),
                 datasets: [
                     {
-                        label: 'Value:',
-                        data: data.map(item => item.count),
+                        label: `Value`,
+                        data: data.map(item => `${item.count * asset.amountClean * (asset.priceUsd || 1)}`),
                         backgroundColor: bgColor,
                         borderColor: '#858585',
-                        borderWidth: 0,
-                        borderRadius: 0,
-                        barThickness: 3,
+                        barThickness: 'flex'
                     },
                 ],
             },
-            options: options
+            options: options,
+            plugins: [barPosition]
         });
 
         return () => chart.destroy()
