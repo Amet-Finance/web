@@ -48,7 +48,7 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
     const contract = getIssuerContractInstance(chain)
 
     const isPaused = await contract.read.isPaused();
-    const valutAddress = await contract.read.vault();
+    const valutAddress = await contract.read.vault() as string;
     const vaultContract = FixedFlexVaultController.getVaultContractInstance(chain, valutAddress);
 
     const issuanceFee: any = await vaultContract.read.issuanceFee();
