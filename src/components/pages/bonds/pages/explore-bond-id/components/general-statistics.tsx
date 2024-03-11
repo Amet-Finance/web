@@ -249,9 +249,9 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
 function LogContainer({contractInfo, log}: { contractInfo: ContractExtendedInfoFormat, log: ActionLogFormat }) {
 
     const {_id, purchase, payout} = contractInfo;
-    const [_, chainId] = _id;
+    const [_, chainId] = _id.split("_");
 
-    const hashUrl = getExplorer(Number(chainId), "hash", log.hash)
+    const hashUrl = getExplorer(chainId, "hash", log.hash)
     let typeClass, value;
 
     if (log.type === LogTypes.Redeem) {
