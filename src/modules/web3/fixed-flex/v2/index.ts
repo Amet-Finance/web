@@ -112,7 +112,10 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
         toBlock: toBlock
     })
 
-    return logs.map(log => {
+
+    const logsById: { [txId: string]: ActionLogFormat } = {}
+
+    logs.forEach(log => {
         const operator = log.args[0]
         const from = log.args[1] || ""
         const to = log.args[2] || ""
@@ -128,15 +131,22 @@ async function getTransferActivity(chain: Chain, contractAddress: string, fromBl
             type = LogTypes.Redeem
         }
 
-        return {
+        const logFormatted = {
             from: from || "",
             to: to || "",
             block: Number(log.blockNumber),
             hash: log.transactionHash,
             type: type,
             count: Number(totalCount)
-        } as ActionLogFormat
+        }
+        if (!logsById[logFormatted.hash]) {
+            logsById[logFormatted.hash] = logFormatted
+        } else {
+            logsById[logFormatted.hash].count += logFormatted.count;
+        }
     })
+
+    return Object.values(logsById);
 }
 
 const FixedFlexController = {

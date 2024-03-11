@@ -1,4 +1,4 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedInfoFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
@@ -8,10 +8,14 @@ import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, registerables} from "chart.js";
-import {formatLargeNumber} from "@/modules/utils/numbers";
 import Loading from "@/components/utils/loading";
 import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
+const StatisticsTypes = {
+    Purchase: "Purchase",
+    Redeem: "Redeem"
+}
 export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
     const [logs, setLogs] = useState<ActionLogFormat[]>([])
     const [isLoadingLogs, setLoadingLogs] = useState(false)
@@ -43,62 +47,67 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
     logs.forEach(log => {
         if (log.type === LogTypes.Purchase) {
             totalPurchased += (log.count * purchase.amountClean);
-            purchased.push(log);
+            purchased.unshift(log);
         } else if (log.type === LogTypes.Redeem) {
             totalRedeemed += (log.count * payout.amountClean);
-            redeemed.push(log);
+            redeemed.unshift(log);
         }
     })
 
-    const StatisticsTypes = {
-        Purchase: "Purchase",
-        Redeem: "Redeem"
-    }
 
-    function Container({type, total, data}: { type: string, total: number, data: ActionLogFormat[] }) {
-        const isPurchase = type === StatisticsTypes.Purchase
-        const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
-        const asset = isPurchase ? purchase : payout
+    return <>
+        <div className='grid grid-cols-2 gap-4'>
+            <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased} asset={purchase}
+                       isLoadingLogs={isLoadingLogs}/>
+            <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed} asset={payout}
+                       isLoadingLogs={isLoadingLogs}/>
+        </div>
+    </>
+}
 
-        if (isLoadingLogs) {
-            return <>
-                <div
-                    className='md:col-span-1 sm:col-span-2 flex justify-center items-center w-full p-4 border border-neutral-900 rounded-3xl'>
-                    <Loading/>
-                </div>
-            </>
-        }
+function Container({type, total, isLoadingLogs, data, asset}: {
+    type: string,
+    total: number,
+    isLoadingLogs: boolean,
+    data: ActionLogFormat[],
+    asset: FinancialAttributeInfo
+}) {
+    const isPurchase = type === StatisticsTypes.Purchase
+    const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
 
-
-        const centerIndex = Math.round(data.length / 2)
-        const blocks = [data[0]?.block, data[centerIndex]?.block, data[data.length - 1]?.block]
-
+    if (isLoadingLogs) {
         return <>
             <div
-                className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
-
-                <div className='flex justify-between w-full'>
-                    <span className='font-medium text-xl'>{type} Statistics</span>
-                    <div className='flex flex-col items-end'>
-                        <span
-                            className='text-2xl font-bold'>{formatLargeNumber(total, true)} {asset.symbol}</span>
-                        <p className='text-neutral-500 text-sm'>Today <span
-                            className='text-green-500'>(+2.4%)</span>
-                        </p>
-                    </div>
-                </div>
-                <BarChart bgColor={bgColor} data={data}/>
-                <div className='flex justify-between'>
-                    {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
-                </div>
+                className='md:col-span-1 sm:col-span-2 flex justify-center items-center w-full p-4 border border-neutral-900 rounded-3xl'>
+                <Loading/>
             </div>
         </>
     }
 
+
+    const centerIndex = Math.round(data.length / 2)
+    const blocks = [data[0]?.block, data[centerIndex]?.block, data[data.length - 1]?.block]
+    const totalInUsd = (asset.priceUsd ?? 0) * total
+    const title = Number.isFinite(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
+
     return <>
-        <div className='grid grid-cols-2 gap-4'>
-            <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased}/>
-            <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed}/>
+        <div
+            className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
+
+            <div className='flex justify-between w-full'>
+                <span className='font-medium text-xl'>{type} Statistics</span>
+                <div className='flex flex-col items-end'>
+                        <span
+                            className='text-2xl font-bold'>{title}</span>
+                    <p className='text-neutral-500 text-sm'>Today {" "}
+                        <span className='text-green-500'>(+2.4%)</span>
+                    </p>
+                </div>
+            </div>
+            <BarChart bgColor={bgColor} data={data}/>
+            <div className='flex justify-between'>
+                {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
+            </div>
         </div>
     </>
 }
