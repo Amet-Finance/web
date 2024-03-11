@@ -50,42 +50,7 @@ function formatLargeNumber(number: number, includeThousand?: boolean, maxFixedLe
     }
 }
 
-function divBigNumberForUI(amount: number | string, decimals: number) {
-    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals))) {
-        return 0
-    }
-
-    const discountedDecimal = 6
-    const isDecBigger = decimals > discountedDecimal
-    const preDecimal = isDecBigger ? decimals - discountedDecimal : decimals;
-    const response = toBN(amount).div(toBN(10).pow(toBN(preDecimal)))
-
-    return isDecBigger ? response.toNumber() / 10 ** discountedDecimal : response.toNumber();
-}
-
-function divBigNumber(amount?: number | string, decimals?: number) {
-    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals)) || typeof amount === "undefined" || typeof decimals === 'undefined') {
-        return toBN(0)
-    }
-
-    return toBN(amount).div(toBN(10).pow(toBN(decimals)))
-}
-
-function mulBigNumber(amount?: number | string, decimals?: number, isStrict?: boolean) {
-    if (!Number.isFinite(Number(amount)) || !Number.isFinite(Number(decimals)) || typeof amount === "undefined" || typeof decimals === 'undefined') {
-        if (isStrict) {
-            throw Error("Amount or Decimals is missing")
-        }
-        return toBN(0)
-    }
-
-    return toBN(amount).times(toBN(10).pow(toBN(decimals)))
-}
-
 export {
     format,
     formatLargeNumber,
-    divBigNumber,
-    divBigNumberForUI,
-    mulBigNumber
 }

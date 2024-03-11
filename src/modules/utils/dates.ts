@@ -4,10 +4,6 @@ const dayInSec = 24 * hourInSec
 const monthInSec = 30 * dayInSec
 const yearInSec = 365 * dayInSec
 
-function shortTime(time: number) {
-    return new Date(time).toDateString()
-}
-
 function formatTime(seconds: number, isShort?: boolean, hideSeconds?: boolean, hideLong?: boolean) {
 
     const years = Math.floor(seconds / yearInSec);
@@ -79,5 +75,5 @@ export {
     dayInSec,
     monthInSec,
     yearInSec,
-    formatTime, shortTime, sleep
+    formatTime, sleep
 }

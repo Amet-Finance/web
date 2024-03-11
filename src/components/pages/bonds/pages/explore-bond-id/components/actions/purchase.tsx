@@ -1,26 +1,23 @@
 import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
-import {useAccount, useNetwork, useSendTransaction, useSwitchNetwork} from "wagmi";
+import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import BigNumber from "bignumber.js";
-import {BlockTimes, TxTypes} from "@/modules/web3/constants";
-import {getContractInfoByType, trackTransaction} from "@/modules/web3";
+import {TxTypes} from "@/modules/web3/constants";
 import TokenController from "@/modules/web3/tokens";
 import {toast} from "react-toastify";
 import {BasicButton} from "@/components/utils/buttons";
 import Loading from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import {formatTime} from "@/modules/utils/dates";
+import {useTransaction} from "@/modules/utils/transaction";
 
-export default function PurchaseTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
-    const {_id, purchase, totalBonds, purchased, payout, maturityPeriodInBlocks} = contractInfo;
+export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+    const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
 
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
-    const network = useNetwork();
-    const {switchNetworkAsync} = useSwitchNetwork({chainId: Number(chainId)});
     const chain = getChain(chainId)
     const router = useRouter();
 
@@ -31,7 +28,7 @@ export default function PurchaseTab({contractInfo}: { contractInfo: ContractExte
         SoldOut: "Sold Out"
     }
 
-    const [isLoadingEffect, setLoadingEffect] = useState(false)
+
     const [allowance, setAllowance] = useState("0")
     const [amount, setAmount] = useState(0);
     const [refresh, setRefresh] = useState(0);
@@ -55,7 +52,6 @@ export default function PurchaseTab({contractInfo}: { contractInfo: ContractExte
 
     const totalPrice = purchase.amountClean * amount;
     const totalRedeemAmount = payout.amountClean * amount;
-    const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriodInBlocks, true, true, true)
 
     const initialReferrer = `${router.query.ref}`
     const referrer = initialReferrer.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
@@ -64,15 +60,13 @@ export default function PurchaseTab({contractInfo}: { contractInfo: ContractExte
         {contractAddress: purchase.contractAddress, spender: contractAddress, value: `0x${required.toString(16)}`} :
         {contractAddress: contractAddress, count: amount, referrer: referrer}
 
-    const txConfig = getContractInfoByType(chain, transactionType, config)
-    const {sendTransactionAsync, isLoading} = useSendTransaction(txConfig)
+
+    const {submitTransaction, isLoading} = useTransaction(chainId, transactionType, config)
 
     useEffect(() => {
         if (chain && address) {
-            setLoadingEffect(true)
             TokenController.getAllowance(chain, purchase.contractAddress, address, contractAddress)
                 .then(response => setAllowance(response.toString()))
-                .finally(() => setLoadingEffect(false))
         }
     }, [amount, chain, address, contractAddress, purchase.contractAddress, refresh]);
 
@@ -89,54 +83,42 @@ export default function PurchaseTab({contractInfo}: { contractInfo: ContractExte
     }
 
     async function submit() {
-        try {
-            if (blockClick) return;
-            if (!chain) return toast.error("Please select correct chain")
-            if (network.chain?.id !== chain.id) await switchNetworkAsync?.(chain.id);
-
-            const response = await sendTransactionAsync();
-            const result = await trackTransaction(chain, response.hash);
-            setRefresh(Math.random());
-            console.log(result)
-        } catch (error) {
-            console.log(error)
-        }
+        if (blockClick) return;
+        if (!chain) return toast.error("Please select correct chain")
+        await submitTransaction();
+        setRefresh(Math.random());
     }
 
 
-    return <>
-        <div className='flex flex-col gap-4 justify-end w-full'>
-            {
-                Boolean(totalPrice) && <>
-                    <div
-                        className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-neutral-700 h-full'>
+    return <div className='flex flex-col gap-4 justify-end w-full'>
+        {
+            Boolean(totalPrice) && <div
+                className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-neutral-700 h-full'>
                         <span
                             className='text-4xl font-bold whitespace-nowrap'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                        <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
-                    </div>
-                </>
-            }
-            <div className='flex flex-col gap-4'>
-                <div className='flex flex-col gap-2'>
-                    <div
-                        className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
-                        <input type="number"
-                               id='amount'
-                               className='bg-transparent placeholder:text-neutral-600 w-full'
-                               value={amount || ""}
-                               onChange={onChange}
-                               placeholder='Enter Number of Bonds to Purchase'/>
-                    </div>
-                    <Percentages setter={setPercentage}/>
-                    <Agreement actionType={"purchasing"}/>
-                </div>
-                <BasicButton onClick={submit} isBlocked={blockClick}>
-                    <div className='flex items-center gap-2'>
-                        {(isLoading) && <Loading percent={75} color="#000"/>}
-                        {title}
-                    </div>
-                </BasicButton>
+                <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
             </div>
+        }
+        <div className='flex flex-col gap-4'>
+            <div className='flex flex-col gap-2'>
+                <div
+                    className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                    <input type="number"
+                           id='amount'
+                           className='bg-transparent placeholder:text-neutral-600 w-full'
+                           value={amount || ""}
+                           onChange={onChange}
+                           placeholder='Enter Number of Bonds to Purchase'/>
+                </div>
+                <Percentages setter={setPercentage}/>
+                <Agreement actionType={"purchasing"}/>
+            </div>
+            <BasicButton onClick={submit} isBlocked={blockClick}>
+                <div className='flex items-center gap-2'>
+                    {(isLoading) && <Loading percent={75} color="#000"/>}
+                    {title}
+                </div>
+            </BasicButton>
         </div>
-    </>
+    </div>
 }
