@@ -7,7 +7,7 @@ import {useAccount} from "wagmi";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {nop} from "@/modules/utils/function";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import Loading from "@/components/utils/loading";
+import {Loading} from "@/components/utils/loading";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {openModal} from "@/store/redux/modal";

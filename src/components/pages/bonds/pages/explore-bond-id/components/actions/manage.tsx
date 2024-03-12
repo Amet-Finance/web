@@ -4,7 +4,7 @@ import {useState} from "react";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
 import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
-import Loading from "@/components/utils/loading";
+import {Loading} from "@/components/utils/loading";
 import {isAddress} from "viem";
 import {useTransaction} from "@/modules/utils/transaction";
 

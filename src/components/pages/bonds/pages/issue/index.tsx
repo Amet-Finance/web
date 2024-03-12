@@ -24,7 +24,7 @@ import TokenController from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
 import {polygonMumbai} from "wagmi/chains";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
-import Loading from "@/components/utils/loading";
+import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
 import {BlockTimes, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";

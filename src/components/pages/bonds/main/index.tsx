@@ -8,7 +8,7 @@ import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
-import Loading from "@/components/utils/loading";
+import {Loading} from "@/components/utils/loading";
 import CloudAPI from "@/modules/cloud-api";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/cloud-api/type";

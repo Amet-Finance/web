@@ -1,4 +1,4 @@
-export default function Loading({percent, color}: { percent?: number, color?: string }) {
+function Loading({percent, color}: { percent?: number, color?: string }) {
     color = color || "#fff"
     percent = percent || 0;
     let widthMain = 62 - ((62 * percent) / 100)
@@ -56,4 +56,13 @@ export default function Loading({percent, color}: { percent?: number, color?: st
 
         `}</style>
     </>
+}
+
+function HorizontalLoading({className}: { className?: string }) {
+    return <div className={`bg-neutral-900 py-3 rounded-md animate-pulse ${className}`}/>
+}
+
+export {
+    Loading,
+    HorizontalLoading
 }

@@ -8,9 +8,9 @@ import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
-import Loading from "@/components/utils/loading";
 import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
+import {HorizontalLoading} from "@/components/utils/loading";
 
 const StatisticsTypes = {
     Purchase: "Purchase",
@@ -75,39 +75,37 @@ function Container({type, total, isLoadingLogs, data, asset}: {
     const isPurchase = type === StatisticsTypes.Purchase
     const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
 
-    if (isLoadingLogs) {
-        return <>
-            <div
-                className='md:col-span-1 sm:col-span-2 flex justify-center items-center w-full p-4 border border-neutral-900 rounded-3xl'>
-                <Loading/>
-            </div>
-        </>
-    }
-
-
     const centerIndex = Math.round(data.length / 2)
     const blocks = [data[0]?.block, data[centerIndex]?.block, data[data.length - 1]?.block]
     const totalInUsd = (asset.priceUsd ?? 0) * total
     const title = Number.isFinite(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
 
+    // todo add text loading just like in Coinstats or Zerion
+
     return <>
         <div
             className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
-
             <div className='flex justify-between w-full'>
                 <span className='font-medium text-xl'>{type} Statistics</span>
-                <div className='flex flex-col items-end'>
-                        <span
-                            className='text-2xl font-bold'>{title}</span>
-                    <p className='text-neutral-500 text-sm'>Today {" "}
+                <div className='flex flex-col items-end gap-1'>
+                    {isLoadingLogs ? <HorizontalLoading className='w-32'/> :
+                        <span className='text-2xl font-bold'>{title}</span>}
+                    {isLoadingLogs ? <HorizontalLoading className='w-20'/> :
+                        <p className='text-neutral-500 text-sm'>Today {" "}
                         <span className='text-green-500'>(+2.4%)</span>
-                    </p>
+                        </p>}
                 </div>
             </div>
-            <BarChart bgColor={bgColor} data={data} asset={asset}/>
-            <div className='flex justify-between'>
-                {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
-            </div>
+            {
+                isLoadingLogs ?
+                    <HorizontalLoading className='w-full h-24'/> :
+                    <>
+                        <BarChart bgColor={bgColor} data={data} asset={asset}/>
+                        <div className='flex justify-between'>
+                            {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
+                        </div>
+                    </>
+            }
         </div>
     </>
 }
@@ -247,12 +245,14 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
                 {
-                    logs.filter(filterMyLogs)
-                        .map(log =>
-                            <LogContainer
-                                contractInfo={contractInfo}
-                                log={log}
-                                key={log.hash}/>)
+                    isLoadingLogs ?
+                        <HorizontalLoading className='w-full col-span-6 h-32'/> :
+                        logs.filter(filterMyLogs)
+                            .map(log =>
+                                <LogContainer
+                                    contractInfo={contractInfo}
+                                    log={log}
+                                    key={log.hash}/>)
                 }
             </div>
         </div>

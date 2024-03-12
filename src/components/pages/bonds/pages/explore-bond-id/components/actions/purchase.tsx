@@ -8,7 +8,7 @@ import {TxTypes} from "@/modules/web3/constants";
 import TokenController from "@/modules/web3/tokens";
 import {toast} from "react-toastify";
 import {BasicButton} from "@/components/utils/buttons";
-import Loading from "@/components/utils/loading";
+import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useTransaction} from "@/modules/utils/transaction";
