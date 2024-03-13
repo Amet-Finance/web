@@ -1,5 +1,5 @@
 import AmetLogo from "../../../public/svg/amet-logo";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef} from "react";
 import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {LinkBase, LinkExtended} from "@/components/navbar/types";
@@ -26,6 +26,7 @@ import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {initBalances} from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
+import {ShowContainer, useShow} from "@/components/utils/contrainer";
 
 
 export default function Navbar() {
@@ -41,121 +42,100 @@ export default function Navbar() {
     }, [address]);
 
 
-    return <>
-        <nav className="fixed flex flex-col w-full bg-black z-50">
-            <TopAnnouncement/>
-            <div className='flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
-                <AmetLogo/>
-                <DesktopNavbar/>
-                <MobileNavbar/>
-            </div>
-        </nav>
-    </>
+    return <nav className="fixed flex flex-col w-full bg-black z-50">
+        <TopAnnouncement/>
+        <div className='flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+            <AmetLogo/>
+            <DesktopNavbar/>
+            <MobileNavbar/>
+        </div>
+    </nav>
 }
 
 function DesktopNavbar() {
-    return <>
-        <div className='md:flex sm:hidden items-center gap-16'>
-            <Links/>
-            <WalletComponent/>
-        </div>
-    </>
+    return <div className='md:flex sm:hidden items-center gap-16'>
+        <Links/>
+        <WalletComponent/>
+    </div>
 }
 
 function MobileNavbar() {
-    const [isOpen, setOpen] = useState(false);
-    const openOrClose = () => setOpen(!isOpen)
+    const {isOpen, setIsOpen, openOrClose} = useShow();
     const boxRef = useRef<any>()
 
     useEffect(() => {
         const handleClickOutside = (event: any) => {
-            if (boxRef.current && boxRef.current.contains(event.target)) setOpen(false)
+            if (boxRef.current?.contains(event.target)) setIsOpen(false)
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
-    return <>
-        <div className='md:hidden sm:flex w-full justify-end'>
-            {isOpen ? <XmarkSVG onClick={openOrClose}/> : <BurgerSVG onClick={openOrClose}/>}
-            {
-                isOpen && <>
-                    <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
-                         ref={boxRef}>
-                        <div>
-                            {
-                                NAV_LINKS.map((linkExtended, index) => <LinkBuilderMobile linkExtended={linkExtended}
-                                                                                          key={index}/>)
-                            }
-                        </div>
-                        <div className='flex justify-center items-center w-full'>
-                            <WalletComponent/>
-                        </div>
-                    </div>
-                </>
-            }
-        </div>
-    </>
+    return <div className='md:hidden sm:flex w-full justify-end'>
+        {isOpen ? <XmarkSVG onClick={openOrClose}/> : <BurgerSVG onClick={openOrClose}/>}
+        <ShowContainer isOpen={isOpen}>
+            <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
+                 ref={boxRef}>
+                <div>
+                    {
+                        NAV_LINKS.map((linkExtended) => <LinkBuilderMobile linkExtended={linkExtended}
+                                                                           key={linkExtended.href}/>)
+                    }
+                </div>
+                <div className='flex justify-center items-center w-full'>
+                    <WalletComponent/>
+                </div>
+            </div>
+        </ShowContainer>
+    </div>
 }
 
 function Links() {
-    return <>
-        <div className='flex items-center gap-7'>
-            {NAV_LINKS.map((linkExtended, index) => <LinkBuilder linkExtended={linkExtended} key={index}/>)}
-        </div>
-    </>
+    return <div className='flex items-center gap-7'>
+        {NAV_LINKS.map(linkExtended => <LinkBuilder linkExtended={linkExtended} key={linkExtended.href}/>)}
+    </div>
 }
 
-function LinkBuilder({linkExtended}: { linkExtended: LinkExtended}) {
-    return <>
-        <div className='group relative'>
-            <LinkBase linkBase={linkExtended} isExtended={true}/>
-            {
-                linkExtended.subLinks?.length && <>
-                    <div
-                        className={'group-hover:flex hidden flex-col gap-4 justify-center  absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
-                        {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={index}
-                                                                                  isExtended={false}/>)}
-                    </div>
-                </>
-            }
-        </div>
-    </>
+function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
+    return <div className='group relative'>
+        <LinkBase linkBase={linkExtended} isExtended={true}/>
+        {
+            linkExtended.subLinks?.length && <div
+                className={'group-hover:flex hidden flex-col gap-4 justify-center  absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
+                {linkExtended.subLinks.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
+                                                                 isExtended={false}/>)}
+            </div>
+        }
+    </div>
 }
 
-function LinkBuilderMobile({linkExtended}: { linkExtended: LinkExtended }) {
-    return <>
-        <div className='group relative'>
-            <LinkBase linkBase={linkExtended} isExtended={true}/>
-            {
-                linkExtended.subLinks?.length && <>
-                    <div
-                        className='flex flex-col gap-4 justify-center py-4'>
-                        {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={index}
-                                                                                  isExtended={false}/>)}
-                    </div>
-                </>
-            }
-        </div>
-    </>
+function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
+    return <div className='group relative'>
+        <LinkBase linkBase={linkExtended} isExtended={true}/>
+        {
+            linkExtended.subLinks?.length && <div
+                className='flex flex-col gap-4 justify-center py-4'>
+                {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={linkBase.href}
+                                                                          isExtended={false}/>)}
+            </div>
+        }
+    </div>
 }
 
-function LinkBase({linkBase, isExtended}: { linkBase: LinkBase, isExtended?: boolean }) {
-    return <>
-        <Link href={linkBase.href} target={linkBase.target || "_self"}>
+function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBase, isExtended?: boolean }>) {
+    return <Link href={linkBase.href} target={linkBase.target ?? "_self"}>
             <span
                 className={`text-neutral-400 hover:text-white  whitespace-nowrap ${!isExtended && " px-4"}`}>{linkBase.title}</span>
-        </Link>
-    </>
+    </Link>
 }
 
 function WalletComponent() {
     const {isConnected} = useAccount();
-    const [isOpen, setOpen] = useState(false);
+    const {isOpen, setIsOpen} = useShow();
 
     useEffect(() => {
-        setOpen(isConnected);
+        setIsOpen(isConnected);
     }, [isConnected]);
 
     return (
@@ -172,45 +152,42 @@ function ConnectedComponent() {
 
     const network = useNetwork();
     const chain = getChain(network.chain?.id);
-    const [isOpen, setOpen] = useState(false);
+    const {isOpen, setIsOpen, openOrClose} = useShow();
     const boxRef = useRef<any>();
 
     const chainIcon = chain ? getChainIcon(chain?.id) : makeBlockie(zeroAddress);
-    const openOrClose = () => setOpen(!isOpen);
 
     useEffect(() => {
         const handleClickOutside = (event: any) => {
-            if (boxRef.current && !boxRef.current.contains(event.target)) setOpen(false)
+            if (boxRef.current && !boxRef.current.contains(event.target)) setIsOpen(false)
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
-    return <>
-
-        <div className='relative text-black' ref={boxRef}>
-            <BasicButton onClick={openOrClose}>
-                <div className='flex items-center gap-2'>
-                    <Image src={chainIcon}
-                           alt={chain?.name || ""}
-                           width={25} height={25}
-                           className='cursor-pointer rounded-full p-0 m-0'/>
-                    <span>{shorten(accountState.address, 4)}</span>
-                </div>
-            </BasicButton>
-            {isOpen && <Portfolio setOpen={setOpen}/>}
-        </div>
-
-    </>
+    return <div className='relative text-black' ref={boxRef}>
+        <BasicButton onClick={openOrClose}>
+            <div className='flex items-center gap-2'>
+                <Image src={chainIcon}
+                       alt={chain?.name ?? ""}
+                       width={25} height={25}
+                       className='cursor-pointer rounded-full p-0 m-0'/>
+                <span>{shorten(accountState.address, 4)}</span>
+            </div>
+        </BasicButton>
+        <ShowContainer isOpen={isOpen}>
+            <Portfolio setOpen={setIsOpen}/>
+        </ShowContainer>
+    </div>
 }
 
-function Portfolio({setOpen}: { setOpen: any }) {
+function Portfolio({setOpen}: Readonly<{ setOpen: any }>) {
     const accountState = AccountController.state
-    const address = accountState.address || "";
+    const address = accountState.address ?? "";
 
-    const icon = accountState.profileImage || makeBlockie(address);
-    const name = accountState.profileName || "";
+    const icon = accountState.profileImage ?? makeBlockie(address);
+    const name = accountState.profileName ?? "";
     const {disconnect} = useDisconnect()
 
     function disconnectWallet() {
@@ -218,71 +195,65 @@ function Portfolio({setOpen}: { setOpen: any }) {
         disconnect();
     }
 
-    return <>
-        <div className='absolute right-0 top-[120%] bg-white rounded-3xl w-[200%]'>
-            <div className='flex flex-col gap-8 w-full px-6 py-4'>
-                <div className='flex justify-between gap-24 items-center'>
-                    <div className='flex items-center gap-2'>
-                        <Image src={icon}
-                               alt={address}
-                               width={42} height={42}
-                               className='cursor-pointer rounded-full p-0 m-0 border border-neutral-500'/>
-                        <div className='flex flex-col gap-0'>
-                            {
-                                Boolean(name) && <>
-                                    <div className='group flex items-center gap-1'
-                                         onClick={() => copyToClipboard(name, `Name`)}>
-                                        <span className='whitespace-nowrap font-medium'>{shortenString(name, 22)}</span>
-                                        <div className='group-hover:flex hidden'><CopySVG/></div>
-                                    </div>
-
-                                </>
-                            }
-                            <div className='group flex items-center gap-1'
-                                 onClick={() => copyToClipboard(address, `Address`)}>
-                                <span className='text-sm text-neutral-800 font-light'>{shorten(address, 6)}</span>
-                                <div className='group-hover:flex hidden'><CopySVG size={10}/></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-1'>
-                        <div className='p-1.5 hover:bg-neutral-300 rounded-md'
-                             onClick={() => toast.error("Settings is not working")}>
-                            <SettingsSVG color="#000"/>
-                        </div>
-                        <div className='p-1.5 hover:bg-neutral-300 rounded-md' onClick={disconnectWallet}>
-                            <DisconnectSVG/>
-                        </div>
+    return <div className='absolute right-0 top-[120%] bg-white rounded-3xl w-[200%]'>
+        <div className='flex flex-col gap-8 w-full px-6 py-4'>
+            <div className='flex justify-between gap-24 items-center'>
+                <div className='flex items-center gap-2'>
+                    <Image src={icon}
+                           alt={address}
+                           width={42} height={42}
+                           className='cursor-pointer rounded-full p-0 m-0 border border-neutral-500'/>
+                    <div className='flex flex-col gap-0'>
+                        {
+                            Boolean(name) && <button className='group flex items-center gap-1'
+                                                     onClick={() => copyToClipboard(name, `Name`)}>
+                                <span className='whitespace-nowrap font-medium'>{shortenString(name, 22)}</span>
+                                <div className='group-hover:flex hidden'><CopySVG/></div>
+                            </button>
+                        }
+                        <button className='group flex items-center gap-1'
+                                onClick={() => copyToClipboard(address, `Address`)}>
+                            <span className='text-sm text-neutral-800 font-light'>{shorten(address, 6)}</span>
+                            <div className='group-hover:flex hidden'><CopySVG size={10}/></div>
+                        </button>
                     </div>
                 </div>
-                <div className='flex flex-col'>
-                    <span
-                        className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>
-                    <span className='text-sm text-green-500'>$0.00 (0.0%)</span>
-                </div>
-                <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
-                    <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
-                        <span>Portfolio</span>
-                    </Link>
-                    <Link href={`/address/${address}?tab=watchlist`}
-                          className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
-                        <span>Watchlist</span>
-                    </Link>
-                </div>
-                <div className='flex items-center gap-1 justify-center text-xs text-center text-neutral-800'>
-                    <span>Need assistance?</span>
-                    <Link href={URLS.DiscordTicket} target='_blank'>
-                        <span className='underline'>Create a ticket!</span>
-                    </Link>
+                <div className='flex items-center gap-1'>
+                    <button className='p-1.5 hover:bg-neutral-300 rounded-md'
+                            onClick={() => toast.error("Settings is not working")}>
+                        <SettingsSVG color="#000"/>
+                    </button>
+                    <button className='p-1.5 hover:bg-neutral-300 rounded-md' onClick={disconnectWallet}>
+                        <DisconnectSVG/>
+                    </button>
                 </div>
             </div>
+            <div className='flex flex-col'>
+                    <span
+                        className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>
+                <span className='text-sm text-green-500'>$0.00 (0.0%)</span>
+            </div>
+            <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
+                <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                    <span>Portfolio</span>
+                </Link>
+                <Link href={`/address/${address}?tab=watchlist`}
+                      className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                    <span>Watchlist</span>
+                </Link>
+            </div>
+            <div className='flex items-center gap-1 justify-center text-xs text-center text-neutral-800'>
+                <span>Need assistance?</span>
+                <Link href={URLS.DiscordTicket} target='_blank'>
+                    <span className='underline'>Create a ticket!</span>
+                </Link>
+            </div>
         </div>
-    </>
+    </div>
 }
 
 
 function ConnectWalletComponent() {
     const web3Modal = useWeb3Modal();
-
     return <BasicButton wMin onClick={() => web3Modal.open()}><span className='px-4'>Connect</span></BasicButton>
 }

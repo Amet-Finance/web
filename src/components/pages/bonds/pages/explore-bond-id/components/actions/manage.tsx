@@ -7,6 +7,7 @@ import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/compon
 import {Loading} from "@/components/utils/loading";
 import {isAddress} from "viem";
 import {useTransaction} from "@/modules/utils/transaction";
+import {ShowContainer, useShow} from "@/components/utils/contrainer";
 
 export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
 
@@ -26,7 +27,7 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractExtended
     const {_id, payout, totalBonds, redeemed} = contractInfo;
     const [contractAddress, chainId] = _id.split("_");
 
-    const [isOpen, setIsOpen] = useState(false);
+    const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
 
     const handler = [amount, setAmount];
@@ -39,11 +40,6 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractExtended
     })
 
 
-
-    function openOrClose() {
-        setIsOpen(!isOpen)
-    }
-
     async function submit() {
         try {
             if (amount <= 0) return toast.error("Invalid amount");
@@ -54,16 +50,16 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractExtended
     }
 
     return <div
-        className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
+        className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Deposit Payout {isLoading && <Loading percent={80}/>}</button>
-        {
-            isOpen && <InputContainer handler={handler}
-                                      placeholder='Enter The Payout Token Amoun'
-                                      maxValue={maxPayout}
-                                      symbol={payout.symbol}
-                                      submit={submit}/>
-        }
+        <ShowContainer isOpen={isOpen}>
+            <InputContainer handler={handler}
+                            placeholder='Enter The Payout Token Amoun'
+                            maxValue={maxPayout}
+                            symbol={payout.symbol}
+                            submit={submit}/>
+        </ShowContainer>
     </div>
 }
 
@@ -97,7 +93,8 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractExten
     const {_id} = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_");
-    const [isOpen, setIsOpen] = useState(false);
+
+    const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
 
     const handler = [amount, setAmount];
@@ -107,25 +104,18 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractExten
         count: BigInt(amount)
     })
 
-
-    function openOrClose() {
-        setIsOpen(!isOpen)
-    }
-
     async function submit() {
         if (amount <= 0) return toast.error("Invalid amount");
         await submitTransaction();
     }
 
     return <div
-        className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
+        className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Update Bond Supply {isLoading && <Loading percent={80}/>}</button>
-        {
-            isOpen && <InputContainer handler={handler}
-                                      submit={submit}
-                                      placeholder='Enter The Desired Bond Supply'/>
-        }
+        <ShowContainer isOpen={isOpen}>
+            <InputContainer handler={handler} submit={submit} placeholder='Enter The Desired Bond Supply'/>
+        </ShowContainer>
     </div>
 }
 
@@ -135,7 +125,7 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
 
     const [contractAddress, chainId] = _id.split("_");
 
-    const [isOpen, setIsOpen] = useState(false);
+    const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
 
     const handler = [amount, setAmount];
@@ -146,10 +136,6 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
     })
 
 
-    function openOrClose() {
-        setIsOpen(!isOpen)
-    }
-
     async function submit() {
         if (amount <= 0) return toast.error("Invalid amount");
         await submitTransaction();
@@ -159,10 +145,9 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
         className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Decrease Maturity Period {isLoading && <Loading percent={80}/>}</button>
-        {
-            isOpen && <InputContainer handler={handler} submit={submit}
-                                      placeholder='Maturit Period In Blocks'/>
-        }
+        <ShowContainer isOpen={isOpen}>
+            <InputContainer handler={handler} submit={submit} placeholder='Maturit Period In Blocks'/>
+        </ShowContainer>
     </div>
 }
 
@@ -171,7 +156,7 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractExtendedIn
 
     const [contractAddress, chainId] = _id.split("_");
 
-    const [isOpen, setIsOpen] = useState(false);
+    const {isOpen, openOrClose} = useShow()
     const [owner, setOwner] = useState();
 
     const handler = [owner, setOwner];
@@ -182,11 +167,6 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractExtendedIn
         owner
     })
 
-
-    function openOrClose() {
-        setIsOpen(!isOpen)
-    }
-
     async function submit() {
         if (!owner || !isAddress(owner)) return toast.error("Invalid owner");
         await submitTransaction()
@@ -196,12 +176,12 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractExtendedIn
         className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Change Owner {isLoading && <Loading percent={80}/>}</button>
-        {
-            isOpen && <InputContainer handler={handler}
-                                      submit={submit}
-                                      type="string"
-                                      placeholder='The Desired Maturit Period In Blocks'/>
-        }
+        <ShowContainer isOpen={isOpen}>
+            <InputContainer handler={handler}
+                            submit={submit}
+                            type="string"
+                            placeholder='The Desired Maturit Period In Blocks'/>
+        </ShowContainer>
     </div>
 }
 
