@@ -34,6 +34,7 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
+import {ShowContainer, useShow} from "@/components/utils/contrainer";
 
 
 export default function Issue() {
@@ -191,18 +192,19 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     const {address} = useAccount();
     const [bondInfo, setBondInfo] = bondInfoHandler;
     const [tokens, setTokens] = tokensHandler;
-    const [isOpen, setOpen] = useState(false);
+    const {isOpen, setIsOpen, openOrClose} = useShow();
     const inputRef = useRef<any>()
     const boxRef = useRef<any>(null)
 
     const tokenAddress = ((isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken) || "").toLowerCase();
     const tokensArray = Object.values(tokens)
+    const isShow = Boolean(tokensArray.length) && isOpen
 
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
             if (boxRef.current && !boxRef.current.contains(event.target)) {
-                setOpen(false);
+                setIsOpen(false);
             }
         };
 
@@ -239,51 +241,43 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
         [type]: (contractAddress || "").toLowerCase()
     })
     const changeInput = (event: any) => setTokenType(event.target.value)
-    const openOrClose = () => setOpen(!isOpen)
     const selectToken = (contractAddress: string) => {
         setTokenType(contractAddress)
         inputRef.current.value = contractAddress;
-        setOpen(false);
+        setIsOpen(false);
     }
 
 
-
-    return <>
-        <div className='relative md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3 h-full'
-             ref={boxRef}>
-            <InfoBox info={infoObject}><span
-                className='text-white text-md font-medium whitespace-nowrap'>{title}:</span></InfoBox>
-            <input type='text'
-                   className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
-                   placeholder={placeholder}
-                   ref={inputRef}
-                   onClick={openOrClose}
-                   onChange={changeInput}/>
-            {
-                Boolean(tokensArray.length) && isOpen && <>
-                    <div
-                        className='absolute flex flex-col gap-1 bg-[#131313] w-full border border-w1 rounded-md top-full left-0 z-10'>
-                        {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
-                    </div>
-                </>
-            }
-        </div>
-    </>
+    return <div className='relative md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3 h-full'
+                ref={boxRef}>
+        <InfoBox info={infoObject}><span
+            className='text-white text-md font-medium whitespace-nowrap'>{title}:</span></InfoBox>
+        <input type='text'
+               className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
+               placeholder={placeholder}
+               ref={inputRef}
+               onClick={openOrClose}
+               onChange={changeInput}/>
+        <ShowContainer isOpen={isShow}>
+            <div
+                className='absolute flex flex-col gap-1 bg-[#131313] w-full border border-w1 rounded-md top-full left-0 z-10'>
+                {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
+            </div>
+        </ShowContainer>
+    </div>
 }
 
-function TokenForSelector({token, onClick}: { token: TokenResponse, onClick: any }) {
+function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onClick: any }>) {
 
-    const iconSrc = token.icon || makeBlockie(zeroAddress);
+    const iconSrc = token.icon ?? makeBlockie(zeroAddress);
 
-    return <>
-        <div className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800'
-             onClick={() => onClick(token.contractAddress)}>
-            <Image src={iconSrc} alt={token.name} width={22} height={22}
-                   className='rounded-full border border-neutral-400'/>
-            <p className='text-neutral-300 text-sm'>{token.name} <span
-                className='text-neutral-500'>({token.symbol})</span></p>
-        </div>
-    </>
+    return <button className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800'
+                   onClick={() => onClick(token.contractAddress)}>
+        <Image src={iconSrc} alt={token.name} width={22} height={22}
+               className='rounded-full border border-neutral-400'/>
+        <p className='text-neutral-300 text-sm'>{token.name} <span
+            className='text-neutral-500'>({token.symbol})</span></p>
+    </button>
 }
 
 function MaturityPeriodSelector({bondInfoHandler}: BondData) {
@@ -303,13 +297,13 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
 
     const inputRef = useRef<any>(null);
     const boxRef = useRef<any>(null)
-    const [type, setType] = useState(Types.Days)
-    const [isOpen, setOpen] = useState(false);
+    const [type, setType] = useState(Types.Days);
+    const {isOpen, setIsOpen, openOrClose} = useShow();
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
             if (boxRef.current && !boxRef.current.contains(event.target)) {
-                setOpen(false);
+                setIsOpen(false);
             }
         };
 
@@ -318,7 +312,6 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
-    const openOrClose = () => setOpen(!isOpen)
 
     function updateMaturityPeriod(type: string, value: number) {
         const preValue = Timers[type] * Number(value)
@@ -340,8 +333,7 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         updateMaturityPeriod(type, value)
     }
 
-    return <>
-        <div className='md:col-span-4 sm:col-span-8 w-full flex flex-col gap-3'>
+    return <div className='md:col-span-4 sm:col-span-8 w-full flex flex-col gap-3'>
             <InfoBox info={InfoSections.MaturityPeriod}><span
                 className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
             <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
@@ -352,33 +344,28 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
                        ref={inputRef}
                        className='bg-transparent col-span-4 placeholder:text-[#3C3C3C] pl-4 py-3'/>
 
-                <div className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
+                <button className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
                      onClick={openOrClose} ref={boxRef}>
                     <span className='text-center w-full capitalize'>{type}</span>
-                </div>
-                {
-                    isOpen && <>
-                        <div
-                            className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
-                            {
-                                Object.keys(Types)
-                                    .map(key => <><span
-                                            className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
-                                            id={Types[key]} onClick={changeType}>{key}</span>
-                                        </>
-                                    )
-                            }
-                        </div>
-                    </>
-                }
+                </button>
+                <ShowContainer isOpen={isOpen}>
+                    <div
+                        className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
+                        {
+                            Object.keys(Types)
+                                .map(key => (
+                                    <button className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
+                                            id={Types[key]} onClick={changeType} key={key}>{key}</button>))
+                        }
+                    </div>
+                </ShowContainer>
             </div>
-        </div>
-    </>
+    </div>
 }
 
 function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
     const [bondInfo, setBondInfo] = bondInfoHandler;
-    const [isOpen, setIsOpen] = useState(false);
+    const {isOpen, openOrClose, setIsOpen} = useShow();
     const boxRef = useRef<any>(null)
 
     useEffect(() => {
@@ -394,7 +381,6 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
     }, [boxRef]);
 
 
-    const openOrClose = () => setIsOpen(!isOpen)
     const selectChain = (chainId: number) => setBondInfo({...bondInfo, chainId})
 
     const chainInfo = getChain(bondInfo.chainId)
