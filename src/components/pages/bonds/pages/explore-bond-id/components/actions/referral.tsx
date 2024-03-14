@@ -14,6 +14,9 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
 import {useTransaction} from "@/modules/utils/transaction";
+import {copyToClipboard} from "@/modules/utils/address";
+import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
+import CopySVG from "../../../../../../../../public/svg/utils/copy";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
@@ -34,8 +37,8 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const totalReward = referralInfo.quantity * purchase.amountClean * feeDetails.referrerRewardRate / 1000;
 
-    const isBlocked = !contractInfo.isSettled || isBlacklisted || referralInfo.isRepaid || !totalReward;
-    let title = !contractInfo.isSettled ? "Pending Issuer Settlement" : "Claim"
+    const isBlocked = isBlacklisted || referralInfo.isRepaid || !totalReward;
+    let title = "Claim"
     if (isBlacklisted) title = "Address Blocked";
     if (referralInfo.isRepaid) title = "Already Repaid";
 
@@ -94,8 +97,11 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
             }
             <span className='text-neutral-400 text-sm'>in referral rewards with Amet Finance</span>
         </div>
-        <BasicButton isBlocked={isBlocked} onClick={claimReferralRewards}>
-            <span>{title}</span>
-        </BasicButton>
+        <div className='flex gap-1 items-center'>
+            <BasicButton isBlocked={isBlocked} onClick={claimReferralRewards}>
+                <span>{title}</span>
+            </BasicButton>
+            <BasicButton onClick={() => copyReferralCode(address)} wMin hFull><CopySVG size={16}/></BasicButton>
+        </div>
     </div>
 }

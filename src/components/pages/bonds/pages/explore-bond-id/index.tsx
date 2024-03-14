@@ -51,7 +51,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
 
     const refreshHandler = [refreshDate, setUpdateIndex];
 
-    return <>
+    return (
         <div className='flex flex-col gap-4 w-full xl1:px-52 lg:px-24 md:px-12 sm:px-8 py-24'>
             <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
@@ -63,7 +63,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
             <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
             <GeneralStatisticsContainer contractInfo={bondDetailed.contractInfo}/>
         </div>
-    </>
+    )
 }
 
 

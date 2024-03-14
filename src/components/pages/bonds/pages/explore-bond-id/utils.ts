@@ -65,7 +65,19 @@ async function getPastLogs(contractInfo: ContractExtendedInfoFormat, setLogs: an
     return combinedLogs;
 }
 
+function copyReferralCode(address: string|undefined) {
+    if (!address) {
+        return open();
+    }
+
+    const url = `${location.href.toLowerCase()}?ref=${address.toLowerCase()}`
+    navigator.clipboard.writeText(url)
+        .then(() => toast("Referral url was successfully copied to your clipboard."))
+        .catch(() => toast.error("An error has occurred."))
+}
+
 export {
+    copyReferralCode,
     fetchContractExtended,
     getPastLogs
 }

@@ -13,6 +13,8 @@ import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bon
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useTransaction} from "@/modules/utils/transaction";
 
+// todo fetch from blockchain payoutBalance(bond) and if the payout is 0 or low add a warning tab for user so he can be aware of it
+//
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
     const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
 

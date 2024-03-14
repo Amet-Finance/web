@@ -5,6 +5,7 @@ type ActionHeadlineComponent = {
     addon?: { total?: number, onlyOwner?: boolean, owner?: string }
 }
 
+// todo updates needed after contracts changed
 type ReferralInfo = {
     quantity: number,
     isRepaid: boolean
