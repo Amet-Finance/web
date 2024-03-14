@@ -34,7 +34,7 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
-import {ShowContainer, useShow} from "@/components/utils/contrainer";
+import {ShowContainer, useShow} from "@/components/utils/container";
 
 
 export default function Issue() {
@@ -68,7 +68,7 @@ export default function Issue() {
         }
     }, [bondInfo.chainId]);
 
-    return <div className='grid grid-cols-10 gap-6 md:py-32 sm:py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-0'>
+    return <div className='grid grid-cols-10 gap-6 md:py-32 sm:py-12 xl-2xl:px-52 lg:px-24 md:px-12 sm:px-0'>
         <IssuerContainer bondInfoHandler={bondInfoHandler}
                          tokensHandler={tokensHandler}
                          issuerContractInfo={issuerContractInfo}/>

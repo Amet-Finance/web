@@ -13,6 +13,7 @@ import BondCard from "@/components/pages/bonds/utils/bond-card";
 import {DiscordIcon} from "../../../../public/svg/social/discord";
 import RoundedArrowSVG from "../../../../public/svg/utils/rounded-arrow";
 import ArrowBasicSVG from "../../../../public/svg/utils/arrow-basic";
+import {GeneralContainer} from "@/components/utils/container";
 
 
 export default function Home() {
@@ -31,27 +32,27 @@ export default function Home() {
 
 function LandingSection() {
 
-    return <>
-        <div
-            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden  xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-4 md:min-h-[90vh] sm:min-h-[75vh]'>
-            <div className='flex flex-col gap-8 lg:items-start lg:text-start sm:items-center sm:text-center justify-center '>
-                <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold leading-snug max-w-7xl'>Simplified
+    return (
+        <GeneralContainer
+            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden md:min-h-[90vh] min-h-[75vh]'>
+            <div className='flex flex-col gap-8 xl:items-start xl:text-start items-center text-center justify-center'>
+                <h1 className='xl:text-7xl md:text-8xl text-5xl font-bold leading-snug max-w-7xl'>Simplified
                     Bond
                     Investments for Everyone</h1>
                 <div className='h-px w-1/4 bg-neutral-500'/>
-                <p className='text-neutral-400 max-w-xl md:text-sm sm:text-xs'>Welcome to the world of effortless
+                <p className='text-neutral-400 max-w-xl md:text-sm text-xs'>Welcome to the world of effortless
                     on-chain bond
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
-                <Link href='/bonds' className='relative flex lg:w-min sm:w-full'>
+                <Link href='/bonds' className='relative flex xl:w-min w-full'>
                     <BasicButton>
                         <span className='px-4 py-0.5'>Get Started</span>
                     </BasicButton>
                 </Link>
             </div>
-            <div className='flex items-end lg:flex sm:hidden h-full'>
-                <div className='relative w-[28rem] h- rounded-[4rem] origin-bottom-right'>
+            <div className='items-end xl:flex hidden h-full'>
+                <div className='relative w-[28rem] h-px rounded-[4rem] origin-bottom-right'>
                     <div className='absolute w-full top-1/4 z-10 hover:-translate-x-10 shadow-2xl shadow-black'>
                         <BondCard info={BOND_CARDS[0]} link='/bonds'/>
                     </div>
@@ -69,48 +70,25 @@ function LandingSection() {
                     </div>
                 </div>
             </div>
-            <div
-                className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer -translate-y-2.5'
+            <button className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer -translate-y-2.5'
                 onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
                 <span className='text-xs text-neutral-400'>Read More</span>
                 <ArrowBasicSVG classname='stroke-neutral-400 scale-[80%]'/>
-            </div>
-        </div>
-    </>
+            </button>
+        </GeneralContainer>)
 }
 
 function OnChainBondsSection() {
-
-    function Box({props}: {
-        props: {
-            imageSrc: string,
-            title: string,
-            paragraph: string
-        }
-    }) {
-        const {imageSrc, title, paragraph} = props;
-        return <>
-            <div
-                className="flex flex-col justify-between gap-16 items-start py-12 px-7 rounded-3xl border border-neutral-900 shadow-xl hover:shadow-neutral-900 bg-gradient-to-bl from-neutral-950 to-black hover:border-neutral-800 hover:scale-105 cursor-pointer ">
-                <Image src={imageSrc} width={73} height={92} alt={title}/>
-                <div className='flex flex-col gap-9'>
-                    <span className='font-semibold text-3xl'>{title}</span>
-                    <p className='text-neutral-400 text-sm'>{paragraph}</p>
-                </div>
-            </div>
-        </>
-    }
-
-    return <>
-        <div className='flex flex-col justify-center items-center gap-24 py-44 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+    return (
+        <GeneralContainer className='flex flex-col justify-center items-center gap-24 py-44'>
             <div className='flex flex-col items-center gap-5 px-4'>
-                <h2 className='md:text-5xl sm:text-4xl font-bold text-center'>On-Chain Bonds: Smart, Secure,
+                <h2 className='md:text-5xl text-4xl font-bold text-center'>On-Chain Bonds: Smart, Secure,
                     Streamlined</h2>
                 <p className='text-center text-neutral-400 text-sm'>{`Step into the future of finance with
                     On-Chain
                     Bonds. Experience cutting-edge security with blockchain's transparency.`}</p>
             </div>
-            <div className='grid lg1:grid-cols-3 md:grid-cols-1 gap-7'>
+            <div className='grid lg-xl:grid-cols-3 grid-cols-1 gap-7'>
                 <Box props={{
                     imageSrc: '/svg/images/lock.svg',
                     title: "Decentralized Access",
@@ -127,17 +105,37 @@ function OnChainBondsSection() {
                     paragraph: `Trust in smart contract technology. On-chain bonds are backed by secure, transparent smart contracts, safeguarding your investments and eliminating intermediaries.`
                 }}/>
             </div>
-        </div>
-    </>
+        </GeneralContainer>
+    )
 }
 
-function BondProperties() {
-    return <>
+function Box({props}: {
+    props: {
+        imageSrc: string,
+        title: string,
+        paragraph: string
+    }
+}) {
+    const {imageSrc, title, paragraph} = props;
+    return (
         <div
-            className='flex flex-col justify-center items-center rounded-[4rem] py-12 gap-4 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
+            className="flex flex-col justify-between gap-16 items-start py-12 px-7 rounded-3xl border border-neutral-900 shadow-xl hover:shadow-neutral-900 bg-gradient-to-bl from-neutral-950 to-black hover:border-neutral-800 hover:scale-105 cursor-pointer">
+            <Image src={imageSrc} width={73} height={92} alt={title}/>
+            <div className='flex flex-col gap-9'>
+                <span className='font-semibold text-3xl'>{title}</span>
+                <p className='text-neutral-400 text-sm'>{paragraph}</p>
+            </div>
+        </div>
+    )
+}
+
+
+function BondProperties() {
+    return (
+        <GeneralContainer className='flex flex-col justify-center items-center rounded-[4rem] py-12 gap-4'>
             <div className='flex justify-between items-center w-full gap-24'>
                 <div className='flex flex-col gap-8 z-10 w-full'>
-                    <h3 className='md:text-4xl sm:text-3xl font-bold'>Initiate Your Bonds Issuance</h3>
+                    <h3 className='md:text-4xl text-3xl font-bold'>Initiate Your Bonds Issuance</h3>
                     <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Strategize Your Investment:</span>
@@ -162,15 +160,15 @@ function BondProperties() {
                 <Image src='/pngs/Issue-bonds.png' alt="Issue Bonds"
                        width={2000}
                        height={2000}
-                       className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
+                       className='object-contain w-1/2 h-full lg-xl:flex hidden'/>
             </div>
             <RoundedArrowSVG/>
             <div className='flex justify-between items-center w-full gap-24'>
                 <Image src='/pngs/explore-bonds.png' alt="Explore Bonds"
                        width={2000} height={2000}
-                       className='object-contain w-1/2 h-full lg1:flex sm:hidden'/>
+                       className='object-contain w-1/2 h-full lg-xl:flex hidden'/>
                 <div className='flex flex-col gap-8 z-10'>
-                    <h3 className='md:text-4xl sm:text-3xl font-bold'>Discover and Acquire Bonds</h3>
+                    <h3 className='md:text-4xl text-3xl font-bold'>Discover and Acquire Bonds</h3>
                     <div className='flex flex-col max-w-xl gap-4'>
                         <div className='grid grid-cols-12  gap-0'>
                             <span className='col-span-11 row-span-1 font-bold'>Explore Bond Offerings:</span>
@@ -193,14 +191,14 @@ function BondProperties() {
                     </Link>
                 </div>
             </div>
-        </div>
-    </>
+        </GeneralContainer>
+    )
 }
 
 function TradeOnChainBondsSection() {
-    return <>
-        <div className='relative flex justify-between py-52 pb-52 xl1:mx-52 lg:mx-24 md:mx-12 sm:mx-8'>
-            <div className='flex flex-col justify-end gap-8 lg1:w-1/2 sm:w-full'>
+    return (
+        <GeneralContainer className='relative flex justify-between py-52'>
+            <div className='flex flex-col justify-end gap-8 lg-xl:w-1/2 w-full'>
                 <h3 className='md:text-4xl sm:text-3xl font-bold'>Trade On-Chain Bonds</h3>
                 <p className='max-w-xl text-neutral-400 text-sm'>Our innovative approach turns each bond into an ERC1155
                     NFT,
@@ -213,7 +211,7 @@ function TradeOnChainBondsSection() {
                     </BasicButton>
                 </Link>
             </div>
-            <div className='relative flex justify-end w-full lg1:flex sm:hidden'>
+            <div className='relative justify-end w-full lg-xl:flex hidden'>
                 <div className='absolute w-1/2 z-40 top-20 right-40 hover:-translate-x-24'>
                     <BondCard info={BOND_CARDS[1]} link='/bonds/explore'/>
                 </div>
@@ -224,8 +222,8 @@ function TradeOnChainBondsSection() {
                     <BondCard info={BOND_CARDS[3]} link='/bonds/explore'/>
                 </div>
             </div>
-        </div>
-    </>
+        </GeneralContainer>
+    )
 }
 
 function InTheNewsSection() {
@@ -238,10 +236,9 @@ function InTheNewsSection() {
 
 
     return <>
-        <div
-            className='flex flex-col py-12 gap-12  bg-neutral-950 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+        <GeneralContainer className='flex flex-col py-12 gap-12 bg-neutral-950' isPadding>
             <div className='flex justify-between items-center'>
-                <h4 className='md:text-4xl sm:text-3xl font-bold'>In The News</h4>
+                <h4 className='md:text-4xl text-3xl font-bold'>In The News</h4>
                 <div className='flex gap-2 items-center'>
                     <BasicButton isBgGrey onClick={() => scrollToRight('right')}>
                         <ArrowCurveSVG angle={-140} color='#fff'/>
@@ -252,11 +249,10 @@ function InTheNewsSection() {
 
                 </div>
             </div>
-
             <div className='flex gap-4 items-stretch overflow-x-auto hide-scrollbar' ref={articlesRef}>
                 {ARTICLES.map((article, index) => <ArticleBox article={article} key={index}/>)}
             </div>
-        </div>
+        </GeneralContainer>
     </>
 }
 
@@ -265,9 +261,8 @@ function ArticleBox({article}: { article: Article }) {
 
     return <>
         <Link href={href} target='_blank' className='cursor-pointer'>
-
             <div
-                className='relative flex flex-col gap-4 rounded-3xl border border-w1 min-w-[400px] max-w-[400px] h-full bg-black '>
+                className='relative flex flex-col gap-4 rounded-3xl border border-w1 min-w-[400px] max-w-[400px] h-full bg-black'>
                 <Image src={image}
                        alt={title}
                        width={400}
@@ -288,32 +283,33 @@ function ArticleBox({article}: { article: Article }) {
 function FAQ() {
     const [selectedId, selectId] = useState(1);
 
-
-    function FaqItem({item, index}: any) {
-        const isSelected = index === selectedId;
-        const selectItemId = () => selectId(isSelected ? -1 : index)
-
-        return <>
-            <div className='flex flex-col gap-10 w-full text-start'>
-                <div className='flex flex-col gap-2 w-full'>
-                    <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
-                        <span className='text-start text-xl font-medium'>{item.title}</span>
-                        {isSelected ? <MinusSVG/> : <PlusSVG/>}
-                    </div>
-                    {isSelected && <span className='text-g2 text-sm max-w-[80%]'>{item.answer}</span>}
-                </div>
-                <div className='h-px bg-neutral-700 w-full'/>
+    return <>
+        <GeneralContainer className='flex flex-col justify-center items-center py-40 gap-16 text-white' isPadding>
+            <h4 className='md:text-4xl text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
+            <div className='flex flex-col gap-8 w-full'>
+                {
+                    FAQ_QUESTIONS.map((item, index) => <FaqItem item={item}
+                                                             selectedId={selectedId} selectId={selectId}
+                                                             index={index} key={index}/>)}
             </div>
-        </>
-    }
+        </GeneralContainer>
+    </>
+}
+
+function FaqItem({item, selectId, selectedId, index}: { item: any, selectId: any, selectedId: any, index: number }) {
+    const isSelected = index === selectedId;
+    const selectItemId = () => selectId(isSelected ? -1 : index)
 
     return <>
-        <div
-            className='flex flex-col justify-center items-center   xl1:px-52 lg:px-24 md:px-12 sm:px-8  py-40 gap-16 text-white'>
-            <h4 className='md:text-4xl sm:text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
-            <div className='flex flex-col gap-8 w-full'>
-                {FAQ_QUESTIONS.map((item, index) => <FaqItem item={item} index={index} key={index}/>)}
+        <div className='flex flex-col gap-10 w-full text-start'>
+            <div className='flex flex-col gap-2 w-full'>
+                <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
+                    <span className='text-start text-xl font-medium'>{item.title}</span>
+                    {isSelected ? <MinusSVG/> : <PlusSVG/>}
+                </div>
+                {isSelected && <span className='text-g2 text-sm max-w-[80%]'>{item.answer}</span>}
             </div>
+            <div className='h-px bg-neutral-700 w-full'/>
         </div>
     </>
 }
@@ -326,11 +322,6 @@ function Partnerships() {
             alt: "Manta Network",
             src: "/pngs/manta-partner.png"
         },
-        // {
-        //     url: URLS.others.Polygon,
-        //     alt: "Polygon zkEVM",
-        //     src: "/pngs/polygon-zkevm-partner.png"
-        // },
         {
             url: URLS.others.Polygon,
             alt: "Polygon",
@@ -345,26 +336,15 @@ function Partnerships() {
 
     ]
 
-    function TargetLink({item}: any) {
-        return <>
-            <Link href={item.url} target="_blank"
-                  className='flex justify-center md:col-span-2 sm:col-span-6'>
-                <Image src={item.src} alt={item.alt} width={200} height={50}
-                       className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
-            </Link>
-        </>
-    }
-
-    return <>
-        <div
-            className='flex flex-col justify-center gap-24 py-12 xl1:px-52 lg:px-24 md:px-12 sm:px-8 items-center bg-neutral-950'>
-            <div className='flex flex-col  items-center gap-4 text-center'>
-                <h2 className='md:text-4xl sm:text-3xl font-semibold'>Our Esteemed Partners: Collaborating for Success</h2>
+    return (
+        <GeneralContainer className='flex flex-col justify-center gap-24 py-12 items-center bg-neutral-950' isPadding>
+            <div className='flex flex-col items-center gap-4 text-center'>
+                <h2 className='md:text-4xl text-3xl font-semibold'>Our Esteemed Partners: Collaborating for Success</h2>
                 <p className='max-w-3xl text-neutral-400 text-sm'>Each partner plays a pivotal role in our ecosystem, bringing
                     unique expertise and value to our platform. Discover the synergy that makes our service stand out in
                     the world of finance</p>
             </div>
-            <div className='grid grid-cols-6 md:gap-20 sm:gap-12'>
+            <div className='grid grid-cols-6 md:gap-20 gap-12'>
                 {partners.map((item) => <TargetLink item={item} key={item.url}/>)}
             </div>
             <Link href={URLS.Discord} target="_blank">
@@ -375,7 +355,16 @@ function Partnerships() {
                     </div>
                 </BasicButton>
             </Link>
-        </div>
+        </GeneralContainer>
+    )
+}
 
+function TargetLink({item}: any) {
+    return <>
+        <Link href={item.url} target="_blank"
+              className='flex justify-center md:col-span-2 col-span-6'>
+            <Image src={item.src} alt={item.alt} width={200} height={50}
+                   className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
+        </Link>
     </>
 }

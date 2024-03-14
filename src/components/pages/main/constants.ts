@@ -1,5 +1,5 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractBasicFormat} from "@/modules/cloud-api/contract-type";
+import {ContractBasicFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 
 const ARTICLES: Article[] = [
     {
@@ -48,36 +48,28 @@ const FAQ_QUESTIONS: Question[] = [
     }
 ]
 
+const usdtToken: FinancialAttributeInfo = {
+    _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+    contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+    chainId: 80001,
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "icon": "https://storage.amet.finance/icons/usdc.png",
+    "decimals": 6,
+    isVerified: true,
+    amount: "10",
+    amountClean: 150,
+    priceUsd: 1
+}
+
 const BOND_CARDS: ContractBasicFormat[] = [
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
 
-        purchase: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            chainId: 80001,
-            "name": "USD Coin",
-            "symbol": "USDC",
-            "icon": "https://storage.amet.finance/icons/usdc.png",
-            "decimals": 6,
-            isVerified: true,
-            amount: "10",
-            amountClean: 100
-        },
-        payout: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            chainId: 80001,
-            "name": "USD Coin",
-            "symbol": "USDC",
-            "icon": "https://storage.amet.finance/icons/usdc.png",
-            "decimals": 6,
-            isVerified: true,
-            amount: "10",
-            amountClean: 150
-        },
+        purchase: usdtToken,
+        payout: usdtToken,
         payoutBalance: "0",
 
         totalBonds: 100,
@@ -96,18 +88,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         issuer: "0x21451254Fas124",
         owner: "0x0",
         payoutBalance: "0",
-        purchase: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            chainId: 80001,
-            "name": "Tether USD",
-            "symbol": "USDT",
-            "icon": "https://storage.amet.finance/icons/usdc.png",
-            "decimals": 6,
-            isVerified: true,
-            amount: "10",
-            amountClean: 1200
-        },
+        purchase: usdtToken,
         payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -118,7 +99,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 20
+            amountClean: 20,
+            priceUsd: 163
         },
 
         totalBonds: 100,
@@ -138,18 +120,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         owner: "0x0",
         payoutBalance: "0",
 
-        purchase: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            chainId: 80001,
-            "name": "Tether USD",
-            "symbol": "USDT",
-            "icon": "https://storage.amet.finance/icons/usdc.png",
-            "decimals": 6,
-            isVerified: true,
-            amount: "10",
-            amountClean: 200
-        },
+        purchase: usdtToken,
         payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -160,7 +131,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 31350000
+            amountClean: 31350000,
+            priceUsd: 0.00003203
         },
 
         totalBonds: 100,
@@ -170,7 +142,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         maturityPeriodInBlocks: 120000,
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        score: 9.8,
+        score: 9.5,
         tbv: 2100
     },
     {
@@ -178,18 +150,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         issuer: "0x21451254Fas124",
         owner: "0x0",
         payoutBalance: "0",
-        purchase: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-            chainId: 80001,
-            "name": "Tether USD",
-            "symbol": "USDT",
-            "icon": "https://storage.amet.finance/icons/usdc.png",
-            "decimals": 6,
-            isVerified: true,
-            amount: "10",
-            amountClean: 400
-        },
+        purchase: usdtToken,
         payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -200,7 +161,8 @@ const BOND_CARDS: ContractBasicFormat[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 0.01
+            amountClean: 0.01,
+            priceUsd: 72000
         },
 
         totalBonds: 100,
@@ -211,7 +173,7 @@ const BOND_CARDS: ContractBasicFormat[] = [
         tbv: 52350,
 
         issuanceDate: new Date("Tue Feb 13 2024 12:33:05 GMT+0400 (Armenia Standard Time)"),
-        score: 9.8
+        score: 9.9
     }
 ]
 

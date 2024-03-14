@@ -10,7 +10,7 @@ export default function LoadingScreen() {
     }, [percentage]);
 
     return <>
-        <div className='flex gap-2 items-end w-full h-screen xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+        <div className='flex gap-2 items-end w-full h-screen xl-2xl:px-52 lg:px-24 md:px-12 sm:px-8'>
             <div className='-translate-y-28'>
                 <div className='flex items-start'>
                     <span className='text-9xl font-bold'>{percentage}</span>

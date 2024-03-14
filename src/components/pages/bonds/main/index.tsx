@@ -37,7 +37,7 @@ export default function Bonds() {
 
     return <>
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-20 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+            <div className='flex flex-col gap-20 xl-2xl:px-52 lg:px-24 md:px-12 sm:px-8'>
                 <Headline statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
                 <BondCards/>
                 <BondsExplanation statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
@@ -165,7 +165,7 @@ function Loader() {
 function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
     return <>
         <div className='relative w-full'>
-            <div className='grid xl1:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
+            <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
                 {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
             </div>
             <div className='absolute top-[85%] left-0 h-[20%] w-full bg-gradient-to-b from-transparent to-black z-30'/>
@@ -218,7 +218,7 @@ function BondsExplanation({statistics, isStatisticsLoading}: {
 
     return <>
         <div className='flex flex-col gap-40 mt-24'>
-            <div className='flex gap-12 justify-between xl1:flex-row sm:flex-col items-center'>
+            <div className='flex gap-12 justify-between xl-2xl:flex-row sm:flex-col items-center'>
                 <div className='flex flex-col md:max-w-xl sm:max-w-none gap-8'>
                     <h2 className='text-4xl font-medium'>Why Issue On-Chain Bonds?</h2>
                     <p className='text-neutral-400 text-sm'>{`Issuing on-chain bonds presents a unique opportunity for both entities and individuals seeking a simple yet effective way to raise capital. This method stands out for its straightforward process, offering a clear alternative to the intricacies of other financing methods. It allows issuers to reach a wider pool of investors, tapping into a market eager for stable and predictable investment options. By choosing to issue on-chain bonds, you open the door to hassle-free capital generation, providing a win-win for both issuers and investors looking for clarity and opportunity in the financial landscape.`}

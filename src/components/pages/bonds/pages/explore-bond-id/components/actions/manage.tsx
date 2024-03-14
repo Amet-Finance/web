@@ -7,7 +7,7 @@ import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/compon
 import {Loading} from "@/components/utils/loading";
 import {isAddress} from "viem";
 import {useTransaction} from "@/modules/utils/transaction";
-import {ShowContainer, useShow} from "@/components/utils/contrainer";
+import {ShowContainer, useShow} from "@/components/utils/container";
 
 export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
 

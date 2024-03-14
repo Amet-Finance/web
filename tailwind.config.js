@@ -5,23 +5,22 @@ module.exports = {
     ],
     theme: {
         screens: {
-            // => @media (min-width: 320px) { ... }
-            'sm': '320px',
-            'sm1': '544px',
-            'md': '768px',
-            'lg': '1024px',
-            'lg1': '1152px',
-            'xl': '1280px',
-            'xl1': '1440px',
-            '2xl': '1536px',
+            'xs': '475px',       // Extra small devices, like small phones
+            'sm': '640px',       // Small devices, like phones - Tailwind's default
+            'md': '768px',       // Medium devices, like tablets - Tailwind's default
+            'md-lg': '960px',    // Between md and lg - for devices like smaller laptops or tablets in landscape
+            'lg': '1024px',      // Large devices, like laptops - Tailwind's default
+            'lg-xl': '1152px',   // Between lg and xl - for medium-sized laptop screens
+            'xl': '1280px',      // Extra large devices, like large laptops - Tailwind's default
+            'xl-2xl': '1440px',  // Between xl and 2xl - for larger laptop screens or smaller desktops
+            '2xl': '1536px',     // 2x large devices, like larger laptops and desktops - Tailwind's default
+            '3xl': '1920px',     // 3x large devices, like large desktops
         },
         extend: {
             colors: {
                 g: "#929292",
                 g2: "#5B5B5B",
                 g3: "#353535",
-
-                kyberswap: "#31cb9e"
             },
             backgroundColor: {
 

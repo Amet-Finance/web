@@ -26,7 +26,7 @@ import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {initBalances} from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {ShowContainer, useShow} from "@/components/utils/contrainer";
+import {GeneralContainer, ShowContainer, ToggleDisplayComponent, useShow} from "@/components/utils/container";
 
 
 export default function Navbar() {
@@ -42,18 +42,18 @@ export default function Navbar() {
     }, [address]);
 
 
-    return <nav className="fixed flex flex-col w-full bg-black z-50">
+    return <nav className="fixed flex flex-col bg-black z-50 w-full">
         <TopAnnouncement/>
-        <div className='flex justify-between items-center z-20 w-full py-4 xl1:px-52 lg:px-24 md:px-12 sm:px-8'>
+        <GeneralContainer className='flex justify-between items-center z-20 py-4 w-full' isPadding>
             <AmetLogo/>
             <DesktopNavbar/>
             <MobileNavbar/>
-        </div>
+        </GeneralContainer>
     </nav>
 }
 
 function DesktopNavbar() {
-    return <div className='md:flex sm:hidden items-center gap-16'>
+    return <div className='md:flex hidden items-center gap-16'>
         <Links/>
         <WalletComponent/>
     </div>
@@ -72,8 +72,11 @@ function MobileNavbar() {
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
-    return <div className='md:hidden sm:flex w-full justify-end'>
-        {isOpen ? <XmarkSVG onClick={openOrClose}/> : <BurgerSVG onClick={openOrClose}/>}
+    return <div className='md:hidden flex w-full justify-end'>
+        <ToggleDisplayComponent isOpen={isOpen}>
+            <XmarkSVG onClick={openOrClose}/>
+            <BurgerSVG onClick={openOrClose}/>
+        </ToggleDisplayComponent>
         <ShowContainer isOpen={isOpen}>
             <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
                  ref={boxRef}>
@@ -102,7 +105,7 @@ function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
         <LinkBase linkBase={linkExtended} isExtended={true}/>
         {
             linkExtended.subLinks?.length && <div
-                className={'group-hover:flex hidden flex-col gap-4 justify-center  absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
+                className={'group-hover:flex hidden flex-col gap-4 justify-center absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
                 {linkExtended.subLinks.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
                                                                  isExtended={false}/>)}
             </div>
@@ -140,7 +143,10 @@ function WalletComponent() {
 
     return (
         <div className='cursor-pointer text-white'>
-            {isOpen ? <ConnectedComponent/> : <ConnectWalletComponent/>}
+            <ToggleDisplayComponent isOpen={isOpen}>
+                <ConnectedComponent/>
+                <ConnectWalletComponent/>
+            </ToggleDisplayComponent>
         </div>
     );
 }

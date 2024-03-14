@@ -8,7 +8,7 @@ import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
-import {ShowContainer, useShow} from "@/components/utils/contrainer";
+import {ShowContainer, useShow} from "@/components/utils/container";
 import {Chain} from "wagmi";
 
 export default function Explore() {
@@ -17,7 +17,7 @@ export default function Explore() {
     const openOrCloseFilter = () => setIsFilterOpen(!isFilterOpen);
 
     return <div
-        className='flex flex-col justify-center items-center w-full py-24 gap-12 xl1:px-36 lg:px-24 md:px-12 sm:px-0'>
+        className='flex flex-col justify-center items-center w-full py-24 gap-12 xl-2xl:px-36 lg:px-24 md:px-12 sm:px-0'>
         <div className='flex flex-col items-center gap-8 px-8'>
             <h1 className='text-5xl text-center font-bold'>Explore On-Chain Bonds: <br/>
                 Find, Filter, and Invest</h1>
@@ -27,7 +27,7 @@ export default function Explore() {
                 intuitive search options.</p>
         </div>
         <div
-            className='flex flex-col gap-12 bg-neutral-950 rounded-[2rem] w-full py-16 xl1:px- lg:px-8 md:px-4 sm:px-2.5'>
+            className='flex flex-col gap-12 bg-neutral-950 rounded-[2rem] w-full py-16 xl-2xl:px- lg:px-8 md:px-4 sm:px-2.5'>
             <div className='flex flex-col gap-4'>
                 <div className='flex items-stretch justify-end gap-4'>
                     <button className='flex items-center gap-2 p-4 bg-neutral-900 rounded-md cursor-pointer'
@@ -44,7 +44,7 @@ export default function Explore() {
                 </div>
                 {isFilterOpen && <FilterContainer/>}
             </div>
-            <div className='grid xl1:grid-cols-3 lg1:grid-cols-2 sm:grid-cols-1 gap-2'>
+            <div className='grid xl-2xl:grid-cols-3 lg1:grid-cols-2 sm:grid-cols-1 gap-2'>
                 <BondCards/>
             </div>
         </div>

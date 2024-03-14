@@ -18,8 +18,8 @@ function format(number: number, maxDigestsForSmallNumbers = 4) {
     // Format the part before the decimal point with commas
     const formattedIntegerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-    if (parts[1]) {
-        const formattedDecimals = Math.round(Number(parts[1])).toString().substring(0, 2)
+    if (parts[1] && maxDigestsForSmallNumbers) {
+        const formattedDecimals = parts[1].toString().substring(0, maxDigestsForSmallNumbers)
         return formattedIntegerPart + "." + formattedDecimals
     }
 

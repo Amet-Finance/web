@@ -9,14 +9,14 @@ import LinkedInSVG from "../../../public/svg/social/linkedin";
 import MediumSVG from "../../../public/svg/social/medium";
 import GithubSVG from "../../../public/svg/social/github";
 import FacebookSVG from "../../../public/svg/social/facebook";
+import {GeneralContainer} from "@/components/utils/container";
 
 export default function Footer() {
     return <>
-        <footer className="flex flex-col items-center z-20 bg-black">
+        <footer className="flex flex-col items-center z-20 bg-black w-full">
             <div className='w-full h-px bg-b2'/>
-            <div
-                className="flex md:flex-row sm:flex-col md:items-start sm:items-center gap-8 justify-between sm:py-10 xl:px-52 lg:px-24 md:px-12 sm:px-8 w-full">
-                <div className='flex flex-col md:items-start sm:items-center gap-2'>
+            <GeneralContainer className="flex md:flex-row flex-col md:items-start items-center gap-8 justify-between md:py-0 py-10 w-full" isPadding>
+                <div className='flex flex-col md:items-start items-center gap-2'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>
                         <TwitterSVG url={URLS.Twitter}/>
@@ -28,11 +28,11 @@ export default function Footer() {
                         <GithubSVG url={URLS.Github}/>
                         <FacebookSVG url={URLS.Facebook}/>
                     </div>
-                    <span className='text-g2 md:flex sm:hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
+                    <span className='text-g2 md:flex hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
                 </div>
                 <Links/>
-                <span className="text-g2 text-center whitespace-nowrap md:hidden sm:flex">&#169; 2023 Amet Finance. All rights reserved.</span>
-            </div>
+                <span className="text-g2 text-center whitespace-nowrap md:hidden flex">&#169; 2023 Amet Finance. All rights reserved.</span>
+            </GeneralContainer>
         </footer>
     </>
 }
@@ -62,7 +62,7 @@ function Links() {
     function LinkComponent({item}: any) {
         return <>
             <div className='flex flex-col gap-4' key={item.title}>
-                <span>{item.title}</span>
+                <span className='text-neutral-200'>{item.title}</span>
                 <div className='flex flex-col gap-1'>
                     {item.attributes.map((attribute: any, index: number) => <Attribute info={attribute} key={index}/>)}
                 </div>
@@ -82,7 +82,7 @@ function Attribute({info}: any) {
     const {title, url} = info;
     return <>
         <Link href={url} target="_blank" rel='noreferrer'>
-            <button className="text-g2 cursor-pointer hover:text-white text-start">{title}</button>
+            <button className="text-neutral-500 cursor-pointer hover:text-white text-start">{title}</button>
         </Link>
     </>
 }
