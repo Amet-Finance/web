@@ -14,7 +14,6 @@ import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
 import {useTransaction} from "@/modules/utils/transaction";
-import {copyToClipboard} from "@/modules/utils/address";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
 
