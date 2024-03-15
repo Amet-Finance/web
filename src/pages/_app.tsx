@@ -20,7 +20,7 @@ export default function App({Component, pageProps}: AppProps) {
     return <WagmiConfig config={wagmiConfig}>
             <Provider store={store}>
                 <Headers id={pageProps.pageId} meta={pageProps.meta}/>
-                <main className={"flex flex-col justify-between min-h-screen " + montserrat.className}>
+                <main className={`flex flex-col justify-between min-h-screen ${montserrat.className}`}>
                     <Navbar/>
                     <div className='z-10 mt-16'>
                         <Component {...pageProps} />
