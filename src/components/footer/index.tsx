@@ -15,7 +15,7 @@ export default function Footer() {
     return <>
         <footer className="flex flex-col items-center z-20 bg-black w-full">
             <div className='w-full h-px bg-b2'/>
-            <GeneralContainer className="flex md:flex-row flex-col md:items-start items-center gap-8 justify-between md:py-0 py-10 w-full" isPadding>
+            <GeneralContainer className="flex md:flex-row flex-col md:items-start items-center gap-8 justify-between py-10 w-full" isPadding>
                 <div className='flex flex-col md:items-start items-center gap-2'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>

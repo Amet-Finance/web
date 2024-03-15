@@ -12,6 +12,7 @@ import LoadingScreen from "@/components/pages/bonds/pages/explore-bond-id/compon
 import {nop} from "@/modules/utils/function";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/components/finished";
+import {GeneralContainer} from "@/components/utils/container";
 
 // todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
 // on top and tell that this bond is officially finished
@@ -52,7 +53,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
     const refreshHandler = [refreshDate, setUpdateIndex];
 
     return (
-        <div className='flex flex-col gap-4 w-full xl-2xl:px-52 lg:px-24 md:px-12 sm:px-8 py-24'>
+        <GeneralContainer className='flex flex-col gap-4 w-full py-24' isPadding>
             <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
             <StatisticsContainer bondDetailed={bondDetailed}/>
@@ -62,7 +63,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
             </div>
             <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
             <GeneralStatisticsContainer contractInfo={bondDetailed.contractInfo}/>
-        </div>
+        </GeneralContainer>
     )
 }
 

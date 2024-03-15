@@ -13,13 +13,10 @@ export default function HeadlineContainer({refreshHandler, refreshLoader}: {
     const [refreshDate, setUpdateIndex] = refreshHandler
     const [secondsPassed, setSecondsPassed] = useState(0);
     const {address} = useAccount();
-    const {open} = useWeb3Modal();
 
     function refresh() {
         setUpdateIndex(Math.random() * 10)
     }
-
-
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -30,7 +27,7 @@ export default function HeadlineContainer({refreshHandler, refreshLoader}: {
 
     return <>
         <div className='flex justify-between'>
-            <div className='flex  items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
+            <div className='flex items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
                  onClick={() => copyReferralCode(address)}>
                 <CopySVG/>
                 <span className='text-neutral-600 text-sm'>Copy Your Referral URL!</span>

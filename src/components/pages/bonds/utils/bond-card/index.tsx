@@ -52,7 +52,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractBasicFor
     return (
         <Link href={url}>
             <div
-                className='flex flex-col justify-between gap-14 rounded-2xl border border-neutral-900 p-6 py-4 hover:border-neutral-800 hover:bg-neutral-950 bg-black w-full overflow-clip'>
+                className='flex flex-col justify-between gap-14 rounded-2xl border border-neutral-900 p-4 py-4 hover:border-neutral-800 hover:bg-neutral-950 bg-black w-full overflow-clip'>
                 <div className='flex justify-between items-center w-full z-10'>
                     <div className='flex items-start gap-2'>
                         <div className='flex items-center gap-2 w-full whitespace-nowrap'>

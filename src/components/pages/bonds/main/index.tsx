@@ -12,6 +12,7 @@ import {Loading} from "@/components/utils/loading";
 import CloudAPI from "@/modules/cloud-api";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/cloud-api/type";
+import {GeneralContainer, ToggleDisplayComponent} from "@/components/utils/container";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)
@@ -37,11 +38,11 @@ export default function Bonds() {
 
     return <>
         <div className='flex flex-col w-full'>
-            <div className='flex flex-col gap-20 xl-2xl:px-52 lg:px-24 md:px-12 sm:px-8'>
+            <GeneralContainer className='flex flex-col gap-20' isPadding>
                 <Headline statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
                 <BondCards/>
                 <BondsExplanation statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
-            </div>
+            </GeneralContainer>
             <SectionEnd/>
         </div>
     </>
@@ -50,15 +51,15 @@ export default function Bonds() {
 function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
     return <>
         <div
-            className='relative flex lg:flex-row sm:flex-col lg:items-end sm:items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
+            className='relative flex lg:flex-row flex-col lg:items-end items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
             <div
-                className='flex flex-col md:items-start sm:items-center md:text-start sm:text-center w-full gap-12 '>
-                <h1 className='lg:text-7xl md:text-8xl sm:text-5xl font-bold max-2w-xl'>Unlock Financial
+                className='flex flex-col md:items-start items-center md:text-start text-center w-full gap-12 '>
+                <h1 className='lg:text-7xl md:text-8xl text-5xl font-bold max-2w-xl'>Unlock Financial
                     Possibilities <br/> with on-chain
                     Bonds</h1>
                 <div className='h-px w-1/4 bg-neutral-500'/>
                 <p className='text-neutral-400 text-sm max-w-2xl'>{`Amet Finance's on-chain bonds platform lets you issue, buy, sell, and redeem bonds seamlessly. Elevate your investment strategy and embrace the future of decentralized finance today.`}</p>
-                <div className='flex md:flex-row sm:flex-col gap-5 w-full'>
+                <div className='flex md:flex-row flex-col gap-5 w-full'>
                     <Link href='/bonds/issue'>
                         <BasicButton hFull>
                             <span className='font-medium px-4 py-0.5'>Issue Bonds</span>
@@ -82,7 +83,7 @@ function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStat
     const totalVolume = `$${formatLargeNumber((statistics.volume || 0), true).toString()}`
 
     return <>
-        <div className='relative grid grid-cols-2 grid-rows-3 gap-4  h-min hollow-shadow w-full '>
+        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 h-min hollow-shadow w-full '>
             <StatisticsBox value={statistics.issued}
                            isLoading={isStatisticsLoading}
                            title="Total Issued"
@@ -113,14 +114,13 @@ function StatisticsBox({classAttributes, value, title, isLoading}: {
     return <>
         <div
             className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black overflow-x-auto" + classAttributes}>
-            {
-                isLoading ?
-                    <Loading/> :
-                    <div className='flex flex-col gap-2'>
-                        <span className='md:text-3xl sm:text-xl font-bold'>{value}</span>
-                        <span className='text-neutral-500 font-medium md:text-sm sm:text-xs'>{title}</span>
-                    </div>
-            }
+            <ToggleDisplayComponent isOpen={isLoading}>
+                <Loading/>
+                <div className='flex flex-col gap-2'>
+                    <span className='md:text-3xl text-xl font-bold'>{value}</span>
+                    <span className='text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
+                </div>
+            </ToggleDisplayComponent>
         </div>
     </>
 }
@@ -144,7 +144,10 @@ function BondCards() {
 
     return <>
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
-            {isLoading ? <Loader/> : <ContractsContainer contracts={contracts}/>}
+            <ToggleDisplayComponent isOpen={isLoading}>
+                <Loader/>
+                <ContractsContainer contracts={contracts}/>
+            </ToggleDisplayComponent>
             <Link href='/bonds/explore' className='z-50'>
                 <div className="flex w-min">
                     <BasicButton>
@@ -165,7 +168,7 @@ function Loader() {
 function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
     return <>
         <div className='relative w-full'>
-            <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 sm:grid-cols-1 gap-4'>
+            <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>
                 {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
             </div>
             <div className='absolute top-[85%] left-0 h-[20%] w-full bg-gradient-to-b from-transparent to-black z-30'/>
@@ -206,20 +209,11 @@ function BondsExplanation({statistics, isStatisticsLoading}: {
         }
     ]
 
-    function LifecycleContainer({item}: { item: { text: string, title: string } }) {
-        return <>
-            <div className='md:col-span-1 sm:col-span-4 flex flex-col gap-8'>
-                <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
-                <h4 className='text-2xl'>{item.title}</h4>
-                <p className='text-neutral-300 text-sm'>{item.text}</p>
-            </div>
-        </>
-    }
 
-    return <>
+    return (
         <div className='flex flex-col gap-40 mt-24'>
-            <div className='flex gap-12 justify-between xl-2xl:flex-row sm:flex-col items-center'>
-                <div className='flex flex-col md:max-w-xl sm:max-w-none gap-8'>
+            <div className='flex gap-12 justify-between xl-2xl:flex-row flex-col items-center'>
+                <div className='flex flex-col md:max-w-xl max-w-none gap-8'>
                     <h2 className='text-4xl font-medium'>Why Issue On-Chain Bonds?</h2>
                     <p className='text-neutral-400 text-sm'>{`Issuing on-chain bonds presents a unique opportunity for both entities and individuals seeking a simple yet effective way to raise capital. This method stands out for its straightforward process, offering a clear alternative to the intricacies of other financing methods. It allows issuers to reach a wider pool of investors, tapping into a market eager for stable and predictable investment options. By choosing to issue on-chain bonds, you open the door to hassle-free capital generation, providing a win-win for both issuers and investors looking for clarity and opportunity in the financial landscape.`}
                     </p>
@@ -229,9 +223,19 @@ function BondsExplanation({statistics, isStatisticsLoading}: {
                 </div>
                 <ExtendedStatistics statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
             </div>
-            <div className='grid grid-cols-4 gap-12'>
+            <div className='grid grid-cols-4 gap-12 pb-8'>
                 {lifecycleAttributes.map(item => <LifecycleContainer item={item} key={item.title}/>)}
             </div>
+        </div>
+    )
+}
+
+function LifecycleContainer({item}: { item: { text: string, title: string } }) {
+    return <>
+        <div className='md:col-span-1 col-span-4 flex flex-col gap-8'>
+            <div className='bg-gradient-to-r from-white to-black h-px w-full'/>
+            <h4 className='text-2xl'>{item.title}</h4>
+            <p className='text-neutral-300 text-sm'>{item.text}</p>
         </div>
     </>
 }
@@ -241,38 +245,31 @@ function ExtendedStatistics({statistics, isStatisticsLoading}: {
     isStatisticsLoading: boolean
 }) {
 
-    function Context({children, color}: { children: any, color?: string }) {
-        if (isStatisticsLoading) return <Loading color={color || "#fff"}/>
-
-        return <>
-            {children}
-        </>
-    }
 
     return <>
         <div className='grid grid-cols-12 grid-rows-2 gap-2 text-black w-fit'>
-            <div className='md:col-span-6 sm:col-span-12 row-span-2 w-full '>
+            <div className='md:col-span-6 col-span-12 row-span-2 w-full '>
                 <TVL/>
             </div>
-            <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-white rounded-3xl'>
+            <div className='md:col-span-3 col-span-6 md:p-0 p-8 row-span-1 bg-white rounded-3xl'>
                 <div className='flex flex-col justify-center items-center h-full'>
-                    <Context color='#000'>
+                    <Context color='#000' isStatisticsLoading={isStatisticsLoading}>
                         <span className='text-black text-center font-medium text-base'>Active Users</span>
                         <span className='text-3xl font-bold'>{formatLargeNumber(statistics.activeUsers)}</span>
                     </Context>
                 </div>
             </div>
-            <div className='md:col-span-3 sm:col-span-6 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
+            <div className='md:col-span-3 col-span-6 md:p-0 p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
                 <div className='flex flex-col justify-center items-center h-full'>
-                    <Context>
+                    <Context isStatisticsLoading={isStatisticsLoading}>
                         <span className='text-center font-medium text-base'>Max Return</span>
                         <span className='text-3xl font-bold'>x{Math.floor(statistics.maxReturn)}</span>
                     </Context>
                 </div>
             </div>
-            <div className='md:col-span-6 sm:col-span-12 md:p-0 sm:p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
+            <div className='md:col-span-6 col-span-12 md:p-0 p-8 row-span-1 bg-stone-900 rounded-3xl text-white'>
                 <div className='flex flex-col justify-center h-full px-6'>
-                    <Context>
+                    <Context isStatisticsLoading={isStatisticsLoading}>
                         <span className='font-medium text-base'>Realised Gains</span>
                         <span
                             className='text-3xl font-bold'>${formatLargeNumber(statistics.realisedGains, false, 2)}</span>
@@ -281,6 +278,18 @@ function ExtendedStatistics({statistics, isStatisticsLoading}: {
             </div>
         </div>
 
+    </>
+}
+
+function Context({children, isStatisticsLoading, color}: {
+    children: any,
+    isStatisticsLoading: boolean,
+    color?: string
+}) {
+    if (isStatisticsLoading) return <Loading color={color || "#fff"}/>
+
+    return <>
+        {children}
     </>
 }
 
@@ -407,9 +416,9 @@ function TVL() {
 function SectionEnd() {
     return <>
         <div className='flex flex-col justify-center items-center bg-zinc-950 w-full py-32 gap-8'>
-            <h3 className='md:text-5xl sm:text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey
+            <h3 className='md:text-5xl text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey
                 at Amet Finance</h3>
-            <p className='md:text-sm sm:text-xs text-stone-300 text-center'>Connect with like-minded individuals, gain
+            <p className='md:text-sm text-xs text-stone-300 text-center'>Connect with like-minded individuals, gain
                 insights, and stay updated on the latest trends and opportunities.</p>
             <Link href={URLS.Discord} target="_blank">
                 <div className='flex gap-3 items-center bg-white px-8 p-2.5 rounded-3xl text-black'>
