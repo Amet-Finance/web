@@ -13,7 +13,10 @@ import {ToastContainer} from "react-toastify";
 import {WagmiConfig} from 'wagmi';
 import {wagmiConfig} from "@/modules/utils/wallet-connect";
 
-const montserrat = Montserrat({subsets: ['latin'], weight: "variable"})
+const montserrat = Montserrat({
+    subsets: ['cyrillic', 'cyrillic-ext', 'latin', 'latin-ext', 'vietnamese'],
+    weight: "variable"
+})
 
 export default function App({Component, pageProps}: AppProps) {
 
