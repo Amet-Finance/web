@@ -393,10 +393,10 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
             className='flex justify-start items-center bg-[#131313] rounded-md px-4 py-2 cursor-pointer h-full'
             onClick={openOrClose}>
             <div className='flex gap-2 items-center'>
-                <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""}
+                <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
                        width={24}
                        height={24}/>
-                <span className='text-sm font-medium'>{shortenString(chainInfo?.name || "", 15)}</span>
+                <span className='text-sm font-medium'>{shortenString(chainInfo?.name ?? "", 15)}</span>
             </div>
             <div
                 className={`${isOpen ? "flex" : "hidden"} absolute flex-col bg-[#131313] border border-w1 rounded-md left-0 top-full z-10 w-full`}>
@@ -445,7 +445,7 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
 
         <ShowContainer isOpen={Number.isFinite(bondInfo.totalBonds)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                 title={bondInfo.totalBonds.toString()}>
+                 title={bondInfo.totalBonds?.toString()}>
                 <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
                 <span className='text-neutral-500 text-xs'>Total</span>
             </div>
@@ -460,10 +460,10 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
         <ShowContainer isOpen={Number.isFinite(bondInfo.chainId)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
                 <div className='flex gap-2 items-center texee'>
-                    <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""}
+                    <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
                            width={24}
                            height={24}/>
-                    <span className='text-base font-medium'>{shortenString(chainInfo?.name || "", 5)}</span>
+                    <span className='text-base font-medium'>{shortenString(chainInfo?.name ?? "", 5)}</span>
                 </div>
                 <span className='text-neutral-500 text-xs'>Chain</span>
             </div>
