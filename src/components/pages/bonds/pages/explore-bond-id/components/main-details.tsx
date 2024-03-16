@@ -36,7 +36,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
 
-    const payoutIcon = payout.icon || makeBlockie(payout._id)
+    const payoutIcon = payout.icon ?? makeBlockie(payout._id)
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
@@ -52,9 +52,9 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
 
     return <div
-        className='flex flex-col gap-8 lg:col-span-8 sm:col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
+        className='flex flex-col gap-8 lg:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex justify-between w-full'>
+            <div className='flex md:flex-row flex-col justify-between w-full'>
                 <div className='flex gap-2'>
                     <div className='w-12 h-12 rounded-full'>
                         <Image src={payoutIcon} alt={payout.name}

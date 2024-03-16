@@ -84,7 +84,7 @@ function Container({type, total, isLoadingLogs, data, asset}: {
 
     return <>
         <div
-            className='md:col-span-1 sm:col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
+            className='md:col-span-1 col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
             <div className='flex justify-between w-full'>
                 <span className='font-medium text-xl'>{type} Statistics</span>
                 <div className='flex flex-col items-end gap-1'>

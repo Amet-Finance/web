@@ -19,14 +19,15 @@ import {GeneralContainer} from "@/components/utils/container";
 // todo add "Get purchase token" button on purchase screen
 // todo somehow show the USD equivalent for purchase and payout
 
-export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBondIdType) {
+export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
 
     const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormatV2>({...(bondDetailedTmp || {})})
     const [updateIndex, setUpdateIndex] = useState(0);
     const [refreshDate, setRefreshDate] = useState<Date>();
     const [refreshLoader, setRefreshLoader] = useState(false);
-    const [isLoading, setLoading] = useState(!Boolean(bondDetailedTmp))
+    const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
 
+    const refreshHandler = [refreshDate, setUpdateIndex];
 
     useEffect(() => {
         const updater = () => {
@@ -36,7 +37,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
                     setRefreshDate(new Date())
                     if (contract && JSON.stringify(contract) !== JSON.stringify(bondDetailed)) {
                         setBondDetailed({...contract});
-                        setLoading(false);
+                        setIsLoading(false);
                     }
                 })
                 .catch(nop)
@@ -49,8 +50,6 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: ExploreBon
     }, [bondDetailed, updateIndex, queryParams])
 
     if (isLoading) return <LoadingScreen/>
-
-    const refreshHandler = [refreshDate, setUpdateIndex];
 
     return (
         <GeneralContainer className='flex flex-col gap-4 w-full py-24' isPadding>

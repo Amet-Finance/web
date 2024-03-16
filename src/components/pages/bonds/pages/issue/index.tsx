@@ -34,7 +34,7 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
-import {ShowContainer, useShow} from "@/components/utils/container";
+import {GeneralContainer, ShowContainer, useShow} from "@/components/utils/container";
 
 
 export default function Issue() {
@@ -68,14 +68,14 @@ export default function Issue() {
         }
     }, [bondInfo.chainId]);
 
-    return <div className='grid grid-cols-10 gap-6 md:py-32 sm:py-12 xl-2xl:px-52 lg:px-24 md:px-12 sm:px-0'>
+    return <GeneralContainer className='grid grid-cols-10 gap-6 md:py-32 py-12' isPadding>
         <IssuerContainer bondInfoHandler={bondInfoHandler}
                          tokensHandler={tokensHandler}
                          issuerContractInfo={issuerContractInfo}/>
         <PreviewContainer bondInfoHandler={bondInfoHandler}
                           tokensHandler={tokensHandler}
                           issuerContractInfo={issuerContractInfo}/>
-    </div>
+    </GeneralContainer>
 }
 
 function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
@@ -104,7 +104,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
 
 
     return <div
-        className='lg1:col-span-6 sm:col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 sm:px-6 lg:py-8 md:py-6 sm:py-4 bg-neutral-950'>
+        className='lg-xl:col-span-6 col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 px-6 lg:py-8 md:py-6 py-4 bg-neutral-950'>
         <div className='flex flex-col gap-2'>
             <h1 className='text-2xl font-bold'>Issue Your Bonds: Simple and Swift</h1>
             <p className='text-xs text-zinc-600'>Our streamlined form guides you through each step to
@@ -163,7 +163,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
         <ChainSelector bondInfoHandler={bondInfoHandler}/>
         <TokenSelector type='purchaseToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
         <TokenSelector type='payoutToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
-        <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
+        <div className='md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3'>
             <InfoBox info={InfoSections.PurchaseAmount}>
                 <span className='text-white text-md font-medium whitespace-nowrap'>Purchase Amount:</span>
             </InfoBox>
@@ -171,7 +171,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
                         placeholder='Purchase Amount Per Bond'
                         onChange={update}/>
         </div>
-        <div className='md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3'>
+        <div className='md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3'>
             <InfoBox info={InfoSections.PayoutAmount}>
                 <span className='text-white text-md font-medium whitespace-nowrap'>Payout Amount:</span>
             </InfoBox>
@@ -248,7 +248,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     }
 
 
-    return <div className='relative md:col-span-6 sm:col-span-12 w-full flex flex-col justify-between gap-3 h-full'
+    return <div className='relative md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3 h-full'
                 ref={boxRef}>
         <InfoBox info={infoObject}><span
             className='text-white text-md font-medium whitespace-nowrap'>{title}:</span></InfoBox>
@@ -333,7 +333,7 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         updateMaturityPeriod(type, value)
     }
 
-    return <div className='md:col-span-4 sm:col-span-8 w-full flex flex-col gap-3'>
+    return <div className='md:col-span-4 col-span-8 w-full flex flex-col gap-3'>
             <InfoBox info={InfoSections.MaturityPeriod}><span
                 className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
             <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
@@ -385,7 +385,7 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
 
     const chainInfo = getChain(bondInfo.chainId)
 
-    return <div className='md:col-span-4 sm:col-span-12 w-full relative flex flex-col justify-center gap-3'
+    return <div className='md:col-span-4 col-span-12 w-full relative flex flex-col justify-center gap-3'
                 ref={boxRef}>
         <InfoBox info={InfoSections.Chain}><span className='text-white text-md font-medium'>Chain:</span></InfoBox>
 
@@ -418,7 +418,7 @@ function ChainContainer({chain, selectChain}: Readonly<{ chain: Chain, selectCha
 
 function PreviewContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
     return <div
-        className='lg1:col-span-4 sm:col-span-12 flex flex-col gap-8 rounded-3xl md:px-12 sm:px-6 py-8 bg-neutral-950'>
+        className='lg-xl:col-span-4 col-span-12 flex flex-col gap-8 rounded-3xl md:px-12 px-6 py-8 bg-neutral-950'>
         <div className='flex flex-col gap-2'>
             <h2 className='text-2xl font-bold'>Preview Your Bonds</h2>
             <p className='text-xs text-zinc-600'>This real-time snapshot allows you to review and
@@ -442,50 +442,45 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
     return <div className='grid grid-cols-12 mt-4 gap-4'>
-        {
-            Number.isFinite(bondInfo.totalBonds) &&
+
+        <ShowContainer isOpen={Number.isFinite(bondInfo.totalBonds)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
                  title={bondInfo.totalBonds.toString()}>
-                <span className='text-2xl font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
+                <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
                 <span className='text-neutral-500 text-xs'>Total</span>
             </div>
-        }
-        {
-            Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0 &&
+        </ShowContainer>
+        <ShowContainer isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
                  title={maturityPeriodStr}>
-                        <span
-                            className='text-2xl whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
+                <span className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
                 <span className='text-neutral-500 text-xs'>Maturity Period</span>
             </div>
-        }
-        {
-            Number.isFinite(bondInfo.chainId) &&
+        </ShowContainer>
+        <ShowContainer isOpen={Number.isFinite(bondInfo.chainId)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
                 <div className='flex gap-2 items-center texee'>
                     <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name || ""}
                            width={24}
                            height={24}/>
-                    <span className='text-2xl font-medium'>{shortenString(chainInfo?.name || "", 5)}</span>
+                    <span className='text-base font-medium'>{shortenString(chainInfo?.name || "", 5)}</span>
                 </div>
                 <span className='text-neutral-500 text-xs'>Chain</span>
             </div>
-        }
-        {
-            Boolean(bondInfo.purchaseToken) &&
+        </ShowContainer>
+        <ShowContainer isOpen={Boolean(bondInfo.purchaseToken)}>
             <TokenPreview
                 type='purchaseToken'
                 token={tokens[bondInfo.purchaseToken]}
                 issuerContractInfo={issuerContractInfo}
                 bondInfo={bondInfo}/>
-        }
-        {
-            Boolean(bondInfo.payoutToken) &&
+        </ShowContainer>
+        <ShowContainer isOpen={Boolean(bondInfo.payoutToken)}>
             <TokenPreview type='payoutToken'
                           token={tokens[bondInfo.payoutToken]}
                           issuerContractInfo={issuerContractInfo}
                           bondInfo={bondInfo}/>
-        }
+        </ShowContainer>
     </div>
 }
 
@@ -553,7 +548,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
 
 
     return <TokenContainer>
-        <span className='text-xl font-medium'>{title}:</span>
+        <span className='text-base font-medium'>{title}:</span>
         <div className='flex items-center gap-4'>
             <Image src={iconSrc} alt={token.name} width={32} height={32}
                    className='object-contain rounded-full border border-neutral-400'/>
@@ -609,7 +604,7 @@ function BasicInput({id, type, className, onChange, onClick, ref, placeholder}: 
     ref?: any,
 }>) {
     return <input id={id}
-                  type={"number" || type}
+                  type={type ?? "number"}
                   className={'bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base ' + className}
                   onClick={onClick}
                   ref={ref}

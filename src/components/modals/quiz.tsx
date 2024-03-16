@@ -15,7 +15,7 @@ export default function Quiz() {
     const [state, setState] = useState(States.Nope)
 
     return <>
-        <div className='flex flex-col gap-7 max-w-xl lg:w-500 sm:w-full'>
+        <div className='flex flex-col gap-7 max-w-xl lg:w-500 w-full'>
             {state === States.Nope && <Introduction nextState={() => setState(States.Questions)}/>}
             {state === States.Questions && <Questions nextState={() => setState(States.Finish)}/>}
             {state === States.Finish && <Finish/>}

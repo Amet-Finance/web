@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import {GeneralContainer} from "@/components/utils/container";
 
 export default function LoadingScreen() {
     const [percentage, setPercentage] = useState(0);
@@ -9,8 +10,8 @@ export default function LoadingScreen() {
         return () => clearInterval(interval)
     }, [percentage]);
 
-    return <>
-        <div className='flex gap-2 items-end w-full h-screen xl-2xl:px-52 lg:px-24 md:px-12 sm:px-8'>
+    return (
+        <GeneralContainer className='flex gap-2 items-end w-full h-screen'>
             <div className='-translate-y-28'>
                 <div className='flex items-start'>
                     <span className='text-9xl font-bold'>{percentage}</span>
@@ -18,6 +19,6 @@ export default function LoadingScreen() {
                 </div>
                 <span className='text-sm text-neutral-500'>Loading the contract information...</span>
             </div>
-        </div>
-    </>
+        </GeneralContainer>
+    )
 }

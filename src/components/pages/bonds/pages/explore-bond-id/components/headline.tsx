@@ -2,8 +2,6 @@ import {useEffect, useState} from "react";
 import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import CopySVG from "../../../../../../../public/svg/utils/copy";
 import {useAccount} from "wagmi";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {toast} from "react-toastify";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 
 export default function HeadlineContainer({refreshHandler, refreshLoader}: {
@@ -25,17 +23,17 @@ export default function HeadlineContainer({refreshHandler, refreshLoader}: {
         return () => clearInterval(interval)
     }, [refreshDate]);
 
-    return <>
+    return (
         <div className='flex justify-between'>
-            <div className='flex items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
-                 onClick={() => copyReferralCode(address)}>
+            <button className='flex items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
+                    onClick={copyReferralCode.bind(null, address)}>
                 <CopySVG/>
-                <span className='text-neutral-600 text-sm'>Copy Your Referral URL!</span>
-            </div>
+                <span className='text-neutral-600 text-sm md:flex hidden'>Copy Your Referral URL!</span>
+            </button>
             <div className='flex items-center gap-2 px-2'>
                 <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>
                 <RefreshSVG isSmall={true} onClick={refresh} isLoading={refreshLoader}/>
             </div>
         </div>
-    </>
+    )
 }
