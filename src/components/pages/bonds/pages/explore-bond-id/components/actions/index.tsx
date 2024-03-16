@@ -9,6 +9,7 @@ import ManageTab from "@/components/pages/bonds/pages/explore-bond-id/components
 import ReferralTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/referral";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
+import {ShowContainer} from "@/components/utils/container";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -17,26 +18,25 @@ const Tabs = {
     ReferralRewards: "Referral Rewards"
 }
 
-export default function ActionsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+export default function ActionsContainer({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
 
     const [selected, setSelected] = useState(Tabs.Purchase);
     const selectionHandler = [selected, setSelected];
 
-    return <>
-        <div
-            className='relative lg:col-span-4 sm:col-span-12 flex flex-col justify-between rounded-3xl p-6  border border-neutral-900 w-full h-full'>
+    return (
+        <div className='relative lg:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-full'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
-            <div className='flex w-full h-full py-4'>
+            <div className='flex w-full h-full'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>
             </div>
         </div>
-    </>
+    )
 }
 
-function ActionsHeadline({contractInfo, selectionHandler}: {
+function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
     contractInfo: ContractExtendedInfoFormat,
     selectionHandler: any
-}) {
+}>) {
 
 
     const {_id, owner} = contractInfo;
@@ -76,7 +76,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: {
         },
     ]
 
-    return <>
+    return (
         <div className='grid grid-cols-4 gap-2'>
             {
                 components.map(component => <HeadlineComponent
@@ -86,7 +86,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: {
                     setSelected={setSelected}/>)
             }
         </div>
-    </>
+    )
 }
 
 function HeadlineComponent({component, selected, setSelected}: {
@@ -99,7 +99,7 @@ function HeadlineComponent({component, selected, setSelected}: {
     const isSelected = selected === type;
 
     const [isHide, setHide] = useState(true);
-
+    const select = () => setSelected(type)
 
     useEffect(() => {
 
@@ -110,28 +110,25 @@ function HeadlineComponent({component, selected, setSelected}: {
 
     if (isHide) return null;
 
-    return <>
-        <div
-            className={`flex flex-col justify-end gap-1 items-center hover:bg-neutral-800 p-1.5 rounded-md cursor-pointer ${isSelected && "bg-neutral-700"}`}
-            onClick={() => setSelected(type)}>
+
+    return (
+        <button className={`flex flex-col justify-end gap-0.5 py-1.5 items-center hover:bg-neutral-900 rounded-md cursor-pointer ${isSelected && "bg-neutral-800"}`}
+            onClick={select}>
             <div className='relative'>
                 <Image src={icon} alt={title} width={24} height={24}/>
-                {
-                    Number.isFinite(addon?.total) &&
-                    <>
-                        <div
-                            className='absolute flex justify-center items-center px-1 bg-green-500 rounded-full -top-1.5 -right-3'>
-                            <span className='text-mm text-white font-medium'>{addon?.total}</span>
-                        </div>
-                    </>
-                }
+                <ShowContainer isOpen={Number.isFinite(addon?.total)}>
+                    <div
+                        className='absolute flex justify-center items-center px-1 bg-green-500 rounded-full -top-1.5 -right-3'>
+                        <span className='text-mm text-white font-medium'>{addon?.total}</span>
+                    </div>
+                </ShowContainer>
             </div>
             <span className='text-mm'>{title}</span>
-        </div>
-    </>
+        </button>
+    )
 }
 
-function TabSelector({title, contractInfo}: { title: string, contractInfo: ContractExtendedInfoFormat, }) {
+function TabSelector({title, contractInfo}: Readonly<{ title: string, contractInfo: ContractExtendedInfoFormat, }>) {
 
     switch (title) {
         case Tabs.Purchase:

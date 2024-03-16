@@ -15,11 +15,13 @@ import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 import {ContractBalances} from "@/modules/cloud-api/type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
+import {ShowContainer} from "@/components/utils/container";
 
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
-export default function RedeemTab({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+
+export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
 
     const {_id, payout} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_")
@@ -139,28 +141,26 @@ export default function RedeemTab({contractInfo}: { contractInfo: ContractExtend
     }
 
     return <div className='flex flex-col gap-1 justify-end w-full'>
-        {
-            Boolean(totalRedeemAmount) && <>
-                <div
-                    className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-green-500 h-full'>
+        <ShowContainer isOpen={Boolean(totalRedeemAmount)}>
+            <div
+                className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-green-500 h-full'>
                     <span
                         className='text-4xl font-bold whitespace-nowrap'>+{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                    <span className='text-xs whitespace-nowrap'>Total Redeem Amount:</span>
-                </div>
-            </>
-        }
+                <span className='text-xs whitespace-nowrap'>Total Redeem Amount:</span>
+            </div>
+        </ShowContainer>
         <div className='flex flex-col gap-2'>
-        <div className='flex flex-col gap-2'>
-            <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
-                <input type="number"
-                       id='amount'
-                       className='bg-transparent placeholder:text-neutral-600 w-full'
-                       value={redemptionCount || ""}
-                       onChange={onChange}
+            <div className='flex flex-col gap-2'>
+                <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1 px-4'>
+                    <input type="number"
+                           id='amount'
+                           className='bg-transparent placeholder:text-neutral-600 w-full placeholder:text-sm text-sm'
+                           value={redemptionCount || ""}
+                           onChange={onChange}
                        placeholder='Enter Number of Bonds to Redeem'/>
             </div>
-            <Percentages setter={setPercentage}/>
-            <Agreement actionType={"redeeming"}/>
+                <Percentages setter={setPercentage}/>
+                <Agreement actionType={"redeeming"}/>
         </div>
         <BasicButton onClick={submit} isBlocked={blockClick}>
             <div className='flex items-center gap-2'>

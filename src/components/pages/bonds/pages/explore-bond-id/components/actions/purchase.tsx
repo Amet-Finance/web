@@ -14,7 +14,8 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useTransaction} from "@/modules/utils/transaction";
 
 // todo fetch from blockchain payoutBalance(bond) and if the payout is 0 or low add a warning tab for user so he can be aware of it
-//
+// if the payout changes notify the user as well
+
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
     const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
 
@@ -103,10 +104,10 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
         }
         <div className='flex flex-col gap-2'>
             <div className='flex flex-col gap-2'>
-                <div className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1.5 px-4'>
+                <div className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1 px-4'>
                     <input type="number"
                            id='amount'
-                           className='bg-transparent placeholder:text-neutral-600 w-full'
+                           className='bg-transparent placeholder:text-neutral-600 w-full placeholder:text-sm text-sm'
                            value={amount || ""}
                            onChange={onChange}
                            placeholder='Enter Number of Bonds to Purchase'/>
