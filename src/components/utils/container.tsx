@@ -1,4 +1,5 @@
 import {ReactElement, useState} from "react";
+import {format, formatLargeNumber} from "@/modules/utils/numbers";
 
 function GeneralContainer({children, isPadding, className}: {
     children: ReactElement<any, any>[] | ReactElement<any, any>,
@@ -24,7 +25,10 @@ function ToggleDisplayComponent({children, isOpen}: { children: Array<ReactEleme
     }
 }
 
-function ShowContainer({isOpen, children}: Readonly<{ isOpen: boolean, children: ReactElement<any, any> }>) {
+function ShowContainer({isOpen, children}: Readonly<{
+    isOpen: boolean,
+    children: ReactElement<any, any>[] | ReactElement<any, any>
+}>) {
 
     if (!isOpen) return null
 

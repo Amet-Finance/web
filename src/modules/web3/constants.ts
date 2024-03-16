@@ -3,14 +3,7 @@ import {polygon, polygonMumbai} from "wagmi/chains";
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const FIXED_FLEX_ISSUER_CONTRACTS: { [chainId: number]: string } = {
-    // [polygon.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    // [polygonZkEvm.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    // [manta.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    // [optimism.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    // [bsc.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    //
-    // [zetachainAthensTestnet.id]: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    [polygonMumbai.id]: "0xd20e8B4214B5588746D6599307073BBfDCf31c4B",
+    [polygonMumbai.id]: "0x0FBE72137231B40569e3292B6f5927db41F0f3c2",
 }
 
 const TxTypes = {

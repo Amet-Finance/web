@@ -34,7 +34,7 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
-import {GeneralContainer, ShowContainer, useShow} from "@/components/utils/container";
+import {GeneralContainer, ShowContainer, ToggleDisplayComponent, useShow} from "@/components/utils/container";
 
 
 export default function Issue() {
@@ -84,7 +84,6 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
     const [tokens] = tokensHandler
     const chain = getChain(bondInfo.chainId);
 
-
     const {submitTransaction} = useTransaction(bondInfo.chainId, TxTypes.IssueBond, {
         bondInfo,
         tokens,
@@ -121,13 +120,13 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
                 <Link href={URLS.TermsOfService} target="_blank">
                     <u>Terms of Service.</u>
                 </Link></p>
-            <button className='px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
+            <button
+                className='flex items-center justify-center gap-1 px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
                     onClick={issueBonds}>
-                Issue Bonds
-                {
-                    Boolean(issuerContractInfo.issuanceFeeUI) &&
+                <span>Issue Bonds</span>
+                <ShowContainer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
                     <span className='text-red-500'>({issuerContractInfo.issuanceFeeUI})</span>
-                }
+                </ShowContainer>
             </button>
         </div>
     </div>
@@ -398,20 +397,21 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
                        height={24}/>
                 <span className='text-sm font-medium'>{shortenString(chainInfo?.name ?? "", 15)}</span>
             </div>
-            <div
-                className={`${isOpen ? "flex" : "hidden"} absolute flex-col bg-[#131313] border border-w1 rounded-md left-0 top-full z-10 w-full`}>
-                {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
-            </div>
+            <ShowContainer isOpen={isOpen}>
+                <div className="flex absolute flex-col bg-[#131313] rounded-md left-0 top-[110%] z-10 w-full">
+                    {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
+                </div>
+            </ShowContainer>
         </button>
     </div>
 }
 
 function ChainContainer({chain, selectChain}: Readonly<{ chain: Chain, selectChain: any }>) {
-    return <button className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2'
-                   onClick={() => selectChain(chain.id)}>
+    const select = () => selectChain(chain.id);
+
+    return <button className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2' onClick={select}>
         <Image src={`/svg/chains/${chain.id}.svg`} alt={chain.name} width={24} height={24}/>
-        <span
-            className='text-sm font-medium min-w-full'>{shortenString(chain.name || "", 20)}</span>
+        <span className='text-start text-sm font-medium min-w-full'>{shortenString(chain.name || "", 16)}</span>
     </button>
 }
 
@@ -524,7 +524,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                             isLoading: false
                         });
                     })
-            }, 10000)
+            }, 3000)
             return () => clearInterval(interval)
         }
     }, [chain, address, token, tokenAddress]);
@@ -546,39 +546,59 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
     let totalTmp = bondInfo.totalBonds * (isPurchase ? bondInfo.purchaseAmount : bondInfo.payoutAmount) || 0;
     const total = isPurchase ? totalTmp - ((totalTmp * issuerContractInfo.purchaseRate) / 100) : totalTmp
 
+    const valueClass = isPurchase ? "text-green-500" : "text-red-500";
 
-    return <TokenContainer>
-        <span className='text-base font-medium'>{title}:</span>
-        <div className='flex items-center gap-4'>
-            <Image src={iconSrc} alt={token.name} width={32} height={32}
-                   className='object-contain rounded-full border border-neutral-400'/>
-            <div className='flex flex-col gap-1'>
-                <div className='flex items-center gap-2'>
-                    <p className='text-sm'>{token.name} <span>({token.symbol})</span></p>
-                    {token.isVerified && <VerifiedSVG/>}
-                </div>
-                <span className='text-xs text-neutral-400'>
-                        Balance: {balance.isLoading ? <Loading percent={85}/> : balance.value + token.symbol}</span>
-            </div>
-        </div>
-        {
-            Boolean(total) && <>
-                <div className='h-px bg-neutral-900 w-full'/>
+    return (
+        <TokenContainer>
+            <span className='font-semibold'>{title}:</span>
+            <div className='flex items-center gap-1.5'>
+                <Image src={iconSrc} alt={token.name} width={32} height={32}
+                       className='object-contain rounded-full border border-neutral-400'/>
                 <div className='flex flex-col'>
-                    <p>{amountTitle}: <span
-                        className={`${isPurchase ? "text-green-500" : "text-red-500"} font-bold`}>{format(total)} {token.symbol}</span>
+                    <div className='flex items-center gap-1.5'>
+                        <p className='text-sm'>{token.name}<span className='text-neutral-300'>({token.symbol})</span>
+                        </p>
+                        <ShowContainer isOpen={token.isVerified}>
+                            <VerifiedSVG/>
+                        </ShowContainer>
+                    </div>
+                    <p className='flex items-center gap-1 text-mm text-neutral-400'>
+                        <span>Balance:</span>
+                        <ToggleDisplayComponent isOpen={balance.isLoading}>
+                            <Loading percent={85}/>
+                            <span>{formatLargeNumber(balance.value)} {token.symbol}</span>
+                        </ToggleDisplayComponent>
                     </p>
-                    {isPurchase &&
-                        <span className='text-neutral-500 text-xs'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>}
                 </div>
-            </>
-        }
-    </TokenContainer>
+            </div>
+            <ShowContainer isOpen={Boolean(total)}>
+                <div className='flex flex-col'>
+                    <div className='flex gap-1'>
+                        <p className='text-sm whitespace-nowrap'>{amountTitle}:</p>
+                        <div className='group relative w-full'>
+                            <div className={`flex items-center gap-1 font-bold text-sm ${valueClass}`}>
+                                <span>{formatLargeNumber(total)}</span>
+                                <span>{token.symbol}</span>
+                            </div>
+                            <div
+                                className='absolute bg-neutral-700 rounded-md px-2 left-0 top-full hidden group-hover:flex'>
+                                <span
+                                    className='text-neutral-200 text-sm whitespace-nowrap'>{format(total)} {token.symbol}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <ShowContainer isOpen={isPurchase}>
+                        <span className='text-neutral-500 text-mm'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>
+                    </ShowContainer>
+                </div>
+            </ShowContainer>
+        </TokenContainer>
+    )
 }
 
 function TokenContainer({children}: { children?: any }) {
     return <div
-        className='col-span-12 w-full flex flex-col gap-2 cursor-pointer bg-neutral-900 rounded-xl px-4 py-2'>{children}</div>
+        className='col-span-12 w-full flex flex-col gap-2 cursor-pointer bg-neutral-900 rounded-xl p-6 py-3'>{children}</div>
 }
 
 function UnidentifiedToken({chain}: Readonly<{ chain?: Chain }>) {

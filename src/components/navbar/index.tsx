@@ -103,26 +103,26 @@ function Links() {
 function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
-        {
-            linkExtended.subLinks?.length && <div
+        <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
+            <div
                 className={'group-hover:flex hidden flex-col gap-4 justify-center absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
-                {linkExtended.subLinks.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
+                {linkExtended.subLinks?.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
                                                                  isExtended={false}/>)}
             </div>
-        }
+        </ShowContainer>
     </div>
 }
 
 function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
-        {
-            linkExtended.subLinks?.length && <div
+        <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
+            <div
                 className='flex flex-col gap-4 justify-center py-4'>
-                {linkExtended.subLinks.map((linkBase, index) => <LinkBase linkBase={linkBase} key={linkBase.href}
+                {linkExtended.subLinks?.map((linkBase, index) => <LinkBase linkBase={linkBase} key={linkBase.href}
                                                                           isExtended={false}/>)}
             </div>
-        }
+        </ShowContainer>
     </div>
 }
 

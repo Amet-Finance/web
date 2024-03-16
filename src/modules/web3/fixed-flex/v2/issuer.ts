@@ -55,7 +55,6 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
     const initialBondFeeDetails: any = await vaultContract.read.initialBondFeeDetails()
     const normalizedAmount = Number(issuanceFee) / 10 ** chain.nativeCurrency.decimals;
 
-    console.log(initialBondFeeDetails)
     return {
         issuanceFee: Number(issuanceFee),
         issuanceFeeUI: `${normalizedAmount} ${chain.nativeCurrency.symbol}`,
