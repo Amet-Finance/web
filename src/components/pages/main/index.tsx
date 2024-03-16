@@ -199,7 +199,7 @@ function TradeOnChainBondsSection() {
     return (
         <GeneralContainer className='relative flex justify-between py-52'>
             <div className='flex flex-col justify-end gap-8 lg-xl:w-1/2 w-full'>
-                <h3 className='md:text-4xl sm:text-3xl font-bold'>Trade On-Chain Bonds</h3>
+                <h3 className='md:text-4xl text-3xl font-bold'>Trade On-Chain Bonds</h3>
                 <p className='max-w-xl text-neutral-400 text-sm'>Our innovative approach turns each bond into an ERC1155
                     NFT,
                     unlocking the

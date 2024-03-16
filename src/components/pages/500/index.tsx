@@ -14,7 +14,7 @@ export default function ServerError() {
                 <div className='flex flex-col gap-3'>
                     <span className='lg:text-5xl text-xl font-bold'>Internal Server Error!</span>
                     <span
-                        className='lg:text-l sm:text-sm font-medium text-g'>We can not show the page you requested.</span>
+                        className='lg:text-l text-sm font-medium text-g'>We can not show the page you requested.</span>
                 </div>
                 <Link href='/'>
                     <button className='border border-solid border-w1 rounded py-3 hover:border-w5 w-full'>Back to Home!
