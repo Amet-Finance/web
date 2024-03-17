@@ -4,18 +4,18 @@ type AccountInfo = {
     isConnected: boolean
 }
 
-type LinkBase = {
+type LinkBaseType = {
     title: string,
     href: string,
     target?: string
 }
 
-type LinkExtended = LinkBase & {
-    subLinks?: LinkBase[]
+type LinkExtendedType = LinkBaseType & {
+    subLinks?: LinkBaseType[]
 }
 
 export type  {
     AccountInfo,
-    LinkBase,
-    LinkExtended
+    LinkBaseType,
+    LinkExtendedType
 }

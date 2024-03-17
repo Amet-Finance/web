@@ -2,7 +2,7 @@ import AmetLogo from "../../../public/svg/amet-logo";
 import {useEffect, useRef} from "react";
 import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
-import {LinkBase, LinkExtended} from "@/components/navbar/types";
+import {LinkBaseType, LinkExtendedType} from "@/components/navbar/types";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import makeBlockie from "ethereum-blockies-base64";
 import {zeroAddress} from "viem";
@@ -100,7 +100,7 @@ function Links() {
     </div>
 }
 
-function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
+function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtendedType }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
         <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
@@ -113,20 +113,20 @@ function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
     </div>
 }
 
-function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtended }>) {
+function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtendedType }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
         <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
             <div
                 className='flex flex-col gap-4 justify-center py-4'>
-                {linkExtended.subLinks?.map((linkBase, index) => <LinkBase linkBase={linkBase} key={linkBase.href}
-                                                                          isExtended={false}/>)}
+                {linkExtended.subLinks?.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
+                                                                  isExtended={false}/>)}
             </div>
         </ShowContainer>
     </div>
 }
 
-function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBase, isExtended?: boolean }>) {
+function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBaseType, isExtended?: boolean }>) {
     return <Link href={linkBase.href} target={linkBase.target ?? "_self"}>
             <span
                 className={`text-neutral-400 hover:text-white  whitespace-nowrap ${!isExtended && " px-4"}`}>{linkBase.title}</span>
