@@ -51,12 +51,12 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
     const valutAddress = await contract.read.vault() as string;
     const vaultContract = FixedFlexVaultController.getVaultContractInstance(chain, valutAddress);
 
-    const issuanceFee: any = await vaultContract.read.issuanceFee();
+    const issuanceFee: bigint = await vaultContract.read.issuanceFee() as bigint;
     const initialBondFeeDetails: any = await vaultContract.read.initialBondFeeDetails()
     const normalizedAmount = Number(issuanceFee) / 10 ** chain.nativeCurrency.decimals;
 
     return {
-        issuanceFee: Number(issuanceFee),
+        issuanceFee,
         issuanceFeeUI: `${normalizedAmount} ${chain.nativeCurrency.symbol}`,
         purchaseRate: Number(initialBondFeeDetails[0]) / 10,
         earlyRedemptionRate: Number(initialBondFeeDetails[1]) / 10,

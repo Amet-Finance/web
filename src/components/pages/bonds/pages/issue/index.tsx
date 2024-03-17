@@ -28,13 +28,13 @@ import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
 import {BlockTimes, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-import {openModal} from "@/store/redux/modal";
-import {ModalTypes} from "@/store/redux/modal/constants";
 import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
 import {GeneralContainer, ShowContainer, ToggleDisplayComponent, useShow} from "@/components/utils/container";
+import {openModal} from "@/store/redux/modal";
+import {ModalTypes} from "@/store/redux/modal/constants";
 
 
 export default function Issue() {
@@ -61,7 +61,6 @@ export default function Issue() {
 
             FixedFlexIssuerController.getIssuerContractInfo(chain)
                 .then(response => {
-                    console.log(`response`, response);
                     setIssuerContractInfo(response)
                 })
                 .catch(error => console.log(error))
@@ -562,13 +561,13 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                             <VerifiedSVG/>
                         </ShowContainer>
                     </div>
-                    <p className='flex items-center gap-1 text-mm text-neutral-400'>
+                    <div className='flex items-center gap-1 text-mm text-neutral-400'>
                         <span>Balance:</span>
                         <ToggleDisplayComponent isOpen={balance.isLoading}>
                             <Loading percent={85}/>
                             <span>{formatLargeNumber(balance.value)} {token.symbol}</span>
                         </ToggleDisplayComponent>
-                    </p>
+                    </div>
                 </div>
             </div>
             <ShowContainer isOpen={Boolean(total)}>
