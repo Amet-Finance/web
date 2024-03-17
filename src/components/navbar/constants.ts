@@ -1,7 +1,7 @@
-import {LinkExtended} from "@/components/navbar/types";
+import {LinkExtendedType} from "@/components/navbar/types";
 import {URLS} from "@/modules/utils/urls";
 
-const NAV_LINKS: LinkExtended[] = [
+const NAV_LINKS: LinkExtendedType[] = [
     {
         title: "Bonds",
         href: "/bonds",
