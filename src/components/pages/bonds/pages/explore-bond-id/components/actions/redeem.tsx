@@ -5,7 +5,6 @@ import {getBlockNumber} from "@/modules/web3";
 import {TxTypes} from "@/modules/web3/constants";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
-import {BasicButton} from "@/components/utils/buttons";
 import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
@@ -16,6 +15,7 @@ import {ContractBalances} from "@/modules/cloud-api/type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ShowContainer} from "@/components/utils/container";
+import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
@@ -140,36 +140,46 @@ export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: Contr
         }
     }
 
-    return <div className='flex flex-col gap-1 justify-end w-full'>
-        <ShowContainer isOpen={Boolean(totalRedeemAmount)}>
-            <div
-                className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-green-500 h-full'>
+    return (
+        <div className='flex flex-col gap-1 justify-end w-full'>
+            <ShowContainer isOpen={Boolean(totalRedeemAmount)}>
+                <div
+                    className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap'>
                     <span
-                        className='text-4xl font-bold whitespace-nowrap'>+{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                <span className='text-xs whitespace-nowrap'>Total Redeem Amount:</span>
-            </div>
-        </ShowContainer>
-        <div className='flex flex-col gap-2'>
+                        className='text-4xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
+                    <span className='text-xs'>Total Redeem Amount:</span>
+                </div>
+            </ShowContainer>
             <div className='flex flex-col gap-2'>
-                <div className='flex items-center justify-between border border-neutral-800 rounded-md py-1 px-4'>
-                    <input type="number"
-                           id='amount'
-                           className='bg-transparent placeholder:text-neutral-600 w-full placeholder:text-sm text-sm'
-                           value={redemptionCount || ""}
-                           onChange={onChange}
-                       placeholder='Enter Number of Bonds to Redeem'/>
-            </div>
+                <div
+                    className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
+                    <div className='flex items-center justify-between w-full'>
+                        <input type="number"
+                               id='amount'
+                               className='bg-transparent placeholder:text-neutral-600 w-full text-sm'
+                               value={redemptionCount || ""}
+                               onChange={onChange}
+                               placeholder='Enter Number of Bonds to Redeem'/>
+                        <ShowContainer isOpen={Boolean(redemptionCount)}>
+                            <XmarkSVG isSmall onClick={setCount.bind(null, 0)}/>
+                        </ShowContainer>
+                    </div>
+                </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"redeeming"}/>
-        </div>
-        <BasicButton onClick={submit} isBlocked={blockClick}>
-            <div className='flex items-center gap-2'>
-                {isLoading && <Loading percent={75} color="#000"/>}
-                {title}
+
+                <button onClick={submit} disabled={blockClick}
+                        className='flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer'>
+                    <div className='flex items-center gap-2'>
+                        <ShowContainer isOpen={isLoading}>
+                            <Loading percent={75} color="#000"/>
+                        </ShowContainer>
+                        {title}
+                    </div>
+                </button>
             </div>
-        </BasicButton>
         </div>
-    </div>
+    )
 }
 
 

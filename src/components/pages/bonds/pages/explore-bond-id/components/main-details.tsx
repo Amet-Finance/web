@@ -116,8 +116,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
         <div className='flex flex-col gap-8'>
             <div className='grid grid-cols-3  gap-4 mt-4 w-full p-4'>
                 <div className='col-span-1 flex flex-col justify-end w-full'>
-                        <span
-                            className='text-xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
+                        <span className='text-xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
                     <span className='text-sm text-neutral-400'>Purchase</span>
                 </div>
                 <div className='col-span-1 flex flex-col justify-end w-full'>

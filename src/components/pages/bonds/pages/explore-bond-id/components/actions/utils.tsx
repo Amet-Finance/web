@@ -11,12 +11,12 @@ function Percentages({setter}: Readonly<{ setter: any }>) {
 
 function Percentage({percent, setter}: Readonly<{ percent: number, setter: any }>) {
     return <button
-        className='border border-neutral-900 w-full text-center rounded-md text-sm hover:bg-neutral-800 cursor-pointer'
+        className='w-full text-center rounded-md text-sm bg-neutral-900 hover:bg-neutral-800 cursor-pointer'
         onClick={() => setter(percent)}>{percent}%</button>
 }
 
 function Agreement({actionType}: Readonly<{ actionType: string }>) {
-    return <p className='text-xs text-neutral-600'>
+    return <p className='text-mm text-neutral-600'>
         <span>By {actionType}, you agree to the </span>
         <Link href={URLS.TermsOfService} target="_blank">
             <u>Terms and Conditions.</u></Link>

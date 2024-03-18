@@ -27,7 +27,7 @@ async function getReferralRewards(chain: Chain, vaultAddress: string, bondAddres
 
     return {
         quantity: results.quantity,
-        isRepaid: results.isRepaid
+        claimed: results.claimed
     }
 }
 

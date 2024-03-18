@@ -16,6 +16,7 @@ import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
 import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
+import {ToggleDisplayComponent} from "@/components/utils/container";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
@@ -34,12 +35,13 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
     const [feeDetails, setFeeDetails] = useState({} as BondFeeDetails)
     const [referralInfo, setReferralInfo] = useState({} as ReferralInfo)
 
-    const totalReward = referralInfo.quantity * purchase.amountClean * feeDetails.referrerRewardRate / 1000;
+    const rewardsLeft = referralInfo.quantity - referralInfo.claimed
+    const totalReward = rewardsLeft * purchase.amountClean * feeDetails.referrerRewardRate / 1000;
 
-    const isBlocked = isBlacklisted || referralInfo.isRepaid || !totalReward;
-    let title = "Claim"
+    const isBlocked = isBlacklisted || !Boolean(rewardsLeft) || !Boolean(totalReward);
+    let title = "Claim Rewards"
     if (isBlacklisted) title = "Address Blocked";
-    if (referralInfo.isRepaid) title = "Already Repaid";
+    if (!rewardsLeft && referralInfo.quantity) title = "Already Repaid";
 
 
     const {submitTransaction} = useTransaction(chainId, TxTypes.ClaimReferralRewards, {vaultAddress, contractAddress})
@@ -77,30 +79,31 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
     async function claimReferralRewards() {
         if (isBlocked) return toast.error("Action Is Blocked.");
 
-        await submitTransaction();
-        return openModal(ModalTypes.ClaimReferralRewards, {
-                address,
-                totalReward,
-                symbol: purchase.symbol
-            });
+        const result = await submitTransaction();
+        if (result) openModal(ModalTypes.ClaimReferralRewards, {address, totalReward, symbol: purchase.symbol});
     }
 
-    return <div className='flex flex-col gap-4 justify-end h-full w-full'>
-        <div className='flex flex-col gap-1'>
-            <span className='text-neutral-400 text-sm'>You have accumulated</span>
-            {
-                isDataLoading ?
-                    <Loading percent={40}/> :
+
+    console.log(referralInfo)
+    return (
+        <div className='flex flex-col gap-4 justify-end h-full w-full'>
+            <div className='flex flex-col gap-1'>
+                <span className='text-neutral-400 text-sm'>You have accumulated</span>
+                <ToggleDisplayComponent isOpen={isDataLoading}>
+                    <Loading percent={40}/>
                     <span
                         className='text-3xl text-green-500 font-bold'>{formatLargeNumber(totalReward)} {purchase.symbol}</span>
-            }
-            <span className='text-neutral-400 text-sm'>in referral rewards with Amet Finance</span>
+                </ToggleDisplayComponent>
+                <span className='text-neutral-400 text-sm'>in referral rewards with Amet Finance</span>
+            </div>
+            <div className='flex gap-1 items-center'>
+                <BasicButton isBlocked={isBlocked} onClick={claimReferralRewards}>
+                    <span>{title}</span>
+                </BasicButton>
+                <BasicButton onClick={copyReferralCode.bind(null, address)} wMin hFull>
+                    <CopySVG size={16}/>
+                </BasicButton>
+            </div>
         </div>
-        <div className='flex gap-1 items-center'>
-            <BasicButton isBlocked={isBlocked} onClick={claimReferralRewards}>
-                <span>{title}</span>
-            </BasicButton>
-            <BasicButton onClick={() => copyReferralCode(address)} wMin hFull><CopySVG size={16}/></BasicButton>
-        </div>
-    </div>
+    )
 }

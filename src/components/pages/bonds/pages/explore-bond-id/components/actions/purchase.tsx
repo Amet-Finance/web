@@ -7,17 +7,18 @@ import BigNumber from "bignumber.js";
 import {TxTypes} from "@/modules/web3/constants";
 import TokenController from "@/modules/web3/tokens";
 import {toast} from "react-toastify";
-import {BasicButton} from "@/components/utils/buttons";
 import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useTransaction} from "@/modules/utils/transaction";
+import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
+import {ShowContainer} from "@/components/utils/container";
 
 // todo fetch from blockchain payoutBalance(bond) and if the payout is 0 or low add a warning tab for user so he can be aware of it
 // if the payout changes notify the user as well
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
-    const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
+    const {_id, purchase, totalBonds, purchased} = contractInfo;
 
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
@@ -54,7 +55,6 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
 
     const totalPrice = purchase.amountClean * amount;
-    const totalRedeemAmount = payout.amountClean * amount;
 
     const initialReferrer = `${router.query.ref}`
     const referrer = initialReferrer.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
@@ -93,34 +93,44 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     }
 
 
-    return <div className='flex flex-col gap-1 justify-end w-full'>
-        {
-            Boolean(totalPrice) && <div
-                className='flex flex-col justify-center items-center border border-neutral-900 rounded-md px-4 py-1 bg-neutral-700 h-full'>
-                        <span
-                            className='text-4xl font-bold whitespace-nowrap'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                <span className='text-xs whitespace-nowrap'>Total Purchase Amount:</span>
-            </div>
-        }
-        <div className='flex flex-col gap-2'>
+    return (
+        <div className='flex flex-col gap-1 justify-end w-full'>
+            <ShowContainer isOpen={Boolean(totalPrice)}>
+                <div
+                    className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-neutral-700 h-full whitespace-nowrap'>
+                    <span
+                        className='text-4xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
+                    <span className='text-xs'>Total Purchase Amount:</span>
+                </div>
+            </ShowContainer>
             <div className='flex flex-col gap-2'>
-                <div className='flex flex-col items-center justify-between border border-neutral-800 rounded-md py-1 px-4'>
-                    <input type="number"
-                           id='amount'
-                           className='bg-transparent placeholder:text-neutral-600 w-full placeholder:text-sm text-sm'
-                           value={amount || ""}
-                           onChange={onChange}
-                           placeholder='Enter Number of Bonds to Purchase'/>
+                <div
+                    className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
+                    <div className='flex items-center justify-between w-full'>
+                        <input type="number"
+                               id='amount'
+                               className='bg-transparent placeholder:text-neutral-600 w-full text-sm'
+                               value={amount || ""}
+                               onChange={onChange}
+                               placeholder='Enter Number of Bonds to Purchase'/>
+                        <ShowContainer isOpen={Boolean(amount)}>
+                            <XmarkSVG isSmall onClick={setAmount.bind(null, 0)}/>
+                        </ShowContainer>
+                    </div>
                 </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"purchasing"}/>
+
+                <button onClick={submit} disabled={blockClick}
+                        className='flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer'>
+                    <div className='flex items-center gap-2'>
+                        <ShowContainer isOpen={isLoading}>
+                            <Loading percent={75} color="#000"/>
+                        </ShowContainer>
+                        {title}
+                    </div>
+                </button>
             </div>
-            <BasicButton onClick={submit} isBlocked={blockClick}>
-                <div className='flex items-center gap-2'>
-                    {(isLoading) && <Loading percent={75} color="#000"/>}
-                    {title}
-                </div>
-            </BasicButton>
         </div>
-    </div>
+    )
 }

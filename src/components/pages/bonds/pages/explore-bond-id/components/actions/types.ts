@@ -8,7 +8,7 @@ type ActionHeadlineComponent = {
 // todo updates needed after contracts changed
 type ReferralInfo = {
     quantity: number,
-    isRepaid: boolean
+    claimed: number
 }
 
 export type {

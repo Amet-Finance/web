@@ -97,7 +97,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
         if (!isAddress(bondInfo.payoutToken) || !tokens[bondInfo.payoutToken]) return toast.error("payout token is undefined")
 
         const result = await submitTransaction();
-        openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id})
+        if (result) openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id});
     }
 
 

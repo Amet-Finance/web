@@ -26,6 +26,7 @@ function useTransaction(chainId: number | string, txType: string, txConfig: { [k
             return await trackTransaction(chain, response.hash);
         } catch (error: any) {
             console.error(error)
+            return undefined;
         }
     }
 
