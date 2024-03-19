@@ -1,20 +1,21 @@
 import BondCard from "@/components/pages/bonds/utils/bond-card";
 import SearchSVG from "../../../../../../public/svg/utils/search";
 import FilterSVG from "../../../../../../public/svg/utils/filter";
-import {useEffect, useState} from "react";
-import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractCoreDetails, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {useState} from "react";
+import {ContractQuery} from "@/modules/cloud-api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
-import {ConditionalRenderer, GeneralContainer, useShow} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 import {Chain} from "wagmi";
+import {useContracts} from "@/components/pages/bonds/utils/contracts";
+import {HorizontalLoading} from "@/components/utils/loading";
 
 export default function Explore() {
 
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const openOrCloseFilter = () => setIsFilterOpen(!isFilterOpen);
+
+    const {isOpen, openOrClose} = useShow()
 
     return (
         <GeneralContainer className='flex flex-col justify-center items-center w-full py-24 gap-12' isPadding>
@@ -30,7 +31,7 @@ export default function Explore() {
                 <div className='flex flex-col gap-4'>
                     <div className='flex items-stretch justify-end gap-4'>
                         <button className='flex items-center gap-2 px-4 py-1.5 bg-neutral-900 rounded-md cursor-pointer'
-                                onClick={openOrCloseFilter}>
+                                onClick={openOrClose}>
                             <span>Filter</span>
                             <FilterSVG size={16}/>
                         </button>
@@ -41,7 +42,7 @@ export default function Explore() {
                             <SearchSVG/>
                         </div>
                     </div>
-                    <ConditionalRenderer isOpen={isFilterOpen}>
+                    <ConditionalRenderer isOpen={isOpen}>
                         <FilterContainer/>
                     </ConditionalRenderer>
                 </div>
@@ -56,36 +57,37 @@ export default function Explore() {
 function FilterContainer() {
 
     const [params, setParams] = useState<ContractQuery>({});
-
     const selectChain = (chainId: number) => setParams({...params, chainId})
 
-    return <div className='flex gap-4 items-center z-50'>
-        <ChainSelector selectChain={selectChain}/>
-        <div className='relative'>
-            <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                <span className='text-sm'>Chain</span>
-                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+    return (
+        <div className='flex gap-4 items-center z-50'>
+            <ChainSelector selectChain={selectChain}/>
+            <div className='relative'>
+                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
+                    <span className='text-sm'>Chain</span>
+                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+                </div>
+            </div>
+            <div className='relative'>
+                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
+                    <span className='text-sm'>Chain</span>
+                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+                </div>
+            </div>
+            <div className='relative'>
+                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
+                    <span className='text-sm'>Chain</span>
+                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+                </div>
+            </div>
+            <div className='relative'>
+                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
+                    <span className='text-sm'>Chain</span>
+                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+                </div>
             </div>
         </div>
-        <div className='relative'>
-            <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                <span className='text-sm'>Chain</span>
-                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-            </div>
-        </div>
-        <div className='relative'>
-            <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                <span className='text-sm'>Chain</span>
-                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-            </div>
-        </div>
-        <div className='relative'>
-            <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                <span className='text-sm'>Chain</span>
-                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-            </div>
-        </div>
-    </div>
+    )
 }
 
 function ChainSelector({selectChain}: Readonly<{ selectChain: (chainId: number) => void }>) {
@@ -96,42 +98,42 @@ function ChainSelector({selectChain}: Readonly<{ selectChain: (chainId: number) 
         selectChain(chainId)
     }
 
-    return <div className='relative'>
-        <button className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
-                onClick={openOrClose}>
-            <span className='text-sm'>Chain</span>
-            <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-        </button>
-        <ConditionalRenderer isOpen={isOpen}>
-            <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-xl px-4 py-4 w-max'>
-                {CHAINS.map(chain => <ChainWrapper chain={chain} selectChain={selectChainAndClose} key={chain.id}/>)}
-            </div>
-        </ConditionalRenderer>
-    </div>
+    return (
+        <div className='relative'>
+            <button className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
+                    onClick={openOrClose}>
+                <span className='text-sm'>Chain</span>
+                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+            </button>
+            <ConditionalRenderer isOpen={isOpen}>
+                <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-xl px-4 py-4 w-max'>
+                    {CHAINS.map(chain => <ChainWrapper chain={chain} selectChain={selectChainAndClose}
+                                                       key={chain.id}/>)}
+                </div>
+            </ConditionalRenderer>
+        </div>
+    )
 }
 
 function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainId: number) => void }) {
-    return <button className='flex items-center gap-1 w-full px-2 py-1 hover:bg-neutral-700 rounded-md cursor-pointer'
-                   onClick={() => selectChain(chain.id)}>
-        <Image src={getChainIcon(chain.id)} alt={chain.name} width={24} height={24}/>
-        <span
-            className='text-neutral-400 whitespace-nowrap text-sm'>{shortenString(chain.name, 20)}</span>
-    </button>
+    return (
+        <button className='flex items-center gap-1 w-full px-2 py-1 hover:bg-neutral-700 rounded-md cursor-pointer'
+                onClick={() => selectChain(chain.id)}>
+            <Image src={getChainIcon(chain.id)} alt={chain.name} width={24} height={24}/>
+            <span
+                className='text-neutral-400 whitespace-nowrap text-sm'>{shortenString(chain.name, 20)}</span>
+        </button>
+    )
 }
 
 function BondCards() {
+    const params = {};
+    const {isLoading, contracts} = useContracts(params);
 
-    const [contracts, setContracts] = useState<ContractCoreDetails[]>([])
-
-    useEffect(() => {
-        const params = {}
-        ContractAPI.getContractsBasic(params)
-            .then(result => {
-                if (result?.length) setContracts(result)
-            })
-    }, []);
-
-    return <>
-        {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
-    </>
+    return (
+        <ToggleBetweenChildren isOpen={isLoading}>
+            <HorizontalLoading className='col-span-3 h-32'/>
+            {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
+        </ToggleBetweenChildren>
+    )
 }

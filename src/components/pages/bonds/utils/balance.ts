@@ -2,8 +2,9 @@ import {useEffect, useState} from "react";
 import {getChain} from "@/modules/utils/wallet-connect";
 import TokenController from "@/modules/web3/tokens";
 import {nop} from "@/modules/utils/function";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 
-function useTokenBalance(chainId: number | string, contractAddress: string, address: string, intervalMs = 3000) {
+function useTokenBalance(chainId: number | string, contractAddress: string, address: string, intervalMs = UPDATE_INTERVAL) {
     const [balance, setBalance] = useState("0")
 
     const chain = getChain(chainId);

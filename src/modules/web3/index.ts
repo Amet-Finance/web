@@ -12,6 +12,8 @@ import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 
 function getProvider(chain: Chain) {
+    // todo combine all rpc urls and randomly select those
+
     return createPublicClient({
         chain: chain,
         transport: http()
