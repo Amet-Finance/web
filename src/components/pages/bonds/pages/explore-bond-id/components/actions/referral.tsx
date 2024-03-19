@@ -1,4 +1,4 @@
-import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
@@ -22,7 +22,7 @@ import {ToggleBetweenChildren} from "@/components/utils/container";
 // 1. if there's no reward give the referral link so the person can refer
 // 4. After claiming ask him to share in Twitter with a modal or something similar content
 
-export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     const {_id, purchase} = contractInfo;
     const {address} = useAccount();

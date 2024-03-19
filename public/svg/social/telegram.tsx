@@ -1,8 +1,11 @@
 import Link from "next/link";
+import {URLS} from "@/modules/utils/urls";
 
 export default function TelegramSVG({url}: {url: string}) {
-    return <>
-        <Link href={url} target="_blank" rel="noreferrer">
+    const title = url === URLS.Telegram ? "Amet Finance Telegram" : "";
+
+    return (
+        <Link href={url} target="_blank" rel="noreferrer" title={title} className='cursor-pointer hover:fill-white'>
             <svg width="26" height="26" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
                  className='hover'>
                 <path
@@ -10,10 +13,5 @@ export default function TelegramSVG({url}: {url: string}) {
                     fill="#7D7D7D"/>
             </svg>
         </Link>
-        <style jsx>{`
-          .hover:hover path {
-            fill: #fff;
-          }
-        `}</style>
-    </>
+    )
 }

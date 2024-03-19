@@ -1,4 +1,4 @@
-import {ContractEssentialFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
@@ -18,7 +18,7 @@ const StatisticsTypes = {
     Purchase: "Purchase",
     Redeem: "Redeem"
 }
-export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractEssentialFormat }) {
+export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractCoreDetails }) {
     const [logs, setLogs] = useState<ActionLogFormat[]>([])
     const [isLoadingLogs, setLoadingLogs] = useState(false)
 
@@ -34,7 +34,7 @@ export default function GeneralStatisticsContainer({contractInfo}: { contractInf
 }
 
 function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
-    contractInfo: ContractEssentialFormat,
+    contractInfo: ContractCoreDetails,
     logs: ActionLogFormat[],
     isLoadingLogs: boolean
 }) {
@@ -190,7 +190,7 @@ function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogForm
 }
 
 function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
-    contractInfo: ContractEssentialFormat,
+    contractInfo: ContractCoreDetails,
     logs: ActionLogFormat[],
     isLoadingLogs: boolean
 }) {
@@ -262,7 +262,7 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
 }
 
 
-function LogContainer({contractInfo, log}: { contractInfo: ContractEssentialFormat, log: ActionLogFormat }) {
+function LogContainer({contractInfo, log}: { contractInfo: ContractCoreDetails, log: ActionLogFormat }) {
 
     const {_id, purchase, payout} = contractInfo;
     const [_, chainId] = _id.split("_");

@@ -3,7 +3,7 @@ import SearchSVG from "../../../../../../public/svg/utils/search";
 import FilterSVG from "../../../../../../public/svg/utils/filter";
 import {useEffect, useState} from "react";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractEssentialFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractQuery} from "@/modules/cloud-api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
@@ -121,7 +121,7 @@ function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainI
 
 function BondCards() {
 
-    const [contracts, setContracts] = useState<ContractEssentialFormat[]>([])
+    const [contracts, setContracts] = useState<ContractCoreDetails[]>([])
 
     useEffect(() => {
         const params = {}

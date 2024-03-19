@@ -14,7 +14,7 @@ type FinancialAttributeInfo = TokenResponse & {
     amountClean: number,
 }
 
-type ContractEssentialFormat = {
+type ContractCoreDetails = {
     _id: string, // combination of contractAddress and chainId
 
     totalBonds: number,
@@ -35,7 +35,7 @@ type ContractEssentialFormat = {
     issuanceBlock: number,
 }
 
-type ContractEssentialFormatWithPayoutBalance = ContractEssentialFormat & { payoutBalance: string }
+type ContractCoreDetailsWithPayoutBalance = ContractCoreDetails & { payoutBalance: string }
 
 type ContractDescription = {
     name: string,
@@ -50,7 +50,7 @@ type ContractDescription = {
 
 type ContractExtendedFormat = {
     contractDescription: ContractDescription,
-    contractInfo: ContractEssentialFormatWithPayoutBalance,
+    contractInfo: ContractCoreDetailsWithPayoutBalance,
     lastUpdated: Date
 }
 
@@ -64,8 +64,8 @@ type DescriptionEditParams = {
 }
 
 export type  {
-    ContractEssentialFormat,
-    ContractEssentialFormatWithPayoutBalance,
+    ContractCoreDetails,
+    ContractCoreDetailsWithPayoutBalance,
     ContractDescription,
     FinancialAttributeInfo,
     ContractQuery,

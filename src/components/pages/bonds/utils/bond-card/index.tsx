@@ -7,12 +7,12 @@ import {BlockTimes} from "@/modules/web3/constants";
 import {formatTime} from "@/modules/utils/dates";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
-import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
 import {useEffect} from "react";
 import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
-export default function BondCard({info, link}: Readonly<{ info: ContractEssentialFormat, link?: string }>) {
+export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
     const {
         _id,
         redeemed,

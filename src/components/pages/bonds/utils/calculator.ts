@@ -1,14 +1,14 @@
-import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import BigNumber from "bignumber.js";
 
-function tbv(contractInfo: ContractEssentialFormat) {
+function tbv(contractInfo: ContractCoreDetails) {
     const {purchased, redeemed, payout, purchase} = contractInfo;
 
     return ((purchased * purchase.amountClean) * (purchase.priceUsd ?? 0)) + (redeemed * payout.amountClean * (payout.priceUsd ?? 0))
 }
 
 
-function score(contract: ContractEssentialFormatWithPayoutBalance) {
+function score(contract: ContractCoreDetailsWithPayoutBalance) {
     const {_id, purchase, payout, issuerScore} = contract;
     const [_] = _id.split("_");
 
@@ -20,7 +20,7 @@ function score(contract: ContractEssentialFormatWithPayoutBalance) {
     return (0.45 * (securedPercentage / 10)) + (0.3 * issuerScore) + (0.05 * (isBothAssetsVerified ? 10 : 0)) + (0.2 * (uniqueHoldersIndex * 10));
 }
 
-function securedPercentage(contract: ContractEssentialFormatWithPayoutBalance, includeMin?: boolean) {
+function securedPercentage(contract: ContractCoreDetailsWithPayoutBalance, includeMin?: boolean) {
     const {payout} = contract;
 
     // todo do something if payout balance is missing

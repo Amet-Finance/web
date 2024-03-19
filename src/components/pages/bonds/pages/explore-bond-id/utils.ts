@@ -3,7 +3,7 @@ import {getChain} from "@/modules/utils/wallet-connect";
 import {isAddress} from "viem";
 import {toast} from "react-toastify";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractEssentialFormat, ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import {getProvider} from "@/modules/web3";
 import {sleep} from "@/modules/utils/dates";
 import FixedFlexController from "@/modules/web3/fixed-flex/v2";
@@ -30,7 +30,7 @@ async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise
     return contracts[0]
 }
 
-async function getPastLogs(contractInfo: ContractEssentialFormat, setLogs: any, setLoading: any): Promise<ActionLogFormat[]> {
+async function getPastLogs(contractInfo: ContractCoreDetails, setLogs: any, setLoading: any): Promise<ActionLogFormat[]> {
 
     const {_id, issuanceBlock} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_");

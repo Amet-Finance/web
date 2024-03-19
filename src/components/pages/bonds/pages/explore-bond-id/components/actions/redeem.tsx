@@ -1,4 +1,4 @@
-import {ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useEffect, useState} from "react";
 import {getBlockNumber} from "@/modules/web3";
@@ -22,7 +22,7 @@ import {DefaultButton} from "@/components/utils/buttons";
 // todo add capitulation as well
 
 export default function RedeemTab({contractInfo}: Readonly<{
-    contractInfo: ContractEssentialFormatWithPayoutBalance
+    contractInfo: ContractCoreDetailsWithPayoutBalance
 }>) {
 
     const {_id, payout} = contractInfo;

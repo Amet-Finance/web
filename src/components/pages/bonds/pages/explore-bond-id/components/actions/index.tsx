@@ -1,4 +1,4 @@
-import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
 import Image from "next/image"
 import {getAccount} from "@wagmi/core";
@@ -19,7 +19,7 @@ const Tabs = {
 }
 
 export default function ActionsContainer({contractInfo}: Readonly<{
-    contractInfo: ContractEssentialFormatWithPayoutBalance
+    contractInfo: ContractCoreDetailsWithPayoutBalance
 }>) {
 
     const [selected, setSelected] = useState(Tabs.Purchase);
@@ -37,7 +37,7 @@ export default function ActionsContainer({contractInfo}: Readonly<{
 }
 
 function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
-    contractInfo: ContractEssentialFormat,
+    contractInfo: ContractCoreDetails,
     selectionHandler: any
 }>) {
 
@@ -134,7 +134,7 @@ function HeadlineComponent({component, selected, setSelected}: {
 
 function TabSelector({title, contractInfo}: Readonly<{
     title: string,
-    contractInfo: ContractEssentialFormatWithPayoutBalance
+    contractInfo: ContractCoreDetailsWithPayoutBalance
 }>) {
 
     switch (title) {

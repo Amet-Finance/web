@@ -1,4 +1,4 @@
-import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useRouter} from "next/router";
@@ -15,7 +15,7 @@ import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 
-export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
 
     const [contractAddress, chainId] = _id.toLowerCase().split("_");

@@ -1,5 +1,5 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractEssentialFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 
 const ARTICLES: Article[] = [
     {
@@ -62,7 +62,7 @@ const usdtToken: FinancialAttributeInfo = {
     priceUsd: 1
 }
 
-const BOND_CARDS: ContractEssentialFormat[] = [
+const BOND_CARDS: ContractCoreDetails[] = [
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",

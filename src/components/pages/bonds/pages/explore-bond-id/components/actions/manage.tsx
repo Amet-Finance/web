@@ -1,4 +1,4 @@
-import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import {TxTypes} from "@/modules/web3/constants";
 import {useRef, useState} from "react";
 import BigNumber from "bignumber.js";
@@ -10,7 +10,7 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, useShow} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 
-export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     return <div className='flex flex-col h-full w-full'>
         <div className='grid grid-cols-4 gap-2'>
@@ -24,7 +24,7 @@ export default function ManageTab({contractInfo}: Readonly<{ contractInfo: Contr
     </div>
 }
 
-function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {_id, payout, totalBonds, redeemed} = contractInfo;
     const [contractAddress, chainId] = _id.split("_");
 
@@ -64,7 +64,7 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractEssentia
     </div>
 }
 
-function Settle({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const [contractAddress, chainId] = contractInfo._id.split("_");
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.Settle, {contractAddress})
 
@@ -79,7 +79,7 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat
         {isLoading && <Loading percent={80}/>}</button>
 }
 
-function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const [contractAddress, chainId] = contractInfo._id.split("_");
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.WithdrawExcessPayout, {contractAddress})
 
@@ -90,7 +90,7 @@ function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: Contrac
         {isLoading && <Loading percent={80}/>}</button>
 }
 
-function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {_id} = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_");
@@ -120,7 +120,7 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractEssen
     </div>
 }
 
-function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     // todo continue
     const {_id,} = contractInfo;
 
@@ -152,7 +152,7 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
     </div>
 }
 
-function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {_id,} = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_");

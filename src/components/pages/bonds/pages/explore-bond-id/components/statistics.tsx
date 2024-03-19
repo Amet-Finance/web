@@ -1,4 +1,4 @@
-import {ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import InfoBox from "@/components/utils/info-box";
@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
 
 export default function StatisticsContainer({contractInfo}: Readonly<{
-    contractInfo: ContractEssentialFormatWithPayoutBalance
+    contractInfo: ContractCoreDetailsWithPayoutBalance
 }>) {
 
     const {issuerScore, uniqueHolders} = contractInfo;

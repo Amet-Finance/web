@@ -1,6 +1,6 @@
-import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 
-export default function FinishedComponent({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+export default function FinishedComponent({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     const {totalBonds, purchased, redeemed} = contractInfo;
     if (totalBonds !== redeemed) return null;

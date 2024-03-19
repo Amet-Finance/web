@@ -3,11 +3,12 @@ import {URLS} from "@/modules/utils/urls";
 
 export default function RedditSVG({url}: {url: string}) {
     const color = "#7D7D7D"
+    const title = url === URLS.Reddit ? "Amet Finance Reddit" : "";
 
-    return <>
-        <Link href={url} target="_blank" rel="noreferrer">
+    return (
+        <Link href={url} target="_blank" rel="noreferrer" title={title}>
             <svg width="26" height="26" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg"
-                 className='hover'>
+                 className='cursor-pointer hover:fill-white'>
                 <path
                     d="M13.0715 19.1989C12.8026 19.2048 12.5381 19.1303 12.3118 18.985C12.0855 18.8398 11.9077 18.6303 11.8011 18.3834C11.6945 18.1365 11.664 17.8634 11.7135 17.5991C11.7629 17.3348 11.8901 17.0912 12.0788 16.8995C12.2674 16.7079 12.509 16.5769 12.7725 16.5232C13.036 16.4696 13.3095 16.4958 13.558 16.5985C13.8066 16.7012 14.0189 16.8756 14.1677 17.0996C14.3165 17.3236 14.3952 17.5869 14.3936 17.8558C14.3953 18.2089 14.2572 18.5483 14.0095 18.8C13.7618 19.0516 13.4245 19.195 13.0715 19.1989Z"
                     fill={color}/>
@@ -22,14 +23,5 @@ export default function RedditSVG({url}: {url: string}) {
                     fill={color}/>
             </svg>
         </Link>
-        <style jsx>{`
-          .hover {
-            cursor: pointer;
-          }
-
-          .hover:hover path {
-            fill: #fff;
-          }
-        `}</style>
-    </>
+    )
 }

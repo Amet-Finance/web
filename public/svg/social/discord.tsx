@@ -6,7 +6,7 @@ export default function DiscordSVG({isWhite, isBig}: { isWhite?: boolean, isBig?
     const color = isWhite ? "#000" : "#7D7D7D"
 
     return <>
-        <Link href={URLS.Discord} target="_blank" rel="noreferrer">
+        <Link href={URLS.Discord} target="_blank" rel="noreferrer" title="Amet Finance Discord">
             <DiscordIcon size={size} color={color} hoverColor={"#fff"}/>
         </Link>
     </>

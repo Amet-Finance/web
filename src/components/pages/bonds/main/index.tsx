@@ -7,7 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractEssentialFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractQuery} from "@/modules/cloud-api/contract-type";
 import {Loading} from "@/components/utils/loading";
 import CloudAPI from "@/modules/cloud-api";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
@@ -130,7 +130,7 @@ function BondCards() {
 
     const [isLoading, setLoading] = useState(false);
     const [params, setParams] = useState<ContractQuery>({limit: 12})
-    const [contracts, setContracts] = useState<ContractEssentialFormat[]>([])
+    const [contracts, setContracts] = useState<ContractCoreDetails[]>([])
 
     useEffect(() => {
         const requestContracts = () => ContractAPI.getContractsBasic(params).then(response => Boolean(response) && setContracts(response))
@@ -165,7 +165,7 @@ function Loader() {
     return <div className='p-12'><Loading percent={-50}/></div>
 }
 
-function ContractsContainer({contracts}: { contracts: ContractEssentialFormat[] }) {
+function ContractsContainer({contracts}: { contracts: ContractCoreDetails[] }) {
     return <>
         <div className='relative w-full'>
             <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>
