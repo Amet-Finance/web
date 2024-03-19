@@ -1,8 +1,8 @@
 import {API_URL, ResponseFormat} from "@/modules/cloud-api/constants";
 import {patchAPI, requestAPI} from "@/modules/cloud-api/util";
 import {
-    ContractEssentialFormat,
     ContractDescription,
+    ContractEssentialFormat,
     ContractExtendedFormat,
     ContractQuery,
     DescriptionEditParams

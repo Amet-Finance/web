@@ -1,4 +1,4 @@
-import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import InfoBox from "@/components/utils/info-box";

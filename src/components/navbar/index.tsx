@@ -26,7 +26,7 @@ import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {initBalances} from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {GeneralContainer, ConditionalRenderer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 
 
 export default function Navbar() {

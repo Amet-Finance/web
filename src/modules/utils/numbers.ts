@@ -1,5 +1,3 @@
-import {toBN} from "@/modules/web3/util";
-
 function format(number: number, maxDigestsForSmallNumbers = 4) {
 
     if (number < 1) {

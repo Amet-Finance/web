@@ -1,4 +1,4 @@
-import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useEffect, useState} from "react";
 import {getBlockNumber} from "@/modules/web3";

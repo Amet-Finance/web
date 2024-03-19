@@ -8,7 +8,7 @@ import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
-import {GeneralContainer, ConditionalRenderer, useShow} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, useShow} from "@/components/utils/container";
 import {Chain} from "wagmi";
 
 export default function Explore() {
