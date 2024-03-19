@@ -13,7 +13,8 @@ const nextConfig = {
                 hostname: "euc.li"
             }
         ],
-    }
+    },
+    swcMinify: true
 }
 
 module.exports = nextConfig
