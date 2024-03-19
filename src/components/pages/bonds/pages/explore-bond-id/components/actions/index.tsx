@@ -26,7 +26,8 @@ export default function ActionsContainer({contractInfo}: Readonly<{
     const selectionHandler = [selected, setSelected];
 
     return (
-        <div className='relative lg:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-full'>
+        <div
+            className='relative lg:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-full'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
             <div className='flex w-full h-full'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>
@@ -114,7 +115,8 @@ function HeadlineComponent({component, selected, setSelected}: {
 
 
     return (
-        <button className={`flex flex-col justify-end gap-0.5 py-1.5 items-center hover:bg-neutral-900 rounded-md cursor-pointer ${isSelected && "bg-neutral-800"}`}
+        <button
+            className={`flex flex-col justify-end gap-0.5 py-1.5 items-center hover:bg-neutral-900 rounded-md cursor-pointer ${isSelected && "bg-neutral-800"}`}
             onClick={select}>
             <div className='relative'>
                 <Image src={icon} alt={title} width={24} height={24}/>

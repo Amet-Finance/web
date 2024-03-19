@@ -107,7 +107,7 @@ function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtendedType }
             <div
                 className={'group-hover:flex hidden flex-col gap-4 justify-center absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
                 {linkExtended.subLinks?.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
-                                                                 isExtended={false}/>)}
+                                                                  isExtended={false}/>)}
             </div>
         </ConditionalRenderer>
     </div>

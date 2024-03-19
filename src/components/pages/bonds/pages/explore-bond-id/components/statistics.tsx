@@ -6,7 +6,9 @@ import {STATISTICS_DEFINITION} from "@/components/pages/bonds/pages/explore-bond
 import BigNumber from "bignumber.js";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
 
-export default function StatisticsContainer({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormatWithPayoutBalance }>) {
+export default function StatisticsContainer({contractInfo}: Readonly<{
+    contractInfo: ContractEssentialFormatWithPayoutBalance
+}>) {
 
     const {issuerScore, uniqueHolders} = contractInfo;
     const score = CalculatorController.score(contractInfo)

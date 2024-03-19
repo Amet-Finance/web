@@ -10,7 +10,7 @@ function tbv(contractInfo: ContractEssentialFormat) {
 
 function score(contract: ContractEssentialFormatWithPayoutBalance) {
     const {_id, purchase, payout, issuerScore} = contract;
-    const [_, chainId] = _id.split("_");
+    const [_] = _id.split("_");
 
     const isBothAssetsVerified = payout?.isVerified && purchase?.isVerified;
 

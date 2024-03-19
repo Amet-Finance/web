@@ -15,7 +15,8 @@ export default function Referral() {
 
     return <>
         <div className='relative flex justify-center items-center min-h-[90vh]'>
-            <Image src='/svg/images/bg-referral.svg' alt='Bond abstract image'  fill className='absolute top-full left-0'/>
+            <Image src='/svg/images/bg-referral.svg' alt='Bond abstract image' fill
+                   className='absolute top-full left-0'/>
             <div className='flex justify-center items-center z-10'>
                 <BecomeAReferralPartner stateHandler={stateHandler}/>
                 <ReferralPartnerForm stateHandler={stateHandler}/>

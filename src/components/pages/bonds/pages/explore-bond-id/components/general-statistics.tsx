@@ -94,7 +94,7 @@ function Container({type, total, isLoadingLogs, data, asset}: {
                         <span className='text-2xl font-bold'>{title}</span>}
                     {isLoadingLogs ? <HorizontalLoading className='w-20'/> :
                         <p className='text-neutral-500 text-sm'>Today {" "}
-                        <span className='text-green-500'>(+2.4%)</span>
+                            <span className='text-green-500'>(+2.4%)</span>
                         </p>}
                 </div>
             </div>

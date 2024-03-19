@@ -21,7 +21,9 @@ import {DefaultButton} from "@/components/utils/buttons";
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
-export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormatWithPayoutBalance }>) {
+export default function RedeemTab({contractInfo}: Readonly<{
+    contractInfo: ContractEssentialFormatWithPayoutBalance
+}>) {
 
     const {_id, payout} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_")

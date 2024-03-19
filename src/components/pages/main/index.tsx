@@ -71,7 +71,7 @@ function LandingSection() {
                 </div>
             </div>
             <button className='absolute flex flex-col gap-1 items-center top-[95%] cursor-pointer -translate-y-2.5'
-                onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
+                    onClick={() => window.scrollTo({top: 900, behavior: "smooth"})}>
                 <span className='text-xs text-neutral-400'>Read More</span>
                 <ArrowBasicSVG classname='stroke-neutral-400 scale-[80%]'/>
             </button>
@@ -289,8 +289,8 @@ function FAQ() {
             <div className='flex flex-col gap-8 w-full'>
                 {
                     FAQ_QUESTIONS.map((item, index) => <FaqItem item={item}
-                                                             selectedId={selectedId} selectId={selectId}
-                                                             index={index} key={index}/>)}
+                                                                selectedId={selectedId} selectId={selectId}
+                                                                index={index} key={index}/>)}
             </div>
         </GeneralContainer>
     </>
@@ -340,7 +340,8 @@ function Partnerships() {
         <GeneralContainer className='flex flex-col justify-center gap-24 py-12 items-center bg-neutral-950' isPadding>
             <div className='flex flex-col items-center gap-4 text-center'>
                 <h2 className='md:text-4xl text-3xl font-semibold'>Our Esteemed Partners: Collaborating for Success</h2>
-                <p className='max-w-3xl text-neutral-400 text-sm'>Each partner plays a pivotal role in our ecosystem, bringing
+                <p className='max-w-3xl text-neutral-400 text-sm'>Each partner plays a pivotal role in our ecosystem,
+                    bringing
                     unique expertise and value to our platform. Discover the synergy that makes our service stand out in
                     the world of finance</p>
             </div>

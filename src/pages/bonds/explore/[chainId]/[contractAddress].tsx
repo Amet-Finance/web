@@ -26,7 +26,10 @@ export async function getServerSideProps({query}: any) {
 
 
     if (chain && contractAddress) {
-        const contracts = await ContractAPI.getContractsExtended({chainId: chain.id, contractAddresses: [contractAddress]});
+        const contracts = await ContractAPI.getContractsExtended({
+            chainId: chain.id,
+            contractAddresses: [contractAddress]
+        });
         if (contracts?.length) {
             const bondInfoDetailed = contracts[0]
             const {contractDescription} = bondInfoDetailed;

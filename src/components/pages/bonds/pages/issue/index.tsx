@@ -122,7 +122,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
                 </Link></p>
             <button
                 className='flex items-center justify-center gap-1 px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
-                    onClick={issueBonds}>
+                onClick={issueBonds}>
                 <span>Issue Bonds</span>
                 <ConditionalRenderer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
                     <span className='text-red-500'>({issuerContractInfo.issuanceFeeUI})</span>
@@ -333,32 +333,32 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
     }
 
     return <div className='md:col-span-4 col-span-8 w-full flex flex-col gap-3'>
-            <InfoBox info={InfoSections.MaturityPeriod}><span
-                className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
-            <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
-                <input type="number"
-                       id='day'
-                       placeholder="Choose Maturity Period"
-                       onChange={changeTime}
-                       ref={inputRef}
-                       className='bg-transparent col-span-4 placeholder:text-[#3C3C3C] pl-4 py-3'/>
+        <InfoBox info={InfoSections.MaturityPeriod}><span
+            className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
+        <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
+            <input type="number"
+                   id='day'
+                   placeholder="Choose Maturity Period"
+                   onChange={changeTime}
+                   ref={inputRef}
+                   className='bg-transparent col-span-4 placeholder:text-[#3C3C3C] pl-4 py-3'/>
 
-                <button className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
-                     onClick={openOrClose} ref={boxRef}>
-                    <span className='text-center w-full capitalize'>{type}</span>
-                </button>
-                <ConditionalRenderer isOpen={isOpen}>
-                    <div
-                        className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
-                        {
-                            Object.keys(Types)
-                                .map(key => (
-                                    <button className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
-                                            id={Types[key]} onClick={changeType} key={key}>{key}</button>))
-                        }
-                    </div>
-                </ConditionalRenderer>
-            </div>
+            <button className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
+                    onClick={openOrClose} ref={boxRef}>
+                <span className='text-center w-full capitalize'>{type}</span>
+            </button>
+            <ConditionalRenderer isOpen={isOpen}>
+                <div
+                    className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
+                    {
+                        Object.keys(Types)
+                            .map(key => (
+                                <button className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
+                                        id={Types[key]} onClick={changeType} key={key}>{key}</button>))
+                    }
+                </div>
+            </ConditionalRenderer>
+        </div>
     </div>
 }
 

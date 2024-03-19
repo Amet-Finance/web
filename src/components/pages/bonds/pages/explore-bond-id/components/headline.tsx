@@ -18,7 +18,7 @@ export default function HeadlineContainer({refreshHandler, refreshLoader}: {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if(refreshDate) setSecondsPassed(Math.round((Date.now() - refreshDate.getTime()) / 1000))
+            if (refreshDate) setSecondsPassed(Math.round((Date.now() - refreshDate.getTime()) / 1000))
         }, 500)
         return () => clearInterval(interval)
     }, [refreshDate]);

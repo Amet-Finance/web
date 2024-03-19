@@ -2,16 +2,16 @@ import React from "react";
 import {StringKeyedObject} from "@/components/utils/general";
 
 function BasicButton({
-                                children,
-                                isBgWhite,
-                                isBgGrey,
-                                isWhiteBorder,
-                                onClick,
-                                wMin,
-                                hFull,
-                                isBlocked,
-                                className
-                            }: Readonly<{
+                         children,
+                         isBgWhite,
+                         isBgGrey,
+                         isWhiteBorder,
+                         onClick,
+                         wMin,
+                         hFull,
+                         isBlocked,
+                         className
+                     }: Readonly<{
     children: any,
     isBgWhite?: boolean,
     isBgGrey?: boolean,
@@ -37,9 +37,9 @@ function BasicButton({
 
     return <button
         className={`w-full ${classOnBg} flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium ${className}`}
-            onClick={onClick}>
-            {children}
-        </button>
+        onClick={onClick}>
+        {children}
+    </button>
 }
 
 function DefaultButton({children, disabled, className, classType = "", onClick}: {
