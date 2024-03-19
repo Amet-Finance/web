@@ -1,7 +1,4 @@
-import {
-    ContractEssentialFormat,
-    FinancialAttributeInfo
-} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
