@@ -1,15 +1,16 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
 import {TxTypes} from "@/modules/web3/constants";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
 import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {Loading} from "@/components/utils/loading";
 import {isAddress} from "viem";
 import {useTransaction} from "@/modules/utils/transaction";
-import {ShowContainer, useShow} from "@/components/utils/container";
+import {ConditionalRenderer, useShow} from "@/components/utils/container";
+import {DefaultButton} from "@/components/utils/buttons";
 
-export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
 
     return <div className='flex flex-col h-full w-full'>
         <div className='grid grid-cols-4 gap-2'>
@@ -23,7 +24,7 @@ export default function ManageTab({contractInfo}: Readonly<{ contractInfo: Contr
     </div>
 }
 
-function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     const {_id, payout, totalBonds, redeemed} = contractInfo;
     const [contractAddress, chainId] = _id.split("_");
 
@@ -53,17 +54,17 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractExtended
         className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Deposit Payout {isLoading && <Loading percent={80}/>}</button>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <InputContainer handler={handler}
                             placeholder='Enter The Payout Token Amoun'
                             maxValue={maxPayout}
                             symbol={payout.symbol}
                             submit={submit}/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
-function Settle({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function Settle({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     const [contractAddress, chainId] = contractInfo._id.split("_");
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.Settle, {contractAddress})
 
@@ -78,7 +79,7 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFor
         {isLoading && <Loading percent={80}/>}</button>
 }
 
-function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     const [contractAddress, chainId] = contractInfo._id.split("_");
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.WithdrawExcessPayout, {contractAddress})
 
@@ -89,7 +90,7 @@ function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: Contrac
         {isLoading && <Loading percent={80}/>}</button>
 }
 
-function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     const {_id} = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_");
@@ -113,13 +114,13 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractExten
         className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Update Bond Supply {isLoading && <Loading percent={80}/>}</button>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <InputContainer handler={handler} submit={submit} placeholder='Enter The Desired Bond Supply'/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
-function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     // todo continue
     const {_id,} = contractInfo;
 
@@ -145,13 +146,13 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
         className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Decrease Maturity Period {isLoading && <Loading percent={80}/>}</button>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <InputContainer handler={handler} submit={submit} placeholder='Maturit Period In Blocks'/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
-function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
     const {_id,} = contractInfo;
 
     const [contractAddress, chainId] = _id.split("_");
@@ -176,12 +177,12 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractExtendedIn
         className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Change Owner {isLoading && <Loading percent={80}/>}</button>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <InputContainer handler={handler}
                             submit={submit}
                             type="string"
                             placeholder='The Desired Maturit Period In Blocks'/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -193,6 +194,8 @@ function InputContainer({handler, maxValue, symbol, submit, placeholder, type}: 
     placeholder?: string
     submit: any
 }>) {
+
+    const ref = useRef<any>();
     const [value, setValue] = handler;
 
     function change(event: any) {
@@ -207,22 +210,20 @@ function InputContainer({handler, maxValue, symbol, submit, placeholder, type}: 
     function setPercentage(percent: number) {
         if (!maxValue) return;
 
-        const value = maxValue * percent / 100
-        setValue(Math.floor(value));
+        const value = Math.floor(maxValue * percent / 100)
+        setValue(value);
+        ref.current.value = value;
     }
 
-    return <div className='flex flex-col gap-1 '>
-        <div
-            className='flex justify-between items-center gap-2 bg-neutral-950 border border-neutral-700 rounded-md w-full'>
+    return <div className='flex flex-col gap-2'>
+        <div className='flex justify-between items-center gap-2 bg-neutral-950 rounded-md w-full'>
             <input type="text"
+                   ref={ref}
                    className='w-full bg-transparent placeholder:text-sm px-2'
-                   value={value || ""}
                    onChange={change}
                    placeholder={placeholder}/>
             {symbol && <span className='text-sm text-neutral-400 font-medium'>{symbol}</span>}
-            <button className='bg-white text-black px-2 py-1 rounded-r-md hover:bg-green-300'
-                    onClick={submit}>Submit
-            </button>
+            <DefaultButton classType='1' onClick={submit}>Submit</DefaultButton>
         </div>
         {Boolean(maxValue) && <Percentages setter={setPercentage}/>}
     </div>

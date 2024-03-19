@@ -32,9 +32,10 @@ import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
-import {GeneralContainer, ShowContainer, ToggleDisplayComponent, useShow} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
+import {StringKeyedObject} from "@/components/utils/general";
 
 
 export default function Issue() {
@@ -123,9 +124,9 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
                 className='flex items-center justify-center gap-1 px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
                     onClick={issueBonds}>
                 <span>Issue Bonds</span>
-                <ShowContainer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
+                <ConditionalRenderer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
                     <span className='text-red-500'>({issuerContractInfo.issuanceFeeUI})</span>
-                </ShowContainer>
+                </ConditionalRenderer>
             </button>
         </div>
     </div>
@@ -256,12 +257,12 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                ref={inputRef}
                onClick={openOrClose}
                onChange={changeInput}/>
-        <ShowContainer isOpen={isShow}>
+        <ConditionalRenderer isOpen={isShow}>
             <div
                 className='absolute flex flex-col gap-1 bg-[#131313] w-full border border-w1 rounded-md top-full left-0 z-10'>
                 {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
             </div>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -280,7 +281,7 @@ function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onC
 
 function MaturityPeriodSelector({bondInfoHandler}: BondData) {
     const [bondInfo, setBondInfo] = bondInfoHandler;
-    const Types: { [key: string]: string } = {
+    const Types: StringKeyedObject<string> = {
         Hours: "hours",
         Days: "days",
         Months: "months",
@@ -346,7 +347,7 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
                      onClick={openOrClose} ref={boxRef}>
                     <span className='text-center w-full capitalize'>{type}</span>
                 </button>
-                <ShowContainer isOpen={isOpen}>
+                <ConditionalRenderer isOpen={isOpen}>
                     <div
                         className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
                         {
@@ -356,7 +357,7 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
                                             id={Types[key]} onClick={changeType} key={key}>{key}</button>))
                         }
                     </div>
-                </ShowContainer>
+                </ConditionalRenderer>
             </div>
     </div>
 }
@@ -396,11 +397,11 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
                        height={24}/>
                 <span className='text-sm font-medium'>{shortenString(chainInfo?.name ?? "", 15)}</span>
             </div>
-            <ShowContainer isOpen={isOpen}>
+            <ConditionalRenderer isOpen={isOpen}>
                 <div className="flex absolute flex-col bg-[#131313] rounded-md left-0 top-[110%] z-10 w-full">
                     {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
                 </div>
-            </ShowContainer>
+            </ConditionalRenderer>
         </button>
     </div>
 }
@@ -442,21 +443,22 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
 
     return <div className='grid grid-cols-12 mt-4 gap-4'>
 
-        <ShowContainer isOpen={Number.isFinite(bondInfo.totalBonds)}>
+        <ConditionalRenderer isOpen={Number.isFinite(bondInfo.totalBonds)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
                  title={bondInfo.totalBonds?.toString()}>
                 <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
                 <span className='text-neutral-500 text-xs'>Total</span>
             </div>
-        </ShowContainer>
-        <ShowContainer isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
+        </ConditionalRenderer>
+        <ConditionalRenderer
+            isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
                  title={maturityPeriodStr}>
                 <span className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
                 <span className='text-neutral-500 text-xs'>Maturity Period</span>
             </div>
-        </ShowContainer>
-        <ShowContainer isOpen={Number.isFinite(bondInfo.chainId)}>
+        </ConditionalRenderer>
+        <ConditionalRenderer isOpen={Number.isFinite(bondInfo.chainId)}>
             <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
                 <div className='flex gap-2 items-center texee'>
                     <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
@@ -466,20 +468,20 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
                 </div>
                 <span className='text-neutral-500 text-xs'>Chain</span>
             </div>
-        </ShowContainer>
-        <ShowContainer isOpen={Boolean(bondInfo.purchaseToken)}>
+        </ConditionalRenderer>
+        <ConditionalRenderer isOpen={Boolean(bondInfo.purchaseToken)}>
             <TokenPreview
                 type='purchaseToken'
                 token={tokens[bondInfo.purchaseToken]}
                 issuerContractInfo={issuerContractInfo}
                 bondInfo={bondInfo}/>
-        </ShowContainer>
-        <ShowContainer isOpen={Boolean(bondInfo.payoutToken)}>
+        </ConditionalRenderer>
+        <ConditionalRenderer isOpen={Boolean(bondInfo.payoutToken)}>
             <TokenPreview type='payoutToken'
                           token={tokens[bondInfo.payoutToken]}
                           issuerContractInfo={issuerContractInfo}
                           bondInfo={bondInfo}/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -557,20 +559,20 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                     <div className='flex items-center gap-1.5'>
                         <p className='text-sm'>{token.name}<span className='text-neutral-300'>({token.symbol})</span>
                         </p>
-                        <ShowContainer isOpen={token.isVerified}>
+                        <ConditionalRenderer isOpen={token.isVerified}>
                             <VerifiedSVG/>
-                        </ShowContainer>
+                        </ConditionalRenderer>
                     </div>
                     <div className='flex items-center gap-1 text-mm text-neutral-400'>
                         <span>Balance:</span>
-                        <ToggleDisplayComponent isOpen={balance.isLoading}>
+                        <ToggleBetweenChildren isOpen={balance.isLoading}>
                             <Loading percent={85}/>
                             <span>{formatLargeNumber(balance.value)} {token.symbol}</span>
-                        </ToggleDisplayComponent>
+                        </ToggleBetweenChildren>
                     </div>
                 </div>
             </div>
-            <ShowContainer isOpen={Boolean(total)}>
+            <ConditionalRenderer isOpen={Boolean(total)}>
                 <div className='flex flex-col'>
                     <div className='flex gap-1'>
                         <p className='text-sm whitespace-nowrap'>{amountTitle}:</p>
@@ -586,11 +588,11 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                             </div>
                         </div>
                     </div>
-                    <ShowContainer isOpen={isPurchase}>
+                    <ConditionalRenderer isOpen={isPurchase}>
                         <span className='text-neutral-500 text-mm'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>
-                    </ShowContainer>
+                    </ConditionalRenderer>
                 </div>
-            </ShowContainer>
+            </ConditionalRenderer>
         </TokenContainer>
     )
 }

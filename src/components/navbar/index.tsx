@@ -26,7 +26,7 @@ import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {initBalances} from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {GeneralContainer, ShowContainer, ToggleDisplayComponent, useShow} from "@/components/utils/container";
+import {GeneralContainer, ConditionalRenderer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 
 
 export default function Navbar() {
@@ -73,11 +73,11 @@ function MobileNavbar() {
     }, [boxRef]);
 
     return <div className='md:hidden flex w-full justify-end'>
-        <ToggleDisplayComponent isOpen={isOpen}>
+        <ToggleBetweenChildren isOpen={isOpen}>
             <XmarkSVG onClick={openOrClose}/>
             <BurgerSVG onClick={openOrClose}/>
-        </ToggleDisplayComponent>
-        <ShowContainer isOpen={isOpen}>
+        </ToggleBetweenChildren>
+        <ConditionalRenderer isOpen={isOpen}>
             <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
                  ref={boxRef}>
                 <div>
@@ -90,7 +90,7 @@ function MobileNavbar() {
                     <WalletComponent/>
                 </div>
             </div>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -103,26 +103,26 @@ function Links() {
 function LinkBuilder({linkExtended}: Readonly<{ linkExtended: LinkExtendedType }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
-        <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
+        <ConditionalRenderer isOpen={Boolean(linkExtended.subLinks?.length)}>
             <div
                 className={'group-hover:flex hidden flex-col gap-4 justify-center absolute left-0 top-full py-4 border-b-2 border-neutral-800 bg-black'}>
                 {linkExtended.subLinks?.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
                                                                  isExtended={false}/>)}
             </div>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
 function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtendedType }>) {
     return <div className='group relative'>
         <LinkBase linkBase={linkExtended} isExtended={true}/>
-        <ShowContainer isOpen={Boolean(linkExtended.subLinks?.length)}>
+        <ConditionalRenderer isOpen={Boolean(linkExtended.subLinks?.length)}>
             <div
                 className='flex flex-col gap-4 justify-center py-4'>
                 {linkExtended.subLinks?.map(linkBase => <LinkBase linkBase={linkBase} key={linkBase.href}
                                                                   isExtended={false}/>)}
             </div>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -143,10 +143,10 @@ function WalletComponent() {
 
     return (
         <div className='cursor-pointer text-white'>
-            <ToggleDisplayComponent isOpen={isOpen}>
+            <ToggleBetweenChildren isOpen={isOpen}>
                 <ConnectedComponent/>
                 <ConnectWalletComponent/>
-            </ToggleDisplayComponent>
+            </ToggleBetweenChildren>
         </div>
     );
 }
@@ -182,9 +182,9 @@ function ConnectedComponent() {
                 <span>{shorten(accountState.address, 4)}</span>
             </div>
         </BasicButton>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <Portfolio setOpen={setIsOpen}/>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 

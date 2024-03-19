@@ -1,14 +1,14 @@
 import {API_URL, ResponseFormat} from "@/modules/cloud-api/constants";
 import {patchAPI, requestAPI} from "@/modules/cloud-api/util";
 import {
-    ContractBasicFormat,
+    ContractEssentialFormat,
     ContractDescription,
     ContractExtendedFormat,
     ContractQuery,
     DescriptionEditParams
 } from "@/modules/cloud-api/contract-type";
 
-async function getContractsBasic(params: ContractQuery): Promise<ContractBasicFormat[]> {
+async function getContractsBasic(params: ContractQuery): Promise<ContractEssentialFormat[]> {
     const bondsAPI = `${API_URL}/v2/contract`
 
     const queryParams: any = {

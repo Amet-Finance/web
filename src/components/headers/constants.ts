@@ -1,4 +1,5 @@
 import {URLS} from "@/modules/utils/urls";
+import {StringKeyedObject} from "@/components/utils/general";
 
 type MetaInfo = {
     title: string,
@@ -6,7 +7,7 @@ type MetaInfo = {
     ogImage?: string
 }
 
-const MetaConstants: { [key: string]: MetaInfo } = {
+const MetaConstants: StringKeyedObject<MetaInfo> = {
     "NotFoundPage": {
         title: "Amet Finance - Page Not Found",
         description: "Oops! You've reached a page that doesn't exist on Amet Finance. Please check the URL or explore our other offerings."

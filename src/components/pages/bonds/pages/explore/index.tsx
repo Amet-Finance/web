@@ -3,12 +3,12 @@ import SearchSVG from "../../../../../../public/svg/utils/search";
 import FilterSVG from "../../../../../../public/svg/utils/filter";
 import {useEffect, useState} from "react";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
-import {GeneralContainer, ShowContainer, useShow} from "@/components/utils/container";
+import {GeneralContainer, ConditionalRenderer, useShow} from "@/components/utils/container";
 import {Chain} from "wagmi";
 
 export default function Explore() {
@@ -41,9 +41,9 @@ export default function Explore() {
                             <SearchSVG/>
                         </div>
                     </div>
-                    <ShowContainer isOpen={isFilterOpen}>
+                    <ConditionalRenderer isOpen={isFilterOpen}>
                         <FilterContainer/>
-                    </ShowContainer>
+                    </ConditionalRenderer>
                 </div>
                 <div className='grid 2xl:grid-cols-3 md-lg:grid-cols-2 grid-cols-1 gap-2'>
                     <BondCards/>
@@ -102,11 +102,11 @@ function ChainSelector({selectChain}: Readonly<{ selectChain: (chainId: number) 
             <span className='text-sm'>Chain</span>
             <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
         </button>
-        <ShowContainer isOpen={isOpen}>
+        <ConditionalRenderer isOpen={isOpen}>
             <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-xl px-4 py-4 w-max'>
                 {CHAINS.map(chain => <ChainWrapper chain={chain} selectChain={selectChainAndClose} key={chain.id}/>)}
             </div>
-        </ShowContainer>
+        </ConditionalRenderer>
     </div>
 }
 
@@ -121,7 +121,7 @@ function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainI
 
 function BondCards() {
 
-    const [contracts, setContracts] = useState<ContractBasicFormat[]>([])
+    const [contracts, setContracts] = useState<ContractEssentialFormat[]>([])
 
     useEffect(() => {
         const params = {}

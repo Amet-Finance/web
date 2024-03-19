@@ -3,8 +3,9 @@ import {useNetworkValidator} from "@/modules/utils/chain";
 import {useAccount, useSendTransaction} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {StringKeyedObject} from "@/components/utils/general";
 
-function useTransaction(chainId: number | string, txType: string, txConfig: { [key: string]: any }) {
+function useTransaction(chainId: number | string, txType: string, txConfig: StringKeyedObject<any>) {
 
     const {address} = useAccount();
     const {open} = useWeb3Modal();

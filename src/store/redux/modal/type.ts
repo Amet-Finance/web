@@ -1,5 +1,6 @@
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {TransactionReceipt} from "viem";
+import {StringKeyedObject} from "@/components/utils/general";
 
 
 type Modal = {
@@ -8,7 +9,7 @@ type Modal = {
         // todo all the params that may be in the additional
         bondInfo?: BondInfo,
         transaction?: TransactionReceipt
-        decoded?: { [key: string]: any }
+        decoded?: StringKeyedObject<any>
     }
 }
 export type {

@@ -1,4 +1,7 @@
-import {ContractExtendedInfoFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {
+    ContractEssentialFormat,
+    FinancialAttributeInfo
+} from "@/modules/cloud-api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
@@ -12,11 +15,13 @@ import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {HorizontalLoading} from "@/components/utils/loading";
 
+// todo dynamically monitor blocks and whenever new action happens show here
+
 const StatisticsTypes = {
     Purchase: "Purchase",
     Redeem: "Redeem"
 }
-export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractExtendedInfoFormat }) {
+export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractEssentialFormat }) {
     const [logs, setLogs] = useState<ActionLogFormat[]>([])
     const [isLoadingLogs, setLoadingLogs] = useState(false)
 
@@ -32,7 +37,7 @@ export default function GeneralStatisticsContainer({contractInfo}: { contractInf
 }
 
 function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
-    contractInfo: ContractExtendedInfoFormat,
+    contractInfo: ContractEssentialFormat,
     logs: ActionLogFormat[],
     isLoadingLogs: boolean
 }) {
@@ -188,7 +193,7 @@ function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogForm
 }
 
 function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
-    contractInfo: ContractExtendedInfoFormat,
+    contractInfo: ContractEssentialFormat,
     logs: ActionLogFormat[],
     isLoadingLogs: boolean
 }) {
@@ -260,7 +265,7 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
 }
 
 
-function LogContainer({contractInfo, log}: { contractInfo: ContractExtendedInfoFormat, log: ActionLogFormat }) {
+function LogContainer({contractInfo, log}: { contractInfo: ContractEssentialFormat, log: ActionLogFormat }) {
 
     const {_id, purchase, payout} = contractInfo;
     const [_, chainId] = _id.split("_");

@@ -1,4 +1,4 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
 import Image from "next/image"
 import {getAccount} from "@wagmi/core";
@@ -9,7 +9,7 @@ import ManageTab from "@/components/pages/bonds/pages/explore-bond-id/components
 import ReferralTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/referral";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
-import {ShowContainer} from "@/components/utils/container";
+import {ConditionalRenderer} from "@/components/utils/container";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -18,7 +18,9 @@ const Tabs = {
     ReferralRewards: "Referral Rewards"
 }
 
-export default function ActionsContainer({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+export default function ActionsContainer({contractInfo}: Readonly<{
+    contractInfo: ContractEssentialFormatWithPayoutBalance
+}>) {
 
     const [selected, setSelected] = useState(Tabs.Purchase);
     const selectionHandler = [selected, setSelected];
@@ -34,7 +36,7 @@ export default function ActionsContainer({contractInfo}: Readonly<{ contractInfo
 }
 
 function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
-    contractInfo: ContractExtendedInfoFormat,
+    contractInfo: ContractEssentialFormat,
     selectionHandler: any
 }>) {
 
@@ -116,19 +118,22 @@ function HeadlineComponent({component, selected, setSelected}: {
             onClick={select}>
             <div className='relative'>
                 <Image src={icon} alt={title} width={24} height={24}/>
-                <ShowContainer isOpen={Number.isFinite(addon?.total)}>
+                <ConditionalRenderer isOpen={Number.isFinite(addon?.total)}>
                     <div
                         className='absolute flex justify-center items-center px-1 bg-green-500 rounded-full -top-1.5 -right-3'>
                         <span className='text-mm text-white font-medium'>{addon?.total}</span>
                     </div>
-                </ShowContainer>
+                </ConditionalRenderer>
             </div>
             <span className='text-mm'>{title}</span>
         </button>
     )
 }
 
-function TabSelector({title, contractInfo}: Readonly<{ title: string, contractInfo: ContractExtendedInfoFormat, }>) {
+function TabSelector({title, contractInfo}: Readonly<{
+    title: string,
+    contractInfo: ContractEssentialFormatWithPayoutBalance
+}>) {
 
     switch (title) {
         case Tabs.Purchase:

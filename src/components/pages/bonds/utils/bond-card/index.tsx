@@ -5,11 +5,14 @@ import Link from "next/link";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import {BlockTimes} from "@/modules/web3/constants";
 import {formatTime} from "@/modules/utils/dates";
-import {ContractBasicFormat} from "@/modules/cloud-api/contract-type";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
+import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
+import CalculatorController from "@/components/pages/bonds/utils/calculator";
+import {useEffect} from "react";
+import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
-export default function BondCard({info, link}: Readonly<{ info: ContractBasicFormat, link?: string }>) {
+export default function BondCard({info, link}: Readonly<{ info: ContractEssentialFormat, link?: string }>) {
     const {
         _id,
         redeemed,
@@ -18,16 +21,18 @@ export default function BondCard({info, link}: Readonly<{ info: ContractBasicFor
         totalBonds,
         payout,
         purchase,
-        score,
-        tbv,
+        issuerScore,
         maturityPeriodInBlocks,
         issuer,
         issuanceDate
     } = info;
     const [contractAddress, chainId] = _id.split("_");
 
+    const {balance} = useTokenBalance(chainId, payout.contractAddress, contractAddress)
+
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
 
+    const score = CalculatorController.score({...info, payoutBalance: balance})
     const scoreColor = tColor(score * 10)
 
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
@@ -48,6 +53,11 @@ export default function BondCard({info, link}: Readonly<{ info: ContractBasicFor
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
     const expectedReturnPerBond = payoutPriceUsd - purchasePriceUsd;
     const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
+
+
+    useEffect(() => {
+
+    }, [])
 
     return (
         <Link href={url}>
@@ -107,8 +117,10 @@ export default function BondCard({info, link}: Readonly<{ info: ContractBasicFor
 }
 
 function DetailContainer({value, title, valueClass}: Readonly<{ value: string, title: string, valueClass?: string }>) {
-    return <div className='flex flex-col items-center'>
-        <span className={`${valueClass} font-semibold`}>{value}</span>
-        <span className='text-mm text-neutral-500'>{title}</span>
-    </div>
+    return (
+        <div className='flex flex-col items-center'>
+            <span className={`${valueClass} font-semibold`}>{value}</span>
+            <span className='text-mm text-neutral-500'>{title}</span>
+        </div>
+    )
 }

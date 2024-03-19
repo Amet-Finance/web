@@ -8,6 +8,7 @@ import {TokensResponse} from "@/modules/cloud-api/type";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
+import {StringKeyedObject} from "@/components/utils/general";
 
 function getIssuerContractInstance(chain: Chain) {
     const provider = getProvider(chain)
@@ -66,7 +67,7 @@ async function getIssuerContractInfo(chain: Chain): Promise<IssuerContractInfoDe
 }
 
 function decode(transaction: TransactionReceipt): {} {
-    let result: { [key: string]: any } = {};
+    let result: StringKeyedObject<any> = {};
 
     for (const log of transaction.logs) {
         try {

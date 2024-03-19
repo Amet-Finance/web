@@ -5,6 +5,7 @@ import ContractAPI from "@/modules/cloud-api/contract-api";
 import {shortenString} from "@/modules/utils/string";
 import SaveSVG from "../../../../../../../public/svg/utils/save";
 import EditSVG from "../../../../../../../public/svg/utils/edit";
+import {ConditionalRenderer, ToggleBetweenChildren} from "@/components/utils/container";
 
 export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
     bondDetailed: ContractExtendedFormat,
@@ -72,37 +73,34 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
         <div className='flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
             <div className='grid grid-cols-12 gap-4'>
                 <div className='col-span-11'>
-                    {
-                        isEditMode ?
-                            <input type="text"
-                                   className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
-                                   id='title'
-                                   onChange={edit}
-                                   defaultValue={contractDescription.details?.title}
-                                   placeholder='Title'/> :
-                            <h1 className='text-2xl font-bold'
-                                title={contractDescription.details?.title}>{shortenString(contractDescription.details?.title, 190)}</h1>
-                    }
+                    <ConditionalRenderer isOpen={isEditMode}>
+                        <input type="text"
+                               className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
+                               id='title'
+                               onChange={edit}
+                               defaultValue={contractDescription.details?.title}
+                               placeholder='Title'/> :
+                        <h1 className='text-2xl font-bold'
+                            title={contractDescription.details?.title}>{shortenString(contractDescription.details?.title, 190)}</h1>
+                    </ConditionalRenderer>
                 </div>
                 <div className='col-span-1 flex justify-end'>
-                    {
-                        isEditMode ?
-                            <SaveSVG onClick={updateDescription}/> :
-                            <EditSVG onClick={() => setEditMode(true)}/>
-                    }
+                    <ToggleBetweenChildren isOpen={isEditMode}>
+                        <SaveSVG onClick={updateDescription}/>
+                        <EditSVG onClick={() => setEditMode(true)}/>
+                    </ToggleBetweenChildren>
                 </div>
             </div>
-            {
-                isEditMode ?
-                    <textarea
-                        rows={5}
-                        onChange={edit}
-                        id='description'
-                        className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
-                        defaultValue={contractDescription.details?.description}
-                        placeholder='Desribe you bonds, the purpose and etc..'/> :
-                    <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription.details?.description}</p>
-            }
+            <ConditionalRenderer isOpen={isEditMode}>
+                  <textarea
+                      rows={5}
+                      onChange={edit}
+                      id='description'
+                      className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
+                      defaultValue={contractDescription.details?.description}
+                      placeholder='Desribe you bonds, the purpose and etc..'/> :
+                <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription.details?.description}</p>
+            </ConditionalRenderer>
         </div>
     </>
 }

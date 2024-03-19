@@ -11,9 +11,11 @@ import {getExplorer, shorten} from "@/modules/web3/util";
 import WarningSVG from "../../../../../../../public/svg/utils/warning";
 import InfoBox from "@/components/utils/info-box";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
+import {ConditionalRenderer} from "@/components/utils/container";
+import CalculatorController from "@/components/pages/bonds/utils/calculator";
 
 export default function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
-    const {contractInfo, contractStats} = bondDetailed;
+    const {contractInfo} = bondDetailed;
 
     const {
         _id,
@@ -30,8 +32,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
 
     const [contractAddress, chainId] = _id.split("_")
 
-    const {tbv} = contractStats;
 
+    const tbv = CalculatorController.tbv(contractInfo);
     const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriodInBlocks, true, true, true)
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
@@ -107,9 +109,12 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                 </div>
             </div>
             <div className='flex flex-col gap-1'>
-                {!Boolean(payout.isVerified) && <NotVerifiedAsset title={"Payout"}/>}
-                {!Boolean(purchase.isVerified) && <NotVerifiedAsset title={"Purchase"}/>}
-
+                <ConditionalRenderer isOpen={!Boolean(payout.isVerified)}>
+                    <NotVerifiedAsset title={"Payout"}/>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={!Boolean(purchase.isVerified)}>
+                    <NotVerifiedAsset title={"Purchase"}/>
+                </ConditionalRenderer>
             </div>
         </div>
 

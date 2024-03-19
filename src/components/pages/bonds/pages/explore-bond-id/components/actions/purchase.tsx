@@ -1,4 +1,4 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
 import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useRouter} from "next/router";
@@ -12,13 +12,11 @@ import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bon
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useTransaction} from "@/modules/utils/transaction";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
-import {ShowContainer} from "@/components/utils/container";
+import {ConditionalRenderer} from "@/components/utils/container";
+import {DefaultButton} from "@/components/utils/buttons";
 
-// todo fetch from blockchain payoutBalance(bond) and if the payout is 0 or low add a warning tab for user so he can be aware of it
-// if the payout changes notify the user as well
-
-export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
-    const {_id, purchase, totalBonds, purchased} = contractInfo;
+export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
+    const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
 
     const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
@@ -28,10 +26,9 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const TitleTypes = {
         Purchase: "Purchase",
         Approve: "Approve",
-        NotEnough: "Not Enough Bonds to Purchas",
+        NotEnough: "Not Enough Bonds to Purchase",
         SoldOut: "Sold Out"
     }
-
 
     const [allowance, setAllowance] = useState("0")
     const [amount, setAmount] = useState(0);
@@ -52,7 +49,6 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     if (isApprove) title = TitleTypes.Approve
     if (purchasingMoreThenAllowed) title = TitleTypes.NotEnough
     if (isSoldOut) title = TitleTypes.SoldOut
-
 
     const totalPrice = purchase.amountClean * amount;
 
@@ -92,17 +88,16 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
         setRefresh(Math.random());
     }
 
-
     return (
         <div className='flex flex-col gap-1 justify-end w-full'>
-            <ShowContainer isOpen={Boolean(totalPrice)}>
+            <ConditionalRenderer isOpen={Boolean(totalPrice)}>
                 <div
                     className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-neutral-700 h-full whitespace-nowrap'>
                     <span
                         className='text-4xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
                     <span className='text-xs'>Total Purchase Amount:</span>
                 </div>
-            </ShowContainer>
+            </ConditionalRenderer>
             <div className='flex flex-col gap-2'>
                 <div
                     className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
@@ -113,23 +108,23 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                                value={amount || ""}
                                onChange={onChange}
                                placeholder='Enter Number of Bonds to Purchase'/>
-                        <ShowContainer isOpen={Boolean(amount)}>
+                        <ConditionalRenderer isOpen={Boolean(amount)}>
                             <XmarkSVG isSmall onClick={setAmount.bind(null, 0)}/>
-                        </ShowContainer>
+                        </ConditionalRenderer>
                     </div>
                 </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"purchasing"}/>
 
-                <button onClick={submit} disabled={blockClick}
-                        className='flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer'>
+
+                <DefaultButton onClick={submit} disabled={blockClick} classType="1">
                     <div className='flex items-center gap-2'>
-                        <ShowContainer isOpen={isLoading}>
+                        <ConditionalRenderer isOpen={isLoading}>
                             <Loading percent={75} color="#000"/>
-                        </ShowContainer>
+                        </ConditionalRenderer>
                         {title}
                     </div>
-                </button>
+                </DefaultButton>
             </div>
         </div>
     )

@@ -1,4 +1,5 @@
 import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {StringKeyedObject} from "@/components/utils/general";
 
 type ExploreIdQueryParams = {
     contractAddress: string,
@@ -19,7 +20,7 @@ type ActionLogFormat = {
     block: number
 }
 
-type Balance = { [contractId: string]: { [id: string]: number } }
+type Balance = StringKeyedObject<StringKeyedObject<number>>
 
 export type  {
     ExploreBondIdType,

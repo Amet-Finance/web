@@ -1,8 +1,7 @@
-import {ReactElement, useState} from "react";
-import {format, formatLargeNumber} from "@/modules/utils/numbers";
+import React, {useState} from "react";
 
-function GeneralContainer({children, isPadding, className}: {
-    children: ReactElement<any, any>[] | ReactElement<any, any>,
+function GeneralContainer({children, isPadding = false, className = ''}: {
+    children: React.ReactNode,
     isPadding?: boolean,
     className?: string
 }) {
@@ -14,27 +13,16 @@ function GeneralContainer({children, isPadding, className}: {
         <div className={`${className} ${positionClass}`}>
             {children}
         </div>
+
     )
 }
 
-function ToggleDisplayComponent({children, isOpen}: { children: Array<ReactElement<any, any>>, isOpen: boolean }) {
-    if (isOpen) {
-        return children[0]
-    } else {
-        return children[1]
-    }
+function ToggleBetweenChildren({children, isOpen}: { children: [React.ReactNode, React.ReactNode], isOpen: boolean }) {
+    return isOpen ? children[0] : children[1];
 }
 
-function ShowContainer({isOpen, children}: Readonly<{
-    isOpen: boolean,
-    children: ReactElement<any, any>[] | ReactElement<any, any>
-}>) {
-
-    if (!isOpen) return null
-
-    return <>
-        {children}
-    </>
+function ConditionalRenderer({isOpen, children}: Readonly<{ isOpen: boolean, children: React.ReactNode }>) {
+    return isOpen ? children : null
 }
 
 function useShow(defaultState?: boolean) {
@@ -50,7 +38,7 @@ function useShow(defaultState?: boolean) {
 
 export {
     GeneralContainer,
-    ToggleDisplayComponent,
-    ShowContainer,
+    ToggleBetweenChildren,
+    ConditionalRenderer,
     useShow
 }

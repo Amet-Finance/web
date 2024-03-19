@@ -1,6 +1,11 @@
 import axios, {AxiosHeaders} from "axios";
+import {StringKeyedObject} from "@/components/utils/general";
 
-async function requestAPI({url, params, headers}: { url: string, params?: { [key: string]: any }, headers?: AxiosHeaders }) {
+async function requestAPI({url, params, headers}: {
+    url: string,
+    params?: StringKeyedObject<any>,
+    headers?: AxiosHeaders
+}) {
     try {
         const response = await axios.get(url, {params, headers})
         return response.data;

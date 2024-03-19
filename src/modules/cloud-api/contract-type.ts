@@ -24,17 +24,18 @@ type ContractEssentialFormat = {
 
     purchase: FinancialAttributeInfo,
     payout: FinancialAttributeInfo,
-    payoutBalance: string,
 
     issuer: string,
+    issuerScore: number,
+    uniqueHolders: number,
+
     owner: string,
     issuanceDate: Date,
+    isSettled: boolean,
+    issuanceBlock: number,
 }
 
-type ContractBasicFormat = ContractEssentialFormat & {
-    score: number,
-    tbv: number
-}
+type ContractEssentialFormatWithPayoutBalance = ContractEssentialFormat & { payoutBalance: string }
 
 type ContractDescription = {
     name: string,
@@ -47,27 +48,11 @@ type ContractDescription = {
     }
 }
 
-type ContractStats = {
-    score: number,
-    securedPercentage: number,
-    issuerScore: number,
-    uniqueHolders: number,
-    tbv: number
-}
-
-type ContractExtendedInfoFormat = ContractEssentialFormat & {
-    isSettled: boolean,
-    issuanceBlock: number,
-}
-
 type ContractExtendedFormat = {
     contractDescription: ContractDescription,
-    contractInfo: ContractExtendedInfoFormat,
-    contractStats: ContractStats,
+    contractInfo: ContractEssentialFormatWithPayoutBalance,
     lastUpdated: Date
 }
-
-type ContractExtendedFormatV2 = ContractExtendedFormat
 
 type DescriptionEditParams = {
     _id: string
@@ -80,13 +65,13 @@ type DescriptionEditParams = {
 
 export type  {
     ContractEssentialFormat,
+    ContractEssentialFormatWithPayoutBalance,
     ContractDescription,
-    ContractExtendedInfoFormat,
-    ContractStats,
     FinancialAttributeInfo,
     ContractQuery,
-    ContractBasicFormat,
     ContractExtendedFormat,
-    ContractExtendedFormatV2,
     DescriptionEditParams
 }
+
+
+

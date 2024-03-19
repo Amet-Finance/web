@@ -1,4 +1,7 @@
-export function BasicButton({
+import React from "react";
+import {StringKeyedObject} from "@/components/utils/general";
+
+function BasicButton({
                                 children,
                                 isBgWhite,
                                 isBgGrey,
@@ -37,4 +40,30 @@ export function BasicButton({
             onClick={onClick}>
             {children}
         </button>
+}
+
+function DefaultButton({children, disabled, className, classType = "", onClick}: {
+    children: React.ReactNode,
+    disabled?: boolean,
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    className?: string,
+    classType?: string
+}) {
+
+    const ClassTypes: StringKeyedObject<string> = {
+        '1': "flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer w-full hover:bg-neutral-300",
+        '2': "bg-white w-min h-full px-4 rounded-md hover:bg-neutral-300 "
+    }
+
+    return (
+        <button disabled={disabled} onClick={onClick} className={className || ClassTypes[classType] || ""}>
+            {children}
+        </button>
+    )
+}
+
+
+export {
+    BasicButton,
+    DefaultButton
 }

@@ -7,12 +7,12 @@ import {useEffect, useRef, useState} from "react";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractBasicFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, ContractQuery} from "@/modules/cloud-api/contract-type";
 import {Loading} from "@/components/utils/loading";
 import CloudAPI from "@/modules/cloud-api";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/cloud-api/type";
-import {GeneralContainer, ToggleDisplayComponent} from "@/components/utils/container";
+import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)
@@ -114,13 +114,13 @@ function StatisticsBox({classAttributes, value, title, isLoading}: {
     return <>
         <div
             className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black overflow-x-auto" + classAttributes}>
-            <ToggleDisplayComponent isOpen={isLoading}>
+            <ToggleBetweenChildren isOpen={isLoading}>
                 <Loading/>
                 <div className='flex flex-col gap-2'>
                     <span className='md:text-3xl text-xl font-bold'>{value}</span>
                     <span className='text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
                 </div>
-            </ToggleDisplayComponent>
+            </ToggleBetweenChildren>
         </div>
     </>
 }
@@ -130,7 +130,7 @@ function BondCards() {
 
     const [isLoading, setLoading] = useState(false);
     const [params, setParams] = useState<ContractQuery>({limit: 12})
-    const [contracts, setContracts] = useState<ContractBasicFormat[]>([])
+    const [contracts, setContracts] = useState<ContractEssentialFormat[]>([])
 
     useEffect(() => {
         const requestContracts = () => ContractAPI.getContractsBasic(params).then(response => Boolean(response) && setContracts(response))
@@ -144,10 +144,10 @@ function BondCards() {
 
     return <>
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
-            <ToggleDisplayComponent isOpen={isLoading}>
+            <ToggleBetweenChildren isOpen={isLoading}>
                 <Loader/>
                 <ContractsContainer contracts={contracts}/>
-            </ToggleDisplayComponent>
+            </ToggleBetweenChildren>
             <Link href='/bonds/explore' className='z-50'>
                 <div className="flex w-min">
                     <BasicButton>
@@ -165,7 +165,7 @@ function Loader() {
     return <div className='p-12'><Loading percent={-50}/></div>
 }
 
-function ContractsContainer({contracts}: { contracts: ContractBasicFormat[] }) {
+function ContractsContainer({contracts}: { contracts: ContractEssentialFormat[] }) {
     return <>
         <div className='relative w-full'>
             <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>

@@ -1,4 +1,4 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useEffect, useState} from "react";
 import {getBlockNumber} from "@/modules/web3";
@@ -14,14 +14,14 @@ import FixedFlexController from "@/modules/web3/fixed-flex/v2";
 import {ContractBalances} from "@/modules/cloud-api/type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
-import {ShowContainer} from "@/components/utils/container";
+import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
+import {DefaultButton} from "@/components/utils/buttons";
 
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
-
-export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormatWithPayoutBalance }>) {
 
     const {_id, payout} = contractInfo;
     const [contractAddress, chainId] = _id.toLowerCase().split("_")
@@ -66,10 +66,7 @@ export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: Contr
     useEffect(() => {
         if (chain) {
             const request = () => {
-                getBlockNumber(chain)
-                    .then(block => {
-                        if (block) setCurrentBlock(block)
-                    })
+                getBlockNumber(chain).then(block => setCurrentBlock(block))
             }
 
             request();
@@ -142,14 +139,14 @@ export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: Contr
 
     return (
         <div className='flex flex-col gap-1 justify-end w-full'>
-            <ShowContainer isOpen={Boolean(totalRedeemAmount)}>
+            <ConditionalRenderer isOpen={Boolean(totalRedeemAmount)}>
                 <div
                     className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap'>
                     <span
                         className='text-4xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
                     <span className='text-xs'>Total Redeem Amount:</span>
                 </div>
-            </ShowContainer>
+            </ConditionalRenderer>
             <div className='flex flex-col gap-2'>
                 <div
                     className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
@@ -160,23 +157,22 @@ export default function RedeemTab({contractInfo}: Readonly<{ contractInfo: Contr
                                value={redemptionCount || ""}
                                onChange={onChange}
                                placeholder='Enter Number of Bonds to Redeem'/>
-                        <ShowContainer isOpen={Boolean(redemptionCount)}>
+                        <ConditionalRenderer isOpen={Boolean(redemptionCount)}>
                             <XmarkSVG isSmall onClick={setCount.bind(null, 0)}/>
-                        </ShowContainer>
+                        </ConditionalRenderer>
                     </div>
                 </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"redeeming"}/>
 
-                <button onClick={submit} disabled={blockClick}
-                        className='flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer'>
+                <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
                     <div className='flex items-center gap-2'>
-                        <ShowContainer isOpen={isLoading}>
+                        <ConditionalRenderer isOpen={isLoading}>
                             <Loading percent={75} color="#000"/>
-                        </ShowContainer>
+                        </ConditionalRenderer>
                         {title}
                     </div>
-                </button>
+                </DefaultButton>
             </div>
         </div>
     )

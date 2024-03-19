@@ -1,14 +1,16 @@
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, ContractEssentialFormatWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {tColor} from "@/components/pages/bonds/utils/colors";
 import InfoBox from "@/components/utils/info-box";
 import {STATISTICS_DEFINITION} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import BigNumber from "bignumber.js";
+import CalculatorController from "@/components/pages/bonds/utils/calculator";
 
-export default function StatisticsContainer({bondDetailed}: Readonly<{ bondDetailed: ContractExtendedFormat }>) {
+export default function StatisticsContainer({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormatWithPayoutBalance }>) {
 
-    const {contractInfo, contractStats} = bondDetailed
-    const {score, securedPercentage, issuerScore, uniqueHolders} = contractStats;
+    const {issuerScore, uniqueHolders} = contractInfo;
+    const score = CalculatorController.score(contractInfo)
+    const securedPercentage = CalculatorController.securedPercentage(contractInfo)
     const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.totalBonds : 0;
 
     const payoutBalanceClean = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(contractInfo.payout.decimals))).toNumber();

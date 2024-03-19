@@ -1,6 +1,6 @@
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
-import {ShowContainer} from "@/components/utils/container";
+import {ConditionalRenderer} from "@/components/utils/container";
 
 type InfoData = {
     text: string;
@@ -39,12 +39,12 @@ export default function InfoBox({children, info, isRight, className, parentClass
                               fill="#888888"/>
                     </svg>
                 </Link>
-                <ShowContainer isOpen={Boolean(info?.text)}>
+                <ConditionalRenderer isOpen={Boolean(info?.text)}>
                     <div
                         className={`${className} group-hover:flex hidden absolute top-[130%] bg-neutral-700 border border-neutral-600 rounded-md px-3 p-1 z-50 h-max ${isRight ? "right-0 " : "left-0"}`}>
                         <span className='text-sm font-medium'>{info?.text}</span>
                     </div>
-                </ShowContainer>
+                </ConditionalRenderer>
             </div>
         </div>
     </>

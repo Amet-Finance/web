@@ -1,5 +1,5 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractBasicFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
 
 const ARTICLES: Article[] = [
     {
@@ -62,7 +62,7 @@ const usdtToken: FinancialAttributeInfo = {
     priceUsd: 1
 }
 
-const BOND_CARDS: ContractBasicFormat[] = [
+const BOND_CARDS: ContractEssentialFormat[] = [
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",
@@ -70,7 +70,6 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
         purchase: usdtToken,
         payout: usdtToken,
-        payoutBalance: "0",
 
         totalBonds: 100,
         purchased: 50,
@@ -80,14 +79,16 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        score: 8.9,
-        tbv: 8000
+        issuerScore: 10,
+        uniqueHolders: 30,
+        isSettled: false,
+        issuanceBlock: 401412,
     },
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
-        payoutBalance: "0",
+
         purchase: usdtToken,
         payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -111,14 +112,15 @@ const BOND_CARDS: ContractBasicFormat[] = [
 
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        score: 9.2,
-        tbv: 131000
+        issuerScore: 10,
+        uniqueHolders: 30,
+        isSettled: false,
+        issuanceBlock: 401412,
     },
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
-        payoutBalance: "0",
 
         purchase: usdtToken,
         payout: {
@@ -138,18 +140,19 @@ const BOND_CARDS: ContractBasicFormat[] = [
         totalBonds: 100,
         purchased: 10,
         redeemed: 0,
+        issuerScore: 10,
+        uniqueHolders: 30,
+        isSettled: false,
+        issuanceBlock: 401412,
 
         maturityPeriodInBlocks: 120000,
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        score: 9.5,
-        tbv: 2100
     },
     {
         _id: "0x1",
         issuer: "0x21451254Fas124",
         owner: "0x0",
-        payoutBalance: "0",
         purchase: usdtToken,
         payout: {
             _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -170,10 +173,12 @@ const BOND_CARDS: ContractBasicFormat[] = [
         redeemed: 30,
 
         maturityPeriodInBlocks: 120000,
-        tbv: 52350,
 
         issuanceDate: new Date("Tue Feb 13 2024 12:33:05 GMT+0400 (Armenia Standard Time)"),
-        score: 9.9
+        issuerScore: 10,
+        uniqueHolders: 30,
+        isSettled: false,
+        issuanceBlock: 401412,
     }
 ]
 

@@ -1,6 +1,6 @@
-import {ContractExtendedInfoFormat} from "@/modules/cloud-api/contract-type";
+import {ContractEssentialFormat} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
-import {BasicButton} from "@/components/utils/buttons";
+import {DefaultButton} from "@/components/utils/buttons";
 import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount} from "wagmi";
@@ -16,13 +16,13 @@ import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
 import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
-import {ToggleDisplayComponent} from "@/components/utils/container";
+import {ToggleBetweenChildren} from "@/components/utils/container";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
 // 4. After claiming ask him to share in Twitter with a modal or something similar content
 
-export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractExtendedInfoFormat }>) {
+export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractEssentialFormat }>) {
 
     const {_id, purchase} = contractInfo;
     const {address} = useAccount();
@@ -84,25 +84,24 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
     }
 
 
-    console.log(referralInfo)
     return (
         <div className='flex flex-col gap-4 justify-end h-full w-full'>
             <div className='flex flex-col gap-1'>
                 <span className='text-neutral-400 text-sm'>You have accumulated</span>
-                <ToggleDisplayComponent isOpen={isDataLoading}>
+                <ToggleBetweenChildren isOpen={isDataLoading}>
                     <Loading percent={40}/>
                     <span
                         className='text-3xl text-green-500 font-bold'>{formatLargeNumber(totalReward)} {purchase.symbol}</span>
-                </ToggleDisplayComponent>
+                </ToggleBetweenChildren>
                 <span className='text-neutral-400 text-sm'>in referral rewards with Amet Finance</span>
             </div>
             <div className='flex gap-1 items-center'>
-                <BasicButton isBlocked={isBlocked} onClick={claimReferralRewards}>
+                <DefaultButton disabled={isBlocked} onClick={claimReferralRewards} classType='1'>
                     <span>{title}</span>
-                </BasicButton>
-                <BasicButton onClick={copyReferralCode.bind(null, address)} wMin hFull>
+                </DefaultButton>
+                <DefaultButton onClick={copyReferralCode.bind(null, address)} classType="2">
                     <CopySVG size={16}/>
-                </BasicButton>
+                </DefaultButton>
             </div>
         </div>
     )
