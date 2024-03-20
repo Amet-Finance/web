@@ -36,7 +36,7 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<E
     if (isLoading) return <LoadingScreen/>
 
     return (
-        <GeneralContainer className='flex flex-col gap-4 w-full py-24' isPadding>
+        <GeneralContainer className='flex flex-col gap-4 w-full md:py-24 py-16' isPadding>
             <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
             <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>

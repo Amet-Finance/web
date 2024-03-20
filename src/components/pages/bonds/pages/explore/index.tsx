@@ -4,7 +4,7 @@ import FilterSVG from "../../../../../../public/svg/utils/filter";
 import {useState} from "react";
 import {ContractQuery} from "@/modules/cloud-api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
-import {CHAINS, getChainIcon} from "@/modules/utils/wallet-connect";
+import {CHAINS, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
@@ -14,8 +14,8 @@ import {HorizontalLoading} from "@/components/utils/loading";
 
 export default function Explore() {
 
-
     const {isOpen, openOrClose} = useShow()
+
 
     return (
         <GeneralContainer className='flex flex-col justify-center items-center w-full py-24 gap-12' isPadding>
@@ -58,39 +58,26 @@ function FilterContainer() {
 
     const [params, setParams] = useState<ContractQuery>({});
     const selectChain = (chainId: number) => setParams({...params, chainId})
+    const selectToken = (type: string, contractAddress: string) => setParams({...params, [type]: contractAddress})
+
+
+    // useEffect(() => {
+    //     CloudAPI.getTokens()
+    // }, [])
 
     return (
         <div className='flex gap-4 items-center z-50'>
-            <ChainSelector selectChain={selectChain}/>
-            <div className='relative'>
-                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                    <span className='text-sm'>Chain</span>
-                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-                </div>
-            </div>
-            <div className='relative'>
-                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                    <span className='text-sm'>Chain</span>
-                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-                </div>
-            </div>
-            <div className='relative'>
-                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                    <span className='text-sm'>Chain</span>
-                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-                </div>
-            </div>
-            <div className='relative'>
-                <div className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full'>
-                    <span className='text-sm'>Chain</span>
-                    <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
-                </div>
-            </div>
+            <ChainSelector params={params} selectChain={selectChain}/>
+            {/*<TokenSelector params={params} type={"purchaseToken"} setter={selectToken}/>*/}
+            {/*<TokenSelector params={params} type={"payoutToken"} setter={selectToken}/>*/}
         </div>
     )
 }
 
-function ChainSelector({selectChain}: Readonly<{ selectChain: (chainId: number) => void }>) {
+function ChainSelector({params, selectChain}: Readonly<{
+    params: ContractQuery,
+    selectChain: (chainId: number) => void
+}>) {
     const {isOpen, openOrClose} = useShow();
 
     const selectChainAndClose = (chainId: number) => {
@@ -98,30 +85,90 @@ function ChainSelector({selectChain}: Readonly<{ selectChain: (chainId: number) 
         selectChain(chainId)
     }
 
+    const chain = getChain(params.chainId);
+    const chainIcon = getChainIcon(chain?.id);
+
     return (
         <div className='relative'>
-            <button className='flex items-center gap-1 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
+            <button className='flex items-center gap-1.5 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
                     onClick={openOrClose}>
-                <span className='text-sm'>Chain</span>
-                <ArrowBasicSVG classname='stroke-white' sPercentage={-25}/>
+                <ToggleBetweenChildren isOpen={Boolean(params.chainId)}>
+                    <>
+                        <Image src={chainIcon} alt={`${chain?.name}`} width={24} height={24}/>
+                        <span className='text-sm'>{chain?.name}</span>
+                    </>
+                    <span className='text-sm'>Chain</span>
+                </ToggleBetweenChildren>
+                <ArrowBasicSVG classname={`stroke-white ${isOpen && "rotate-180"}`} sPercentage={-25}/>
             </button>
             <ConditionalRenderer isOpen={isOpen}>
-                <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-xl px-4 py-4 w-max'>
-                    {CHAINS.map(chain => <ChainWrapper chain={chain} selectChain={selectChainAndClose}
-                                                       key={chain.id}/>)}
+                <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-md p-2 w-max z-50'>
+                    {
+                        CHAINS.map(chain =>
+                            <ChainWrapper chain={chain} selectChain={selectChainAndClose}
+                                          key={chain.id}/>
+                        )}
                 </div>
             </ConditionalRenderer>
         </div>
     )
 }
 
+
+// function TokenSelector({
+//                            params, type, setter
+//                        }: {
+//     params: ContractQuery,
+//     type: string,
+//     setter: any
+// }) {
+//     const {isOpen, openOrClose} = useShow();
+//
+//     const selectTokenAndClose = (chainId: number) => {
+//         openOrClose()
+//         setter(type, chainId)
+//     }
+//
+//
+//     const title = type === "purchaseToken" ? "Purchase" : "Payout";
+//
+//     return (
+//         <div className='relative'>
+//             <button className='flex items-center gap-1.5 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
+//                     onClick={openOrClose}>
+//                 <ToggleBetweenChildren isOpen={Boolean(params[type])}>
+//                     <>
+//                         <Image src={chainIcon} alt={`${chain?.name}`} width={24} height={24}/>
+//                         <span className='text-sm'>{chain?.name}</span>
+//                     </>
+//                     <span className='text-sm'>{title} Token</span>
+//                 </ToggleBetweenChildren>
+//                 <ArrowBasicSVG classname={`stroke-white ${isOpen && "rotate-180"}`} sPercentage={-25}/>
+//             </button>
+//             <ConditionalRenderer isOpen={isOpen}>
+//                 <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-md p-2 w-max'>
+//
+//                 </div>
+//             </ConditionalRenderer>
+//         </div>
+//     )
+// }
+
+function TokenWrapper() {
+    return (
+        <div>
+
+        </div>
+    )
+}
+
 function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainId: number) => void }) {
+
     return (
         <button className='flex items-center gap-1 w-full px-2 py-1 hover:bg-neutral-700 rounded-md cursor-pointer'
                 onClick={() => selectChain(chain.id)}>
             <Image src={getChainIcon(chain.id)} alt={chain.name} width={24} height={24}/>
-            <span
-                className='text-neutral-400 whitespace-nowrap text-sm'>{shortenString(chain.name, 20)}</span>
+            <span className='text-neutral-400 whitespace-nowrap text-sm'>{shortenString(chain.name, 20)}</span>
         </button>
     )
 }

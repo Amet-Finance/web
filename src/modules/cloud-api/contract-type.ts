@@ -6,7 +6,10 @@ type ContractQuery = {
     chainId?: number,
     contractAddresses?: string[], // JSON.stringify([contractAddress,contractAddress,])
     trending?: boolean,
-    sortByBondScore?: "asc"|"desc"
+    sortByBondScore?: "asc"|"desc",
+    issuer?: string
+    purchaseToken?: string,
+    payoutToken?: string
 }
 
 type FinancialAttributeInfo = TokenResponse & {

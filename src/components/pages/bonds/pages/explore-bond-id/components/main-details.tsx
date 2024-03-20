@@ -54,41 +54,39 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
 
     return <div
-        className='flex flex-col gap-8 lg:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
+        className='flex flex-col gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex md:flex-row flex-col justify-between w-full'>
-                <div className='flex gap-2'>
-                    <div className='w-12 h-12 rounded-full'>
+            <div className='flex md:flex-row flex-col justify-between w-full gap-4 items-center'>
+                <div className='flex items-center gap-2 md:w-max w-full'>
+                    <div className='md:w-12 md:h-12 w-10 h-10 rounded-full'>
                         <Image src={payoutIcon} alt={payout.name}
                                width={1000} height={1000}
                                className='w-full h-full object-contain rounded-full'/>
                     </div>
-                    <div className='flex flex-col'>
-                        <span className='text-2xl font-bold'>{payout.name}</span>
-                        <div className='flex gap-1 items-center cursor-pointer'>
-                            <Link href={purchaseTokenExplorer} target="_blank">
-                                    <span
-                                        className='font-thin text-neutral-400 text-sm hover:underline underline-offset-2'>{purchase.symbol}</span>
-                            </Link>
-                            <span className='font-thin text-neutral-400 text-sm'>-</span>
-                            <Link href={payoutTokenExplorer} target="_blank">
-                                    <span
-                                        className='font-thin text-neutral-400 text-sm hover:underline underline-offset-2'>{payout.symbol}</span>
-                            </Link>
+                    <div className='flex gap-2'>
+                        <div className='flex flex-col'>
+                            <span className='md:text-2xl text-xl font-bold'>{payout.name}</span>
+                            <div className='flex gap-1 items-center cursor-pointer font-thin text-neutral-400 text-sm'>
+                                <Link href={purchaseTokenExplorer} target="_blank">
+                                    <span className='hover:underline underline-offset-2'>{purchase.symbol}</span>
+                                </Link>
+                                <span>-</span>
+                                <Link href={payoutTokenExplorer} target="_blank">
+                                    <span className='hover:underline underline-offset-2'>{payout.symbol}</span>
+                                </Link>
+                            </div>
                         </div>
+                        <span
+                            className='bg-neutral-900 h-min px-3 py-1 rounded-md text-neutral-200 text-sm'>Fixed Flex</span>
                     </div>
-                    <span
-                        className='bg-neutral-900 h-min px-3 py-1 rounded-md text-neutral-200 text-sm'>Fixed Flex</span>
                 </div>
-                <div className='flex flex-col justify-end items-end gap-2'>
-                    <div className='relative grid grid-cols-3 items-end rounded-t-md gap-x-2'>
-                        <div
-                            className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
+                <div className='flex flex-col justify-end items-end gap-2 md:w-max w-full'>
+                    <div className='relative grid grid-cols-3 items-end gap-x-2 md:w-max w-full'>
+                        <div className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
                             <span className='text-md font-semibold'>{formatLargeNumber(totalBonds)}</span>
                             <span className='text-xs text-neutral-400 font-light'>Total Bonds</span>
                         </div>
-                        <div
-                            className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
+                        <div className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
                             <span className='text-md font-semibold'>{formatLargeNumber(purchased)}</span>
                             <span className='text-xs text-neutral-400 font-light'>Purchased</span>
                         </div>
@@ -119,35 +117,35 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
         </div>
 
         <div className='flex flex-col gap-8'>
-            <div className='grid grid-cols-3  gap-4 mt-4 w-full p-4'>
-                <div className='col-span-1 flex flex-col justify-end w-full'>
+            <div className='grid grid-cols-6 gap-4 mt-4 w-full'>
+                <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
                     <span
-                        className='text-xl font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
+                        className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
                     <span className='text-sm text-neutral-400'>Purchase</span>
                 </div>
-                <div className='col-span-1 flex flex-col justify-end w-full'>
-                    <span className='text-xl font-bold'>{maturityPeriodTime}</span>
+                <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
+                    <span className='md:text-xl text-base font-bold'>{maturityPeriodTime}</span>
                     <span className='text-sm text-neutral-400'>Maturity Period</span>
                 </div>
-                <div className='col-span-1 flex flex-col gap-1 justify-end w-full'>
+                <div className='lg:col-span-2 col-span-3  flex flex-col gap-1 justify-end w-full'>
                     <div className='flex items-center gap-2'>
                         <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
-                        <span className='text-xl font-bold'>{shortenString(chain?.name || "", 10)}</span>
+                        <span className='md:text-xl text-base font-bold'>{shortenString(chain?.name || "", 7)}</span>
                     </div>
                     <span className='text-sm text-neutral-400'>Chain</span>
                 </div>
-                <div className='col-span-1 flex flex-col justify-end w-full'>
-                        <span
-                            className='text-xl font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
+                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
+                    <span
+                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
                     <span className='text-sm text-neutral-400'>Payout</span>
                 </div>
-                <div className='col-span-1 flex flex-col justify-end w-full'>
-                    <span className='text-xl font-bold'>${formatLargeNumber(tbv, true)}</span>
+                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
+                    <span className='md:text-xl text-base font-bold'>${formatLargeNumber(tbv, true)}</span>
                     <span className='text-sm text-neutral-400'>Total Bonded Volume</span>
                 </div>
-                <div className='col-span-1 flex flex-col justify-end  w-full'>
+                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end  w-full'>
                         <span
-                            className='text-xl font-bold text-green-500'>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
+                            className='md:text-xl text-base font-bold text-green-500'>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
                     <span className='text-sm text-neutral-400'>Return Per Bond</span>
                 </div>
             </div>

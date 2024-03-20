@@ -27,7 +27,7 @@ export default function ActionsContainer({contractInfo}: Readonly<{
 
     return (
         <div
-            className='relative lg:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-full'>
+            className='relative xl:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-full'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
             <div className='flex w-full h-full'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>

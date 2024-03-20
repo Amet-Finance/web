@@ -69,20 +69,22 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
 
     }
 
-    return <>
+    console.log(contractDescription.details?.title)
+
+    return (
         <div className='flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
             <div className='grid grid-cols-12 gap-4'>
                 <div className='col-span-11'>
-                    <ConditionalRenderer isOpen={isEditMode}>
+                    <ToggleBetweenChildren isOpen={isEditMode}>
                         <input type="text"
                                className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
                                id='title'
                                onChange={edit}
                                defaultValue={contractDescription.details?.title}
-                               placeholder='Title'/> :
+                               placeholder='Title'/>
                         <h1 className='text-2xl font-bold'
                             title={contractDescription.details?.title}>{shortenString(contractDescription.details?.title, 190)}</h1>
-                    </ConditionalRenderer>
+                    </ToggleBetweenChildren>
                 </div>
                 <div className='col-span-1 flex justify-end'>
                     <ToggleBetweenChildren isOpen={isEditMode}>
@@ -91,16 +93,16 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
                     </ToggleBetweenChildren>
                 </div>
             </div>
-            <ConditionalRenderer isOpen={isEditMode}>
+            <ToggleBetweenChildren isOpen={isEditMode}>
                   <textarea
                       rows={5}
                       onChange={edit}
                       id='description'
                       className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
                       defaultValue={contractDescription.details?.description}
-                      placeholder='Desribe you bonds, the purpose and etc..'/> :
+                      placeholder='Describe you bonds, the purpose and etc..'/>
                 <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription.details?.description}</p>
-            </ConditionalRenderer>
+            </ToggleBetweenChildren>
         </div>
-    </>
+    )
 }
