@@ -26,7 +26,6 @@ import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
 import {BlockTimes, FIXED_FLEX_ISSUER_CONTRACTS, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-// import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
@@ -42,11 +41,11 @@ export default function Issue() {
     const [tokens, setTokens] = useState({} as TokensResponse)
     const [issuerContractInfo, setIssuerContractInfo] = useState({} as IssuerContractInfoDetailed)
 
+    const chain = getChain(bondInfo.chainId);
     const bondInfoHandler: any = [bondInfo, setBondInfo];
     const tokensHandler: any = [tokens, setTokens];
 
     useEffect(() => {
-        const chain = getChain(bondInfo.chainId);
         if (chain) {
             CloudAPI.getTokens({
                 params: {
@@ -71,7 +70,7 @@ export default function Issue() {
                     console.error('getIssuerContractInfo', error)
                 })
         }
-    }, [bondInfo.chainId]);
+    }, [chain]);
 
     // console.log(issuerContractInfo)
 
@@ -101,8 +100,10 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
         if (!chain) return toast.error("Please select correct chain")
         if (!bondInfo.totalBonds || bondInfo.totalBonds <= 0) return toast.error("Total Bonds must be greater than 0")
         if (!Number.isFinite(bondInfo.maturityPeriodInBlocks) || bondInfo.maturityPeriodInBlocks <= 0) return toast.error("Maturity Period must be greater than 0")
-        if (!isAddress(bondInfo.purchaseToken) || !tokens[bondInfo.purchaseToken]) return toast.error("purchase token is undefined")
-        if (!isAddress(bondInfo.payoutToken) || !tokens[bondInfo.payoutToken]) return toast.error("payout token is undefined")
+        if (!isAddress(bondInfo.purchaseToken) || !tokens[bondInfo.purchaseToken]) return toast.error("Purchase token is undefined")
+        if (!isAddress(bondInfo.payoutToken) || !tokens[bondInfo.payoutToken]) return toast.error("Payout token is undefined")
+        if (!Object.values(issuerContractInfo).length) return toast.error("Could not find Issuer information")
+        if (issuerContractInfo.isPaused) return toast.error("Bond issuance is paused")
 
         const result = await submitTransaction();
         if (result) openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id});

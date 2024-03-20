@@ -52,9 +52,9 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<E
 
 function useUpdater({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
 
-    const {contractInfo} = bondDetailedTmp;
-    const {_id, payout} = contractInfo;
-    const [contractAddress, chainId] = _id.toLowerCase().split("_");
+    const {contractInfo} = bondDetailedTmp || {};
+    const {_id, payout} = contractInfo || {};
+    const [contractAddress, chainId] = (_id || "").toLowerCase().split("_");
 
     const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormat>({...(bondDetailedTmp || {})})
     const [updateIndex, setUpdateIndex] = useState(0);
@@ -62,7 +62,7 @@ function useUpdater({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>)
     const [refreshLoader, setRefreshLoader] = useState(false);
     const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
 
-    const {balance} = useTokenBalance(chainId, payout.contractAddress, contractAddress);
+    const {balance} = useTokenBalance(chainId, payout?.contractAddress, contractAddress);
 
     useEffect(() => {
         const updater = () => {
