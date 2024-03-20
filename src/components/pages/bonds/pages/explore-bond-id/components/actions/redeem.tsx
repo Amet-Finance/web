@@ -10,13 +10,14 @@ import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bon
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
-import FixedFlexController from "@/modules/web3/fixed-flex/v2";
+import FixedFlexController from "@/modules/web3/fixed-flex";
 import {ContractBalances} from "@/modules/cloud-api/type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
+import {nop} from "@/modules/utils/function";
 
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
@@ -33,7 +34,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const balances = useSelector((item: RootState) => item.account).balances;
     const contractBalance = balances[_id] || {}
 
-    const [currentBlock, setCurrentBlock] = useState(BigInt(0));
+    const [currentBlock, setCurrentBlock] = useState(0);
     const [purchaseBlocks, setPurchaseBlocks] = useState({})
     const [bondIndexes, setBondIndexes] = useState([] as Array<string>)
     const [redemptionCount, setRedemptionCount] = useState(0);
@@ -68,7 +69,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     useEffect(() => {
         if (chain) {
             const request = () => {
-                getBlockNumber(chain).then(block => setCurrentBlock(block))
+                getBlockNumber(chain).then(block => setCurrentBlock(block)).catch(nop)
             }
 
             request();
@@ -181,7 +182,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
 }
 
 
-function getMatureTokenIds(currentBlock: bigint, maturityPeriodInBlocks: number, balances: ContractBalances, purchasedBlocks: any): string[] {
+function getMatureTokenIds(currentBlock: number, maturityPeriodInBlocks: number, balances: ContractBalances, purchasedBlocks: any): string[] {
 
     const matureTokenIds = []
 

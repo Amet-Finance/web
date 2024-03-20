@@ -8,7 +8,7 @@ import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
-import {LogTypes} from "@/modules/web3/fixed-flex/v2/constants";
+import {LogTypes} from "@/modules/web3/fixed-flex/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {HorizontalLoading} from "@/components/utils/loading";
 

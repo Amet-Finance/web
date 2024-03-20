@@ -1,7 +1,8 @@
 import {TokenResponse} from "@/modules/cloud-api/type";
+import {BigNumber} from "ethers"
 
 type IssuerContractInfo = {
-    issuanceFee: bigint
+    issuanceFee: BigNumber
     purchaseRate: number
     earlyRedemptionRate: number;
     referrerRewardRate: number,
@@ -40,7 +41,7 @@ type TokenResponseDetailed = TokenResponseBalance & {
 
 type ContractInfoType = {
     to: string
-    data: `0x${string}`,
+    data: `0x${string}` | string,
     value?: bigint
 }
 

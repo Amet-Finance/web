@@ -6,7 +6,7 @@ import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractCoreDetails, ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import {getProvider} from "@/modules/web3";
 import {sleep} from "@/modules/utils/dates";
-import FixedFlexController from "@/modules/web3/fixed-flex/v2";
+import FixedFlexController from "@/modules/web3/fixed-flex";
 
 
 async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise<ContractExtendedFormat | undefined> {

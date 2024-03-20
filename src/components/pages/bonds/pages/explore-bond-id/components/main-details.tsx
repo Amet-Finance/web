@@ -144,8 +144,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                     <span className='text-sm text-neutral-400'>Total Bonded Volume</span>
                 </div>
                 <div className='lg:col-span-2 col-span-3  flex flex-col justify-end  w-full'>
-                        <span
-                            className='md:text-xl text-base font-bold text-green-500'>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
+                    <span
+                        className={`md:text-xl text-base font-bold ${expectedReturnPerBond > 0 ? "text-green-500" : "text-red-500"}`}>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
                     <span className='text-sm text-neutral-400'>Return Per Bond</span>
                 </div>
             </div>

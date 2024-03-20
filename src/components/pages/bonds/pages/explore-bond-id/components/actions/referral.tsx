@@ -1,22 +1,23 @@
 import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
-import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
+// import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount} from "wagmi";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {nop} from "@/modules/utils/function";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {Loading} from "@/components/utils/loading";
-import {TxTypes} from "@/modules/web3/constants";
+import {FIXED_FLEX_ISSUER_CONTRACTS, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {BondFeeDetails} from "@/modules/web3/fixed-flex/v2/types";
+import {BondFeeDetails} from "@/modules/web3/fixed-flex/types";
 import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
 import {ToggleBetweenChildren} from "@/components/utils/container";
+import {FixedFlexIssuerController, FixedFlexVaultController} from "amet-utils";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
@@ -31,7 +32,7 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [isBlacklisted, setIsBlacklisted] = useState(false);
-    const [vaultAddress, setVaultAddress] = useState();
+    const [vaultAddress, setVaultAddress] = useState("");
     const [feeDetails, setFeeDetails] = useState({} as BondFeeDetails)
     const [referralInfo, setReferralInfo] = useState({} as ReferralInfo)
 
@@ -48,7 +49,7 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
     useEffect(() => {
         if (chain) {
-            FixedFlexVaultController.getVault(chain)
+            FixedFlexIssuerController.getVaultContract(chain.id, FIXED_FLEX_ISSUER_CONTRACTS[chain.id])
                 .then(response => setVaultAddress(response.address))
                 .catch(nop)
         }
@@ -57,16 +58,15 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
     useEffect(() => {
         if (chain && address && vaultAddress) {
             setIsDataLoading(true)
-            const refPromise = FixedFlexVaultController.getReferralRewards(chain, vaultAddress, contractAddress, address)
-                .then(result => {
-                    if (result) setReferralInfo(result)
-                }).catch(nop)
+            const refPromise = FixedFlexVaultController.getReferralRewards(chain.id, vaultAddress, contractAddress, address)
+                .then(result => setReferralInfo(result))
+                .catch(nop)
 
-            const restrictionPromise = FixedFlexVaultController.isAddressRestricted(chain, vaultAddress, address)
+            const restrictionPromise = FixedFlexVaultController.isAddressRestricted(chain.id, vaultAddress, address)
                 .then((status) => setIsBlacklisted(status))
                 .catch(nop)
 
-            const feeDetailsPromise = FixedFlexVaultController.getBondFeeDetails(chain, vaultAddress, contractAddress)
+            const feeDetailsPromise = FixedFlexVaultController.getBondFeeDetails(chain.id, vaultAddress, contractAddress)
                 .then(response => setFeeDetails(response))
                 .catch(nop)
 

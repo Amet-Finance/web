@@ -19,16 +19,14 @@ import CloudAPI from "@/modules/cloud-api";
 import makeBlockie from "ethereum-blockies-base64";
 import {isAddress, zeroAddress} from "viem";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
-
-import TokenController from "@/modules/web3/tokens";
 import BigNumber from "bignumber.js";
 import {polygonMumbai} from "wagmi/chains";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
-import {BlockTimes, TxTypes} from "@/modules/web3/constants";
+import {BlockTimes, FIXED_FLEX_ISSUER_CONTRACTS, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
+// import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
@@ -36,6 +34,7 @@ import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} f
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {StringKeyedObject} from "@/components/utils/general";
+import {Erc20Controller, FixedFlexIssuerController} from "amet-utils";
 
 
 export default function Issue() {
@@ -60,13 +59,21 @@ export default function Issue() {
                     if (response) setTokens(response)
                 })
 
-            FixedFlexIssuerController.getIssuerContractInfo(chain)
+            FixedFlexIssuerController.getIssuerDetails(chain.id, FIXED_FLEX_ISSUER_CONTRACTS[chain.id])
                 .then(response => {
-                    setIssuerContractInfo(response)
+                    const normalizedAmount = Number(response.issuanceFee) / 10 ** chain.nativeCurrency.decimals;
+                    setIssuerContractInfo({
+                        ...response,
+                        issuanceFeeUI: `${normalizedAmount} ${chain.nativeCurrency.symbol}`
+                    })
                 })
-                .catch(error => console.log(error))
+                .catch(error => {
+                    console.error('getIssuerContractInfo', error)
+                })
         }
     }, [bondInfo.chainId]);
+
+    // console.log(issuerContractInfo)
 
     return <GeneralContainer className='grid grid-cols-10 gap-6 md:py-32 py-12' isPadding>
         <IssuerContainer bondInfoHandler={bondInfoHandler}
@@ -441,48 +448,51 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
     const maturityPeriodTime = (BlockTimes[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
-    return <div className='grid grid-cols-12 mt-4 gap-4'>
+    return (
+        <div className='grid grid-cols-12 mt-4 gap-4'>
 
-        <ConditionalRenderer isOpen={Number.isFinite(bondInfo.totalBonds)}>
-            <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                 title={bondInfo.totalBonds?.toString()}>
-                <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
-                <span className='text-neutral-500 text-xs'>Total</span>
-            </div>
-        </ConditionalRenderer>
-        <ConditionalRenderer
-            isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
-            <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                 title={maturityPeriodStr}>
-                <span className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
-                <span className='text-neutral-500 text-xs'>Maturity Period</span>
-            </div>
-        </ConditionalRenderer>
-        <ConditionalRenderer isOpen={Number.isFinite(bondInfo.chainId)}>
-            <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
-                <div className='flex gap-2 items-center texee'>
-                    <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
-                           width={24}
-                           height={24}/>
-                    <span className='text-base font-medium'>{shortenString(chainInfo?.name ?? "", 5)}</span>
+            <ConditionalRenderer isOpen={Number.isFinite(bondInfo.totalBonds)}>
+                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                     title={bondInfo.totalBonds?.toString()}>
+                    <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
+                    <span className='text-neutral-500 text-xs'>Total</span>
                 </div>
-                <span className='text-neutral-500 text-xs'>Chain</span>
-            </div>
-        </ConditionalRenderer>
-        <ConditionalRenderer isOpen={Boolean(bondInfo.purchaseToken)}>
-            <TokenPreview
-                type='purchaseToken'
-                token={tokens[bondInfo.purchaseToken]}
-                issuerContractInfo={issuerContractInfo}
-                bondInfo={bondInfo}/>
-        </ConditionalRenderer>
-        <ConditionalRenderer isOpen={Boolean(bondInfo.payoutToken)}>
-            <TokenPreview type='payoutToken'
-                          token={tokens[bondInfo.payoutToken]}
-                          issuerContractInfo={issuerContractInfo}
-                          bondInfo={bondInfo}/>
-        </ConditionalRenderer>
-    </div>
+            </ConditionalRenderer>
+            <ConditionalRenderer
+                isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
+                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                     title={maturityPeriodStr}>
+                    <span
+                        className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
+                    <span className='text-neutral-500 text-xs'>Maturity Period</span>
+                </div>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={Number.isFinite(bondInfo.chainId)}>
+                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
+                    <div className='flex gap-2 items-center texee'>
+                        <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
+                               width={24}
+                               height={24}/>
+                        <span className='text-base font-medium'>{shortenString(chainInfo?.name ?? "", 5)}</span>
+                    </div>
+                    <span className='text-neutral-500 text-xs'>Chain</span>
+                </div>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={Boolean(bondInfo.purchaseToken)}>
+                <TokenPreview
+                    type='purchaseToken'
+                    token={tokens[bondInfo.purchaseToken]}
+                    issuerContractInfo={issuerContractInfo}
+                    bondInfo={bondInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={Boolean(bondInfo.payoutToken)}>
+                <TokenPreview type='payoutToken'
+                              token={tokens[bondInfo.payoutToken]}
+                              issuerContractInfo={issuerContractInfo}
+                              bondInfo={bondInfo}/>
+            </ConditionalRenderer>
+        </div>
+    )
 }
 
 
@@ -510,7 +520,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
             });
 
             const interval = setInterval(() => {
-                TokenController.getTokenBalance(chain, tokenAddress, address)
+                Erc20Controller.getTokenBalance(chain.id, tokenAddress, address)
                     .then(response => {
                         const balanceClean = BigNumber(response).div(BigNumber(10).pow(token.decimals));
                         setBalance({

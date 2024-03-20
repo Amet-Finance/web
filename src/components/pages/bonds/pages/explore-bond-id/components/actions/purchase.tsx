@@ -5,7 +5,6 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import BigNumber from "bignumber.js";
 import {TxTypes} from "@/modules/web3/constants";
-import TokenController from "@/modules/web3/tokens";
 import {toast} from "react-toastify";
 import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
@@ -14,6 +13,7 @@ import {useTransaction} from "@/modules/utils/transaction";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
+import {Erc20Controller} from "amet-utils";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
@@ -52,8 +52,8 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const totalPrice = purchase.amountClean * amount;
 
-    const initialReferrer = `${router.query.ref}`
-    const referrer = initialReferrer.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
+    const initialReferrer = Boolean(router.query.ref) ? `${router.query.ref}` : undefined
+    const referrer = initialReferrer?.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
     const transactionType = isApprove ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
     const config = isApprove ?
         {contractAddress: purchase.contractAddress, spender: contractAddress, value: `0x${required.toString(16)}`} :
@@ -64,7 +64,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     useEffect(() => {
         if (chain && address) {
-            TokenController.getAllowance(chain, purchase.contractAddress, address, contractAddress)
+            Erc20Controller.getAllowance(chain.id, purchase.contractAddress, address, contractAddress)
                 .then(response => setAllowance(response.toString()))
         }
     }, [amount, chain, address, contractAddress, purchase.contractAddress, refresh]);

@@ -2,9 +2,7 @@ import {TransactionReceipt} from "viem";
 
 type IssueBondSuccessAdditional = {
     transaction: TransactionReceipt,
-    decoded: {
-        bondAddress: string
-    },
+    decoded: any[]
     chainId: number
 }
 

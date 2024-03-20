@@ -16,7 +16,7 @@ function useTransaction(chainId: number | string, txType: string, txConfig: Stri
     const {sendTransactionAsync, isLoading} = useSendTransaction({
         to: config.to,
         value: config.value,
-        data: config.data
+        data: config.data as any
     })
 
     async function submitTransaction() {

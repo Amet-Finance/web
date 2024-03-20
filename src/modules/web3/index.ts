@@ -1,15 +1,24 @@
 import {FIXED_FLEX_ISSUER_CONTRACTS, TransactionMessages, TxTypes} from "@/modules/web3/constants";
-import TokenController from './tokens';
 
 import {sleep} from "@/modules/utils/dates";
 import {Chain} from "wagmi";
 import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
-import {createPublicClient, http, TransactionReceipt} from "viem";
+import {createPublicClient, http} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
-import FixedFlexIssuerController from "@/modules/web3/fixed-flex/v2/issuer";
-import FixedFlexController from "@/modules/web3/fixed-flex/v2";
-import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
+
+import {
+    Erc20Controller,
+    FixedFlexBondController,
+    FixedFlexIssuerController,
+    FixedFlexVaultController,
+    ProviderController
+} from "amet-utils";
+
+import {constants} from "ethers";
+import {TransactionReceipt} from "@ethersproject/abstract-provider";
+import BigNumber from "bignumber.js";
+import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
 
 function getProvider(chain: Chain) {
     // todo combine all rpc urls and randomly select those
@@ -21,7 +30,7 @@ function getProvider(chain: Chain) {
 }
 
 async function getBlockNumber(chain: Chain) {
-    const provider = getProvider(chain);
+    const {provider} = new ProviderController(chain.id);
     return await provider.getBlockNumber();
 }
 
@@ -31,71 +40,128 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
 
         switch (txType) {
             case TxTypes.IssueBond: {
+
+                const {bondInfo, tokens, issuerContractInfo} = config;
+                const {
+                    totalBonds,
+                    maturityPeriodInBlocks,
+                    purchaseToken,
+                    purchaseAmount,
+                    payoutToken,
+                    payoutAmount
+                } = bondInfo as BondInfoForIssuance;
+                const issuerContract = FIXED_FLEX_ISSUER_CONTRACTS[chain.id];
+
+                // for total etc... check uint40
+                if (totalBonds > 1099511627775) throw Error("Total Bonds MAX reached")
+                if (maturityPeriodInBlocks > 1099511627775) throw Error("Maturity Period MAX reached")
+
+                const purchaseTokenInfo = tokens[purchaseToken]
+                const payoutTokenInfo = tokens[payoutToken]
+
                 return {
-                    to: FIXED_FLEX_ISSUER_CONTRACTS[chain.id],
-                    data: FixedFlexIssuerController.issueBonds(chain, config.bondInfo, config.tokens),
-                    value: BigInt(config.issuerContractInfo.issuanceFee)
+                    to: issuerContract,
+                    data: FixedFlexIssuerController.getIssuerInstance(chain.id, issuerContract)
+                        .interface
+                        .encodeFunctionData('issue', [
+                            totalBonds,
+                            maturityPeriodInBlocks,
+                            purchaseToken,
+                            "0x" + (BigNumber(purchaseAmount).times(BigNumber(10).pow(BigNumber(purchaseTokenInfo.decimals)))).toString(16),
+                            payoutToken,
+                            "0x" + (BigNumber(payoutAmount).times(BigNumber(10).pow(BigNumber(payoutTokenInfo.decimals)))).toString(16)
+                        ]),
+                    value: BigInt(issuerContractInfo.issuanceFee)
                 }
             }
             case TxTypes.ApproveToken: {
+                const {contractAddress, spender, value} = config
                 return {
-                    to: config.contractAddress,
-                    data: TokenController.approve(chain, config.contractAddress, config.spender, BigInt(config.value))
+                    to: contractAddress,
+                    data: Erc20Controller.getTokenInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData("approve", [spender, BigInt(value)])
                 }
             }
             case TxTypes.PurchaseBonds: {
+                const {contractAddress, count, referrer} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.purchase(chain, config.contractAddress, config.count, config.referrer)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData("purchase", [count, (referrer ?? constants.AddressZero)])
                 }
             }
             case TxTypes.RedeemBonds: {
+                const {contractAddress, redemptionCount, bondIndexes, isCapitulation} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.redeem(chain, config.contractAddress, config.bondIndexes, config.redemptionCount, config.isCapitulation)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData("redeem", [bondIndexes, redemptionCount, isCapitulation])
                 }
             }
             case TxTypes.Settle: {
+                const {contractAddress} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.settle(chain, config.contractAddress)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData("settle")
                 }
             }
             case TxTypes.ClaimReferralRewards: {
+                const {vaultAddress, contractAddress} = config
                 return {
-                    to: config.vaultAddress,
-                    data: FixedFlexVaultController.claimReferralRewards(chain, config.vaultAddress, config.contractAddress)
+                    to: vaultAddress,
+                    data: FixedFlexVaultController.getVaultInstance(chain.id, vaultAddress)
+                        .interface
+                        .encodeFunctionData("claimReferralRewards", [contractAddress])
                 }
             }
             case TxTypes.TransferERC20: {
+                const {contractAddress, toAddress, amount} = config;
                 return {
-                    to: config.contractAddress,
-                    data: TokenController.deposit(chain, config.contractAddress, config.toAddress, BigInt(config.amount))
+                    to: contractAddress,
+                    data: Erc20Controller.getTokenInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData("transfer", [toAddress, BigInt(amount)])
                 };
             }
-
             case TxTypes.WithdrawExcessPayout: {
+                const {contractAddress} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.withdrawExcessPayout(chain, config.contractAddress)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData('withdrawExcessPayout')
                 }
             }
             case TxTypes.UpdateBondSupply: {
+                const {contractAddress, count} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.updateBondSupply(chain, config.contractAddress, config.count)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData('updateBondSupply', [count])
                 }
             }
             case TxTypes.DecreaseMaturityPeriod: {
+                const {contractAddress, period} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.decreaseMaturityPeriod(chain, config.contractAddress, config.period)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData('decreaseMaturityPeriod', [period])
                 }
             }
             case TxTypes.ChangeOwner: {
+                const {contractAddress, owner} = config;
                 return {
-                    to: config.contractAddress,
-                    data: FixedFlexController.transferOwnership(chain, config.contractAddress, config.owner)
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
+                        .interface
+                        .encodeFunctionData('transferOwnership', [owner])
                 }
             }
             default: {
@@ -130,10 +196,11 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
         if (recursionCount > 50) {
             return undefined;
         }
-        const provider = getProvider(chain);
+
+        const {provider} = new ProviderController(chain.id);
 
         await sleep(4000); // info - moved places because the polygon mumbai rpc had issues with confirmed transactions
-        const response = await provider.getTransactionReceipt({hash: txHash as any});
+        const response = await provider.getTransactionReceipt(txHash);
         if (!response) {
             return trackTransactionReceipt(chain, txHash, recursionCount++);
         }
@@ -142,7 +209,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
             return undefined;
         }
 
-        return decodeTransactionLogs(response);
+        return decodeTransactionLogs(chain, response);
     } catch (error: any) {
         console.error(`trackTransactionReceipt: ${error.message}`);
         return trackTransactionReceipt(chain, txHash, recursionCount++);
@@ -150,15 +217,14 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 }
 
 
-async function decodeTransactionLogs(transaction: TransactionReceipt) {
-
+async function decodeTransactionLogs(chain: Chain, transaction: TransactionReceipt) {
     const isFixedFlexIssuer = Object
         .values(FIXED_FLEX_ISSUER_CONTRACTS)
         .some(address => address.toLowerCase() === transaction.to?.toLowerCase())
 
     switch (true) {
         case isFixedFlexIssuer: {
-            const decoded = FixedFlexIssuerController.decode(transaction);
+            const decoded = FixedFlexIssuerController.decode(chain.id, transaction);
             return {
                 transaction,
                 decoded
