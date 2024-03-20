@@ -13,25 +13,11 @@ type IssuerContractInfoDetailed = IssuerContractInfo & {
     issuanceFeeUI: string
 }
 
-type TokenInfo = {
-    contractAddress: string,
-    name: string,
-    symbol: string,
-    decimals: number,
-    verified?: boolean,
-    unidentified?: boolean,
-    icon: string,
-    balance?: number,
-    balanceClean?: string,
-    isLoading?: boolean
-    isFake?: boolean
-}
-
 type ExplorerTypes = "token" | "address" | "hash"
 
 type TokenResponseBalance = TokenResponse & {
-    balance: number,
-    balanceClean: string,
+    pureBalance: string;
+    normalizedBalance: number;
 }
 
 type TokenResponseDetailed = TokenResponseBalance & {
@@ -48,7 +34,6 @@ type ContractInfoType = {
 export type {
     IssuerContractInfo,
     IssuerContractInfoDetailed,
-    TokenInfo,
     TokenResponseBalance,
     TokenResponseDetailed,
     ExplorerTypes,
