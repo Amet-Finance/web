@@ -4,7 +4,7 @@ import {isAddress} from "viem";
 import {toast} from "react-toastify";
 import ContractAPI from "@/modules/cloud-api/contract-api";
 import {ContractCoreDetails, ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
-import {getProvider} from "@/modules/web3";
+import {ProviderController} from 'amet-utils'
 import {sleep} from "@/modules/utils/dates";
 import FixedFlexController from "@/modules/web3/fixed-flex";
 
@@ -39,9 +39,9 @@ async function getPastLogs(contractInfo: ContractCoreDetails, setLogs: any, setL
     if (!chain) return [];
 
     setLoading(true)
-    const provider = getProvider(chain);
+    const {provider} = new ProviderController(chain.id);
     const blockNumber = await provider.getBlockNumber();
-    const FIXED_BLOCK = BigInt(1000)
+    const FIXED_BLOCK = 1000
 
     const combinedLogs: ActionLogFormat[] = []
     for (let block = blockNumber; block > 0;) {

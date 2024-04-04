@@ -189,12 +189,13 @@ function ConnectedComponent() {
 }
 
 function Portfolio({setOpen}: Readonly<{ setOpen: any }>) {
+    // todo changing chain should also trigger this component re-render
     const accountState = AccountController.state
     const address = accountState.address ?? "";
 
     const icon = accountState.profileImage ?? makeBlockie(address);
     const name = accountState.profileName ?? "";
-    const {disconnect} = useDisconnect()
+    const {disconnect} = useDisconnect();
 
     function disconnectWallet() {
         setOpen(false);

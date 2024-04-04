@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     BondAndTokenData,
     BondAndTokenDataWithType,
@@ -24,7 +24,7 @@ import {polygonMumbai} from "wagmi/chains";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
-import {BlockTimes, FIXED_FLEX_ISSUER_CONTRACTS, TxTypes} from "@/modules/web3/constants";
+import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
@@ -33,8 +33,8 @@ import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} f
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {StringKeyedObject} from "@/components/utils/general";
-import {Erc20Controller, FixedFlexIssuerController} from "amet-utils";
-
+import {constants, Erc20Controller, FixedFlexIssuerController, utils} from "amet-utils";
+import {InfoData} from "@/components/utils/types";
 
 export default function Issue() {
     const [bondInfo, setBondInfo] = useState({chainId: polygonMumbai.id} as BondInfoForIssuance);
@@ -44,7 +44,6 @@ export default function Issue() {
     const chain = getChain(bondInfo.chainId);
     const bondInfoHandler: any = [bondInfo, setBondInfo];
     const tokensHandler: any = [tokens, setTokens];
-
     useEffect(() => {
         if (chain) {
             CloudAPI.getTokens({
@@ -53,12 +52,11 @@ export default function Issue() {
                     chainId: bondInfo.chainId,
                     verified: true
                 }
-            })
-                .then((response) => {
+            }).then((response) => {
                     if (response) setTokens(response)
                 })
 
-            FixedFlexIssuerController.getIssuerDetails(chain.id, FIXED_FLEX_ISSUER_CONTRACTS[chain.id])
+            FixedFlexIssuerController.getIssuerDetails(chain.id, utils.getIssuerContract(chain.id))
                 .then(response => {
                     const normalizedAmount = Number(response.issuanceFee) / 10 ** chain.nativeCurrency.decimals;
                     setIssuerContractInfo({
@@ -71,8 +69,6 @@ export default function Issue() {
                 })
         }
     }, [chain]);
-
-    // console.log(issuerContractInfo)
 
     return <GeneralContainer className='grid grid-cols-10 gap-6 md:py-32 py-12' isPadding>
         <IssuerContainer bondInfoHandler={bondInfoHandler}
@@ -158,35 +154,30 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
     }
 
 
-    return <div className='grid grid-cols-12 gap-4 mt-4'>
-        <div className='col-span-4 w-full flex flex-col gap-3'>
-            <InfoBox info={InfoSections.Total}><span
-                className='text-white text-md font-medium'>Total:</span></InfoBox>
-            <BasicInput id='totalBonds'
-                        onChange={update}
-                        placeholder='Total amount of Bonds'/>
+    return (
+        <div className='grid grid-cols-12 gap-4 mt-4'>
+            <InputContainer id='totalBonds'
+                            onChange={update}
+                            placeholder="Total Bonds"
+                            parentClassName='md:col-span-4 col-span-12 w-full flex items-center'
+                            info={InfoSections.Total}/>
+
+            <MaturityPeriodSelector bondInfoHandler={bondInfoHandler}/>
+            <ChainSelector bondInfoHandler={bondInfoHandler}/>
+            <TokenSelector type='purchaseToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <TokenSelector type='payoutToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
+            <InputContainer id="purchaseAmount"
+                            onChange={update}
+                            placeholder="Purchase Amount Per Bond"
+                            parentClassName='md:col-span-6 col-span-12 w-full flex justify-between gap-3'
+                            info={InfoSections.PurchaseAmount}/>
+            <InputContainer id="payoutAmount"
+                            onChange={update}
+                            placeholder="Payout Amount Per Bond"
+                            parentClassName='md:col-span-6 col-span-12 w-full flex justify-between gap-3'
+                            info={InfoSections.PayoutAmount}/>
         </div>
-        <MaturityPeriodSelector bondInfoHandler={bondInfoHandler}/>
-        <ChainSelector bondInfoHandler={bondInfoHandler}/>
-        <TokenSelector type='purchaseToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
-        <TokenSelector type='payoutToken' bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
-        <div className='md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3'>
-            <InfoBox info={InfoSections.PurchaseAmount}>
-                <span className='text-white text-md font-medium whitespace-nowrap'>Purchase Amount:</span>
-            </InfoBox>
-            <BasicInput id="purchaseAmount"
-                        placeholder='Purchase Amount Per Bond'
-                        onChange={update}/>
-        </div>
-        <div className='md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3'>
-            <InfoBox info={InfoSections.PayoutAmount}>
-                <span className='text-white text-md font-medium whitespace-nowrap'>Payout Amount:</span>
-            </InfoBox>
-            <BasicInput id="payoutAmount"
-                        placeholder='Payout Amount Per Bond'
-                        onChange={update}/>
-        </div>
-    </div>
+    )
 }
 
 function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataWithType) {
@@ -200,13 +191,11 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     const [bondInfo, setBondInfo] = bondInfoHandler;
     const [tokens, setTokens] = tokensHandler;
     const {isOpen, setIsOpen, openOrClose} = useShow();
-    const inputRef = useRef<any>()
     const boxRef = useRef<any>(null)
 
     const tokenAddress = ((isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken) || "").toLowerCase();
     const tokensArray = Object.values(tokens)
     const isShow = Boolean(tokensArray.length) && isOpen
-
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
@@ -219,7 +208,6 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
 
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
-
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -250,35 +238,36 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
     const changeInput = (event: any) => setTokenType(event.target.value)
     const selectToken = (contractAddress: string) => {
         setTokenType(contractAddress)
-        inputRef.current.value = contractAddress;
         setIsOpen(false);
     }
 
 
-    return <div className='relative md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-3 h-full'
+    return <div className='relative md:col-span-6 col-span-12 w-full flex flex-col justify-between gap-4 h-full'
                 ref={boxRef}>
-        <InfoBox info={infoObject}><span
-            className='text-white text-md font-medium whitespace-nowrap'>{title}:</span></InfoBox>
-        <input type='text'
-               className='bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base'
-               placeholder={placeholder}
-               ref={inputRef}
-               onClick={openOrClose}
-               onChange={changeInput}/>
+        <InputContainer id={type}
+                        type='text'
+                        onChange={changeInput}
+                        onClick={openOrClose}
+                        value={tokenAddress}
+                        placeholder={placeholder}
+                        parentClassName='w-full flex items-center gap-2'
+                        info={infoObject}/>
         <ConditionalRenderer isOpen={isShow}>
             <div
-                className='absolute flex flex-col gap-1 bg-[#131313] w-full border border-w1 rounded-md top-full left-0 z-10'>
+                className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10'>
                 {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
             </div>
         </ConditionalRenderer>
     </div>
+
+
 }
 
 function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onClick: any }>) {
 
     const iconSrc = token.icon ?? makeBlockie(zeroAddress);
 
-    return <button className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800'
+    return <button className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md'
                    onClick={() => onClick(token.contractAddress)}>
         <Image src={iconSrc} alt={token.name} width={22} height={22}
                className='rounded-full border border-neutral-400'/>
@@ -287,7 +276,7 @@ function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onC
     </button>
 }
 
-function MaturityPeriodSelector({bondInfoHandler}: BondData) {
+function MaturityPeriodSelector({bondInfoHandler}: Readonly<BondData>) {
     const [bondInfo, setBondInfo] = bondInfoHandler;
     const Types: StringKeyedObject<string> = {
         Hours: "hours",
@@ -302,10 +291,11 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         [Types.Blocks]: 1
     }
 
-    const inputRef = useRef<any>(null);
+
     const boxRef = useRef<any>(null)
     const [type, setType] = useState(Types.Days);
     const {isOpen, setIsOpen, openOrClose} = useShow();
+    const inputValue = type === Types.Blocks ? bondInfo.maturityPeriodInBlocks : (bondInfo.maturityPeriodInBlocks * constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]) / Timers[type];
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
@@ -320,18 +310,19 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
     }, [boxRef]);
 
 
-    function updateMaturityPeriod(type: string, value: number) {
-        const preValue = Timers[type] * Number(value)
-        if (!BlockTimes[bondInfo.chainId]) return toast.error("Please select the chain first!")
+    function updateMaturityPeriod(calculationType: string, value: number) {
+        const preValue = Timers[calculationType] * Number(value)
+        if (!constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]) return toast.error("Please select the chain first!")
 
-        const maturityPeriodInBlocks = type === Types.Blocks ? preValue : preValue / BlockTimes[bondInfo.chainId]
+        const maturityPeriodInBlocks = calculationType === Types.Blocks ? preValue : preValue / constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]
         setBondInfo({...bondInfo, maturityPeriodInBlocks})
     }
 
     const changeType = (event: any) => {
-        const type = event.target.id
-        setType(type)
-        updateMaturityPeriod(type, inputRef.current.value)
+        const updatedType = event.target.id;
+
+        setType(updatedType);
+        updateMaturityPeriod(updatedType, inputValue);
         openOrClose()
     }
 
@@ -340,34 +331,30 @@ function MaturityPeriodSelector({bondInfoHandler}: BondData) {
         updateMaturityPeriod(type, value)
     }
 
-    return <div className='md:col-span-4 col-span-8 w-full flex flex-col gap-3'>
-        <InfoBox info={InfoSections.MaturityPeriod}><span
-            className='text-white text-md font-medium whitespace-nowrap'>Maturity Period:</span></InfoBox>
-        <div className='relative grid grid-cols-7 gap-4 rounded-md h-full bg-[#131313] text-base'>
-            <input type="number"
-                   id='day'
-                   placeholder="Choose Maturity Period"
-                   onChange={changeTime}
-                   ref={inputRef}
-                   className='bg-transparent col-span-4 placeholder:text-[#3C3C3C] pl-4 py-3'/>
+    return (
+        <InputContainer id="day"
+                        placeholder="Maturity Period"
+                        parentClassName='relative md:col-span-4 col-span-12 flex items-center w-full gap-2'
+                        onChange={changeTime}
+                        info={InfoSections.MaturityPeriod}>
 
-            <button className='col-span-3 relative flex justify-center items-center cursor-pointer h-full pr-4 py-3'
+            <button className='relative flex justify-center items-center cursor-pointer h-full'
                     onClick={openOrClose} ref={boxRef}>
                 <span className='text-center w-full capitalize'>{type}</span>
             </button>
             <ConditionalRenderer isOpen={isOpen}>
                 <div
-                    className='absolute top-full right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md border border-w1 '>
+                    className='absolute top-[110%] right-0 bg-[#131313] flex flex-col z-10 text-sm text-center rounded-md gap-1'>
                     {
                         Object.keys(Types)
                             .map(key => (
-                                <button className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize'
+                                <button className='px-5 py-1 cursor-pointer hover:bg-neutral-800 capitalize rounded-md'
                                         id={Types[key]} onClick={changeType} key={key}>{key}</button>))
                     }
                 </div>
             </ConditionalRenderer>
-        </div>
-    </div>
+        </InputContainer>
+    )
 }
 
 function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
@@ -394,8 +381,6 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
 
     return <div className='md:col-span-4 col-span-12 w-full relative flex flex-col justify-center gap-3'
                 ref={boxRef}>
-        <InfoBox info={InfoSections.Chain}><span className='text-white text-md font-medium'>Chain:</span></InfoBox>
-
         <button
             className='flex justify-start items-center bg-[#131313] rounded-md px-4 py-2 cursor-pointer h-full'
             onClick={openOrClose}>
@@ -403,7 +388,7 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
                 <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
                        width={24}
                        height={24}/>
-                <span className='text-sm font-medium'>{shortenString(chainInfo?.name ?? "", 15)}</span>
+                <span className='text-sm '>{shortenString(chainInfo?.name ?? "", 15)}</span>
             </div>
             <ConditionalRenderer isOpen={isOpen}>
                 <div className="flex absolute flex-col bg-[#131313] rounded-md left-0 top-[110%] z-10 w-full">
@@ -417,7 +402,8 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
 function ChainContainer({chain, selectChain}: Readonly<{ chain: Chain, selectChain: any }>) {
     const select = () => selectChain(chain.id);
 
-    return <button className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2' onClick={select}>
+    return <button className='flex gap-2 items-center w-full hover:bg-neutral-800 px-3 py-2 rounded-md'
+                   onClick={select}>
         <Image src={`/svg/chains/${chain.id}.svg`} alt={chain.name} width={24} height={24}/>
         <span className='text-start text-sm font-medium min-w-full'>{shortenString(chain.name || "", 16)}</span>
     </button>
@@ -446,7 +432,8 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
 
     const chainInfo = getChain(bondInfo.chainId)
 
-    const maturityPeriodTime = (BlockTimes[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
+    const maturityPeriodTime = (constants.CHAIN_BLOCK_TIMES[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
+    const maturityPeriodStrLong = formatTime(maturityPeriodTime)
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
     return (
@@ -462,7 +449,7 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
             <ConditionalRenderer
                 isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
                 <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                     title={maturityPeriodStr}>
+                     title={`${maturityPeriodStrLong} or ${bondInfo.maturityPeriodInBlocks} blocks`}>
                     <span
                         className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
                     <span className='text-neutral-500 text-xs'>Maturity Period</span>
@@ -513,6 +500,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
         isLoading: false
     });
 
+
     useEffect(() => {
         if (chain && address && token) {
             setBalance({
@@ -554,9 +542,10 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
         return <UnidentifiedToken chain={chain}/>
     }
 
+    const purchaseRateClean = issuerContractInfo.purchaseRate / 10;
     const iconSrc = token.icon ?? makeBlockie(zeroAddress);
     let totalTmp = bondInfo.totalBonds * (isPurchase ? bondInfo.purchaseAmount : bondInfo.payoutAmount) || 0;
-    const total = isPurchase ? totalTmp - ((totalTmp * issuerContractInfo.purchaseRate) / 100) : totalTmp
+    const total = isPurchase ? totalTmp - ((totalTmp * purchaseRateClean) / 100) : totalTmp
 
     const valueClass = isPurchase ? "text-green-500" : "text-red-500";
 
@@ -600,7 +589,7 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                         </div>
                     </div>
                     <ConditionalRenderer isOpen={isPurchase}>
-                        <span className='text-neutral-500 text-mm'>We charge {issuerContractInfo.purchaseRate}% on every purchased bond.</span>
+                        <span className='text-neutral-500 text-mm'>We charge {purchaseRateClean}% on every purchased bond.</span>
                     </ConditionalRenderer>
                 </div>
             </ConditionalRenderer>
@@ -625,21 +614,43 @@ function UnidentifiedToken({chain}: Readonly<{ chain?: Chain }>) {
     </TokenContainer>
 }
 
-
-function BasicInput({id, type, className, onChange, onClick, ref, placeholder}: Readonly<{
-    id?: string,
+function InputContainer({
+                            id,
+                            type,
+                            inputClassName,
+                            value,
+                            parentClassName,
+                            children,
+                            onClick,
+                            placeholder,
+                            info,
+                            onChange
+                        }: Readonly<{
+    id: string,
+    placeholder: string,
+    onChange: any,
+    info: InfoData
+    parentClassName: string,
+    value?: string | number,
+    children?: React.ReactNode,
     type?: string,
-    className?: string,
-    onChange?: any,
-    placeholder?: string,
+    inputClassName?: string,
     onClick?: any,
-    ref?: any,
 }>) {
-    return <input id={id}
-                  type={type ?? "number"}
-                  className={'bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-base ' + className}
-                  onClick={onClick}
-                  ref={ref}
-                  placeholder={placeholder}
-                  onChange={onChange}/>
+
+    return (
+        <div className={parentClassName + " bg-[#131313] rounded-md placeholder:text-[#3C3C3C] py-3 px-4 text-sm"}>
+            <input id={id}
+                   type={type ?? "number"}
+                   className={inputClassName + " bg-transparent w-full"}
+                   onClick={onClick}
+                   value={value}
+                   placeholder={placeholder}
+                   onChange={onChange}/>
+            {children}
+            <ConditionalRenderer isOpen={Boolean(info)}>
+                <InfoBox info={info} className='whitespace-nowrap' isRight/>
+            </ConditionalRenderer>
+        </div>
+    )
 }

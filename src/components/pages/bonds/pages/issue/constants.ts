@@ -22,22 +22,22 @@ const InfoSections = {
         isBlank: true
     },
     PurchaseToken: {
-        text: "The contract address of the investment token.",
+        text: "The contract address of the purchase token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
     PayoutToken: {
-        text: "The contract address of the interest token.",
+        text: "The contract address of the payout token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
     PurchaseAmount: {
-        text: "The price per bond in the investment token.",
+        text: "The price per bond in the purchase token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },
     PayoutAmount: {
-        text: "The total return per bond in the interest token.",
+        text: "The total return per bond in the payout token.",
         link: URLS.FAQ_IOB,
         isBlank: true
     },

@@ -1,4 +1,4 @@
-import {FIXED_FLEX_ISSUER_CONTRACTS, TransactionMessages, TxTypes} from "@/modules/web3/constants";
+import {TransactionMessages, TxTypes} from "@/modules/web3/constants";
 
 import {sleep} from "@/modules/utils/dates";
 import {Chain} from "wagmi";
@@ -8,14 +8,15 @@ import {createPublicClient, http} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
 
 import {
+    constants,
     Erc20Controller,
     FixedFlexBondController,
     FixedFlexIssuerController,
     FixedFlexVaultController,
-    ProviderController
+    ProviderController,
+    utils
 } from "amet-utils";
 
-import {constants} from "ethers";
 import {TransactionReceipt} from "@ethersproject/abstract-provider";
 import BigNumber from "bignumber.js";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
@@ -50,7 +51,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                     payoutToken,
                     payoutAmount
                 } = bondInfo as BondInfoForIssuance;
-                const issuerContract = FIXED_FLEX_ISSUER_CONTRACTS[chain.id];
+                const issuerContract = utils.getIssuerContract(chain.id);
 
                 // for total etc... check uint40
                 if (totalBonds > 1099511627775) throw Error("Total Bonds MAX reached")
@@ -218,9 +219,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 
 
 async function decodeTransactionLogs(chain: Chain, transaction: TransactionReceipt) {
-    const isFixedFlexIssuer = Object
-        .values(FIXED_FLEX_ISSUER_CONTRACTS)
-        .some(address => address.toLowerCase() === transaction.to?.toLowerCase())
+    const isFixedFlexIssuer = utils.getIssuerContract(chain.id).toLowerCase() === transaction.to?.toLowerCase();
 
     switch (true) {
         case isFixedFlexIssuer: {

@@ -3,7 +3,7 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import {shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {tColor} from "@/components/pages/bonds/utils/colors";
-import {BlockTimes} from "@/modules/web3/constants";
+import {constants} from 'amet-utils'
 import {formatTime} from "@/modules/utils/dates";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
@@ -12,6 +12,7 @@ import CalculatorController from "@/components/pages/bonds/utils/calculator";
 import {useEffect} from "react";
 import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
+const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
     const {
         _id,
@@ -38,7 +39,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
     const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
 
-    const maturityPeriodClean = (BlockTimes[chainId] || 1) * maturityPeriodInBlocks
+    const maturityPeriodClean = (CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
     const payoutIcon = payout.icon ?? makeBlockie(contractAddress);
@@ -51,8 +52,8 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
 
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
-    const expectedReturnPerBond = payoutPriceUsd - purchasePriceUsd;
-    const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
+
+    const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
 
 
     useEffect(() => {
@@ -95,9 +96,9 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                             value={maturityInTime}
                             title="Period"/>
                         <DetailContainer
-                            value={`x${formatLargeNumber(expectedReturnMultiplier)}`}
-                            title="Multiplier"
-                            valueClass='text-green-500 font-bold'/>
+                            value={`${formatLargeNumber(expectedReturnPercentage)}%`}
+                            title="Yield"
+                            valueClass={`${expectedReturnPercentage > 0 ? "text-green-500" : "text-red-500"} font-bold`}/>
                     </div>
                     <div className='relative w-full '>
                         <div className="absolute h-[3px] bg-green-900 z-20"

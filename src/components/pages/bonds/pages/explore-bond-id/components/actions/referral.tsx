@@ -1,14 +1,13 @@
 import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
-// import FixedFlexVaultController from "@/modules/web3/fixed-flex/v2/vault";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useAccount} from "wagmi";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {nop} from "@/modules/utils/function";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {Loading} from "@/components/utils/loading";
-import {FIXED_FLEX_ISSUER_CONTRACTS, TxTypes} from "@/modules/web3/constants";
+import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
@@ -17,7 +16,7 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
 import {ToggleBetweenChildren} from "@/components/utils/container";
-import {FixedFlexIssuerController, FixedFlexVaultController} from "amet-utils";
+import {FixedFlexIssuerController, FixedFlexVaultController, utils} from "amet-utils";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
@@ -49,7 +48,7 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
     useEffect(() => {
         if (chain) {
-            FixedFlexIssuerController.getVaultContract(chain.id, FIXED_FLEX_ISSUER_CONTRACTS[chain.id])
+            FixedFlexIssuerController.getVaultContract(chain.id, utils.getIssuerContract(chain.id))
                 .then(response => setVaultAddress(response.address))
                 .catch(nop)
         }

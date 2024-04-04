@@ -50,7 +50,7 @@ function Container({title, value, valueTitle, valueColor, info}: Readonly<{
     return (
         <div
             className='flex flex-col items-end justify-between rounded-3xl p-6 pt-2 pr-2 border border-neutral-900 lg:col-span-1 col-span-2 cursor-pointer'>
-            <div className='w-full p-2'>
+            <div className='p-2'>
                 <InfoBox info={info} isRight><span/></InfoBox>
             </div>
             <div className='flex flex-col w-full' title={valueTitle}>

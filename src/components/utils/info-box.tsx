@@ -1,30 +1,25 @@
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
 import {ConditionalRenderer} from "@/components/utils/container";
-
-type InfoData = {
-    text: string;
-    link?: string;
-    isBlank?: boolean;
-}
+import {InfoData} from "@/components/utils/types";
 
 type InfoBox = {
-    children: any,
     info: InfoData,
+    children?: any,
     isRight?: boolean,
     className?: string,
     parentClassName?: string,
 }
 
-export default function InfoBox({children, info, isRight, className, parentClassName}: InfoBox) {
+export default function InfoBox({children, info, isRight, className, parentClassName}: Readonly<InfoBox>) {
 
     const isBlank = info.isBlank || !info.link;
 
-    const url = info.link || URLS.FAQ;
+    const url = info.link ?? URLS.FAQ;
     const target = isBlank ? "_blank" : "_self";
 
-    return <>
-        <div className="relative flex items-center gap-1 w-full">
+    return (
+        <div className="relative flex items-center gap-1 w-min">
             {children}
             <div className={`flex justify-end group w-full ${parentClassName}`}>
                 <Link href={url} target={target} title='Click to learn more!'>
@@ -47,5 +42,5 @@ export default function InfoBox({children, info, isRight, className, parentClass
                 </ConditionalRenderer>
             </div>
         </div>
-    </>
+    )
 }

@@ -1,6 +1,5 @@
 import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
 import {formatTime} from "@/modules/utils/dates";
-import {BlockTimes} from "@/modules/web3/constants";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import makeBlockie from "ethereum-blockies-base64";
 import Image from "next/image";
@@ -13,6 +12,9 @@ import InfoBox from "@/components/utils/info-box";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import {ConditionalRenderer} from "@/components/utils/container";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
+import {constants} from 'amet-utils';
+
+const {CHAIN_BLOCK_TIMES} = constants;
 
 export default function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
     const {contractInfo} = bondDetailed;
@@ -34,7 +36,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
 
 
     const tbv = CalculatorController.tbv(contractInfo);
-    const maturityPeriodTime = formatTime(BlockTimes[chainId] * maturityPeriodInBlocks, true, true, true)
+    const maturityPeriodTime = formatTime(CHAIN_BLOCK_TIMES[chainId] * maturityPeriodInBlocks, true, true, true)
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
 
@@ -48,10 +50,11 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const purchaseTokenExplorer = getExplorer(chainId, "token", purchase.contractAddress);
     const payoutTokenExplorer = getExplorer(chainId, "token", payout.contractAddress);
 
-    const payoutPriceUsd = payout.amountClean * (payout.priceUsd || 0);
-    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd || 0)
+    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
+    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
     const expectedReturnPerBond = payoutPriceUsd - purchasePriceUsd;
     const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
+    const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
 
     return <div
         className='flex flex-col gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
@@ -145,8 +148,10 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
                 </div>
                 <div className='lg:col-span-2 col-span-3  flex flex-col justify-end  w-full'>
                     <span
-                        className={`md:text-xl text-base font-bold ${expectedReturnPerBond > 0 ? "text-green-500" : "text-red-500"}`}>${formatLargeNumber(expectedReturnPerBond, true)}(x{formatLargeNumber(expectedReturnMultiplier)})</span>
-                    <span className='text-sm text-neutral-400'>Return Per Bond</span>
+                        className={`md:text-xl text-base font-bold ${expectedReturnPerBond > 0 ? "text-green-500" : "text-red-500"}`}>
+                        {formatLargeNumber(expectedReturnPercentage)}%
+                    </span>
+                    <span className='text-sm text-neutral-400'>Yield</span>
                 </div>
             </div>
             <div className='flex items-center justify-between w-full text-sm'>
