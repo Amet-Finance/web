@@ -8,7 +8,7 @@ import {
 } from "@/components/pages/bonds/pages/issue/type";
 import {Chain, useAccount} from "wagmi";
 import InfoBox from "@/components/utils/info-box";
-import {CHAINS, getChain} from "@/modules/utils/wallet-connect";
+import {CHAINS, defaultChain, getChain} from "@/modules/utils/wallet-connect";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
@@ -20,7 +20,6 @@ import makeBlockie from "ethereum-blockies-base64";
 import {isAddress, zeroAddress} from "viem";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
 import BigNumber from "bignumber.js";
-import {polygonMumbai} from "wagmi/chains";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
@@ -37,7 +36,7 @@ import {constants, Erc20Controller, FixedFlexIssuerController, utils} from "amet
 import {InfoData} from "@/components/utils/types";
 
 export default function Issue() {
-    const [bondInfo, setBondInfo] = useState({chainId: polygonMumbai.id} as BondInfoForIssuance);
+    const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
     const [tokens, setTokens] = useState({} as TokensResponse)
     const [issuerContractInfo, setIssuerContractInfo] = useState({} as IssuerContractInfoDetailed)
 
