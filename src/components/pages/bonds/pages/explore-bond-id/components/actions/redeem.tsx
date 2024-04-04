@@ -43,7 +43,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const totalQuantity = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
     const totalMatureQuantity = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, contractBalance, purchaseBlocks);
-    console.log(totalMatureQuantity)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
