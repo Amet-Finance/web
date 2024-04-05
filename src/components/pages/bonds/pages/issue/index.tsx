@@ -39,10 +39,13 @@ export default function Issue() {
     const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
     const [tokens, setTokens] = useState({} as TokensResponse)
     const [issuerContractInfo, setIssuerContractInfo] = useState({} as IssuerContractInfoDetailed)
+    const {isOpen, setIsOpen} = useShow();
 
     const chain = getChain(bondInfo.chainId);
     const bondInfoHandler: any = [bondInfo, setBondInfo];
     const tokensHandler: any = [tokens, setTokens];
+
+
     useEffect(() => {
         if (chain) {
             CloudAPI.getTokens({
@@ -51,35 +54,40 @@ export default function Issue() {
                     chainId: bondInfo.chainId,
                     verified: true
                 }
-            }).then((response) => {
+            })
+                .then((response) => {
                     if (response) setTokens(response)
                 })
 
+            setIssuerContractInfo({} as IssuerContractInfoDetailed);
+            setIsOpen(true);
             FixedFlexIssuerController.getIssuerDetails(chain.id, utils.getIssuerContract(chain.id))
                 .then(response => {
+                    setIsOpen(false);
                     const normalizedAmount = Number(response.issuanceFee) / 10 ** chain.nativeCurrency.decimals;
                     setIssuerContractInfo({
                         ...response,
                         issuanceFeeUI: `${normalizedAmount} ${chain.nativeCurrency.symbol}`
                     })
                 })
-                .catch(error => {
-                    console.error('getIssuerContractInfo', error)
-                })
+                .catch(error => console.error('getIssuerContractInfo', error))
         }
     }, [chain]);
 
-    return <GeneralContainer className='grid grid-cols-10 gap-6 md:py-32 py-12' isPadding>
-        <IssuerContainer bondInfoHandler={bondInfoHandler}
-                         tokensHandler={tokensHandler}
-                         issuerContractInfo={issuerContractInfo}/>
-        <PreviewContainer bondInfoHandler={bondInfoHandler}
-                          tokensHandler={tokensHandler}
-                          issuerContractInfo={issuerContractInfo}/>
-    </GeneralContainer>
+    return (
+        <GeneralContainer className='grid grid-cols-10 gap-6 md:py-32 py-12' isPadding>
+            <IssuerContainer bondInfoHandler={bondInfoHandler}
+                             tokensHandler={tokensHandler}
+                             isLoading={isOpen}
+                             issuerContractInfo={issuerContractInfo}/>
+            <PreviewContainer bondInfoHandler={bondInfoHandler}
+                              tokensHandler={tokensHandler}
+                              issuerContractInfo={issuerContractInfo}/>
+        </GeneralContainer>
+    )
 }
 
-function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombinedData) {
+function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo, isLoading}: BondCombinedData & {isLoading: boolean}) {
 
     const [bondInfo] = bondInfoHandler;
     const [tokens] = tokensHandler
@@ -108,7 +116,12 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
     return <div
         className='lg-xl:col-span-6 col-span-12 flex flex-col gap-10 rounded-3xl lg:px-12 px-6 lg:py-8 md:py-6 py-4 bg-neutral-950'>
         <div className='flex flex-col gap-2'>
-            <h1 className='text-2xl font-bold'>Issue Your Bonds: Simple and Swift</h1>
+            <div className='flex justify-between items-center'>
+                <h1 className='text-2xl font-bold'>Issue Your Bonds: Simple and Swift</h1>
+                <ConditionalRenderer isOpen={isLoading}>
+                    <Loading percent={80}/>
+                </ConditionalRenderer>
+            </div>
             <p className='text-xs text-zinc-600'>Our streamlined form guides you through each step to
                 issue your bonds seamlessly. Just fill in the details - from bond type to maturity period - and
                 set the parameters that suit your financial strategy.</p>
@@ -116,7 +129,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
         <div className='h-px w-full bg-zinc-800'/>
         <IssuanceForm bondInfoHandler={bondInfoHandler} tokensHandler={tokensHandler}/>
         <div className='flex flex-col gap-2'>
-            <p className='flex items-center text-sm text-neutral-600 gap-1'>By issuing bond you agree with our
+            <p className='flex items-center text-xs text-neutral-600 gap-1'>By issuing bond you agree with our
                 <Link href={URLS.PrivacyPolicy} target="_blank">
                     <u>Privacy policy</u>
                 </Link> and
@@ -124,7 +137,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo}: B
                     <u>Terms of Service.</u>
                 </Link></p>
             <button
-                className='flex items-center justify-center gap-1 px-2 py-3 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
+                className='flex items-center justify-center gap-1 px-2 py-2.5 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
                 onClick={issueBonds}>
                 <span>Issue Bonds</span>
                 <ConditionalRenderer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
