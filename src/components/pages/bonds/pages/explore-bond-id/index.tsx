@@ -56,8 +56,8 @@ function useExtendedFetch({bondDetailedTmp, queryParams}: Readonly<ExploreBondId
     const [refreshLoader, setRefreshLoader] = useState(false);
     const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
 
-    const purchase = useFinancialAttributeExtended(bondDetailed.contractInfo.purchase);
-    const payout = useFinancialAttributeExtended(bondDetailed.contractInfo.payout);
+    const purchase = useFinancialAttributeExtended(bondDetailed?.contractInfo?.purchase || {});
+    const payout = useFinancialAttributeExtended(bondDetailed?.contractInfo?.payout || {});
 
     useEffect(() => {
         const updater = () => {

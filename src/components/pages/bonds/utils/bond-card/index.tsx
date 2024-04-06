@@ -19,7 +19,6 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
         redeemed,
         issuer,
         owner,
-        issuerScore,
         purchased,
         totalBonds,
         maturityPeriodInBlocks,
@@ -90,7 +89,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                             title="Period"/>
                         <DetailContainer
                             value={`${formatLargeNumber(expectedReturnPercentage)}%`}
-                            title="Yield"
+                            title="Yield Rate"
                             valueClass={`${expectedReturnPercentage > 0 ? "text-green-500" : "text-red-500"} font-bold`}/>
                     </div>
                     <div className='relative w-full '>

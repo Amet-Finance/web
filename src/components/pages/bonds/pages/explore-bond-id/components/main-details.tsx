@@ -48,12 +48,6 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     const purchaseTokenExplorer = getExplorer(chainId, "token", purchase.contractAddress);
     const payoutTokenExplorer = getExplorer(chainId, "token", payout.contractAddress);
 
-    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
-    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
-    const expectedReturnPerBond = payoutPriceUsd - purchasePriceUsd;
-    const expectedReturnMultiplier = payoutPriceUsd / purchasePriceUsd;
-    const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
-
     return <div
         className='flex flex-col gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
@@ -143,13 +137,6 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                 <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
                     <span className='md:text-xl text-base font-bold'>${formatLargeNumber(tbv, true)}</span>
                     <span className='text-sm text-neutral-400'>Total Bonded Volume</span>
-                </div>
-                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end  w-full'>
-                    <span
-                        className={`md:text-xl text-base font-bold ${expectedReturnPerBond > 0 ? "text-green-500" : "text-red-500"}`}>
-                        {formatLargeNumber(expectedReturnPercentage)}%
-                    </span>
-                    <span className='text-sm text-neutral-400'>Yield</span>
                 </div>
             </div>
             <div className='flex items-center justify-between w-full text-sm'>

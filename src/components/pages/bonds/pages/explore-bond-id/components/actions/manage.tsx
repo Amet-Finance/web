@@ -25,13 +25,15 @@ export default function ManageTab({contractInfo}: Readonly<{ contractInfo: Contr
 }
 
 function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {contractAddress, chainId, payout, totalBonds, redeemed} = contractInfo;
+    const {contractAddress, chainId, payout, totalBonds, redeemed, payoutBalance} = contractInfo;
 
     const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
 
     const handler = [amount, setAmount];
-    const maxPayout = (totalBonds - redeemed) * payout.amountClean;
+    const payoutBalanceClean = BigNumber(payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
+    const maxPayout = ((totalBonds - redeemed) * payout.amountClean);
+    const maxPayoutDeposit = Math.max(maxPayout - payoutBalanceClean, 0)
 
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.TransferERC20, {
         contractAddress: payout.contractAddress,
@@ -56,7 +58,7 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDeta
         <ConditionalRenderer isOpen={isOpen}>
             <InputContainer handler={handler}
                             placeholder='Enter The Payout Token Amoun'
-                            maxValue={maxPayout}
+                            maxValue={maxPayoutDeposit}
                             symbol={payout.symbol}
                             submit={submit}/>
         </ConditionalRenderer>

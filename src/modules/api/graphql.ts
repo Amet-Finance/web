@@ -28,12 +28,10 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     issuanceDate
     maturityPeriodInBlocks
     issuer {
-      score
       id
     }
     owner {
       id
-      score
     }
     payoutAmount
     payoutToken {
@@ -53,7 +51,6 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     purchased
     redeemed
     totalBonds
-    uniqueHolders
   }
 }
 `
@@ -78,12 +75,10 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     issuanceDate
     issuer {
       id
-      score
     }
     maturityPeriodInBlocks
     owner {
       id
-      score
     }
     payoutAmount
     payoutBalance
@@ -103,7 +98,6 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     purchased
     redeemed
     totalBonds
-    uniqueHolders
     actionLogs {
       blockNumber
       count
@@ -214,10 +208,6 @@ function transformCoreDetails(item: any, chainId: number): ContractCoreDetails |
         totalBonds: Number(item.totalBonds),
         purchased: Number(item.purchased),
         redeemed: Number(item.redeemed),
-
-        uniqueHolders: Number(item.uniqueHolders),
-        issuerScore: item.issuer.score ?? 0,
-
 
         payoutBalance: item.payoutBalance as string,
         maturityPeriodInBlocks: Number(item.maturityPeriodInBlocks),

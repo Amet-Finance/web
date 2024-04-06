@@ -9,22 +9,21 @@ function tbv(contractInfo: ContractCoreDetails) {
 
 
 function score(contract: ContractCoreDetails) {
-    const {purchase, payout, issuerScore} = contract;
+    const {purchase, payout} = contract;
     const isBothAssetsVerified = payout?.isVerified && purchase?.isVerified;
 
-    const uniqueHoldersIndex = contract.uniqueHolders ? contract.uniqueHolders / contract.totalBonds : 0;
+    const calculatedYield = yieldRate(contract);
     const securedPercentage = CalculatorController.securedPercentage(contract, true)
 
-    return (0.45 * (securedPercentage / 10)) + (0.3 * issuerScore) + (0.05 * (isBothAssetsVerified ? 10 : 0)) + (0.2 * (uniqueHoldersIndex * 10));
+    return (0.7 * (securedPercentage / 10)) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * (calculatedYield / 10)));
 }
 
 function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
-    const {payout} = contract;
+    const {payout, payoutBalance, totalBonds, redeemed,} = contract;
 
     // todo do something if payout balance is missing
-    const payoutBalanceClean = BigNumber(contract.payoutBalance.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
-
-    const notRedeemed = BigNumber(contract.totalBonds - contract.redeemed).times(payout.amountClean).toNumber();
+    const payoutBalanceClean = BigNumber(payoutBalance.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
+    const notRedeemed = BigNumber(totalBonds - redeemed).times(payout.amountClean).toNumber();
     if (!notRedeemed) return 0; // this means all the bonds were purchased and redeemed
 
     const securedTmp = payoutBalanceClean * 100 / notRedeemed
@@ -35,10 +34,17 @@ function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) 
     return securedTmp;
 }
 
+function yieldRate({purchase, payout}: ContractCoreDetails): number {
+    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
+    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
+    return ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
+}
+
 const CalculatorController = {
     tbv,
     score,
-    securedPercentage
+    securedPercentage,
+    yieldRate
 }
 
 export default CalculatorController;

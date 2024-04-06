@@ -45,8 +45,6 @@ type ContractDetails = {
     payoutBalance: string,
 
     issuer: string,
-    issuerScore: number,
-    uniqueHolders: number,
 
     owner: string,
     issuanceDate: Date | string,

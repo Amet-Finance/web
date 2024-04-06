@@ -81,10 +81,10 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
                                className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
                                id='title'
                                onChange={edit}
-                               defaultValue={contractDescription.details?.title}
+                               defaultValue={contractDescription?.details?.title}
                                placeholder='Title'/>
                         <h1 className='text-2xl font-bold'
-                            title={contractDescription.details?.title}>{shortenString(contractDescription.details?.title, 190)}</h1>
+                            title={contractDescription?.details?.title}>{shortenString(contractDescription?.details?.title, 190)}</h1>
                     </ToggleBetweenChildren>
                 </div>
                 <div className='col-span-1 flex justify-end'>
@@ -100,9 +100,9 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
                       onChange={edit}
                       id='description'
                       className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
-                      defaultValue={contractDescription.details?.description}
+                      defaultValue={contractDescription?.details?.description}
                       placeholder='Describe you bonds, the purpose and etc..'/>
-                <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription.details?.description}</p>
+                <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription?.details?.description}</p>
             </ToggleBetweenChildren>
         </div>
     )

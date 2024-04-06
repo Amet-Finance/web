@@ -1,5 +1,5 @@
 import AmetLogo from "../../../public/svg/amet-logo";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {LinkBaseType, LinkExtendedType} from "@/components/navbar/types";
@@ -18,11 +18,10 @@ import SettingsSVG from "../../../public/svg/utils/settings";
 import DisconnectSVG from "../../../public/svg/utils/disconnect";
 import {URLS} from "@/modules/utils/urls";
 import {toast} from "react-toastify";
-import {AccountController} from "@web3modal/core";
+import {AccountController, AccountControllerState} from "@web3modal/core";
 import {shortenString} from "@/modules/utils/string";
 import CopySVG from "../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";
-import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
@@ -43,12 +42,10 @@ export default function Navbar() {
     }, [address]);
 
     useEffect(() => {
-        if (address) {
-            TokenStore.initTokens().catch(nop)
-            const interval = setInterval(() => TokenStore.initTokens(), UPDATE_INTERVAL);
-            return () => clearInterval(interval);
-        }
-    }, [address]);
+        TokenStore.initTokens().catch(nop)
+        const interval = setInterval(() => TokenStore.initTokens(), UPDATE_INTERVAL);
+        return () => clearInterval(interval);
+    }, []);
 
     return <nav className="fixed flex flex-col bg-black z-50 w-full">
         <TopAnnouncement/>
@@ -162,7 +159,7 @@ function WalletComponent() {
 function ConnectedComponent() {
 
 
-    const accountState = AccountController.state;
+    const [accountState, setAccountState] = useState(AccountController.state)
 
     const network = useNetwork();
     const chain = getChain(network.chain?.id);
@@ -180,6 +177,17 @@ function ConnectedComponent() {
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
 
+    useEffect(() => {
+        AccountController.subscribe(newState => setAccountState({
+            address: newState.address,
+            isConnected: newState.isConnected,
+            profileImage: newState.profileImage,
+            profileName: newState.profileName,
+            balance: newState.balance,
+            balanceSymbol: newState.balanceSymbol
+        }))
+    }, []);
+
     return <div className='relative text-black' ref={boxRef}>
         <BasicButton onClick={openOrClose}>
             <div className='flex items-center gap-2'>
@@ -191,14 +199,12 @@ function ConnectedComponent() {
             </div>
         </BasicButton>
         <ConditionalRenderer isOpen={isOpen}>
-            <Portfolio setOpen={setIsOpen}/>
+            <Portfolio accountState={accountState} setOpen={setIsOpen}/>
         </ConditionalRenderer>
     </div>
 }
 
-function Portfolio({setOpen}: Readonly<{ setOpen: any }>) {
-    // todo changing chain should also trigger this component re-render
-    const accountState = AccountController.state
+function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountControllerState, setOpen: any }>) {
     const address = accountState.address ?? "";
 
     const icon = accountState.profileImage ?? makeBlockie(address);
@@ -243,11 +249,11 @@ function Portfolio({setOpen}: Readonly<{ setOpen: any }>) {
                     </button>
                 </div>
             </div>
-            <div className='flex flex-col'>
-                    <span
-                        className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>
-                <span className='text-sm text-green-500'>$0.00 (0.0%)</span>
-            </div>
+            {/*<div className='flex flex-col'>*/}
+            {/*        <span*/}
+            {/*            className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>*/}
+            {/*    <span className='text-sm text-green-500'>$0.00 (0.0%)</span>*/}
+            {/*</div>*/}
             <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
                 <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
                     <span>Portfolio</span>

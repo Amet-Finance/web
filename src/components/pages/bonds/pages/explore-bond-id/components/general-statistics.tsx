@@ -1,44 +1,30 @@
-import {
-    ContractCoreDetails,
-    ContractExtendedFormat,
-    FinancialAttributeExtended,
-    FinancialAttributeInfo
-} from "@/modules/api/contract-type";
+import {ContractCoreDetails, ContractExtendedFormat, FinancialAttributeExtended} from "@/modules/api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {useAccount} from "wagmi";
-import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import {HorizontalLoading} from "@/components/utils/loading";
-import {ToggleBetweenChildren} from "@/components/utils/container";
 import {LogTypes} from "@/modules/web3/constants";
-
-// todo dynamically monitor blocks and whenever new action happens show here
 
 const StatisticsTypes = {
     Purchase: "Purchase",
     Redeem: "Redeem"
 }
-export default function GeneralStatisticsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+export default function GeneralStatisticsContainer({bondDetailed}: Readonly<{ bondDetailed: ContractExtendedFormat }>) {
     const {contractInfo, actionLogs} = bondDetailed;
 
-    const [logs, setLogs] = useState<ActionLogFormat[]>(actionLogs)
-    const [isLoadingLogs, setLoadingLogs] = useState(false)
-
     return <>
-        <GraphsContainer contractInfo={contractInfo} logs={logs} isLoadingLogs={isLoadingLogs}/>
-        <RecentActivityContainer contractInfo={contractInfo} logs={logs} isLoadingLogs={isLoadingLogs}/>
+        <GraphsContainer contractInfo={contractInfo} logs={actionLogs}/>
+        <RecentActivityContainer contractInfo={contractInfo} logs={actionLogs}/>
     </>
 }
 
-function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
+function GraphsContainer({contractInfo, logs}: Readonly<{
     contractInfo: ContractCoreDetails,
     logs: ActionLogFormat[],
-    isLoadingLogs: boolean
-}) {
+}>) {
 
     const {purchase, payout} = contractInfo;
     let totalPurchased = 0
@@ -60,21 +46,18 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
 
     return (
         <div className='grid grid-cols-2 gap-4'>
-            <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased} asset={purchase}
-                       isLoadingLogs={isLoadingLogs}/>
-            <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed} asset={payout}
-                       isLoadingLogs={isLoadingLogs}/>
+            <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased} asset={purchase}/>
+            <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed} asset={payout}/>
         </div>
     )
 }
 
-function Container({type, total, isLoadingLogs, data, asset}: {
+function Container({type, total, data, asset}: Readonly<{
     type: string,
     total: number,
-    isLoadingLogs: boolean,
     data: ActionLogFormat[],
     asset: FinancialAttributeExtended
-}) {
+}>) {
     const isPurchase = type === StatisticsTypes.Purchase
     const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
 
@@ -83,39 +66,33 @@ function Container({type, total, isLoadingLogs, data, asset}: {
     const totalInUsd = (asset.priceUsd ?? 0) * total
     const title = Number.isFinite(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
 
-    // todo add text loading just like in Coinstats or Zerion
-
-    return <>
+    return (
         <div
             className='md:col-span-1 col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
             <div className='flex justify-between w-full'>
                 <span className='font-medium text-xl'>{type} Statistics</span>
                 <div className='flex flex-col items-end gap-1'>
-                    {isLoadingLogs ? <HorizontalLoading className='w-32'/> :
-                        <span className='text-2xl font-bold'>{title}</span>}
-                    {isLoadingLogs ? <HorizontalLoading className='w-20'/> :
-                        <p className='text-neutral-500 text-sm'>Today {" "}
-                            <span className='text-green-500'>(+2.4%)</span>
-                        </p>}
+                    <span className='text-2xl font-bold'>{title}</span>
+                    <p className='text-neutral-500 text-sm'>Today {" "}
+                        <span className='text-green-500'>(+0%)</span>
+                    </p>
                 </div>
             </div>
-            {
-                isLoadingLogs ?
-                    <HorizontalLoading className='w-full h-24'/> :
-                    <>
-                        <BarChart bgColor={bgColor} data={data} asset={asset}/>
-                        <div className='flex justify-between'>
-                            {blocks.map((block, index) => (
-                                <span className='text-sm text-neutral-600' key={index}>{block}</span>))}
-                        </div>
-                    </>
-            }
+            <BarChart bgColor={bgColor} data={data} asset={asset}/>
+            <div className='flex justify-between'>
+                {blocks.map((block, index) => (
+                    <span className='text-sm text-neutral-600' key={index}>{block}</span>))}
+            </div>
         </div>
-    </>
+    )
 }
 
 
-function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogFormat[], asset: FinancialAttributeExtended }) {
+function BarChart({bgColor, data, asset}: Readonly<{
+    bgColor: string,
+    data: ActionLogFormat[],
+    asset: FinancialAttributeExtended
+}>) {
     const chartRef = useRef<any>(null);
 
     useEffect(() => {
@@ -184,18 +161,17 @@ function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogForm
         return () => chart.destroy()
     }, [bgColor, data])
 
-    return <>
+    return (
         <div className='w-full'>
             <canvas ref={chartRef} className='max-h-60'/>
         </div>
-    </>
+    )
 }
 
-function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
+function RecentActivityContainer({contractInfo, logs}: Readonly<{
     contractInfo: ContractCoreDetails,
-    logs: ActionLogFormat[],
-    isLoadingLogs: boolean
-}) {
+    logs: ActionLogFormat[]
+}>) {
 
     const ActivityTypes = {
         All: "All",
@@ -213,24 +189,22 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
         return true;
     }
 
-    return <>
+    return (
         <div className='flex flex-col gap-8 border border-neutral-900 w-full rounded-3xl p-8'>
-            <div className='flex justify-between items-center'>
-                <div className='flex items-center gap-4'>
-                    <span className='text-xl font-medium'>Recent Activity</span>
-                    <RefreshSVG isLoading={isLoadingLogs} isSmall/>
-                </div>
+            <div className='flex md:flex-row flex-col justify-between md:items-center items-start gap-2'>
+                <span className='text-xl font-medium'>Recent Activity</span>
                 <div className='flex items-center border border-neutral-900 rounded-3xl cursor-pointer'>
                     {
-                        Object.values(ActivityTypes).map((title, index) => (
-                            <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-neutral-900"}`}
-                                  key={index}
-                                  onClick={() => setActivityType(title)}>{title}</span>
+                        Object.values(ActivityTypes).map((title) => (
+                            <button
+                                className={`p-1 px-4 rounded-3xl md:text-base text-sm ${title === activityType && "bg-neutral-900"}`}
+                                key={title}
+                                onClick={() => setActivityType(title)}>{title}</button>
                         ))
                     }
                 </div>
             </div>
-            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-y-auto'>
+            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-y-auto whitespace-nowrap'>
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400'>From</span>
                 </div>
@@ -249,24 +223,19 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
-                <ToggleBetweenChildren isOpen={isLoadingLogs}>
-                    <HorizontalLoading className='w-full col-span-6 h-32'/>
-                    {
-                        logs.filter(filterMyLogs)
-                            .map(log =>
-                                <LogContainer
-                                    contractInfo={contractInfo}
-                                    log={log}
-                                    key={log.id}/>)
-                    }
-                </ToggleBetweenChildren>
+                {logs.filter(filterMyLogs)
+                    .map(log =>
+                        <LogContainer
+                            contractInfo={contractInfo}
+                            log={log}
+                            key={log.id}/>)}
             </div>
         </div>
-    </>
+    )
 }
 
 
-function LogContainer({contractInfo, log}: { contractInfo: ContractCoreDetails, log: ActionLogFormat }) {
+function LogContainer({contractInfo, log}: Readonly<{ contractInfo: ContractCoreDetails, log: ActionLogFormat }>) {
 
     const {chainId, purchase, payout} = contractInfo;
 
@@ -286,7 +255,7 @@ function LogContainer({contractInfo, log}: { contractInfo: ContractCoreDetails, 
 
     return <>
         <div className='h-px col-span-6 bg-neutral-600 w-full'/>
-        <div className='col-span-1 text-sm '>
+        <div className='col-span-1 text-sm'>
             <span className='text-neutral-200'>{shorten(log.from, 5)}</span>
         </div>
         <div className='col-span-1 text-sm'>
