@@ -28,7 +28,7 @@ export async function getServerSideProps({query}: any) {
     if (chain && contractAddress) {
         const contract = await Graphql.getContractExtended({
             chainId: chain.id,
-            contractAddresses: [contractAddress]
+            contractAddress: contractAddress
         });
         if (contract) {
             const {contractDescription} = contract;

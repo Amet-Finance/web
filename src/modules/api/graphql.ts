@@ -63,8 +63,7 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
 }
 
 async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormat | null> {
-    const {chainId, contractAddresses} = params;
-    const contractAddress = params.contractAddresses?.[0]
+    const {chainId, contractAddress} = params;
     const query = `
              {
               bond(id: "${contractAddress?.toLowerCase()}") {

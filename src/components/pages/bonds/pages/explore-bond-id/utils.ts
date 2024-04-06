@@ -16,7 +16,7 @@ async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise
 
     return await Graphql.getContractExtended({
         chainId: queryParams.chainId,
-        contractAddresses: [queryParams.contractAddress]
+        contractAddress: queryParams.contractAddress
     })
 }
 

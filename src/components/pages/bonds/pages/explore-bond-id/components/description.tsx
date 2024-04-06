@@ -70,7 +70,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
 
     }
 
-    console.log(contractDescription.details?.title)
+    // console.log(contractDescription.details?.title)
 
     return (
         <div className='flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>

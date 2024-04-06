@@ -9,6 +9,8 @@ import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
@@ -30,6 +32,12 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
 
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
 
+    const tokens = useSelector((item: RootState) => item.token);
+    const tokensByChainId = tokens[chainId] || {};
+
+    const purchaseToken = tokensByChainId[purchase.contractAddress] || {}
+    const payoutToken = tokensByChainId[payout.contractAddress] || {}
+
     const score = CalculatorController.score({...info, payoutBalance})
     const scoreColor = tColor(score * 10)
 
@@ -39,7 +47,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const maturityPeriodClean = (CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
-    const payoutIcon = payout.icon ?? makeBlockie(contractAddress);
+    const payoutIcon = payoutToken.icon ?? makeBlockie(contractAddress);
 
     const payoutSymbolShort = shortenString(payout.symbol, 5)
     const purchaseSymbolShort = shortenString(purchase.symbol, 5)
@@ -47,8 +55,8 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
-    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
-    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
+    const payoutPriceUsd = payout.amountClean * (payoutToken.priceUsd ?? 0);
+    const purchasePriceUsd = purchase.amountClean * (purchaseToken.priceUsd ?? 0)
 
     const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
 
