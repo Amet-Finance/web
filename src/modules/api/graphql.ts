@@ -1,19 +1,19 @@
 import {postAPI} from "@/modules/api/util";
-import {
-    ContractCoreDetails,
-    ContractExtendedFormat,
-    ContractExtendedFormatAPI,
-    ContractQuery
-} from "@/modules/api/contract-type";
+import {ContractCoreDetails, ContractExtendedFormatAPI, ContractQuery} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
-// import {LogTypes} from "@/modules/web3/fixed-flex/constants";
 import {constants} from "amet-utils";
 import {Balances, ContractBalance} from "@/modules/api/type";
 import {LogTypes} from "@/modules/web3/constants";
+import {StringKeyedObject} from "@/components/utils/general";
+import {base} from "wagmi/chains";
 
 function getApi(chainId: number) {
-    return `https://api.studio.thegraph.com/query/70324/amet-finance-${chainId}/version/latest`
+    const API: StringKeyedObject<string> = {
+        [base.id]: `https://gateway-arbitrum.network.thegraph.com/api/6d563e0becc20d2d52c08ca555d0a735/subgraphs/id/JBBiYxUHriMu5GpUtiuPLzroZbD6aGkaoipdLRn47BMy`
+    }
+
+    return API[chainId];
 }
 
 
@@ -21,7 +21,7 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     const {chainId} = params;
     const query = `
             {
-  bonds(first: ${params.limit || 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
+  bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
     id
     isSettled
     issuanceBlock
