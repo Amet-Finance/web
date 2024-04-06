@@ -36,6 +36,7 @@ import ModalStore from "@/store/redux/modal";
 import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import BigNumber from "bignumber.js";
+import {useTokensByChain} from "@/modules/utils/token";
 
 export default function Issue() {
     const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
@@ -50,13 +51,6 @@ export default function Issue() {
 
     useEffect(() => {
         if (chain) {
-            CloudAPI.getTokens({
-                chainId: bondInfo.chainId,
-                verified: true
-            }).then((response) => {
-                    if (response) setTokens(response)
-                })
-
             setIssuerContractInfo({} as IssuerContractInfoDetailed);
             setIsOpen(true);
             FixedFlexIssuerController.getIssuerDetails(chain.id, utils.getIssuerContract(chain.id))
@@ -192,6 +186,7 @@ function IssuanceForm({bondInfoHandler, tokensHandler}: BondAndTokenData) {
 
 function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataWithType) {
 
+
     const isPurchase = type === 'purchaseToken'
     const title = isPurchase ? "Purchase Token" : "Payout Token";
     const placeholder = `${title} Contract Address`
@@ -199,13 +194,16 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
 
     const {address} = useAccount();
     const [bondInfo, setBondInfo] = bondInfoHandler;
+    const verifiedTokens = useTokensByChain(bondInfo.chainId);
+
     const [tokens, setTokens] = tokensHandler;
     const {isOpen, setIsOpen, openOrClose} = useShow();
     const boxRef = useRef<any>(null)
 
     const tokenAddress = ((isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken) || "").toLowerCase();
-    const tokensArray = Object.values(tokens)
-    const isShow = Boolean(tokensArray.length) && isOpen
+
+    const verifiedTokensArray = Object.values(verifiedTokens)
+    const isShow = Boolean(verifiedTokensArray.length) && isOpen
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
@@ -230,7 +228,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                         const _id = `${tokenAddress}_${bondInfo.chainId}`.toLowerCase()
                         const token = tokensResponse[_id]
                         if (token) {
-                            setTokens({...tokens, [tokenAddress]: token})
+                            setTokens({...tokens, [tokenAddress.toLowerCase()]: token})
                         } else {
                             setTokens({...tokens, [tokenAddress]: {unidentified: true}})
                         }
@@ -265,8 +263,9 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                         info={infoObject}/>
         <ConditionalRenderer isOpen={isShow}>
             <div
-                className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10'>
-                {tokensArray.map(token => <TokenForSelector token={token} key={token.contractAddress}
+                className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10 h-56 overflow-y-auto'>
+                {verifiedTokensArray.map(token => <TokenForSelector token={token}
+                                                                    key={token.contractAddress}
                                                             onClick={selectToken}/>)}
             </div>
         </ConditionalRenderer>
@@ -279,7 +278,8 @@ function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onC
 
     const iconSrc = token.icon ?? makeBlockie(zeroAddress);
 
-    return <button className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md'
+    return <button
+        className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md whitespace-nowrap'
                    onClick={() => onClick(token.contractAddress)}>
         <Image src={iconSrc} alt={token.name} width={22} height={22}
                className='rounded-full border border-neutral-400'/>
@@ -626,6 +626,7 @@ function InputContainer({
                    className={inputClassName + " bg-transparent w-full"}
                    onClick={onClick}
                    value={value}
+                   autoComplete="off"
                    placeholder={placeholder}
                    onChange={onChange}/>
             {children}

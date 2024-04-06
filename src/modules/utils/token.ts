@@ -2,9 +2,13 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {FinancialAttributeExtended, FinancialAttributeInfo} from "@/modules/api/contract-type";
 
-function useToken(chainId: number, contractAddress: string) {
+function useTokensByChain(chainId: number) {
     const tokens = useSelector((item: RootState) => item.token);
-    const tokensByChain = tokens[chainId] || {};
+    return tokens[chainId] || {};
+}
+
+function useToken(chainId: number, contractAddress: string) {
+    const tokensByChain = useTokensByChain(chainId)
     return tokensByChain[contractAddress] || {};
 }
 
@@ -17,4 +21,4 @@ function useFinancialAttributeExtended(preToken: FinancialAttributeInfo): Financ
     }
 }
 
-export {useToken, useFinancialAttributeExtended}
+export {useTokensByChain, useToken, useFinancialAttributeExtended}
