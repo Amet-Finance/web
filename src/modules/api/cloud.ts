@@ -1,6 +1,13 @@
 import {patchAPI, requestAPI} from "@/modules/api/util";
 import {API_URL} from "@/modules/api/constants";
-import {GeneralStatistics, GeneralStatsKey, StatisticsTypes, TBVStatistics, TokensResponse} from "@/modules/api/type";
+import {
+    AuthenticatedRequest,
+    GeneralStatistics,
+    GeneralStatsKey,
+    StatisticsTypes,
+    TBVStatistics,
+    TokensResponse
+} from "@/modules/api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 import {ContractDescription, DescriptionEditParams} from "@/modules/api/contract-type";
 
@@ -42,15 +49,11 @@ async function getTokensDetailed(params: {
     });
 }
 
-async function updateContractDescription(params: DescriptionEditParams): Promise<ContractDescription> {
+async function updateContractDescription(body: DescriptionEditParams, params: AuthenticatedRequest): Promise<ContractDescription> {
     return await patchAPI({
-        url: `${API_URL}/v2/contract/description`,
-        body: params,
-        params: {
-            address: params.address,
-            signature: params.signature,
-            message: params.message
-        }
+        url: `${API_URL}/v1/description`,
+        body: body,
+        params: params
     });
 }
 

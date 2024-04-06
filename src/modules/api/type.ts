@@ -48,6 +48,12 @@ type ContractBalance = {
     tokenId: number
 }
 
+type AuthenticatedRequest = {
+    address: string,
+    signature: string,
+    message: string
+}
+
 export type  {
     TokenCore,
     TokenResponse,
@@ -58,5 +64,6 @@ export type  {
     GeneralStatsKey,
     TBVStatsKey,
     Balances,
-    ContractBalance
+    ContractBalance,
+    AuthenticatedRequest
 }

@@ -58,9 +58,10 @@ type ContractCoreDetails = ContractDetails & PurchasePayoutExtended
 
 type ContractDescription = {
     name: string,
-    description: string,
-    external_url: string,
-    image: string,
+    isInitiated: boolean,
+    description?: string,
+    external_url?: string,
+    image?: string,
     details?: {
         title: string,
         description: string
@@ -84,10 +85,8 @@ type ContractExtendedFormat = {
 
 
 type DescriptionEditParams = {
-    _id: string
-    address :string,
-    signature: string,
-    message: string,
+    contractAddress: string,
+    chainId: number
     title: string,
     description: string
 }

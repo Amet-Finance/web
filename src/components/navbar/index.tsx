@@ -48,7 +48,7 @@ export default function Navbar() {
     }, []);
 
     return <nav className="fixed flex flex-col bg-black z-50 w-full">
-        <TopAnnouncement/>
+        {/*<TopAnnouncement/>*/}
         <GeneralContainer className='flex justify-between items-center z-20 py-4 w-full' isPadding>
             <AmetLogo/>
             <DesktopNavbar/>

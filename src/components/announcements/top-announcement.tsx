@@ -1,16 +1,17 @@
 import XmarkSVG from "../../../public/svg/utils/xmark";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
+import {useShow} from "@/components/utils/container";
 
 export default function TopAnnouncement() {
 
-    const [isHidden, setHidden] = useState(true);
+    const {isOpen, setIsOpen} = useShow();
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             const isHidden = getConfig();
-            setHidden(isHidden)
+            setIsOpen(isHidden)
         }
     }, [])
 
@@ -24,12 +25,12 @@ export default function TopAnnouncement() {
 
     function hide() {
         localStorage.setItem("amet-finance-announcement", JSON.stringify(true))
-        setHidden(true);
+        setIsOpen(true);
     }
 
-    if (isHidden) return null;
+    if (isOpen) return null;
 
-    return <>
+    return (
         <div className='flex justify-between items-center w-full py-2 bg-green-500 px-4 text-black'>
             <span/>
             <span>Exciting News: Amet Finance v2 is Live! Be a part of the journey – join our discussion on <Link
@@ -38,5 +39,5 @@ export default function TopAnnouncement() {
                 <XmarkSVG isSmall color='#000' onClick={() => hide()}/>
             </div>
         </div>
-    </>
+    )
 }

@@ -1,16 +1,17 @@
 import axios, {AxiosHeaders} from "axios";
 import {StringKeyedObject} from "@/components/utils/general";
 
-async function requestAPI({url, params, headers}: {
+async function requestAPI({url, params, headers, showError}: {
     url: string,
     params?: StringKeyedObject<any>,
-    headers?: AxiosHeaders
+    headers?: AxiosHeaders,
+    showError?: boolean
 }) {
     try {
         const response = await axios.get(url, {params, headers})
         return response.data;
     } catch (error) {
-        console.error(`requestAPI`, error)
+        if (showError) console.error(`requestAPI`, error);
         return undefined;
     }
 }

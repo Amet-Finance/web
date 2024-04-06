@@ -1,4 +1,4 @@
-import {postAPI} from "@/modules/api/util";
+import {postAPI, requestAPI} from "@/modules/api/util";
 import {ContractCoreDetails, ContractExtendedFormatAPI, ContractQuery} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
@@ -24,6 +24,7 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
   bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
     id
     isSettled
+    uri
     issuanceBlock
     issuanceDate
     maturityPeriodInBlocks
@@ -71,6 +72,7 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
               bond(id: "${contractAddress?.toLowerCase()}") {
     id
     isSettled
+    uri
     issuanceBlock
     issuanceDate
     issuer {
@@ -116,14 +118,14 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     const bond = response.data?.bond;
     const contractInfo = transformCoreDetails(bond, chainId);
     const actionLogs = transformActionDetails(bond)
+    const contractDescription = await requestAPI({url: bond?.uri});
     if (!contractInfo) return null;
 
     return {
         contractDescription: {
             name: `Amet Finance | ${contractInfo.purchase.symbol}-${contractInfo.payout.symbol} | Fixed Flex`,
-            description: "string",
-            external_url: "string",
-            image: "string",
+            isInitiated: Boolean(contractDescription),
+            ...(contractDescription || {})
         },
         contractInfo,
         actionLogs,

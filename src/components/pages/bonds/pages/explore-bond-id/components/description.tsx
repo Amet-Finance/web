@@ -6,20 +6,22 @@ import SaveSVG from "../../../../../../../public/svg/utils/save";
 import EditSVG from "../../../../../../../public/svg/utils/edit";
 import {ToggleBetweenChildren} from "@/components/utils/container";
 import CloudAPI from "@/modules/api/cloud";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
-export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
+export default function DescriptionContainer({bondDetailed, setBondDetailed}: Readonly<{
     bondDetailed: ContractExtendedFormat,
     setBondDetailed: (contractExtendedFormat: any) => any
-}) {
+}>) {
 
     const {contractInfo, contractDescription} = bondDetailed;
     const {contractAddress} = contractInfo;
 
     const message = `To ensure the security of your bond description update, please sign this request with your wallet. This signature is needed to verify the authenticity of the modification. Make sure to review the changes before signing. Your signature helps maintain the integrity of the information on the Amet Finance platform\n\nContract: ${contractAddress} \nNonce: ${Date.now()}`;
 
+    const {open} = useWeb3Modal();
     const {address} = useAccount();
-    const [isHidden, setHidden] = useState(true);
-    const [isEditMode, setEditMode] = useState(false);
+    const [isHidden, setIsHidden] = useState(true);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [descriptionDetails, setDescriptionDetails] = useState({
         title: "",
         description: ""
@@ -30,8 +32,8 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
 
     useEffect(() => {
         if (contractDescription.details || isIssuer) {
-            if (!contractDescription.details && isIssuer) setEditMode(true)
-            setHidden(false);
+            if (!contractDescription.details && isIssuer) setIsEditMode(true)
+            setIsHidden(false);
         }
     }, [address, contractDescription?.details, isIssuer]);
 
@@ -48,22 +50,26 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
     async function updateDescription() {
         try {
             if (!address) {
-                return;
+                return open()
             }
 
             const signature = await signMessageAsync?.()
 
-            const params: DescriptionEditParams = {
-                _id: `${contractInfo.contractAddress}_${contractInfo.chainId}`,
+            const params = {
                 address: address,
                 message: message,
-                title: descriptionDetails.title,
-                description: descriptionDetails.description,
                 signature,
             }
-            const descriptionUpdated = await CloudAPI.updateContractDescription(params);
+
+            const body: DescriptionEditParams = {
+                contractAddress: contractInfo.contractAddress,
+                chainId: contractInfo.chainId,
+                title: descriptionDetails.title,
+                description: descriptionDetails.description,
+            }
+            const descriptionUpdated = await CloudAPI.updateContractDescription(body, params);
             setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
-            setEditMode(false);
+            setIsEditMode(false);
         } catch (error: any) {
             console.log(error)
         }
@@ -90,7 +96,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
                 <div className='col-span-1 flex justify-end'>
                     <ToggleBetweenChildren isOpen={isEditMode}>
                         <SaveSVG onClick={updateDescription}/>
-                        <EditSVG onClick={() => setEditMode(true)}/>
+                        <EditSVG onClick={() => setIsEditMode(true)}/>
                     </ToggleBetweenChildren>
                 </div>
             </div>
