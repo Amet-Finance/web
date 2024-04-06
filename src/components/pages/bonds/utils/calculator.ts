@@ -15,6 +15,7 @@ function score(contract: ContractCoreDetails) {
     const calculatedYield = yieldRate(contract);
     const securedPercentage = CalculatorController.securedPercentage(contract, true);
 
+
     return (0.7 * (securedPercentage / 10)) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * Math.min(calculatedYield, 100) / 10));
 }
 
@@ -37,7 +38,8 @@ function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) 
 function yieldRate({purchase, payout}: ContractCoreDetails): number {
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
-    return ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
+
+    return ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd || 0
 }
 
 const CalculatorController = {
