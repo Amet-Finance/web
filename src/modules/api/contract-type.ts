@@ -1,4 +1,4 @@
-import {TokenResponse} from "@/modules/api/type";
+import {TokenCore, TokenResponse} from "@/modules/api/type";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
 type ContractQuery = {
@@ -14,12 +14,26 @@ type ContractQuery = {
     payoutToken?: string
 }
 
-type FinancialAttributeInfo = TokenResponse & {
+type AmountInfo = {
     amount: string
     amountClean: number,
 }
 
-type ContractCoreDetails = {
+type FinancialAttributeInfo = TokenCore & AmountInfo
+
+type FinancialAttributeExtended = TokenResponse & AmountInfo
+
+type PurchasePayoutInfo = {
+    purchase: FinancialAttributeInfo,
+    payout: FinancialAttributeInfo,
+}
+
+type PurchasePayoutExtended = {
+    purchase: FinancialAttributeExtended,
+    payout: FinancialAttributeExtended,
+}
+
+type ContractDetails = {
     contractAddress: string,
     chainId: number,
 
@@ -27,9 +41,6 @@ type ContractCoreDetails = {
     purchased: number,
     redeemed: number,
     maturityPeriodInBlocks: number,
-
-    purchase: FinancialAttributeInfo,
-    payout: FinancialAttributeInfo,
 
     payoutBalance: string,
 
@@ -43,6 +54,10 @@ type ContractCoreDetails = {
     issuanceBlock: number,
 }
 
+type ContractInfoDetails = ContractDetails & PurchasePayoutInfo
+
+type ContractCoreDetails = ContractDetails & PurchasePayoutExtended
+
 type ContractDescription = {
     name: string,
     description: string,
@@ -54,12 +69,21 @@ type ContractDescription = {
     }
 }
 
+type ContractExtendedFormatAPI = {
+    contractDescription: ContractDescription,
+    contractInfo: ContractInfoDetails,
+    actionLogs: ActionLogFormat[],
+    lastUpdated?: Date | string
+}
+
+
 type ContractExtendedFormat = {
     contractDescription: ContractDescription,
     contractInfo: ContractCoreDetails,
     actionLogs: ActionLogFormat[],
     lastUpdated?: Date | string
 }
+
 
 type DescriptionEditParams = {
     _id: string
@@ -74,7 +98,9 @@ export type  {
     ContractCoreDetails,
     ContractDescription,
     FinancialAttributeInfo,
+    FinancialAttributeExtended,
     ContractQuery,
+    ContractExtendedFormatAPI,
     ContractExtendedFormat,
     DescriptionEditParams
 }

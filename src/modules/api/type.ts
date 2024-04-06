@@ -1,16 +1,20 @@
 import {StringKeyedObject} from "@/components/utils/general";
 
-type TokenResponse = {
+type TokenCore = {
     contractAddress: string,
     chainId: number,
     name: string,
     symbol: string,
-    decimals: number,
+    decimals: number
+}
+
+type TokenResponse = TokenCore & {
     isVerified?: boolean,
     priceUsd?: number,
     icon?: string,
     unidentified?: boolean,
 }
+
 // contractAddress_chainId => ContractBalance
 type TokensResponse = StringKeyedObject<TokenResponse>
 
@@ -45,6 +49,7 @@ type ContractBalance = {
 }
 
 export type  {
+    TokenCore,
     TokenResponse,
     TokensResponse,
     GeneralStatistics,

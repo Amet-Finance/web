@@ -5,10 +5,12 @@ import InfoBox from "@/components/utils/info-box";
 import {STATISTICS_DEFINITION} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import BigNumber from "bignumber.js";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
+import {useFinancialAttributeExtended} from "@/modules/utils/token";
 
 export default function StatisticsContainer({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     const {issuerScore, uniqueHolders} = contractInfo;
+
     const score = CalculatorController.score(contractInfo)
     const securedPercentage = CalculatorController.securedPercentage(contractInfo)
     const holdersIndex = uniqueHolders ? uniqueHolders / contractInfo.totalBonds : 0;

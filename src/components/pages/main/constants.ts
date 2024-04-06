@@ -1,5 +1,5 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/api/contract-type";
+import {ContractCoreDetails, FinancialAttributeExtended, FinancialAttributeInfo} from "@/modules/api/contract-type";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ARTICLES: Article[] = [
@@ -49,7 +49,7 @@ const FAQ_QUESTIONS: Question[] = [
     }
 ]
 
-const usdtToken: FinancialAttributeInfo = {
+const usdtToken: FinancialAttributeExtended = {
     contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
     chainId: 80001,
     "name": "USD Coin",

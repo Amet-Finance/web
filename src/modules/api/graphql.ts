@@ -1,5 +1,10 @@
 import {postAPI} from "@/modules/api/util";
-import {ContractCoreDetails, ContractExtendedFormat, ContractQuery} from "@/modules/api/contract-type";
+import {
+    ContractCoreDetails,
+    ContractExtendedFormat,
+    ContractExtendedFormatAPI,
+    ContractQuery
+} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 // import {LogTypes} from "@/modules/web3/fixed-flex/constants";
@@ -62,7 +67,7 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     return bonds.map((item: any) => transformCoreDetails(item, chainId)) as ContractCoreDetails[]
 }
 
-async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormat | null> {
+async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormatAPI | null> {
     const {chainId, contractAddress} = params;
     const query = `
              {

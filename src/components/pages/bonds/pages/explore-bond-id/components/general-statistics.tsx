@@ -1,4 +1,9 @@
-import {ContractCoreDetails, ContractExtendedFormat, FinancialAttributeInfo} from "@/modules/api/contract-type";
+import {
+    ContractCoreDetails,
+    ContractExtendedFormat,
+    FinancialAttributeExtended,
+    FinancialAttributeInfo
+} from "@/modules/api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {useAccount} from "wagmi";
@@ -53,14 +58,14 @@ function GraphsContainer({contractInfo, logs, isLoadingLogs}: {
     })
 
 
-    return <>
+    return (
         <div className='grid grid-cols-2 gap-4'>
             <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased} asset={purchase}
                        isLoadingLogs={isLoadingLogs}/>
             <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed} asset={payout}
                        isLoadingLogs={isLoadingLogs}/>
         </div>
-    </>
+    )
 }
 
 function Container({type, total, isLoadingLogs, data, asset}: {
@@ -68,7 +73,7 @@ function Container({type, total, isLoadingLogs, data, asset}: {
     total: number,
     isLoadingLogs: boolean,
     data: ActionLogFormat[],
-    asset: FinancialAttributeInfo
+    asset: FinancialAttributeExtended
 }) {
     const isPurchase = type === StatisticsTypes.Purchase
     const bgColor = isPurchase ? "#fff" : "rgb(34 197 94)"
@@ -110,7 +115,7 @@ function Container({type, total, isLoadingLogs, data, asset}: {
 }
 
 
-function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogFormat[], asset: FinancialAttributeInfo }) {
+function BarChart({bgColor, data, asset}: { bgColor: string, data: ActionLogFormat[], asset: FinancialAttributeExtended }) {
     const chartRef = useRef<any>(null);
 
     useEffect(() => {

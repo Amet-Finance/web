@@ -9,8 +9,7 @@ import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
+import {useFinancialAttributeExtended} from "@/modules/utils/token";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
@@ -18,27 +17,21 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
         contractAddress,
         chainId,
         redeemed,
+        issuer,
         owner,
+        issuerScore,
         purchased,
         totalBonds,
-        payout,
-        purchase,
-        issuerScore,
-        payoutBalance,
         maturityPeriodInBlocks,
-        issuer,
         issuanceDate
     } = info;
 
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
 
-    const tokens = useSelector((item: RootState) => item.token);
-    const tokensByChainId = tokens[chainId] || {};
+    const purchase = useFinancialAttributeExtended(info.purchase);
+    const payout = useFinancialAttributeExtended(info.payout);
 
-    const purchaseToken = tokensByChainId[purchase.contractAddress] || {}
-    const payoutToken = tokensByChainId[payout.contractAddress] || {}
-
-    const score = CalculatorController.score({...info, payoutBalance})
+    const score = CalculatorController.score({...info, purchase, payout})
     const scoreColor = tColor(score * 10)
 
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
@@ -47,7 +40,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const maturityPeriodClean = (CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
-    const payoutIcon = payoutToken.icon ?? makeBlockie(contractAddress);
+    const payoutIcon = payout.icon ?? makeBlockie(contractAddress);
 
     const payoutSymbolShort = shortenString(payout.symbol, 5)
     const purchaseSymbolShort = shortenString(purchase.symbol, 5)
@@ -55,8 +48,8 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
-    const payoutPriceUsd = payout.amountClean * (payoutToken.priceUsd ?? 0);
-    const purchasePriceUsd = purchase.amountClean * (purchaseToken.priceUsd ?? 0)
+    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
+    const purchasePriceUsd = purchase.amountClean * (payout.priceUsd ?? 0)
 
     const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
 

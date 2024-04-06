@@ -13,40 +13,23 @@ import {nop} from "@/modules/utils/function";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/components/finished";
 import {GeneralContainer} from "@/components/utils/container";
+import {useFinancialAttributeExtended} from "@/modules/utils/token";
 
 // todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
 // on top and tell that this bond is officially finished
 // todo add "Get purchase token" button on purchase screen
 // todo somehow show the USD equivalent for purchase and payout
 
-export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
+export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
-    const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormat>({...(bondDetailedTmp || {})})
-    const [updateIndex, setUpdateIndex] = useState(0);
-    const [refreshDate, setRefreshDate] = useState<Date>();
-    const [refreshLoader, setRefreshLoader] = useState(false);
-    const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
-
-    useEffect(() => {
-        const updater = () => {
-            setRefreshLoader(true);
-            fetchContractExtended(queryParams)
-                .then(contract => {
-                    setRefreshDate(new Date())
-                    if (contract && JSON.stringify(contract) !== JSON.stringify(bondDetailed)) {
-                        setBondDetailed({...contract});
-                        setIsLoading(false);
-                    }
-                })
-                .catch(nop)
-                .finally(() => setRefreshLoader(false))
-        }
-
-        updater();
-        const interval = setInterval(updater, UPDATE_INTERVAL)
-        return () => clearInterval(interval);
-    }, [bondDetailed, updateIndex, queryParams])
-
+    const {
+        refreshDate,
+        setUpdateIndex,
+        isLoading,
+        refreshLoader,
+        bondDetailed,
+        setBondDetailed
+    } = useExtendedFetch(params);
     const refreshHandler = [refreshDate, setUpdateIndex];
 
     if (isLoading) return <LoadingScreen/>
@@ -64,4 +47,55 @@ export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<E
             <GeneralStatisticsContainer bondDetailed={bondDetailed}/>
         </GeneralContainer>
     )
+}
+
+function useExtendedFetch({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
+    const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormat>({...(bondDetailedTmp || {})})
+    const [updateIndex, setUpdateIndex] = useState(0);
+    const [refreshDate, setRefreshDate] = useState<Date>();
+    const [refreshLoader, setRefreshLoader] = useState(false);
+    const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
+
+    const purchase = useFinancialAttributeExtended(bondDetailed.contractInfo.purchase);
+    const payout = useFinancialAttributeExtended(bondDetailed.contractInfo.payout);
+
+    useEffect(() => {
+        const updater = () => {
+            setRefreshLoader(true);
+            fetchContractExtended(queryParams)
+                .then(contract => {
+                    setRefreshDate(new Date())
+
+                    if (contract) {
+                        setBondDetailed({...contract});
+                        setIsLoading(false);
+                    }
+                })
+                .catch(nop)
+                .finally(() => setRefreshLoader(false))
+        }
+
+
+        updater();
+        const interval = setInterval(updater, UPDATE_INTERVAL)
+        return () => clearInterval(interval);
+    }, [updateIndex, queryParams])
+
+    return {
+        bondDetailed: {
+            contractDescription: bondDetailed.contractDescription,
+            contractInfo: {
+                ...bondDetailed.contractInfo,
+                purchase,
+                payout
+            },
+            actionLogs: bondDetailed.actionLogs,
+            lastUpdated: bondDetailed.lastUpdated
+        },
+        setBondDetailed,
+        refreshDate,
+        refreshLoader,
+        setUpdateIndex,
+        isLoading,
+    }
 }
