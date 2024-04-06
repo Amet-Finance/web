@@ -14,12 +14,11 @@ import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {formatTime} from "@/modules/utils/dates";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
-import {TokenResponse, TokensResponse} from "@/modules/cloud-api/type";
-import CloudAPI from "@/modules/cloud-api";
+import {TokenResponse, TokensResponse} from "@/modules/api/type";
+import CloudAPI from "../../../../../modules/api/cloud";
 import makeBlockie from "ethereum-blockies-base64";
 import {isAddress, zeroAddress} from "viem";
 import {IssuerContractInfoDetailed} from "@/modules/web3/type";
-import BigNumber from "bignumber.js";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
@@ -29,11 +28,14 @@ import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
-import {openModal} from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {StringKeyedObject} from "@/components/utils/general";
-import {constants, Erc20Controller, FixedFlexIssuerController, utils} from "amet-utils";
+import {constants, FixedFlexIssuerController, utils} from "amet-utils";
 import {InfoData} from "@/components/utils/types";
+import ModalStore from "@/store/redux/modal";
+import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
+import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import BigNumber from "bignumber.js";
 
 export default function Issue() {
     const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
@@ -49,13 +51,9 @@ export default function Issue() {
     useEffect(() => {
         if (chain) {
             CloudAPI.getTokens({
-                params: {
-                    contractAddresses: [],
-                    chainId: bondInfo.chainId,
-                    verified: true
-                }
-            })
-                .then((response) => {
+                chainId: bondInfo.chainId,
+                verified: true
+            }).then((response) => {
                     if (response) setTokens(response)
                 })
 
@@ -109,7 +107,7 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo, is
         if (issuerContractInfo.isPaused) return toast.error("Bond issuance is paused")
 
         const result = await submitTransaction();
-        if (result) openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id});
+        if (result) ModalStore.openModal(ModalTypes.IssuedBondSuccess, {...result, chainId: chain.id});
     }
 
 
@@ -229,7 +227,8 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                     contractAddresses: [tokenAddress]
                 }).then(tokensResponse => {
                     if (tokensResponse) {
-                        const token = tokensResponse[tokenAddress]
+                        const _id = `${tokenAddress}_${bondInfo.chainId}`.toLowerCase()
+                        const token = tokensResponse[_id]
                         if (token) {
                             setTokens({...tokens, [tokenAddress]: token})
                         } else {
@@ -267,7 +266,8 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
         <ConditionalRenderer isOpen={isShow}>
             <div
                 className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10'>
-                {tokensArray.map(token => <TokenForSelector token={token} key={token._id} onClick={selectToken}/>)}
+                {tokensArray.map(token => <TokenForSelector token={token} key={token.contractAddress}
+                                                            onClick={selectToken}/>)}
             </div>
         </ConditionalRenderer>
     </div>
@@ -507,39 +507,8 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
     const chain = getChain(bondInfo.chainId)
     const isPurchase = type === "purchaseToken";
     const tokenAddress = isPurchase ? bondInfo.purchaseToken : bondInfo.payoutToken;
-    const [balance, setBalance] = useState({
-        value: 0,
-        isLoading: false
-    });
-
-
-    useEffect(() => {
-        if (chain && address && token) {
-            setBalance({
-                value: 0,
-                isLoading: true
-            });
-
-            const interval = setInterval(() => {
-                Erc20Controller.getTokenBalance(chain.id, tokenAddress, address)
-                    .then(response => {
-                        const balanceClean = BigNumber(response).div(BigNumber(10).pow(token.decimals));
-                        setBalance({
-                            value: balanceClean.toNumber(),
-                            isLoading: false
-                        });
-                    })
-                    .catch(error => {
-                        console.error(`getTokenBalance`, error.message)
-                        setBalance({
-                            value: 0,
-                            isLoading: false
-                        });
-                    })
-            }, 3000)
-            return () => clearInterval(interval)
-        }
-    }, [chain, address, token, tokenAddress]);
+    const {balance, isLoading} = useTokenBalance(bondInfo.chainId, tokenAddress, `${address}`, UPDATE_INTERVAL)
+    const balanceClean = BigNumber(balance).div(BigNumber(10).pow(BigNumber(token?.decimals ?? 0))).toNumber()
 
     const title = isPurchase ? "Purchase" : "Payout";
     const amountTitle = isPurchase ? "Total Purchase Amount" : "Total Payout Amount"
@@ -571,15 +540,15 @@ function TokenPreview({type, token, bondInfo, issuerContractInfo}: Readonly<{
                     <div className='flex items-center gap-1.5'>
                         <p className='text-sm'>{token.name}<span className='text-neutral-300'>({token.symbol})</span>
                         </p>
-                        <ConditionalRenderer isOpen={token.isVerified}>
+                        <ConditionalRenderer isOpen={Boolean(token.isVerified)}>
                             <VerifiedSVG/>
                         </ConditionalRenderer>
                     </div>
                     <div className='flex items-center gap-1 text-mm text-neutral-400'>
                         <span>Balance:</span>
-                        <ToggleBetweenChildren isOpen={balance.isLoading}>
+                        <ToggleBetweenChildren isOpen={isLoading}>
                             <Loading percent={85}/>
-                            <span>{formatLargeNumber(balance.value)} {token.symbol}</span>
+                            <span>{formatLargeNumber(balanceClean)} {token.symbol}</span>
                         </ToggleBetweenChildren>
                     </div>
                 </div>

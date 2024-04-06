@@ -1,4 +1,4 @@
-import {ContractCoreDetails, ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 
 function tbv(contractInfo: ContractCoreDetails) {
@@ -8,10 +8,8 @@ function tbv(contractInfo: ContractCoreDetails) {
 }
 
 
-function score(contract: ContractCoreDetailsWithPayoutBalance) {
-    const {_id, purchase, payout, issuerScore} = contract;
-    const [_] = _id.split("_");
-
+function score(contract: ContractCoreDetails) {
+    const {purchase, payout, issuerScore} = contract;
     const isBothAssetsVerified = payout?.isVerified && purchase?.isVerified;
 
     const uniqueHoldersIndex = contract.uniqueHolders ? contract.uniqueHolders / contract.totalBonds : 0;
@@ -20,7 +18,7 @@ function score(contract: ContractCoreDetailsWithPayoutBalance) {
     return (0.45 * (securedPercentage / 10)) + (0.3 * issuerScore) + (0.05 * (isBothAssetsVerified ? 10 : 0)) + (0.2 * (uniqueHoldersIndex * 10));
 }
 
-function securedPercentage(contract: ContractCoreDetailsWithPayoutBalance, includeMin?: boolean) {
+function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
     const {payout} = contract;
 
     // todo do something if payout balance is missing

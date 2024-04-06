@@ -1,4 +1,4 @@
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {formatTime} from "@/modules/utils/dates";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import makeBlockie from "ethereum-blockies-base64";
@@ -16,11 +16,11 @@ import {constants} from 'amet-utils';
 
 const {CHAIN_BLOCK_TIMES} = constants;
 
-export default function MainDetailsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDetailed: ContractExtendedFormat }>) {
     const {contractInfo} = bondDetailed;
 
     const {
-        _id,
+        chainId,
         issuer,
         purchase,
         payout,
@@ -29,10 +29,8 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
         redeemed,
         maturityPeriodInBlocks,
         issuanceDate,
-        owner
     } = contractInfo;
 
-    const [contractAddress, chainId] = _id.split("_")
 
 
     const tbv = CalculatorController.tbv(contractInfo);
@@ -40,7 +38,7 @@ export default function MainDetailsContainer({bondDetailed}: { bondDetailed: Con
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
 
-    const payoutIcon = payout.icon ?? makeBlockie(payout._id)
+    const payoutIcon = payout.icon ?? makeBlockie(payout.contractAddress)
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 

@@ -1,4 +1,4 @@
-import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {TxTypes} from "@/modules/web3/constants";
 import {useRef, useState} from "react";
 import BigNumber from "bignumber.js";
@@ -25,8 +25,7 @@ export default function ManageTab({contractInfo}: Readonly<{ contractInfo: Contr
 }
 
 function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {_id, payout, totalBonds, redeemed} = contractInfo;
-    const [contractAddress, chainId] = _id.split("_");
+    const {contractAddress, chainId, payout, totalBonds, redeemed} = contractInfo;
 
     const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
@@ -65,7 +64,7 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDeta
 }
 
 function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const [contractAddress, chainId] = contractInfo._id.split("_");
+    const {contractAddress, chainId} = contractInfo;
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.Settle, {contractAddress})
 
     function submit() {
@@ -80,7 +79,7 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>)
 }
 
 function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const [contractAddress, chainId] = contractInfo._id.split("_");
+    const {contractAddress, chainId} = contractInfo;
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.WithdrawExcessPayout, {contractAddress})
 
 
@@ -91,9 +90,7 @@ function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: Contrac
 }
 
 function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {_id} = contractInfo;
-
-    const [contractAddress, chainId] = _id.split("_");
+    const {contractAddress, chainId} = contractInfo;
 
     const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
@@ -122,9 +119,7 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreD
 
 function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     // todo continue
-    const {_id,} = contractInfo;
-
-    const [contractAddress, chainId] = _id.split("_");
+    const {contractAddress, chainId,} = contractInfo;
 
     const {isOpen, openOrClose} = useShow();
     const [amount, setAmount] = useState(0);
@@ -155,9 +150,7 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
 function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     // todo also show pending owner if there's any
-    const {_id,} = contractInfo;
-
-    const [contractAddress, chainId] = _id.split("_");
+    const {contractAddress, chainId} = contractInfo;
 
     const {isOpen, openOrClose} = useShow()
     const [owner, setOwner] = useState();

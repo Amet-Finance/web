@@ -1,9 +1,9 @@
-import {Balances} from "@/modules/cloud-api/type";
+import {Balances} from "@/modules/api/type";
 
-type Account = {
+type AccountState = {
     balances: Balances
 }
 
 export type {
-    Account
+    AccountState
 }

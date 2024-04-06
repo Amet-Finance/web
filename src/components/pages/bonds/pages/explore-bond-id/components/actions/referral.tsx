@@ -1,4 +1,4 @@
-import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
 import {getChain} from "@/modules/utils/wallet-connect";
@@ -9,14 +9,14 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import {Loading} from "@/components/utils/loading";
 import {TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
-import {openModal} from "@/store/redux/modal";
+import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {BondFeeDetails} from "@/modules/web3/fixed-flex/types";
 import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
 import {ToggleBetweenChildren} from "@/components/utils/container";
-import {FixedFlexIssuerController, FixedFlexVaultController, utils} from "amet-utils";
+import {FixedFlexIssuerController, FixedFlexVaultController, utils, VaultFeeDetails,} from "amet-utils";
+import {BigNumber} from "ethers";
 
 // todo here also include a few cases
 // 1. if there's no reward give the referral link so the person can refer
@@ -24,15 +24,14 @@ import {FixedFlexIssuerController, FixedFlexVaultController, utils} from "amet-u
 
 export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
-    const {_id, purchase} = contractInfo;
+    const {contractAddress, chainId, purchase} = contractInfo;
     const {address} = useAccount();
-    const [contractAddress, chainId] = _id.split("_");
     const chain = getChain(chainId);
 
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [isBlacklisted, setIsBlacklisted] = useState(false);
     const [vaultAddress, setVaultAddress] = useState("");
-    const [feeDetails, setFeeDetails] = useState({} as BondFeeDetails)
+    const [feeDetails, setFeeDetails] = useState({} as VaultFeeDetails)
     const [referralInfo, setReferralInfo] = useState({} as ReferralInfo)
 
     const rewardsLeft = referralInfo.quantity - referralInfo.claimed
@@ -66,7 +65,7 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
                 .catch(nop)
 
             const feeDetailsPromise = FixedFlexVaultController.getBondFeeDetails(chain.id, vaultAddress, contractAddress)
-                .then(response => setFeeDetails(response))
+                .then(response => setFeeDetails({...response, issuanceFee: BigNumber.from(0)}))
                 .catch(nop)
 
             Promise.allSettled([refPromise, restrictionPromise, feeDetailsPromise]).then(() => setIsDataLoading(false));
@@ -79,7 +78,11 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
         if (isBlocked) return toast.error("Action Is Blocked.");
 
         const result = await submitTransaction();
-        if (result) openModal(ModalTypes.ClaimReferralRewards, {address, totalReward, symbol: purchase.symbol});
+        if (result) ModalStore.openModal(ModalTypes.ClaimReferralRewards, {
+            address,
+            totalReward,
+            symbol: purchase.symbol
+        });
     }
 
 

@@ -1,5 +1,5 @@
 import {IssuerContractInfoDetailed, TokenResponseDetailed} from "@/modules/web3/type";
-import {TokensResponse} from "@/modules/cloud-api/type";
+import {TokensResponse} from "@/modules/api/type";
 
 type BondInfoForIssuance = {
     totalBonds: number,

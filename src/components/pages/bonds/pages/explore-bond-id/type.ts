@@ -1,4 +1,4 @@
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {StringKeyedObject} from "@/components/utils/general";
 
 type ExploreIdQueryParams = {
@@ -12,11 +12,11 @@ type ExploreBondIdType = {
 }
 
 type ActionLogFormat = {
+    id: string
     from: string,
     to: string,
     count: number, // 25 tokens
     type: string,
-    hash: string
     block: number
 }
 

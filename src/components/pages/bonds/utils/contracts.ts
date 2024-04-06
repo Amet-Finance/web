@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractCoreDetails, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractQuery} from "@/modules/api/contract-type";
 import {nop} from "@/modules/utils/function";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
+import GraphqlAPI from "@/modules/api/graphql";
 
 function useContracts(params: ContractQuery, intervalMs = UPDATE_INTERVAL) {
 
@@ -12,7 +12,7 @@ function useContracts(params: ContractQuery, intervalMs = UPDATE_INTERVAL) {
 
     useEffect(() => {
         const updater = () => {
-            ContractAPI.getContractsBasic(params)
+            GraphqlAPI.getContracts(params)
                 .then(result => {
                     if (result?.length) {
                         setContracts(result)
@@ -26,7 +26,7 @@ function useContracts(params: ContractQuery, intervalMs = UPDATE_INTERVAL) {
 
         const interval = setInterval(updater, intervalMs)
         return () => clearInterval(interval);
-    }, [intervalMs, params.chainId]); // todo params can be vulnerable
+    }, [intervalMs, params.chainId, params.skip, params.limit]);
 
 
     return {

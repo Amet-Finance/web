@@ -1,5 +1,4 @@
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {closeModal} from "@/store/redux/modal";
 import Modal, {setAppElement} from "react-modal";
 import {Montserrat} from "next/font/google";
 import IssuedBondSuccess from "@/components/modals/issued-bond-success";
@@ -7,6 +6,7 @@ import Quiz from "@/components/modals/quiz";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import ClaimReferralRewards from "@/components/modals/claim-referral-rewards";
+import ModalStore from "@/store/redux/modal";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -42,7 +42,7 @@ export default function ModalHandler() {
         <Modal
             isOpen={!isClosed}
             style={customStyles}
-            onRequestClose={closeModal}
+            onRequestClose={ModalStore.closeModal}
             contentLabel="Example Modal">
             <div className={montserrat.className + " z-50"}>
                 <ModalContent type={modalState.type} additional={modalState.additional}/>

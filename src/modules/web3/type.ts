@@ -1,4 +1,4 @@
-import {TokenResponse} from "@/modules/cloud-api/type";
+import {TokenResponse} from "@/modules/api/type";
 import {BigNumber} from "ethers"
 
 type IssuerContractInfo = {

@@ -1,9 +1,9 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import store from "@/store/store";
-import {Modal} from "@/store/redux/modal/type";
+import {ModalState} from "@/store/redux/modal/type";
 
-const emptyModalState: Modal = {
+const emptyModalState: ModalState = {
     type: ModalTypes.None,
     additional: undefined
 }
@@ -35,8 +35,9 @@ function closeModal() {
     return store.dispatch(open({type: ModalTypes.None}))
 }
 
-export {
+const ModalStore = {
     reducer,
     closeModal,
     openModal
 }
+export default ModalStore;

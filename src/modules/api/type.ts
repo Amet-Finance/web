@@ -1,19 +1,18 @@
+import {StringKeyedObject} from "@/components/utils/general";
+
 type TokenResponse = {
-    _id: string, //0x13a8398fdf48055209186b93920d50eca5703bf0_80001
     contractAddress: string,
     chainId: number,
     name: string,
     symbol: string,
     decimals: number,
-    isVerified: boolean,
+    isVerified?: boolean,
     priceUsd?: number,
     icon?: string,
     unidentified?: boolean,
 }
-
-type TokensResponse = {
-    [contractLowerCased: string]: TokenResponse
-}
+// contractAddress_chainId => ContractBalance
+type TokensResponse = StringKeyedObject<TokenResponse>
 
 type GeneralStatsKey = "general-stats"
 type TBVStatsKey = "tbv-daily-stats"
@@ -36,12 +35,13 @@ type TBVStatistics = {
     values: [number, number][]
 }
 
-type ContractBalances = {
-    [tokenId: string]: number
-}
+// contractAddress => ContractBalance
+type Balances = StringKeyedObject<ContractBalance[]>
 
-type Balances = {
-    [contractId: string]: ContractBalances
+type ContractBalance = {
+    balance: number,
+    purchaseBlock: number,
+    tokenId: number
 }
 
 export type  {
@@ -53,5 +53,5 @@ export type  {
     GeneralStatsKey,
     TBVStatsKey,
     Balances,
-    ContractBalances
+    ContractBalance
 }

@@ -1,6 +1,6 @@
 import CongratulationsSVG from "../../../public/svg/utils/congratulations";
 import XmarkSVG from "../../../public/svg/utils/xmark";
-import {closeModal} from "@/store/redux/modal";
+import ModalStore from "@/store/redux/modal";
 import {BasicButton} from "@/components/utils/buttons";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
@@ -19,7 +19,7 @@ export default function ClaimReferralRewards({additional}: Readonly<{
     return <div className='relative flex flex-col items-center rounded-4xl  max-w-[500px] text-center z-20 gap-6'>
         <CongratulationsSVG/>
         <div className='absolute top-0 right-0'>
-            <XmarkSVG onClick={closeModal} isMedium/>
+            <XmarkSVG onClick={ModalStore.closeModal} isMedium/>
         </div>
         <h1 className='text-2xl font-bold'>Congratulations</h1>
         <p className='text-start'>You have made <span

@@ -1,4 +1,3 @@
-import {ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useEffect, useState} from "react";
 import {getBlockNumber} from "@/modules/web3";
@@ -8,41 +7,44 @@ import {toast} from "react-toastify";
 import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
-import FixedFlexController from "@/modules/web3/fixed-flex";
-import {ContractBalances} from "@/modules/cloud-api/type";
+import {ContractBalance} from "@/modules/api/type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
 import {nop} from "@/modules/utils/function";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
+import GraphqlAPI from "@/modules/api/graphql";
+import {useAccount} from "wagmi";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 // todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
 export default function RedeemTab({contractInfo}: Readonly<{
-    contractInfo: ContractCoreDetailsWithPayoutBalance
+    contractInfo: ContractCoreDetails
 }>) {
 
-    const {_id, payout} = contractInfo;
-    const [contractAddress, chainId] = _id.toLowerCase().split("_")
+    const {contractAddress, chainId, payout} = contractInfo;
+    const {address} = useAccount();
 
     const chain = getChain(chainId)
 
-    const balances = useSelector((item: RootState) => item.account).balances;
-    const contractBalance = balances[_id] || {}
-
     const [currentBlock, setCurrentBlock] = useState(0);
     const [purchaseBlocks, setPurchaseBlocks] = useState({})
-    const [bondIndexes, setBondIndexes] = useState([] as Array<string>)
+    const [bondIndexes, setBondIndexes] = useState([] as Array<number>)
+
+    const balancesStore = useSelector((item: RootState) => item.account).balances;
+    const balances: ContractBalance[] = balancesStore[contractAddress.toLowerCase()] || []
+
     const [redemptionCount, setRedemptionCount] = useState(0);
 
     const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
 
-    const totalQuantity = Object.values(contractBalance).reduce((acc: number, value: number) => acc += value, 0);
-    const totalMatureQuantity = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, contractBalance, purchaseBlocks);
+    const totalQuantity = Object.values(balances).reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
+    const totalMatureQuantity = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, balances);
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
@@ -64,7 +66,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.RedeemBonds, config)
 
-
     useEffect(() => {
         if (chain) {
             const request = () => {
@@ -76,20 +77,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
             return () => clearInterval(interval);
         }
     }, [chain]);
-
-    useEffect(() => {
-        if (chain) {
-            for (const tokenId in contractBalance) {
-                FixedFlexController.purchaseBlocks(chain, contractAddress, tokenId)
-                    .then(purchaseBlock => {
-                        setPurchaseBlocks({
-                            ...purchaseBlocks,
-                            [tokenId]: purchaseBlock
-                        })
-                    })
-            }
-        }
-    }, [chain, contractAddress, contractBalance]);
 
     function onChange(event: any) {
         const value = Number(event.target.value);
@@ -104,15 +91,13 @@ export default function RedeemTab({contractInfo}: Readonly<{
     function setCount(value: number) {
 
         let valueLeft = value;
-        const indexes: string[] = []
+        const indexes: number[] = []
 
-        for (const tokenId in contractBalance) {
+        for (const balanceInfo of balances) {
             if (!valueLeft) break;
 
-            if (Number(contractBalance[tokenId])) {
-                valueLeft -= Number(contractBalance[tokenId])
-                indexes.push(tokenId)
-            }
+            valueLeft -= balanceInfo.balance;
+            indexes.push(balanceInfo.tokenId)
 
             if (valueLeft <= 0) {
                 break;
@@ -181,14 +166,13 @@ export default function RedeemTab({contractInfo}: Readonly<{
 }
 
 
-function getMatureTokenIds(currentBlock: number, maturityPeriodInBlocks: number, balances: ContractBalances, purchasedBlocks: any): string[] {
+function getMatureTokenIds(currentBlock: number, maturityPeriodInBlocks: number, balances: ContractBalance[]): number[] {
 
     const matureTokenIds = []
 
-    for (const tokenId in balances) {
-        const purchasedBlock = purchasedBlocks[tokenId];
-        if (purchasedBlock && BigInt(purchasedBlock) + BigInt(maturityPeriodInBlocks) <= currentBlock) {
-            matureTokenIds.push(tokenId);
+    for (const balanceInfo of balances) {
+        if (BigInt(balanceInfo.purchaseBlock) + BigInt(maturityPeriodInBlocks) <= currentBlock) {
+            matureTokenIds.push(balanceInfo.tokenId);
         }
     }
 

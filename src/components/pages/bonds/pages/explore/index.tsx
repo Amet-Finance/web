@@ -2,9 +2,9 @@ import BondCard from "@/components/pages/bonds/utils/bond-card";
 import SearchSVG from "../../../../../../public/svg/utils/search";
 import FilterSVG from "../../../../../../public/svg/utils/filter";
 import {useState} from "react";
-import {ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractQuery} from "@/modules/api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
-import {CHAINS, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {CHAINS, defaultChain, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
@@ -56,14 +56,10 @@ export default function Explore() {
 
 function FilterContainer() {
 
-    const [params, setParams] = useState<ContractQuery>({});
+    //todo fix this defaultChain logic
+    const [params, setParams] = useState<ContractQuery>({chainId: defaultChain.id});
     const selectChain = (chainId: number) => setParams({...params, chainId})
     const selectToken = (type: string, contractAddress: string) => setParams({...params, [type]: contractAddress})
-
-
-    // useEffect(() => {
-    //     CloudAPI.getTokens()
-    // }, [])
 
     return (
         <div className='flex gap-4 items-center z-50'>
@@ -174,13 +170,14 @@ function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainI
 }
 
 function BondCards() {
-    const params = {};
+    // todo fix this defaultchain logic
+    const params: ContractQuery = {chainId: defaultChain.id};
     const {isLoading, contracts} = useContracts(params);
 
     return (
         <ToggleBetweenChildren isOpen={isLoading}>
             <HorizontalLoading className='col-span-3 h-32'/>
-            {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
+            {contracts.map(contract => <BondCard info={contract} key={contract.contractAddress}/>)}
         </ToggleBetweenChildren>
     )
 }

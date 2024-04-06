@@ -1,9 +1,11 @@
-import {TokenResponse} from "@/modules/cloud-api/type";
+import {TokenResponse} from "@/modules/api/type";
+import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
 type ContractQuery = {
+    chainId: number,
     skip?: number,
     limit?: number,
-    chainId?: number,
+
     contractAddresses?: string[], // JSON.stringify([contractAddress,contractAddress,])
     trending?: boolean,
     sortByBondScore?: "asc"|"desc",
@@ -18,7 +20,8 @@ type FinancialAttributeInfo = TokenResponse & {
 }
 
 type ContractCoreDetails = {
-    _id: string, // combination of contractAddress and chainId
+    contractAddress: string,
+    chainId: number,
 
     totalBonds: number,
     purchased: number,
@@ -28,17 +31,17 @@ type ContractCoreDetails = {
     purchase: FinancialAttributeInfo,
     payout: FinancialAttributeInfo,
 
+    payoutBalance: string,
+
     issuer: string,
     issuerScore: number,
     uniqueHolders: number,
 
     owner: string,
-    issuanceDate: Date,
+    issuanceDate: Date | string,
     isSettled: boolean,
     issuanceBlock: number,
 }
-
-type ContractCoreDetailsWithPayoutBalance = ContractCoreDetails & { payoutBalance: string }
 
 type ContractDescription = {
     name: string,
@@ -53,8 +56,9 @@ type ContractDescription = {
 
 type ContractExtendedFormat = {
     contractDescription: ContractDescription,
-    contractInfo: ContractCoreDetailsWithPayoutBalance,
-    lastUpdated: Date
+    contractInfo: ContractCoreDetails,
+    actionLogs: ActionLogFormat[],
+    lastUpdated?: Date | string
 }
 
 type DescriptionEditParams = {
@@ -68,7 +72,6 @@ type DescriptionEditParams = {
 
 export type  {
     ContractCoreDetails,
-    ContractCoreDetailsWithPayoutBalance,
     ContractDescription,
     FinancialAttributeInfo,
     ContractQuery,

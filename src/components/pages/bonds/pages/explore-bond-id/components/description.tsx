@@ -1,11 +1,11 @@
-import {ContractExtendedFormat, DescriptionEditParams} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedFormat, DescriptionEditParams} from "@/modules/api/contract-type";
 import {useAccount, useSignMessage} from "wagmi";
 import {useEffect, useState} from "react";
-import ContractAPI from "@/modules/cloud-api/contract-api";
 import {shortenString} from "@/modules/utils/string";
 import SaveSVG from "../../../../../../../public/svg/utils/save";
 import EditSVG from "../../../../../../../public/svg/utils/edit";
-import {ConditionalRenderer, ToggleBetweenChildren} from "@/components/utils/container";
+import {ToggleBetweenChildren} from "@/components/utils/container";
+import CloudAPI from "@/modules/api/cloud";
 
 export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
     bondDetailed: ContractExtendedFormat,
@@ -13,8 +13,9 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
 }) {
 
     const {contractInfo, contractDescription} = bondDetailed;
+    const {contractAddress} = contractInfo;
 
-    const message = `To ensure the security of your bond description update, please sign this request with your wallet. This signature is needed to verify the authenticity of the modification. Make sure to review the changes before signing. Your signature helps maintain the integrity of the information on the Amet Finance platform\n\nContract: ${contractInfo._id.toLowerCase()} \nNonce: ${Date.now()}`;
+    const message = `To ensure the security of your bond description update, please sign this request with your wallet. This signature is needed to verify the authenticity of the modification. Make sure to review the changes before signing. Your signature helps maintain the integrity of the information on the Amet Finance platform\n\nContract: ${contractAddress} \nNonce: ${Date.now()}`;
 
     const {address} = useAccount();
     const [isHidden, setHidden] = useState(true);
@@ -53,14 +54,14 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: {
             const signature = await signMessageAsync?.()
 
             const params: DescriptionEditParams = {
-                _id: contractInfo._id,
+                _id: `${contractInfo.contractAddress}_${contractInfo.chainId}`,
                 address: address,
                 message: message,
                 title: descriptionDetails.title,
                 description: descriptionDetails.description,
                 signature,
             }
-            const descriptionUpdated = await ContractAPI.updateContractDescription(params);
+            const descriptionUpdated = await CloudAPI.updateContractDescription(params);
             setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
             setEditMode(false);
         } catch (error: any) {

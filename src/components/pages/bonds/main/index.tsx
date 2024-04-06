@@ -6,13 +6,14 @@ import {DiscordIcon} from "../../../../../public/svg/social/discord";
 import {useEffect, useRef, useState} from "react";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
-import ContractAPI from "@/modules/cloud-api/contract-api";
-import {ContractCoreDetails, ContractQuery} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractQuery} from "@/modules/api/contract-type";
 import {Loading} from "@/components/utils/loading";
-import CloudAPI from "@/modules/cloud-api";
+import CloudAPI from "../../../../modules/api/cloud";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
-import {GeneralStatistics} from "@/modules/cloud-api/type";
+import {GeneralStatistics} from "@/modules/api/type";
 import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
+import {base} from "wagmi/chains";
+import {useContracts} from "@/components/pages/bonds/utils/contracts";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)
@@ -128,21 +129,10 @@ function StatisticsBox({classAttributes, value, title, isLoading}: {
 
 function BondCards() {
 
-    const [isLoading, setLoading] = useState(false);
-    const [params, setParams] = useState<ContractQuery>({limit: 12})
-    const [contracts, setContracts] = useState<ContractCoreDetails[]>([])
+    const [params, setParams] = useState<ContractQuery>({limit: 12, chainId: base.id})
+    const {contracts, isLoading} = useContracts(params);
 
-    useEffect(() => {
-        const requestContracts = () => ContractAPI.getContractsBasic(params).then(response => Boolean(response) && setContracts(response))
-
-        setLoading(true)
-        requestContracts().then(() => setLoading(false))
-
-        const interval = setInterval(requestContracts, UPDATE_INTERVAL)
-        return () => clearInterval(interval);
-    }, [params])
-
-    return <>
+    return (
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
             <ToggleBetweenChildren isOpen={isLoading}>
                 <Loader/>
@@ -158,7 +148,7 @@ function BondCards() {
                 </div>
             </Link>
         </div>
-    </>
+    )
 }
 
 function Loader() {
@@ -169,7 +159,7 @@ function ContractsContainer({contracts}: { contracts: ContractCoreDetails[] }) {
     return <>
         <div className='relative w-full'>
             <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>
-                {contracts.map(contract => <BondCard info={contract} key={contract._id}/>)}
+                {contracts.map(contract => <BondCard info={contract} key={contract.contractAddress}/>)}
             </div>
             <div className='absolute top-[85%] left-0 h-[20%] w-full bg-gradient-to-b from-transparent to-black z-30'/>
         </div>

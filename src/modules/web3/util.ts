@@ -1,10 +1,5 @@
 import {getChain} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
-import BigNumber from "bignumber.js";
-
-function toBN(value: number | string) {
-    return BigNumber(value)
-}
 
 function getExplorer(chainId: number | string | undefined, type: ExplorerTypes, value: string) {
     const chain = getChain(chainId)
@@ -34,7 +29,6 @@ function shorten(address: string | any, length = 6) {
 }
 
 export {
-    toBN,
     getExplorer,
     shorten
 }

@@ -10,7 +10,7 @@ async function requestAPI({url, params, headers}: {
         const response = await axios.get(url, {params, headers})
         return response.data;
     } catch (error) {
-        console.log(`error`, error)
+        console.error(`requestAPI`, error)
         return undefined;
     }
 }
@@ -20,7 +20,7 @@ async function postAPI({url, body, params, headers}: { url: string, body: any, p
         const response = await axios.post(url, body, {params, headers})
         return response.data;
     } catch (error) {
-        console.log(error)
+        console.error(`postAPI`, error)
         return undefined;
     }
 }
@@ -31,7 +31,7 @@ async function patchAPI({url, body, params, headers}: { url: string, body: any, 
         const response = await axios.patch(url, body, {params, headers})
         return response.data;
     } catch (error) {
-        console.log(error)
+        console.log(`patchAPI`, error)
         return undefined;
     }
 }

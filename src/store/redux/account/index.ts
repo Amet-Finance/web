@@ -1,9 +1,10 @@
 import {createSlice} from "@reduxjs/toolkit";
 import store from "@/store/store";
-import {Account} from "@/store/redux/account/type";
-import CloudAPI from "../../../modules/cloud-api/index"
+import GraphqlAPI from "@/modules/api/graphql";
+import {defaultChain} from "@/modules/utils/wallet-connect";
+import {AccountState} from "@/store/redux/account/type";
 
-const emptyState: Account = {
+const emptyState: AccountState = {
     balances: {}
 }
 
@@ -26,16 +27,17 @@ const {
 
 async function initBalances(address: string | undefined) {
     if (address) {
-        const balances = await CloudAPI.getBalance(address);
+        // todo here we need to fix this, defaultChain logic
+        const balances = await GraphqlAPI.getBalances(address, defaultChain.id);
         if (balances) {
-            delete balances._id;
             store.dispatch(updateBalance(balances))
         }
     }
 }
 
-export {
+const AccountStore = {
     counterSlice,
     reducer,
     initBalances,
 }
+export default AccountStore;

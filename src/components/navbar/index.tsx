@@ -24,9 +24,10 @@ import CopySVG from "../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";
 import {format} from "@/modules/utils/numbers";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
-import {initBalances} from "@/store/redux/account";
+import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
+import TokenStore from "@/store/redux/token";
 
 
 export default function Navbar() {
@@ -35,12 +36,19 @@ export default function Navbar() {
 
     useEffect(() => {
         if (address) {
-            initBalances(address).catch(nop)
-            const interval = setInterval(() => initBalances(address), UPDATE_INTERVAL);
+            AccountStore.initBalances(address).catch(nop)
+            const interval = setInterval(() => AccountStore.initBalances(address), UPDATE_INTERVAL);
             return () => clearInterval(interval);
         }
     }, [address]);
 
+    useEffect(() => {
+        if (address) {
+            TokenStore.initTokens().catch(nop)
+            const interval = setInterval(() => TokenStore.initTokens(), UPDATE_INTERVAL);
+            return () => clearInterval(interval);
+        }
+    }, [address]);
 
     return <nav className="fixed flex flex-col bg-black z-50 w-full">
         <TopAnnouncement/>

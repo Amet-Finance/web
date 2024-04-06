@@ -1,4 +1,4 @@
-import {ContractCoreDetails, ContractCoreDetailsWithPayoutBalance} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useEffect, useState} from "react";
 import Image from "next/image"
 import {getAccount} from "@wagmi/core";
@@ -10,6 +10,7 @@ import ReferralTab from "@/components/pages/bonds/pages/explore-bond-id/componen
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {ConditionalRenderer} from "@/components/utils/container";
+import {ContractBalance} from "@/modules/api/type";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -19,7 +20,7 @@ const Tabs = {
 }
 
 export default function ActionsContainer({contractInfo}: Readonly<{
-    contractInfo: ContractCoreDetailsWithPayoutBalance
+    contractInfo: ContractCoreDetails
 }>) {
 
     const [selected, setSelected] = useState(Tabs.Purchase);
@@ -42,13 +43,13 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
 }>) {
 
 
-    const {_id, owner} = contractInfo;
+    const {contractAddress, chainId, owner} = contractInfo;
     const [selected, setSelected] = selectionHandler;
 
 
     const balances = useSelector((item: RootState) => item.account).balances;
-    const contractBalances = balances[_id] || {};
-    const total = Object.values(contractBalances).reduce((acc: number, value: number) => acc += value, 0);
+    const contractBalances: ContractBalance[] = balances[contractAddress.toLowerCase()] || []
+    const total = Object.values(contractBalances).reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
 
     const components: ActionHeadlineComponent[] = [
         {
@@ -134,7 +135,7 @@ function HeadlineComponent({component, selected, setSelected}: {
 
 function TabSelector({title, contractInfo}: Readonly<{
     title: string,
-    contractInfo: ContractCoreDetailsWithPayoutBalance
+    contractInfo: ContractCoreDetails
 }>) {
 
     switch (title) {

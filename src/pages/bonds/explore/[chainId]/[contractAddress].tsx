@@ -1,8 +1,8 @@
 import {getChain} from "@/modules/utils/wallet-connect";
 import ExploreBondId from "@/components/pages/bonds/pages/explore-bond-id";
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
-import ContractAPI from "@/modules/cloud-api/contract-api";
+import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
+import Graphql from "@/modules/api/graphql";
 
 export default function ExploreIdPage({bondInfoDetailed, queryParams}: Readonly<{
     bondInfoDetailed: ContractExtendedFormat,
@@ -26,13 +26,12 @@ export async function getServerSideProps({query}: any) {
 
 
     if (chain && contractAddress) {
-        const contracts = await ContractAPI.getContractsExtended({
+        const contract = await Graphql.getContractExtended({
             chainId: chain.id,
             contractAddresses: [contractAddress]
         });
-        if (contracts?.length) {
-            const bondInfoDetailed = contracts[0]
-            const {contractDescription} = bondInfoDetailed;
+        if (contract) {
+            const {contractDescription} = contract;
 
             const meta: { title?: string, description?: string } = {};
 
@@ -44,7 +43,7 @@ export async function getServerSideProps({query}: any) {
                 if (detailDescription && detailDescription.length > 5) meta.description = detailDescription;
             }
 
-            props.bondInfoDetailed = bondInfoDetailed;
+            props.bondInfoDetailed = contract;
             props.meta = meta;
         }
     }

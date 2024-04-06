@@ -7,15 +7,14 @@ import {constants} from 'amet-utils'
 import {formatTime} from "@/modules/utils/dates";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
-import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
-import {useEffect} from "react";
-import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
     const {
-        _id,
+        contractAddress,
+        chainId,
         redeemed,
         owner,
         purchased,
@@ -23,17 +22,15 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
         payout,
         purchase,
         issuerScore,
+        payoutBalance,
         maturityPeriodInBlocks,
         issuer,
         issuanceDate
     } = info;
-    const [contractAddress, chainId] = _id.split("_");
-
-    const {balance} = useTokenBalance(chainId, payout.contractAddress, contractAddress)
 
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
 
-    const score = CalculatorController.score({...info, payoutBalance: balance})
+    const score = CalculatorController.score({...info, payoutBalance})
     const scoreColor = tColor(score * 10)
 
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
@@ -54,11 +51,6 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
 
     const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
-
-
-    useEffect(() => {
-
-    }, [])
 
     return (
         <Link href={url}>

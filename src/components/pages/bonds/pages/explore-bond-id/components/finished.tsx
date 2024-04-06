@@ -1,4 +1,4 @@
-import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 
 export default function FinishedComponent({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 

@@ -32,10 +32,6 @@ const MetaConstants: StringKeyedObject<MetaInfo> = {
         title: "Amet Finance - Wallet Address",
         description: "Explore your wallet address and transactions on Amet Finance. Securely track your financial activities with us."
     },
-    "ReferralPage": {
-        title: "Join Amet Finance Referral Program - Earn Rewards by Promoting DeFi Bonds",
-        description: "Become a part of Amet Finance's referral program. Invite others to explore innovative DeFi bond solutions and earn lucrative rewards for each successful referral"
-    },
     default: {
         title: "Amet Finance - Your Gateway to Secure and Transparent On-Chain Bonds",
         description: "Unlock limitless opportunities with Amet Finance. Join us to explore on-chain bonds and embrace the decentralized future of finance.",

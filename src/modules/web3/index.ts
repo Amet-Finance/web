@@ -4,7 +4,6 @@ import {sleep} from "@/modules/utils/dates";
 import {Chain} from "wagmi";
 import {toast} from "react-toastify";
 import {ToastPromiseParams} from "react-toastify/dist/core/toast";
-import {createPublicClient, http} from "viem";
 import {ContractInfoType} from "@/modules/web3/type";
 
 import {
@@ -20,15 +19,6 @@ import {
 import {TransactionReceipt} from "@ethersproject/abstract-provider";
 import BigNumber from "bignumber.js";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
-
-function getProvider(chain: Chain) {
-    // todo combine all rpc urls and randomly select those
-
-    return createPublicClient({
-        chain: chain,
-        transport: http()
-    });
-}
 
 async function getBlockNumber(chain: Chain) {
     const {provider} = new ProviderController(chain.id);
@@ -239,7 +229,6 @@ async function decodeTransactionLogs(chain: Chain, transaction: TransactionRecei
 }
 
 export {
-    getProvider,
     getBlockNumber,
     getContractInfoByType,
     trackTransaction,

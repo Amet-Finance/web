@@ -1,16 +1,15 @@
-import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, ContractExtendedFormat, FinancialAttributeInfo} from "@/modules/api/contract-type";
 import {useEffect, useRef, useState} from "react";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
-import {getPastLogs} from "@/components/pages/bonds/pages/explore-bond-id/utils";
-import {nop} from "@/modules/utils/function";
 import {useAccount} from "wagmi";
 import RefreshSVG from "../../../../../../../public/svg/utils/refresh";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
-import {LogTypes} from "@/modules/web3/fixed-flex/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {HorizontalLoading} from "@/components/utils/loading";
+import {ToggleBetweenChildren} from "@/components/utils/container";
+import {LogTypes} from "@/modules/web3/constants";
 
 // todo dynamically monitor blocks and whenever new action happens show here
 
@@ -18,14 +17,11 @@ const StatisticsTypes = {
     Purchase: "Purchase",
     Redeem: "Redeem"
 }
-export default function GeneralStatisticsContainer({contractInfo}: { contractInfo: ContractCoreDetails }) {
-    const [logs, setLogs] = useState<ActionLogFormat[]>([])
+export default function GeneralStatisticsContainer({bondDetailed}: { bondDetailed: ContractExtendedFormat }) {
+    const {contractInfo, actionLogs} = bondDetailed;
+
+    const [logs, setLogs] = useState<ActionLogFormat[]>(actionLogs)
     const [isLoadingLogs, setLoadingLogs] = useState(false)
-
-    useEffect(() => {
-        getPastLogs(contractInfo, setLogs, setLoadingLogs).catch(nop)
-    }, [contractInfo]);
-
 
     return <>
         <GraphsContainer contractInfo={contractInfo} logs={logs} isLoadingLogs={isLoadingLogs}/>
@@ -104,7 +100,8 @@ function Container({type, total, isLoadingLogs, data, asset}: {
                     <>
                         <BarChart bgColor={bgColor} data={data} asset={asset}/>
                         <div className='flex justify-between'>
-                            {blocks.map(block => (<><span className='text-sm text-neutral-600'>{block}</span></>))}
+                            {blocks.map((block, index) => (
+                                <span className='text-sm text-neutral-600' key={index}>{block}</span>))}
                         </div>
                     </>
             }
@@ -220,10 +217,11 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
                 </div>
                 <div className='flex items-center border border-neutral-900 rounded-3xl cursor-pointer'>
                     {
-                        Object.values(ActivityTypes).map(title => (<>
-                <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-neutral-900"}`}
-                      onClick={() => setActivityType(title)}>{title}</span>
-                        </>))
+                        Object.values(ActivityTypes).map((title, index) => (
+                            <span className={`p-2 px-4 rounded-3xl ${title === activityType && "bg-neutral-900"}`}
+                                  key={index}
+                                  onClick={() => setActivityType(title)}>{title}</span>
+                        ))
                     }
                 </div>
             </div>
@@ -246,16 +244,17 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
-                {
-                    isLoadingLogs ?
-                        <HorizontalLoading className='w-full col-span-6 h-32'/> :
+                <ToggleBetweenChildren isOpen={isLoadingLogs}>
+                    <HorizontalLoading className='w-full col-span-6 h-32'/>
+                    {
                         logs.filter(filterMyLogs)
                             .map(log =>
                                 <LogContainer
                                     contractInfo={contractInfo}
                                     log={log}
-                                    key={log.hash}/>)
-                }
+                                    key={log.id}/>)
+                    }
+                </ToggleBetweenChildren>
             </div>
         </div>
     </>
@@ -264,10 +263,9 @@ function RecentActivityContainer({contractInfo, logs, isLoadingLogs}: {
 
 function LogContainer({contractInfo, log}: { contractInfo: ContractCoreDetails, log: ActionLogFormat }) {
 
-    const {_id, purchase, payout} = contractInfo;
-    const [_, chainId] = _id.split("_");
+    const {chainId, purchase, payout} = contractInfo;
 
-    const hashUrl = getExplorer(chainId, "hash", log.hash)
+    const hashUrl = getExplorer(chainId, "hash", log.id)
     let typeClass, value;
 
     if (log.type === LogTypes.Redeem) {
@@ -300,7 +298,7 @@ function LogContainer({contractInfo, log}: { contractInfo: ContractCoreDetails, 
         </div>
         <div className='col-span-1 text-sm'>
             <Link href={hashUrl} target='_blank'>
-                <span className='text-neutral-200 underline'>{shorten(log.hash)}</span>
+                <span className='text-neutral-200 underline'>{shorten(log.id)}</span>
             </Link>
         </div>
     </>

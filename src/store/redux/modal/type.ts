@@ -3,7 +3,7 @@ import {TransactionReceipt} from "viem";
 import {StringKeyedObject} from "@/components/utils/general";
 
 
-type Modal = {
+type ModalState = {
     type: string,
     additional?: {
         // todo all the params that may be in the additional
@@ -13,5 +13,5 @@ type Modal = {
     }
 }
 export type {
-    Modal
+    ModalState
 }

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {ContractExtendedFormat} from "@/modules/cloud-api/contract-type";
+import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {ExploreBondIdType} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {fetchContractExtended} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import GeneralStatisticsContainer from "@/components/pages/bonds/pages/explore-bond-id/components/general-statistics";
@@ -13,7 +13,6 @@ import {nop} from "@/modules/utils/function";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/components/finished";
 import {GeneralContainer} from "@/components/utils/container";
-import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
 // todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
 // on top and tell that this bond is officially finished
@@ -22,47 +21,11 @@ import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 
 export default function ExploreBondId({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
 
-    const {
-        bondDetailed,
-        setBondDetailed,
-        isLoading,
-        refreshDate,
-        refreshLoader,
-        setUpdateIndex
-    } = useUpdater({bondDetailedTmp, queryParams});
-    const refreshHandler = [refreshDate, setUpdateIndex];
-
-
-    if (isLoading) return <LoadingScreen/>
-
-    return (
-        <GeneralContainer className='flex flex-col gap-4 w-full md:py-24 py-16' isPadding>
-            <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
-            <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
-            <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>
-            <div className='grid grid-cols-12 w-full gap-4 h-full'>
-                <MainDetailsContainer bondDetailed={bondDetailed}/>
-                <ActionsContainer contractInfo={bondDetailed.contractInfo}/>
-            </div>
-            <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
-            <GeneralStatisticsContainer contractInfo={bondDetailed.contractInfo}/>
-        </GeneralContainer>
-    )
-}
-
-function useUpdater({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>) {
-
-    const {contractInfo} = bondDetailedTmp || {};
-    const {_id, payout} = contractInfo || {};
-    const [contractAddress, chainId] = (_id || "").toLowerCase().split("_");
-
     const [bondDetailed, setBondDetailed] = useState<ContractExtendedFormat>({...(bondDetailedTmp || {})})
     const [updateIndex, setUpdateIndex] = useState(0);
     const [refreshDate, setRefreshDate] = useState<Date>();
     const [refreshLoader, setRefreshLoader] = useState(false);
     const [isLoading, setIsLoading] = useState(!bondDetailedTmp)
-
-    const {balance} = useTokenBalance(chainId, payout?.contractAddress, contractAddress);
 
     useEffect(() => {
         const updater = () => {
@@ -84,23 +47,21 @@ function useUpdater({bondDetailedTmp, queryParams}: Readonly<ExploreBondIdType>)
         return () => clearInterval(interval);
     }, [bondDetailed, updateIndex, queryParams])
 
+    const refreshHandler = [refreshDate, setUpdateIndex];
 
-    return {
-        bondDetailed: {
-            contractInfo: {
-                ...bondDetailed.contractInfo,
-                payoutBalance: balance,
-            },
-            contractDescription: bondDetailed.contractDescription,
-            lastUpdated: bondDetailed.lastUpdated
-        },
-        setBondDetailed,
-        isLoading,
-        refreshDate,
-        refreshLoader,
-        setUpdateIndex
-    }
+    if (isLoading) return <LoadingScreen/>
+
+    return (
+        <GeneralContainer className='flex flex-col gap-4 w-full md:py-24 py-16' isPadding>
+            <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
+            <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
+            <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>
+            <div className='grid grid-cols-12 w-full gap-4 h-full'>
+                <MainDetailsContainer bondDetailed={bondDetailed}/>
+                <ActionsContainer contractInfo={bondDetailed.contractInfo}/>
+            </div>
+            <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
+            <GeneralStatisticsContainer bondDetailed={bondDetailed}/>
+        </GeneralContainer>
+    )
 }
-
-
-

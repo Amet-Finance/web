@@ -1,5 +1,6 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails, FinancialAttributeInfo} from "@/modules/api/contract-type";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ARTICLES: Article[] = [
     {
@@ -49,7 +50,6 @@ const FAQ_QUESTIONS: Question[] = [
 ]
 
 const usdtToken: FinancialAttributeInfo = {
-    _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
     contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
     chainId: 80001,
     "name": "USD Coin",
@@ -64,7 +64,10 @@ const usdtToken: FinancialAttributeInfo = {
 
 const BOND_CARDS: ContractCoreDetails[] = [
     {
-        _id: "0x1",
+        contractAddress: "0x1",
+        chainId: defaultChain.id,
+        payoutBalance: "4142412421",
+
         issuer: "0x21451254Fas124",
         owner: "0x0",
 
@@ -85,13 +88,13 @@ const BOND_CARDS: ContractCoreDetails[] = [
         issuanceBlock: 401412,
     },
     {
-        _id: "0x1",
+        contractAddress: "0x1",
+        chainId: defaultChain.id,
         issuer: "0x21451254Fas124",
         owner: "0x0",
 
         purchase: usdtToken,
         payout: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
             "name": "Solana",
@@ -104,6 +107,7 @@ const BOND_CARDS: ContractCoreDetails[] = [
             priceUsd: 163
         },
 
+        payoutBalance: "4142412421214412",
         totalBonds: 100,
         purchased: 80,
         redeemed: 25,
@@ -118,13 +122,16 @@ const BOND_CARDS: ContractCoreDetails[] = [
         issuanceBlock: 401412,
     },
     {
-        _id: "0x1",
+        contractAddress: "0x1",
+        chainId: defaultChain.id,
+        payoutBalance: "4142412421",
+
         issuer: "0x21451254Fas124",
         owner: "0x0",
 
         purchase: usdtToken,
         payout: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
             "name": "Shiba Inu",
@@ -150,12 +157,14 @@ const BOND_CARDS: ContractCoreDetails[] = [
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
     },
     {
-        _id: "0x1",
+        contractAddress: "0x1",
+        chainId: defaultChain.id,
+        payoutBalance: "4142412421",
+
         issuer: "0x21451254Fas124",
         owner: "0x0",
         purchase: usdtToken,
         payout: {
-            _id: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
             "name": "Bitcoin",

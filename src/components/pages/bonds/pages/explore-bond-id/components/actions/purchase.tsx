@@ -1,4 +1,4 @@
-import {ContractCoreDetails} from "@/modules/cloud-api/contract-type";
+import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccount} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useRouter} from "next/router";
@@ -16,9 +16,8 @@ import {DefaultButton} from "@/components/utils/buttons";
 import {Erc20Controller} from "amet-utils";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {_id, purchase, totalBonds, purchased, payout} = contractInfo;
+    const {contractAddress,chainId, purchase, totalBonds, purchased, payout} = contractInfo;
 
-    const [contractAddress, chainId] = _id.toLowerCase().split("_");
     const {address} = useAccount();
     const chain = getChain(chainId)
     const router = useRouter();

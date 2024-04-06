@@ -22,8 +22,14 @@ const TransactionMessages = {
     pending: `Pending Transaction`
 }
 
+const LogTypes = {
+    Purchase: "Purchase",
+    Redeem: "Redeem",
+    Transfer: "Transfer"
+}
+
 export {
     TxTypes,
     TransactionMessages,
-
+    LogTypes
 }

@@ -1,9 +1,11 @@
-import {Account} from "@/store/redux/account/type";
-import {Modal} from "@/store/redux/modal/type";
+import {AccountState} from "@/store/redux/account/type";
+import {ModalState} from "@/store/redux/modal/type";
+import {TokensResponse} from "@/modules/api/type";
 
 type RootState = {
-    modal: Modal;
-    account: Account;
+    modal: ModalState;
+    account: AccountState;
+    token: TokensResponse
 }
 
 export type {

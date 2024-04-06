@@ -1,20 +1,8 @@
-import {requestAPI} from "@/modules/cloud-api/util";
-import {API_URL} from "@/modules/cloud-api/constants";
-import {
-    Balances,
-    GeneralStatistics,
-    GeneralStatsKey,
-    StatisticsTypes,
-    TBVStatistics,
-    TokensResponse
-} from "@/modules/cloud-api/type";
+import {patchAPI, requestAPI} from "@/modules/api/util";
+import {API_URL} from "@/modules/api/constants";
+import {GeneralStatistics, GeneralStatsKey, StatisticsTypes, TBVStatistics, TokensResponse} from "@/modules/api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
-
-async function getBalance(address: string): Promise<Balances> {
-    const url = `${API_URL}/v1/balance/${address}`
-    const response = await requestAPI({url});
-    return response?.data;
-}
+import {ContractDescription, DescriptionEditParams} from "@/modules/api/contract-type";
 
 
 async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T extends GeneralStatsKey ? GeneralStatistics : TBVStatistics> {
@@ -24,9 +12,7 @@ async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T exte
 }
 
 
-async function getTokens({params}: {
-    params: { chainId: number, contractAddresses: string[], verified?: boolean }
-}): Promise<TokensResponse> {
+async function getTokens(params: { chainId?: number, contractAddresses?: string[], verified?: boolean }): Promise<TokensResponse> {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
         url,
@@ -56,10 +42,23 @@ async function getTokensDetailed(params: {
     });
 }
 
+async function updateContractDescription(params: DescriptionEditParams): Promise<ContractDescription> {
+    return await patchAPI({
+        url: `${API_URL}/v2/contract/description`,
+        body: params,
+        params: {
+            address: params.address,
+            signature: params.signature,
+            message: params.message
+        }
+    });
+}
+
+
 const CloudAPI = {
-    getBalance,
     getStatistics,
     getTokens,
     getTokensDetailed,
+    updateContractDescription
 }
 export default CloudAPI

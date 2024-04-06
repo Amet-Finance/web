@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import XmarkSVG from "../../../public/svg/utils/xmark";
-import {closeModal} from "@/store/redux/modal";
 import CongratulationsSVG from "../../../public/svg/utils/congratulations";
+import ModalStore from "@/store/redux/modal";
 
 const States = {
     Nope: 'nope',
@@ -215,7 +215,7 @@ function Finish() {
             <div className='relative flex justify-center items-center w-full'>
                 <CongratulationsSVG/>
                 <div className='absolute top-0 right-0'>
-                    <XmarkSVG isMedium onClick={closeModal}/>
+                    <XmarkSVG isMedium onClick={ModalStore.closeModal}/>
                 </div>
             </div>
             <span className='text-2xl font-bold'>Congratulations!</span>
