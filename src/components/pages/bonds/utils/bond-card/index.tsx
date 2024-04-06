@@ -17,7 +17,6 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
         contractAddress,
         chainId,
         redeemed,
-        issuer,
         owner,
         purchased,
         totalBonds,
@@ -30,6 +29,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const purchase = useFinancialAttributeExtended(info.purchase);
     const payout = useFinancialAttributeExtended(info.payout);
 
+    const expectedReturnPercentage = CalculatorController.yieldRate(info)
     const score = CalculatorController.score({...info, purchase, payout})
     const scoreColor = tColor(score * 10)
 
@@ -47,10 +47,6 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const issuanceDateInFormat = new Date(issuanceDate);
     const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
 
-    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
-    const purchasePriceUsd = purchase.amountClean * (payout.priceUsd ?? 0)
-
-    const expectedReturnPercentage = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd
 
     return (
         <Link href={url}>
@@ -79,10 +75,10 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                 <div className='flex flex-col gap-3 z-10'>
                     <div className='flex justify-between items-stretch  whitespace-nowrap'>
                         <DetailContainer
-                            value={`${formatLargeNumber(purchase.amountClean, true, 2)} ${purchaseSymbolShort}`}
+                            value={`${formatLargeNumber(purchase.amountClean, true, 3)} ${purchaseSymbolShort}`}
                             title={`Purchase`}/>
                         <DetailContainer
-                            value={`${formatLargeNumber(payout.amountClean, true)} ${payoutSymbolShort}`}
+                            value={`${formatLargeNumber(payout.amountClean, true, 3)} ${payoutSymbolShort}`}
                             title="Payout"/>
                         <DetailContainer
                             value={maturityInTime}
@@ -100,7 +96,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                         <div className='absolute h-[3px] w-full bg-white'/>
                     </div>
                     <div className='flex justify-between items-center w-full'>
-                        <span className='text-neutral-400 text-mm'>Issuer: {shorten(issuer, 5)}</span>
+                        <span className='text-neutral-400 text-mm'>Issuer: {shorten(owner, 5)}</span>
                         <span className='text-neutral-400 text-mm'>{issuanceDateClean}</span>
                     </div>
                 </div>

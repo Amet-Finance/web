@@ -1,5 +1,5 @@
 import {Article, Question} from "@/components/pages/main/types";
-import {ContractCoreDetails, FinancialAttributeExtended, FinancialAttributeInfo} from "@/modules/api/contract-type";
+import {ContractCoreDetails, FinancialAttributeExtended} from "@/modules/api/contract-type";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ARTICLES: Article[] = [
@@ -58,7 +58,7 @@ const usdtToken: FinancialAttributeExtended = {
     "decimals": 6,
     isVerified: true,
     amount: "10",
-    amountClean: 150,
+    amountClean: 180,
     priceUsd: 1
 }
 
@@ -82,8 +82,6 @@ const BOND_CARDS: ContractCoreDetails[] = [
 
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        issuerScore: 10,
-        uniqueHolders: 30,
         isSettled: false,
         issuanceBlock: 401412,
     },
@@ -103,7 +101,7 @@ const BOND_CARDS: ContractCoreDetails[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 20,
+            amountClean: 1.3,
             priceUsd: 163
         },
 
@@ -116,22 +114,19 @@ const BOND_CARDS: ContractCoreDetails[] = [
 
 
         issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        issuerScore: 10,
-        uniqueHolders: 30,
         isSettled: false,
         issuanceBlock: 401412,
     },
     {
         contractAddress: "0x1",
         chainId: defaultChain.id,
-        payoutBalance: "4142412421",
+        payoutBalance: "5000000000000000",
 
         issuer: "0x21451254Fas124",
         owner: "0x0",
 
         purchase: usdtToken,
         payout: {
-
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
             chainId: 80001,
             "name": "Shiba Inu",
@@ -140,15 +135,13 @@ const BOND_CARDS: ContractCoreDetails[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 31350000,
+            amountClean: 7600000,
             priceUsd: 0.00003203
         },
 
         totalBonds: 100,
         purchased: 10,
         redeemed: 0,
-        issuerScore: 10,
-        uniqueHolders: 30,
         isSettled: false,
         issuanceBlock: 401412,
 
@@ -165,7 +158,7 @@ const BOND_CARDS: ContractCoreDetails[] = [
         owner: "0x0",
         purchase: usdtToken,
         payout: {
-            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+            contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3351",
             chainId: 80001,
             "name": "Bitcoin",
             "symbol": "BTC",
@@ -173,8 +166,8 @@ const BOND_CARDS: ContractCoreDetails[] = [
             "decimals": 6,
             isVerified: true,
             amount: "10",
-            amountClean: 0.01,
-            priceUsd: 72000
+            amountClean: 0.004,
+            priceUsd: 63000
         },
 
         totalBonds: 100,
@@ -184,8 +177,6 @@ const BOND_CARDS: ContractCoreDetails[] = [
         maturityPeriodInBlocks: 120000,
 
         issuanceDate: new Date("Tue Feb 13 2024 12:33:05 GMT+0400 (Armenia Standard Time)"),
-        issuerScore: 10,
-        uniqueHolders: 30,
         isSettled: false,
         issuanceBlock: 401412,
     }

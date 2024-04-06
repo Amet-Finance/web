@@ -13,9 +13,9 @@ function score(contract: ContractCoreDetails) {
     const isBothAssetsVerified = payout?.isVerified && purchase?.isVerified;
 
     const calculatedYield = yieldRate(contract);
-    const securedPercentage = CalculatorController.securedPercentage(contract, true)
+    const securedPercentage = CalculatorController.securedPercentage(contract, true);
 
-    return (0.7 * (securedPercentage / 10)) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * (calculatedYield / 10)));
+    return (0.7 * (securedPercentage / 10)) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * Math.min(calculatedYield, 100) / 10));
 }
 
 function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
