@@ -52,8 +52,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
 
                 return {
                     to: issuerContract,
-                    data: FixedFlexIssuerController.getIssuerInstance(chain.id, issuerContract)
-                        .interface
+                    data: FixedFlexIssuerController.getIssuerInterface()
                         .encodeFunctionData('issue', [
                             totalBonds,
                             maturityPeriodInBlocks,
@@ -69,8 +68,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, spender, value} = config
                 return {
                     to: contractAddress,
-                    data: Erc20Controller.getTokenInstance(chain.id, contractAddress)
-                        .interface
+                    data: Erc20Controller.getTokenInterface()
                         .encodeFunctionData("approve", [spender, BigInt(value)])
                 }
             }
@@ -78,8 +76,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, count, referrer} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData("purchase", [count, (referrer ?? constants.AddressZero)])
                 }
             }
@@ -87,8 +84,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, redemptionCount, bondIndexes, isCapitulation} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData("redeem", [bondIndexes, redemptionCount, isCapitulation])
                 }
             }
@@ -96,8 +92,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData("settle")
                 }
             }
@@ -105,8 +100,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {vaultAddress, contractAddress} = config
                 return {
                     to: vaultAddress,
-                    data: FixedFlexVaultController.getVaultInstance(chain.id, vaultAddress)
-                        .interface
+                    data: FixedFlexVaultController.getVaultInterface()
                         .encodeFunctionData("claimReferralRewards", [contractAddress])
                 }
             }
@@ -114,8 +108,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, toAddress, amount} = config;
                 return {
                     to: contractAddress,
-                    data: Erc20Controller.getTokenInstance(chain.id, contractAddress)
-                        .interface
+                    data: Erc20Controller.getTokenInterface()
                         .encodeFunctionData("transfer", [toAddress, BigInt(amount)])
                 };
             }
@@ -123,8 +116,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData('withdrawExcessPayout')
                 }
             }
@@ -132,8 +124,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, count} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData('updateBondSupply', [count])
                 }
             }
@@ -141,8 +132,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, period} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData('decreaseMaturityPeriod', [period])
                 }
             }
@@ -150,8 +140,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 const {contractAddress, owner} = config;
                 return {
                     to: contractAddress,
-                    data: FixedFlexBondController.getBondInstance(chain.id, contractAddress)
-                        .interface
+                    data: FixedFlexBondController.getBondInterface()
                         .encodeFunctionData('transferOwnership', [owner])
                 }
             }
