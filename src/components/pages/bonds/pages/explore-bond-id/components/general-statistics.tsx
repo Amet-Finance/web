@@ -4,7 +4,7 @@ import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/ty
 import {useAccount} from "wagmi";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
-import {Chart, ChartOptions, Plugin, registerables} from "chart.js";
+import {Chart, ChartOptions, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {LogTypes} from "@/modules/web3/constants";
 
@@ -64,8 +64,9 @@ function Container({type, total, data, asset}: Readonly<{
     const centerIndex = Math.round(data.length / 2)
     const blocks = [data[0]?.block, data[centerIndex]?.block, data[data.length - 1]?.block]
     const totalInUsd = (asset.priceUsd ?? 0) * total
-    const title = Number.isFinite(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
+    const title = Boolean(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
 
+    //todo fix this today with fixed 0%
     return (
         <div
             className='md:col-span-1 col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
@@ -73,7 +74,9 @@ function Container({type, total, data, asset}: Readonly<{
                 <span className='font-medium text-xl'>{type} Statistics</span>
                 <div className='flex flex-col items-end gap-1'>
                     <span className='text-2xl font-bold'>{title}</span>
-                    <p className='text-neutral-500 text-sm'>Today {" "}
+                    <p className='text-neutral-500 text-sm'>
+                        Today
+                        {" "}
                         <span className='text-green-500'>(+0%)</span>
                     </p>
                 </div>
@@ -127,17 +130,8 @@ function BarChart({bgColor, data, asset}: Readonly<{
             },
         };
 
-        const barPosition: Plugin = {
-            id: "barPosition",
-            // beforeDatasetDraw(chart: Chart): void {
-            //     const {data, chartArea: {left, right, width}, scales: {x, y}} = chart
-            //
-            //     const barWidth = data.labels?.length ? width / data.labels.length : 0;
-            //     chart.getDatasetMeta(0).data.forEach((dataPoint, index) => {
-            //         dataPoint.x = left + (barWidth * index)
-            //     })
-            // }
-        }
+        const priceExists = Boolean(asset.priceUsd)
+        const label = priceExists ? "Value(USD)" : `Value(${shorten(asset.symbol, 5)})`
 
         Chart.register(...registerables)
         const chart = new Chart(chartRef.current, {
@@ -146,7 +140,7 @@ function BarChart({bgColor, data, asset}: Readonly<{
                 labels: data.map(item => `Block: ${item.block}`),
                 datasets: [
                     {
-                        label: `Value`,
+                        label,
                         data: data.map(item => `${item.count * asset.amountClean * (asset.priceUsd || 1)}`),
                         backgroundColor: bgColor,
                         borderColor: '#858585',
@@ -155,11 +149,10 @@ function BarChart({bgColor, data, asset}: Readonly<{
                 ],
             },
             options: options,
-            plugins: [barPosition]
         });
 
         return () => chart.destroy()
-    }, [bgColor, data])
+    }, [bgColor, data, asset.priceUsd, asset.amountClean, asset.symbol])
 
     return (
         <div className='w-full'>
