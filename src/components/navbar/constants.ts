@@ -11,6 +11,11 @@ const NAV_LINKS: LinkExtendedType[] = [
         ]
     },
     {
+        title: "Careers",
+        href: URLS.LinkedIn,
+        target: "_blank"
+    },
+    {
         title: "Documents",
         href: URLS.Docs,
         target: "_blank"
