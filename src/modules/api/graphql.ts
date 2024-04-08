@@ -12,7 +12,7 @@ function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
         [base.id]: `https://gateway-arbitrum.network.thegraph.com/api/6d563e0becc20d2d52c08ca555d0a735/subgraphs/id/JBBiYxUHriMu5GpUtiuPLzroZbD6aGkaoipdLRn47BMy`
     }
-
+    
     return API[chainId];
 }
 
@@ -20,94 +20,107 @@ function getApi(chainId: number) {
 async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[]> {
     const {chainId} = params;
     const query = `
-            {
-  bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
-    id
-    isSettled
-    uri
-    issuanceBlock
-    issuanceDate
-    maturityPeriodInBlocks
-    issuer {
-      id
-    }
-    owner {
-      id
-    }
-    payoutAmount
-    payoutToken {
-      decimals
-      name
-      id
-      symbol
-    }
-    purchaseToken {
-      decimals
-      id
-      name
-      symbol
-    }
-    payoutBalance
-    purchaseAmount
-    purchased
-    redeemed
-    totalBonds
-  }
-}
-`
+                    {
+                      _meta {
+                        block {
+                          number
+                          timestamp
+                        }
+                      }
+                      bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
+                        id
+                        isSettled
+                        uri
+                        issuanceBlock
+                        issuanceDate
+                        maturityPeriodInBlocks
+                        issuer {
+                          id
+                        }
+                        owner {
+                          id
+                        }
+                        payoutAmount
+                        payoutToken {
+                          decimals
+                          name
+                          id
+                          symbol
+                        }
+                        purchaseToken {
+                          decimals
+                          id
+                          name
+                          symbol
+                        }
+                        payoutBalance
+                        purchaseAmount
+                        purchased
+                        redeemed
+                        totalBonds
+                      }
+                    }
+        `
 
     const response = await postAPI({
         url: getApi(chainId),
         body: {query}
     });
     const bonds: any = response.data?.bonds;
+    const block = response.data?._meta.block.number;
 
-    return bonds.map((item: any) => transformCoreDetails(item, chainId)) as ContractCoreDetails[]
+    return bonds.map((item: any) => transformCoreDetails(item, chainId, block)) as ContractCoreDetails[]
 }
 
 async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormatAPI | null> {
     const {chainId, contractAddress} = params;
     const query = `
-             {
-              bond(id: "${contractAddress?.toLowerCase()}") {
-    id
-    isSettled
-    uri
-    issuanceBlock
-    issuanceDate
-    issuer {
-      id
-    }
-    maturityPeriodInBlocks
-    owner {
-      id
-    }
-    payoutAmount
-    payoutBalance
-    payoutToken {
-      decimals
-      id
-      name
-      symbol
-    }
-    purchaseAmount
-    purchaseToken {
-      decimals
-      name
-      id
-      symbol
-    }
-    purchased
-    redeemed
-    totalBonds
-    actionLogs {
-      blockNumber
-      count
-      from
-      id
-      to
-    }
+             { 
+             _meta {
+                block {
+                  number
+                  timestamp
                 }
+              }
+              bond(id: "${contractAddress?.toLowerCase()}") {
+                    id
+                    isSettled
+                    uri
+                    issuanceBlock
+                    issuanceDate
+                    issuer {
+                      id
+                    }
+                    maturityPeriodInBlocks
+                    owner {
+                      id
+                    }
+                    payoutAmount
+                    payoutBalance
+                    payoutToken {
+                      decimals
+                      id
+                      name
+                      symbol
+                    }
+                    purchaseAmount
+                    purchaseToken {
+                      decimals
+                      name
+                      id
+                      symbol
+                    }
+                    purchased
+                    redeemed
+                    totalBonds
+                    actionLogs {
+                      blockNumber
+                      count
+                      from
+                      id
+                      to
+                    }
+                  }
                 }
             `
     const response = await postAPI({
@@ -115,8 +128,9 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
         body: {query}
     });
 
+    const block = response.data?._meta.block.number;
     const bond = response.data?.bond;
-    const contractInfo = transformCoreDetails(bond, chainId);
+    const contractInfo = transformCoreDetails(bond, chainId, block);
     const actionLogs = transformActionDetails(bond)
     const contractDescription = await requestAPI({url: bond?.uri});
     if (!contractInfo) return null;
@@ -127,7 +141,7 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
             isInitiated: Boolean(contractDescription),
             ...(contractDescription || {})
         },
-        contractInfo,
+        contractInfo: contractInfo,
         actionLogs,
         lastUpdated: new Date().toString()
     }
@@ -194,10 +208,11 @@ async function getBalance(address: string, bondAddress: string, chainId: number)
     }))
 }
 
-function transformCoreDetails(item: any, chainId: number): ContractCoreDetails | null {
+function transformCoreDetails(item: any, chainId: number, block: string): ContractCoreDetails | null {
     if (!item) return null;
 
     return {
+        block: Number(block),
         contractAddress: item.id,
         chainId,
 

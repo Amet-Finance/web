@@ -36,7 +36,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
 
     const payoutIcon = payout.icon ?? makeBlockie(payout.contractAddress)
     const issuanceDateInFormat = new Date(issuanceDate);
-    const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
+    const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString("en-GB")}`.replace(/\//g, '.');
 
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
     const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
@@ -114,26 +114,25 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
             <div className='grid grid-cols-8 gap-4 mt-4 w-full'>
                 <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
                     <span
-                        className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
-                    <span className='text-sm text-neutral-400'>Purchase</span>
+                        className='font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
+                    <span className='text-xs text-neutral-400'>Purchase</span>
                 </div>
                 <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
                     <span
-                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
-                    <span className='text-sm text-neutral-400'>Payout</span>
+                        className='font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
+                    <span className='text-xs text-neutral-400'>Payout</span>
                 </div>
                 <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
-                    <span className='md:text-xl text-base font-bold'>{maturityPeriodTime}</span>
-                    <span className='text-sm text-neutral-400'>Maturity Period</span>
+                    <span className='font-bold'>{maturityPeriodTime}</span>
+                    <span className='text-xs text-neutral-400'>Maturity Period</span>
                 </div>
                 <div className='lg:col-span-2 col-span-4 flex flex-col gap-1 justify-end w-full'>
                     <div className='flex items-center gap-2'>
                         <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
-                        <span className='md:text-xl text-base font-bold'>{shortenString(chain?.name || "", 7)}</span>
+                        <span className='font-bold'>{shortenString(chain?.name || "", 7)}</span>
                     </div>
-                    <span className='text-sm text-neutral-400'>Chain</span>
+                    <span className='text-xs text-neutral-400'>Chain</span>
                 </div>
-
             </div>
             <div className='flex items-center justify-between w-full text-sm'>
                 <div className='flex items-center gap-2 text-neutral-400'>

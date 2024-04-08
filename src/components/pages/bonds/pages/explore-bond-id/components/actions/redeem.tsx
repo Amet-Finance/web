@@ -1,6 +1,5 @@
 import {getChain} from "@/modules/utils/wallet-connect";
-import {useEffect, useState} from "react";
-import {getBlockNumber} from "@/modules/web3";
+import {useState} from "react";
 import {TxTypes} from "@/modules/web3/constants";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
@@ -12,7 +11,6 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
-import {nop} from "@/modules/utils/function";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
@@ -27,7 +25,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const chain = getChain(chainId);
 
-    const [currentBlock, setCurrentBlock] = useState(0);
     const [bondIndexes, setBondIndexes] = useState([] as Array<number>)
 
     const balancesStore = useSelector((item: RootState) => item.account).balances;
@@ -38,7 +35,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
 
     const totalQuantity = balances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
-    const matureTokenIds = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, balances);
+    const matureTokenIds = getMatureTokenIds(contractInfo, balances);
     const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (balances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
@@ -61,18 +58,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
     }
 
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.RedeemBonds, config)
-
-    useEffect(() => {
-        if (chain) {
-            const request = () => {
-                getBlockNumber(chain).then(block => setCurrentBlock(block)).catch(nop)
-            }
-
-            request();
-            const interval = setInterval(request, 3000);
-            return () => clearInterval(interval);
-        }
-    }, [chain]);
 
     function onChange(event: any) {
         const value = Number(event.target.value);
@@ -161,12 +146,13 @@ export default function RedeemTab({contractInfo}: Readonly<{
 }
 
 
-function getMatureTokenIds(currentBlock: number, maturityPeriodInBlocks: number, balances: ContractBalance[]): number[] {
+function getMatureTokenIds(contractInfo: ContractCoreDetails, balances: ContractBalance[]): number[] {
 
+    const {block, maturityPeriodInBlocks} = contractInfo;
     const matureTokenIds = []
 
     for (const balanceInfo of balances) {
-        if (currentBlock - maturityPeriodInBlocks > balanceInfo.purchaseBlock) {
+        if (block - maturityPeriodInBlocks > balanceInfo.purchaseBlock) {
             matureTokenIds.push(balanceInfo.tokenId);
         }
     }

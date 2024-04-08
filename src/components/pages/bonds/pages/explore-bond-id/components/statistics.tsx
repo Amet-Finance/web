@@ -11,7 +11,7 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
     const {totalBonds, purchased, redeemed, purchase, payout} = contractInfo;
 
 
-    const isSoldOut = totalBonds === redeemed;
+    const isTotallyRedeemed = totalBonds === redeemed;
     const soldOutTitle = "SOLD OUT";
 
     const calculatedYield = CalculatorController.yieldRate(contractInfo);
@@ -26,14 +26,14 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
     return (
         <div className='grid grid-cols-4 gap-4 w-full'>
             <Container title='Bond Score'
-                       value={isSoldOut ? soldOutTitle : `${format(score, 2)}`}
+                       value={isTotallyRedeemed ? soldOutTitle : `${format(score, 2)}`}
                        info={STATISTICS_DEFINITION.BondScore}
-                       valueColor={isSoldOut ? "text-neutral-400" : tColor(score * 10)}/>
+                       valueColor={isTotallyRedeemed ? "text-neutral-400" : tColor(score * 10)}/>
             <Container title='Secured Percentage'
-                       value={isSoldOut ? soldOutTitle : `${format(securedPercentage, 2)}%`}
+                       value={isTotallyRedeemed ? soldOutTitle : `${format(securedPercentage, 2)}%`}
                        valueTitle={`${formatLargeNumber(payoutBalanceClean)} ${contractInfo.payout.symbol}`}
                        info={STATISTICS_DEFINITION.SecuredPercentage}
-                       valueColor={isSoldOut ? "text-neutral-400" : tColor(securedPercentage)}/>
+                       valueColor={isTotallyRedeemed ? "text-neutral-400" : tColor(securedPercentage)}/>
             <Container title='Volume'
                        value={`$${formatLargeNumber(volume)}`}
                        valueTitle={`${volume} USD`}

@@ -40,7 +40,6 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const isApprove = needed.isLessThan(BigNumber(0))
     const isSoldOut = totalBonds === purchased;
 
-
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
     let blockClick = purchasingMoreThenAllowed || amount <= 0
 

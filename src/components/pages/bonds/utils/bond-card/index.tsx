@@ -33,7 +33,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
 
 
-    const isSoldOut = totalBonds === redeemed;
+    const isSoldOut = totalBonds === purchased;
 
     const yieldRate = CalculatorController.yieldRate(bondDetails)
     const score = CalculatorController.score(bondDetails)
@@ -51,7 +51,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const purchaseSymbolShort = shortenString(purchase.symbol, 5)
 
     const issuanceDateInFormat = new Date(issuanceDate);
-    const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString()}`.replace(/\//g, '.');
+    const issuanceDateClean = `${issuanceDateInFormat.toLocaleDateString("en-GB")}`.replace(/\//g, '.');
 
 
     return (
@@ -77,7 +77,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                         </div>
                         <div className='flex flex-col items-end'>
                             <ToggleBetweenChildren isOpen={isSoldOut}>
-                                <span className='font-bold text-neutral-400'>SOLD OUT</span>
+                                <span className='font-bold '>SOLD OUT</span>
                                 <div className='flex flex-col items-end'>
                                     <span className={`text-lg font-bold ${scoreColor} leading-5`}>{formatLargeNumber(score, false, 2)}</span>
                                     <span className='text-neutral-500 text-mm'>Score</span>
@@ -125,7 +125,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
 function DetailContainer({value, title, valueClass}: Readonly<{ value: string, title: string, valueClass?: string }>) {
     return (
         <div className='flex flex-col items-center'>
-            <span className={`${valueClass} font-semibold`}>{value}</span>
+            <span className={`${valueClass} text-sm font-semibold`}>{value}</span>
             <span className='text-mm text-neutral-500'>{title}</span>
         </div>
     )

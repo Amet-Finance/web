@@ -54,7 +54,7 @@ type ContractDetails = {
 
 type ContractInfoDetails = ContractDetails & PurchasePayoutInfo
 
-type ContractCoreDetails = ContractDetails & PurchasePayoutExtended
+type ContractCoreDetails = ContractDetails & PurchasePayoutExtended & { block: number }
 
 type ContractDescription = {
     name: string,
