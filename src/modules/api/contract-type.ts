@@ -34,6 +34,7 @@ type PurchasePayoutExtended = {
 }
 
 type ContractDetails = {
+    block: number, // the last updated block(current block) from The Graph
     contractAddress: string,
     chainId: number,
 
@@ -54,7 +55,7 @@ type ContractDetails = {
 
 type ContractInfoDetails = ContractDetails & PurchasePayoutInfo
 
-type ContractCoreDetails = ContractDetails & PurchasePayoutExtended & { block: number }
+type ContractCoreDetails = ContractDetails & PurchasePayoutExtended
 
 type ContractDescription = {
     name: string,

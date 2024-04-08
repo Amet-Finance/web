@@ -49,6 +49,20 @@ const FAQ_QUESTIONS: Question[] = [
     }
 ]
 
+const commonDetails = {
+    block: 1,
+    contractAddress: "0x1",
+    chainId: defaultChain.id,
+    payoutBalance: "4142412421",
+
+    issuer: "0x21451254Fas124",
+    owner: "0x0",
+    issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
+    isSettled: false,
+    issuanceBlock: 401412,
+    maturityPeriodInBlocks: 300,
+}
+
 const usdtToken: FinancialAttributeExtended = {
     contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
     chainId: 80001,
@@ -64,33 +78,15 @@ const usdtToken: FinancialAttributeExtended = {
 
 const BOND_CARDS: ContractCoreDetails[] = [
     {
-        contractAddress: "0x1",
-        chainId: defaultChain.id,
-        payoutBalance: "4142412421",
-
-        issuer: "0x21451254Fas124",
-        owner: "0x0",
-
+        ...commonDetails,
         purchase: usdtToken,
         payout: usdtToken,
-
         totalBonds: 100,
         purchased: 50,
         redeemed: 20,
-
-        maturityPeriodInBlocks: 300,
-
-
-        issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        isSettled: false,
-        issuanceBlock: 401412,
     },
     {
-        contractAddress: "0x1",
-        chainId: defaultChain.id,
-        issuer: "0x21451254Fas124",
-        owner: "0x0",
-
+        ...commonDetails,
         purchase: usdtToken,
         payout: {
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -104,27 +100,12 @@ const BOND_CARDS: ContractCoreDetails[] = [
             amountClean: 1.3,
             priceUsd: 163
         },
-
-        payoutBalance: "4142412421214412",
         totalBonds: 100,
         purchased: 80,
         redeemed: 25,
-
-        maturityPeriodInBlocks: 300,
-
-
-        issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
-        isSettled: false,
-        issuanceBlock: 401412,
     },
     {
-        contractAddress: "0x1",
-        chainId: defaultChain.id,
-        payoutBalance: "5000000000000000",
-
-        issuer: "0x21451254Fas124",
-        owner: "0x0",
-
+        ...commonDetails,
         purchase: usdtToken,
         payout: {
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
@@ -142,20 +123,9 @@ const BOND_CARDS: ContractCoreDetails[] = [
         totalBonds: 100,
         purchased: 10,
         redeemed: 0,
-        isSettled: false,
-        issuanceBlock: 401412,
-
-        maturityPeriodInBlocks: 120000,
-
-        issuanceDate: new Date("Tue Feb 13 2024 17:39:05 GMT+0400 (Armenia Standard Time)"),
     },
     {
-        contractAddress: "0x1",
-        chainId: defaultChain.id,
-        payoutBalance: "4142412421",
-
-        issuer: "0x21451254Fas124",
-        owner: "0x0",
+        ...commonDetails,
         purchase: usdtToken,
         payout: {
             contractAddress: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3351",
@@ -169,16 +139,9 @@ const BOND_CARDS: ContractCoreDetails[] = [
             amountClean: 0.004,
             priceUsd: 63000
         },
-
         totalBonds: 100,
         purchased: 80,
         redeemed: 30,
-
-        maturityPeriodInBlocks: 120000,
-
-        issuanceDate: new Date("Tue Feb 13 2024 12:33:05 GMT+0400 (Armenia Standard Time)"),
-        isSettled: false,
-        issuanceBlock: 401412,
     }
 ]
 
