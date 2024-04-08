@@ -44,6 +44,9 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     const purchaseTokenExplorer = getExplorer(chainId, "token", purchase.contractAddress);
     const payoutTokenExplorer = getExplorer(chainId, "token", payout.contractAddress);
 
+    const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
+    const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0)
+
     return <div
         className='flex flex-col gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
@@ -108,28 +111,29 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
         </div>
 
         <div className='flex flex-col gap-8'>
-            <div className='grid grid-cols-6 gap-4 mt-4 w-full'>
-                <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
+            <div className='grid grid-cols-8 gap-4 mt-4 w-full'>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
                     <span
                         className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
                     <span className='text-sm text-neutral-400'>Purchase</span>
                 </div>
-                <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
+                <div className='lg:col-span-2 col-span-4  flex flex-col justify-end w-full'>
+                    <span
+                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
+                    <span className='text-sm text-neutral-400'>Payout</span>
+                </div>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
                     <span className='md:text-xl text-base font-bold'>{maturityPeriodTime}</span>
                     <span className='text-sm text-neutral-400'>Maturity Period</span>
                 </div>
-                <div className='lg:col-span-2 col-span-3  flex flex-col gap-1 justify-end w-full'>
+                <div className='lg:col-span-2 col-span-4 flex flex-col gap-1 justify-end w-full'>
                     <div className='flex items-center gap-2'>
                         <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
                         <span className='md:text-xl text-base font-bold'>{shortenString(chain?.name || "", 7)}</span>
                     </div>
                     <span className='text-sm text-neutral-400'>Chain</span>
                 </div>
-                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
-                    <span
-                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
-                    <span className='text-sm text-neutral-400'>Payout</span>
-                </div>
+
             </div>
             <div className='flex items-center justify-between w-full text-sm'>
                 <div className='flex items-center gap-2 text-neutral-400'>

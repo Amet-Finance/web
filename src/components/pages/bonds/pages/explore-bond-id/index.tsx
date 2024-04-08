@@ -15,8 +15,6 @@ import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/co
 import {GeneralContainer} from "@/components/utils/container";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
 
-// todo add headline component so whenever bond is fully purchased and redeemed (totalBonds === purchased === redeemed and isSettled) add a component
-// on top and tell that this bond is officially finished
 // todo add "Get purchase token" button on purchase screen
 // todo somehow show the USD equivalent for purchase and payout
 
