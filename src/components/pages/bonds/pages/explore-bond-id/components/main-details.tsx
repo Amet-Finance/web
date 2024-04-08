@@ -117,7 +117,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                         className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
                     <span className='text-sm text-neutral-400'>Purchase</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4  flex flex-col justify-end w-full'>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
                     <span
                         className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
                     <span className='text-sm text-neutral-400'>Payout</span>

@@ -41,11 +41,6 @@ const InfoSections = {
         link: URLS.FAQ_IOB,
         isBlank: true
     },
-    Type: {
-        text: "The bond type. Zero Coupon Bonds (ZCB) have no periodic interest payments; interest is paid at bond redemption.",
-        link: URLS.FAQ_ZCB,
-        isBlank: true
-    },
     Settled: {
         text: "\"Settled\" indicates that the issuer cannot increase the bond supply, and the full payout for available bonds (totalBonds - redeemed) is secured within the contract. This ensures bond safety and guarantees for holders and future purchasers."
     }

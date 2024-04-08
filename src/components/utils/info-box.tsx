@@ -15,7 +15,7 @@ export default function InfoBox({children, info, isRight, className, parentClass
 
     const isBlank = info.isBlank || !info.link;
 
-    const url = info.link ?? URLS.FAQ;
+    const url = info.link ?? URLS.FAQ_INVESTOR;
     const target = isBlank ? "_blank" : "_self";
 
     return (

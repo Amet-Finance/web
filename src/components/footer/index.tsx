@@ -56,7 +56,7 @@ function Links() {
             attributes: [
                 {title: 'Status', url: URLS.StatusPage},
                 {title: 'Contact Us', url: URLS.ContactUs},
-                {title: 'FAQ', url: URLS.FAQ},
+                {title: 'FAQ', url: URLS.FAQ_INVESTOR},
             ]
         }
     ]
