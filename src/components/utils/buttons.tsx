@@ -42,21 +42,24 @@ function BasicButton({
     </button>
 }
 
-function DefaultButton({children, disabled, className, classType = "", onClick}: {
+function DefaultButton({children, disabled, className, additionalClassName, classType = "", onClick}: {
     children: React.ReactNode,
     disabled?: boolean,
     onClick?: React.MouseEventHandler<HTMLButtonElement>;
     className?: string,
+    additionalClassName?: string
     classType?: string
 }) {
 
     const ClassTypes: StringKeyedObject<string> = {
         '1': "flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer w-full hover:bg-neutral-300",
-        '2': "bg-white w-min h-full px-4 rounded-md hover:bg-neutral-300 "
+        '2': "bg-white w-min h-full px-4 rounded-md hover:bg-neutral-300",
+        '3': "flex items-center justify-center gap-2 bg-red-500  rounded-md py-1 cursor-pointer w-full hover:bg-red-600",
     }
 
     return (
-        <button disabled={disabled} onClick={onClick} className={className || ClassTypes[classType] || ""}>
+        <button disabled={disabled} onClick={onClick}
+                className={className || ClassTypes[classType] + " " + additionalClassName || ""}>
             {children}
         </button>
     )

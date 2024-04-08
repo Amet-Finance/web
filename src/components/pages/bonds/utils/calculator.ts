@@ -9,14 +9,13 @@ function tbv(contractInfo: ContractCoreDetails) {
 
 
 function score(contract: ContractCoreDetails) {
-    const {purchase, payout} = contract;
+    const {purchase, payout, isSettled} = contract;
     const isBothAssetsVerified = payout?.isVerified && purchase?.isVerified;
 
     const calculatedYield = yieldRate(contract);
     const securedPercentage = CalculatorController.securedPercentage(contract, true);
 
-
-    return (0.7 * (securedPercentage / 10)) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * Math.min(calculatedYield, 100) / 10));
+    return (0.6 * (securedPercentage / 10)) + (isSettled ? 1 : 0) + (0.2 * (isBothAssetsVerified ? 10 : 0) + (0.1 * Math.min(calculatedYield, 100) / 10));
 }
 
 function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
@@ -39,7 +38,8 @@ function yieldRate({purchase, payout}: ContractCoreDetails): number {
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0);
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
 
-    return ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd || 0
+    const yieldRate = ((payoutPriceUsd - purchasePriceUsd) * 100) / purchasePriceUsd;
+    return Number.isFinite(yieldRate) ? yieldRate : 0;
 }
 
 const CalculatorController = {

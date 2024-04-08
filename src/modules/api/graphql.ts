@@ -10,9 +10,9 @@ import {base} from "wagmi/chains";
 
 function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
-        [base.id]: `https://api.studio.thegraph.com/query/70324/amet-finance-8453/version/latest`
+        [base.id]: `https://gateway-arbitrum.network.thegraph.com/api/6d563e0becc20d2d52c08ca555d0a735/subgraphs/id/JBBiYxUHriMu5GpUtiuPLzroZbD6aGkaoipdLRn47BMy`
     }
- 
+
     return API[chainId];
 }
 

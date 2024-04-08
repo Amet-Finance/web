@@ -7,7 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import {Chart, registerables} from "chart.js";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {ContractCoreDetails, ContractQuery} from "@/modules/api/contract-type";
-import {Loading} from "@/components/utils/loading";
+import {HorizontalLoading, Loading} from "@/components/utils/loading";
 import CloudAPI from "../../../../modules/api/cloud";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/api/type";
@@ -135,18 +135,20 @@ function BondCards() {
     return (
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
             <ToggleBetweenChildren isOpen={isLoading}>
-                <Loader/>
-                <ContractsContainer contracts={contracts}/>
-            </ToggleBetweenChildren>
-            <Link href='/bonds/explore' className='z-50'>
-                <div className="flex w-min">
-                    <BasicButton>
-                        <div className='flex items-center px-4 py-0.5 gap-2'>
-                            <span className='font-medium'>Explore More Bonds</span>
+                <HorizontalLoading className='h-64 w-full'/>
+                <>
+                    <ContractsContainer contracts={contracts}/>
+                    <Link href='/bonds/explore' className='z-50'>
+                        <div className="flex w-min">
+                            <BasicButton>
+                                <div className='flex items-center px-4 py-0.5 gap-2'>
+                                    <span className='font-medium'>Explore More Bonds</span>
+                                </div>
+                            </BasicButton>
                         </div>
-                    </BasicButton>
-                </div>
-            </Link>
+                    </Link>
+                </>
+            </ToggleBetweenChildren>
         </div>
     )
 }

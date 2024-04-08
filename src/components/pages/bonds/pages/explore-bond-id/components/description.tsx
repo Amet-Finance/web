@@ -64,8 +64,8 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: Re
             const body: DescriptionEditParams = {
                 contractAddress: contractInfo.contractAddress,
                 chainId: contractInfo.chainId,
-                title: descriptionDetails.title,
-                description: descriptionDetails.description,
+                title: descriptionDetails.title || contractDescription?.details?.title || "",
+                description: descriptionDetails.description || contractDescription?.details?.description || "",
             }
             const descriptionUpdated = await CloudAPI.updateContractDescription(body, params);
             setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})

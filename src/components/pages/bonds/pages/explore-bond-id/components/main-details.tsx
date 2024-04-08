@@ -11,7 +11,6 @@ import WarningSVG from "../../../../../../../public/svg/utils/warning";
 import InfoBox from "@/components/utils/info-box";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import {ConditionalRenderer} from "@/components/utils/container";
-import CalculatorController from "@/components/pages/bonds/utils/calculator";
 import {constants} from 'amet-utils';
 
 const {CHAIN_BLOCK_TIMES} = constants;
@@ -31,9 +30,6 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
         issuanceDate,
     } = contractInfo;
 
-
-
-    const tbv = CalculatorController.tbv(contractInfo);
     const maturityPeriodTime = formatTime(CHAIN_BLOCK_TIMES[chainId] * maturityPeriodInBlocks, true, true, true)
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
@@ -51,7 +47,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     return <div
         className='flex flex-col gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
-            <div className='flex md:flex-row flex-col justify-between w-full gap-4 items-center'>
+            <div className='flex md:flex-row flex-col justify-between w-full gap-4 items-start'>
                 <div className='flex items-center gap-2 md:w-max w-full'>
                     <div className='md:w-12 md:h-12 w-10 h-10 rounded-full'>
                         <Image src={payoutIcon} alt={payout.name}
@@ -115,7 +111,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
             <div className='grid grid-cols-6 gap-4 mt-4 w-full'>
                 <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
                     <span
-                        className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean)} {purchase.symbol}</span>
+                        className='md:text-xl text-base font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
                     <span className='text-sm text-neutral-400'>Purchase</span>
                 </div>
                 <div className='lg:col-span-2 col-span-3 flex flex-col justify-end w-full'>
@@ -131,12 +127,8 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                 </div>
                 <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
                     <span
-                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean)} {payout.symbol}</span>
+                        className='md:text-xl text-base font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
                     <span className='text-sm text-neutral-400'>Payout</span>
-                </div>
-                <div className='lg:col-span-2 col-span-3  flex flex-col justify-end w-full'>
-                    <span className='md:text-xl text-base font-bold'>${formatLargeNumber(tbv, true)}</span>
-                    <span className='text-sm text-neutral-400'>Total Bonded Volume</span>
                 </div>
             </div>
             <div className='flex items-center justify-between w-full text-sm'>

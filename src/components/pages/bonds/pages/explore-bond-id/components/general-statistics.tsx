@@ -216,7 +216,7 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
-                {logs.filter(filterMyLogs)
+                {logs.sort((a, b) => b.block - a.block).filter(filterMyLogs)
                     .map(log =>
                         <LogContainer
                             contractInfo={contractInfo}

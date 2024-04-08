@@ -11,32 +11,36 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
     const {totalBonds, purchased, redeemed, purchase, payout} = contractInfo;
 
 
+    const isSoldOut = totalBonds === redeemed;
+    const soldOutTitle = "SOLD OUT";
+
     const calculatedYield = CalculatorController.yieldRate(contractInfo);
     const score = CalculatorController.score(contractInfo);
     const securedPercentage = CalculatorController.securedPercentage(contractInfo)
+    const volume = CalculatorController.tbv(contractInfo)
 
-    const maxVolume = (totalBonds * (purchase.priceUsd ?? 0)) + (totalBonds * (payout.priceUsd ?? 0))
-    const volume = (purchased * (purchase.priceUsd ?? 0)) + (redeemed * (payout.priceUsd ?? 0))
+    const maxVolume = (totalBonds * purchase.amountClean * (purchase.priceUsd ?? 0)) + (totalBonds * payout.amountClean * (payout.priceUsd ?? 0));
 
     const payoutBalanceClean = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(contractInfo.payout.decimals))).toNumber();
 
     return (
         <div className='grid grid-cols-4 gap-4 w-full'>
             <Container title='Bond Score'
-                       value={`${format(score, 2)}`}
+                       value={isSoldOut ? soldOutTitle : `${format(score, 2)}`}
                        info={STATISTICS_DEFINITION.BondScore}
-                       valueColor={tColor(score * 10)}/>
+                       valueColor={isSoldOut ? "text-neutral-400" : tColor(score * 10)}/>
             <Container title='Secured Percentage'
-                       value={`${format(securedPercentage, 2)}%`}
+                       value={isSoldOut ? soldOutTitle : `${format(securedPercentage, 2)}%`}
                        valueTitle={`${formatLargeNumber(payoutBalanceClean)} ${contractInfo.payout.symbol}`}
                        info={STATISTICS_DEFINITION.SecuredPercentage}
-                       valueColor={tColor(securedPercentage)}/>
+                       valueColor={isSoldOut ? "text-neutral-400" : tColor(securedPercentage)}/>
             <Container title='Volume'
                        value={`$${formatLargeNumber(volume)}`}
+                       valueTitle={`${volume} USD`}
                        info={STATISTICS_DEFINITION.Volume}
-                       valueColor={tColor(volume / maxVolume * 10)}/>
+                       valueColor={tColor(volume / maxVolume * 100)}/>
             <Container title='Yield Rate'
-                       value={`${calculatedYield}%`}
+                       value={`${formatLargeNumber(calculatedYield)}%`}
                        info={STATISTICS_DEFINITION.FixedYieldRate}
                        valueColor={tColor(100)}/>
         </div>

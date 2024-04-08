@@ -5,7 +5,9 @@ export default function FinishedComponent({contractInfo}: Readonly<{ contractInf
     const {totalBonds, purchased, redeemed} = contractInfo;
     if (totalBonds !== redeemed) return null;
 
-    return <div className='bg-neutral-700 rounded-md w-full p-2 border border-neutral-600 text-center'>
-        <h1>This bond has been fully purchased and redeemed!</h1>
-    </div>
+    return (
+        <div className=' rounded-2xl w-full p-4 border border-neutral-900 text-center'>
+            <span className='font-medium'>This bond has been fully purchased and redeemed!</span>
+        </div>
+    )
 }

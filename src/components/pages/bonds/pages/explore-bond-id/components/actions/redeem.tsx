@@ -8,19 +8,15 @@ import {Loading} from "@/components/utils/loading";
 import {Agreement, Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {ContractBalance} from "@/modules/api/type";
-import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
 import {nop} from "@/modules/utils/function";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
-import GraphqlAPI from "@/modules/api/graphql";
-import {useAccount} from "wagmi";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 
-// todo see if bond is mature, and if not show button
 // todo add capitulation as well
 
 export default function RedeemTab({contractInfo}: Readonly<{
@@ -28,12 +24,10 @@ export default function RedeemTab({contractInfo}: Readonly<{
 }>) {
 
     const {contractAddress, chainId, payout} = contractInfo;
-    const {address} = useAccount();
 
-    const chain = getChain(chainId)
+    const chain = getChain(chainId);
 
     const [currentBlock, setCurrentBlock] = useState(0);
-    const [purchaseBlocks, setPurchaseBlocks] = useState({})
     const [bondIndexes, setBondIndexes] = useState([] as Array<number>)
 
     const balancesStore = useSelector((item: RootState) => item.account).balances;
@@ -43,8 +37,9 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
 
-    const totalQuantity = Object.values(balances).reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
-    const totalMatureQuantity = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, balances);
+    const totalQuantity = balances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
+    const matureTokenIds = getMatureTokenIds(currentBlock, contractInfo.maturityPeriodInBlocks, balances);
+    const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (balances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
@@ -55,6 +50,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     let title = "Redeem"
     if (notEnoughLiquidity) title = "Not Enough Liquidity"
     if (redeemingMoreThenAvailable) title = "Max Bonds Reached"
+    if (redemptionCount > matureQuantity) title = "Not Mature"
 
 
     const config = {
@@ -73,7 +69,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
             }
 
             request();
-            const interval = setInterval(request, UPDATE_INTERVAL);
+            const interval = setInterval(request, 3000);
             return () => clearInterval(interval);
         }
     }, [chain]);
@@ -152,14 +148,24 @@ export default function RedeemTab({contractInfo}: Readonly<{
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"redeeming"}/>
 
-                <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
-                    <div className='flex items-center gap-2'>
-                        <ConditionalRenderer isOpen={isLoading}>
-                            <Loading percent={75} color="#000"/>
-                        </ConditionalRenderer>
-                        {title}
-                    </div>
-                </DefaultButton>
+                <div className='grid grid-cols-10 gap-1'>
+                    <DefaultButton onClick={submit} disabled={blockClick} classType='1' additionalClassName='col-span-7'>
+                        <div className='flex items-center gap-2'>
+                            <ConditionalRenderer isOpen={isLoading}>
+                                <Loading percent={75} color="#000"/>
+                            </ConditionalRenderer>
+                            {title}
+                        </div>
+                    </DefaultButton>
+                    <DefaultButton onClick={submit} disabled={blockClick} classType='3' additionalClassName='col-span-3'>
+                        <div className='flex items-center gap-2'>
+                            <ConditionalRenderer isOpen={isLoading}>
+                                <Loading percent={75} color="#000"/>
+                            </ConditionalRenderer>
+                            {"Capitulate"}
+                        </div>
+                    </DefaultButton>
+                </div>
             </div>
         </div>
     )
@@ -171,7 +177,7 @@ function getMatureTokenIds(currentBlock: number, maturityPeriodInBlocks: number,
     const matureTokenIds = []
 
     for (const balanceInfo of balances) {
-        if (BigInt(balanceInfo.purchaseBlock) + BigInt(maturityPeriodInBlocks) <= currentBlock) {
+        if (currentBlock - maturityPeriodInBlocks > balanceInfo.purchaseBlock) {
             matureTokenIds.push(balanceInfo.tokenId);
         }
     }

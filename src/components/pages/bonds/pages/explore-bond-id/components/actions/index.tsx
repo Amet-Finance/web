@@ -48,7 +48,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
 
 
     const balances = useSelector((item: RootState) => item.account).balances;
-    const contractBalances: ContractBalance[] = balances[contractAddress.toLowerCase()] || []
+    const contractBalances: ContractBalance[] = balances[contractAddress.toLowerCase()] || [];
     const total = Object.values(contractBalances).reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
 
     const components: ActionHeadlineComponent[] = [
