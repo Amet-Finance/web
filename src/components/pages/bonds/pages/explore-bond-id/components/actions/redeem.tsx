@@ -147,25 +147,14 @@ export default function RedeemTab({contractInfo}: Readonly<{
                 </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"redeeming"}/>
-
-                <div className='grid grid-cols-10 gap-1'>
-                    <DefaultButton onClick={submit} disabled={blockClick} classType='1' additionalClassName='col-span-7'>
+                <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
                         <div className='flex items-center gap-2'>
                             <ConditionalRenderer isOpen={isLoading}>
                                 <Loading percent={75} color="#000"/>
                             </ConditionalRenderer>
                             {title}
                         </div>
-                    </DefaultButton>
-                    <DefaultButton onClick={submit} disabled={blockClick} classType='3' additionalClassName='col-span-3'>
-                        <div className='flex items-center gap-2'>
-                            <ConditionalRenderer isOpen={isLoading}>
-                                <Loading percent={75} color="#000"/>
-                            </ConditionalRenderer>
-                            {"Capitulate"}
-                        </div>
-                    </DefaultButton>
-                </div>
+                </DefaultButton>
             </div>
         </div>
     )

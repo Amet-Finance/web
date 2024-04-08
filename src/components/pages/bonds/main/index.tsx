@@ -81,11 +81,11 @@ function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatis
 function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
 
 
-    const totalVolume = `$${formatLargeNumber((statistics.volume || 0), true).toString()}`
+    const totalVolume = `$${formatLargeNumber((statistics.volume || 0), false).toString()}`
 
     return <>
         <div className='relative grid grid-cols-2 grid-rows-3 gap-4 h-min hollow-shadow w-full '>
-            <StatisticsBox value={statistics.issued}
+            <StatisticsBox value={formatLargeNumber(statistics.issued)}
                            isLoading={isStatisticsLoading}
                            title="Total Issued"
                            classAttributes="col-span-1 row-span-1"/>
@@ -93,11 +93,11 @@ function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStat
                            isLoading={isStatisticsLoading}
                            title="Total Volume"
                            classAttributes='col-span-1 row-span-2 pr-16'/>
-            <StatisticsBox value={statistics.purchased}
+            <StatisticsBox value={formatLargeNumber(statistics.purchased)}
                            isLoading={isStatisticsLoading}
                            title="Total Purchased"
                            classAttributes='col-span-1 row-span-2'/>
-            <StatisticsBox value={statistics.redeemed}
+            <StatisticsBox value={formatLargeNumber(statistics.redeemed)}
                            isLoading={isStatisticsLoading}
                            title="Total Redeemed"
                            classAttributes='col-span-1 row-span-1 pr-16'/>
