@@ -197,7 +197,7 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                     }
                 </div>
             </div>
-            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-y-auto whitespace-nowrap'>
+            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-auto whitespace-nowrap'>
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400'>From</span>
                 </div>
@@ -216,12 +216,14 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
-                {logs.sort((a, b) => b.block - a.block).filter(filterMyLogs)
+                {
+                    logs.toSorted((a, b) => b.block - a.block).filter(filterMyLogs)
                     .map(log =>
                         <LogContainer
                             contractInfo={contractInfo}
                             log={log}
-                            key={log.id}/>)}
+                            key={log.id}/>)
+                }
             </div>
         </div>
     )

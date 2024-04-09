@@ -4,6 +4,13 @@ import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ARTICLES: Article[] = [
     {
+        title: "Introducing Referral Rewards",
+        href: "https://medium.com/@amet-finance/elevating-defi-engagement-introducing-amet-finance-v2s-referral-rewards-2f27dbf3185b",
+        image: "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*DYV2vjnk0LoSZ7uK_4bORA.png",
+        date: "Apr 10, 2024",
+        paragraph: 'Discover how to turn your network into net worth with Amet Finance v2! 💸 Introducing our latest feature: Referral Rewards. Share the love, introduce friends to Amet, and earn up to 2% on their bond purchases! '
+    },
+    {
         title: "Social Authority As Collateral",
         href: "https://medium.com/@amet-finance/social-authority-as-collateral-b95594eccfd1",
         image: "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*Kl5M9VjOrrAvlhSGApTXyg.png",
