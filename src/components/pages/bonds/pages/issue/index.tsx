@@ -263,7 +263,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                         info={infoObject}/>
         <ConditionalRenderer isOpen={isShow}>
             <div
-                className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10 h-56 overflow-y-auto'>
+                className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10 max-h-56 overflow-y-auto'>
                 {verifiedTokensArray.map(token => <TokenForSelector token={token}
                                                                     key={token.contractAddress}
                                                             onClick={selectToken}/>)}
