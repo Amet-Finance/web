@@ -166,8 +166,6 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
     logs: ActionLogFormat[]
 }>) {
 
-
-    console.log(logs)
     const ActivityTypes = {
         All: "All",
         My: "My Activity"

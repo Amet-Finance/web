@@ -233,7 +233,7 @@ async function getAccountInformation(params: AccountInformationQuery) {
 `
     const response = await indexerRequest(params.chainId, query)
 
-    console.log(response)
+    console.log(`getAccountInformation`, response)
 }
 
 async function getBalances(address: string, chainId: number): Promise<Balances> {
