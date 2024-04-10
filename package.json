@@ -12,7 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@web3modal/wagmi": "^3.5.7",
-    "amet-utils": "^1.5.3",
+    "amet-utils": "^1.5.4",
     "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",
     "chart.js": "^4.4.0",

@@ -1,5 +1,10 @@
 import {postAPI, requestAPI} from "@/modules/api/util";
-import {ContractCoreDetails, ContractExtendedFormatAPI, ContractQuery} from "@/modules/api/contract-type";
+import {
+    AccountInformationQuery,
+    ContractCoreDetails,
+    ContractExtendedFormatAPI,
+    ContractQuery
+} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import {constants} from "amet-utils";
@@ -12,7 +17,6 @@ function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
         [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/version/0.5.2/api`
     }
-
     return API[chainId];
 }
 
@@ -62,12 +66,10 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
                     }
         `
 
-    const response = await postAPI({
-        url: getApi(chainId),
-        body: {query}
-    });
-    const bonds: any = response.data?.bonds;
-    const block = response.data?._meta.block.number;
+    const response = await indexerRequest(chainId, query)
+
+    const bonds: any = response.bonds;
+    const block = response._meta.block.number;
 
     return bonds.map((item: any) => transformCoreDetails(item, chainId, block)) as ContractCoreDetails[]
 }
@@ -123,17 +125,16 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
                   }
                 }
             `
-    const response = await postAPI({
-        url: getApi(chainId),
-        body: {query}
-    });
 
-    const block = response.data?._meta.block.number;
-    const bond = response.data?.bond;
+
+    const response = await indexerRequest(chainId, query)
+    const block = response._meta.block.number;
+    const bond = response.bond;
     const contractInfo = transformCoreDetails(bond, chainId, block);
     const actionLogs = transformActionDetails(bond)
     const contractDescription = await requestAPI({url: bond?.uri});
     if (!contractInfo) return null;
+
 
     return {
         contractDescription: {
@@ -147,26 +148,110 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     }
 }
 
+async function getAccountInformation(params: AccountInformationQuery) {
+    const addressLowercase = params.address.toLowerCase()
+    const query = `
+    {
+          user(id: "${addressLowercase}") {
+            tokenBalances(where: {balance_gt: "0"}) {
+              balance
+              bond {
+                id
+                isSettled
+                issuanceBlock
+                issuanceDate
+                issuer {
+                  id
+                }
+                maturityPeriodInBlocks
+                owner {
+                  id
+                }
+                payoutAmount
+                payoutBalance
+                payoutToken {
+                  decimals
+                  id
+                  name
+                  symbol
+                }
+                purchaseAmount
+                purchaseToken {
+                  decimals
+                  id
+                  name
+                  symbol
+                }
+                purchased
+                redeemed
+                totalBonds
+                uri
+              }
+              purchaseBlock
+              tokenId
+            }
+          }
+          bonds(where: {owner_: {id: "${addressLowercase}"}}) {
+            id
+            isSettled
+            issuanceBlock
+            issuanceDate
+            issuer {
+              id
+            }
+            maturityPeriodInBlocks
+            owner {
+              id
+            }
+            payoutAmount
+            payoutBalance
+            payoutToken {
+              decimals
+              id
+              name
+              symbol
+            }
+            purchaseAmount
+            purchaseToken {
+              decimals
+              id
+              name
+              symbol
+            }
+            purchased
+            redeemed
+            totalBonds
+            uri
+          }
+          _meta {
+            block {
+              number
+              timestamp
+            }
+          }
+        }
+`
+    const response = await indexerRequest(params.chainId, query)
+
+    console.log(response)
+}
+
 async function getBalances(address: string, chainId: number): Promise<Balances> {
     const query = `{
-  user(id: "${address.toLowerCase()}") {
-    tokenBalances(where: {balance_gt: "0"}) {
-      balance
-      tokenId
-      bond {
-        id
-      }
-      purchaseBlock
-    }
-  }
-}`
+              user(id: "${address.toLowerCase()}") {
+                tokenBalances(where: {balance_gt: "0"}) {
+                  balance
+                  tokenId
+                  bond {
+                    id
+                  }
+                  purchaseBlock
+                }
+              }
+            }`
 
-    const response = await postAPI({
-        url: getApi(chainId),
-        body: {query}
-    });
-
-    const userInfo: any = response.data?.user;
+    const response = await indexerRequest(chainId, query);
+    const userInfo = response.user;
 
     const balances: Balances = {}
     userInfo.tokenBalances.forEach((item: any) => {
@@ -187,25 +272,39 @@ async function getBalances(address: string, chainId: number): Promise<Balances> 
 
 async function getBalance(address: string, bondAddress: string, chainId: number): Promise<ContractBalance[]> {
     const query = `{
-  user(id: "${address.toLowerCase()}") {
-    tokenBalances(where: {balance_gt: "0", bond_: {id: "${bondAddress.toLowerCase()}"}}) {
-      balance
-      tokenId
-      purchaseBlock
-    }
-  }
-}`
+              user(id: "${address.toLowerCase()}") {
+                tokenBalances(where: {balance_gt: "0", bond_: {id: "${bondAddress.toLowerCase()}"}}) {
+                  balance
+                  tokenId
+                  purchaseBlock
+                }
+              }
+            }`
 
-    const response = await postAPI({
-        url: getApi(chainId),
-        body: {query}
-    });
-    const userInfo: any = response.data?.user;
+    const response = await indexerRequest(chainId, query)
+    const userInfo: any = response.user;
     return userInfo.tokenBalances.map((item: any) => ({
         balance: Number(item.balance),
         purchaseBlock: Number(item.purchaseBlock),
         tokenId: Number(item.tokenId)
     }))
+}
+
+async function indexerRequest(chainId: number, query: string): Promise<any> {
+    if (!getApi(chainId)) {
+        throw Error(`Indexer for ${chainId} is not supported!`)
+    }
+
+    const response = await postAPI({
+        url: getApi(chainId),
+        body: {query}
+    });
+
+    if (!response?.data) {
+        throw Error("Indexer response is missing")
+    }
+
+    return response.data;
 }
 
 function transformCoreDetails(item: any, chainId: number, block: string): ContractCoreDetails | null {
@@ -279,6 +378,7 @@ const GraphqlAPI = {
     getContracts,
     getContractExtended,
     getBalance,
-    getBalances
+    getBalances,
+    getAccountInformation
 }
 export default GraphqlAPI;

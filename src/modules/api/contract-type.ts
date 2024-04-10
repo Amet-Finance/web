@@ -1,6 +1,11 @@
 import {TokenCore, TokenResponse} from "@/modules/api/type";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
+type AccountInformationQuery = {
+    address: string,
+    chainId: number
+}
+
 type ContractQuery = {
     chainId: number,
     skip?: number,
@@ -93,6 +98,7 @@ type DescriptionEditParams = {
 }
 
 export type  {
+    AccountInformationQuery,
     ContractCoreDetails,
     ContractDescription,
     FinancialAttributeInfo,

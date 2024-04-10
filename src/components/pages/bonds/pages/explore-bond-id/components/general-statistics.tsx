@@ -166,6 +166,8 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
     logs: ActionLogFormat[]
 }>) {
 
+
+    console.log(logs)
     const ActivityTypes = {
         All: "All",
         My: "My Activity"
@@ -217,7 +219,7 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
                 {
-                    logs.toSorted((a, b) => b.block - a.block).filter(filterMyLogs)
+                    logs.sort((a, b) => b.block - a.block).filter(filterMyLogs)
                     .map(log =>
                         <LogContainer
                             contractInfo={contractInfo}
@@ -239,10 +241,10 @@ function LogContainer({contractInfo, log}: Readonly<{ contractInfo: ContractCore
 
     if (log.type === LogTypes.Redeem) {
         typeClass = "bg-green-950 text-green-500"
-        value = `${payout.amountClean * log.count} ${payout.symbol}`
+        value = `${formatLargeNumber(payout.amountClean * log.count, false, 5)} ${payout.symbol}`
     } else if (log.type === LogTypes.Purchase) {
         typeClass = "bg-red-950 text-red-500"
-        value = `${purchase.amountClean * log.count} ${purchase.symbol}`
+        value = `${formatLargeNumber(purchase.amountClean * log.count, false, 5)} ${purchase.symbol}`
     } else {
         typeClass = "bg-neutral-800 text-neutral-200"
     }

@@ -12,8 +12,8 @@ import CloudAPI from "../../../../modules/api/cloud";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/api/type";
 import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
-import {base} from "wagmi/chains";
 import {useContracts} from "@/components/pages/bonds/utils/contracts";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)
@@ -129,7 +129,7 @@ function StatisticsBox({classAttributes, value, title, isLoading}: {
 
 function BondCards() {
 
-    const [params, setParams] = useState<ContractQuery>({limit: 12, chainId: base.id})
+    const [params, setParams] = useState<ContractQuery>({limit: 12, chainId: defaultChain.id})
     const {contracts, isLoading} = useContracts(params);
 
     return (

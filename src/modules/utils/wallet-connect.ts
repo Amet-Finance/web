@@ -1,6 +1,7 @@
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react';
-import {base, polygonMumbai} from 'wagmi/chains';
+import {base} from 'wagmi/chains';
 import {Chain} from "wagmi";
+import {joltevmDev} from "@/modules/utils/custom-chains";
 
 const projectId = '777e05ce479a4c4b6e33deaed761ef5b'
 
@@ -11,7 +12,7 @@ const metadata = {
     icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const CHAINS = [base, polygonMumbai]
+const CHAINS = [base, joltevmDev]
 const defaultChain = CHAINS[0];
 const wagmiConfig = defaultWagmiConfig({
     chains: CHAINS,
