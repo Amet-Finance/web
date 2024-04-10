@@ -10,9 +10,9 @@ import {base} from "wagmi/chains";
 
 function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
-        [base.id]: `https://gateway-arbitrum.network.thegraph.com/api/6d563e0becc20d2d52c08ca555d0a735/subgraphs/id/JBBiYxUHriMu5GpUtiuPLzroZbD6aGkaoipdLRn47BMy`
+        [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/version/0.5.2/api`
     }
-    
+
     return API[chainId];
 }
 

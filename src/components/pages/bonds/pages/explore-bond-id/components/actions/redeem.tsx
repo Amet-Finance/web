@@ -41,13 +41,14 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
     const redeemingMoreThenAvailable = redemptionCount > totalQuantity
+    const notMature = redemptionCount > matureQuantity
 
 
-    const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || redemptionCount <= 0;
+    const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || notMature || redemptionCount <= 0;
     let title = "Redeem"
     if (notEnoughLiquidity) title = "Not Enough Liquidity"
     if (redeemingMoreThenAvailable) title = "Max Bonds Reached"
-    if (redemptionCount > matureQuantity) title = "Not Mature"
+    if (notMature) title = "Not Mature"
 
 
     const config = {
@@ -65,7 +66,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     }
 
     function setPercentage(percent: number) {
-        const count = totalQuantity ? Math.max(Math.floor(totalQuantity * percent / 100), 1) : 0;
+        const count = matureQuantity ? Math.max(Math.floor(matureQuantity * percent / 100), 1) : 0;
         setCount(count)
     }
 
