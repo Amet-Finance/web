@@ -1,5 +1,6 @@
 import {postAPI, requestAPI} from "@/modules/api/util";
 import {
+    AccountExtendedFormat,
     AccountInformationQuery,
     ContractCoreDetails,
     ContractExtendedFormatAPI,
@@ -148,8 +149,11 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     }
 }
 
-async function getAccountInformation(params: AccountInformationQuery) {
-    const addressLowercase = params.address.toLowerCase()
+async function getAccountInformation({chainId, address}: AccountInformationQuery): Promise<AccountExtendedFormat> {
+    // todo we can add historical purchases as well by removing balance_gt: "0"
+    // todo can add action logs as well
+
+    const addressLowercase = address.toLowerCase()
     const query = `
     {
           user(id: "${addressLowercase}") {
@@ -231,9 +235,25 @@ async function getAccountInformation(params: AccountInformationQuery) {
           }
         }
 `
-    const response = await indexerRequest(params.chainId, query)
+    const response = await indexerRequest(chainId, query)
 
-    console.log(`getAccountInformation`, response)
+    const block = response._meta.block.number;
+    const issued = response.bonds.map((item: any) => transformCoreDetails(item, chainId, block))
+    const balances = response.user.tokenBalances.map((item: any) => {
+        const bond = transformCoreDetails(item.bond, chainId, block);
+        return {
+            bond,
+            balance: Number(item.balance),
+            purchaseBlock: Number(item.purchaseBlock),
+            tokenId: Number(item.tokenId)
+        }
+    });
+
+    return {
+        address: addressLowercase,
+        balances,
+        issued
+    }
 }
 
 async function getBalances(address: string, chainId: number): Promise<Balances> {

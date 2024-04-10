@@ -11,7 +11,6 @@ import Link from "next/link";
 import {BasicButton} from "@/components/utils/buttons";
 import BurgerSVG from "../../../public/svg/utils/burger";
 import XmarkSVG from "../../../public/svg/utils/xmark";
-import TopAnnouncement from "@/components/announcements/top-announcement";
 import {shorten} from "@/modules/web3/util";
 import Image from "next/image";
 import SettingsSVG from "../../../public/svg/utils/settings";
@@ -139,12 +138,12 @@ function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBaseType, isE
 }
 
 function WalletComponent() {
-    const {isConnected} = useAccount();
+    const {address} = useAccount();
     const {isOpen, setIsOpen} = useShow();
 
     useEffect(() => {
-        setIsOpen(isConnected);
-    }, [isConnected]);
+        setIsOpen(Boolean(address));
+    }, [address]);
 
     return (
         <div className='cursor-pointer text-white'>

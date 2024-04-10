@@ -1,4 +1,4 @@
-import {TokenCore, TokenResponse} from "@/modules/api/type";
+import {ContractBalance, TokenCore, TokenResponse} from "@/modules/api/type";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
 type AccountInformationQuery = {
@@ -97,6 +97,13 @@ type DescriptionEditParams = {
     description: string
 }
 
+type AccountExtendedFormat = {
+    address: string,
+    balances: (ContractBalance & { bond: ContractCoreDetails })[],
+    issued: ContractCoreDetails[]
+}
+
+
 export type  {
     AccountInformationQuery,
     ContractCoreDetails,
@@ -106,7 +113,8 @@ export type  {
     ContractQuery,
     ContractExtendedFormatAPI,
     ContractExtendedFormat,
-    DescriptionEditParams
+    DescriptionEditParams,
+    AccountExtendedFormat
 }
 
 
