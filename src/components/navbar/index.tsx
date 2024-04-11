@@ -138,27 +138,32 @@ function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBaseType, isE
 }
 
 function WalletComponent() {
-    const {address} = useAccount();
-    const {isOpen, setIsOpen} = useShow();
+
+    const [accountState, setAccountState] = useState(AccountController.state)
 
     useEffect(() => {
-        setIsOpen(Boolean(address));
-    }, [address]);
+        AccountController.subscribe(newState => setAccountState({
+            address: newState.address,
+            isConnected: newState.isConnected,
+            profileImage: newState.profileImage,
+            profileName: newState.profileName,
+            balance: newState.balance,
+            balanceSymbol: newState.balanceSymbol
+        }))
+    }, []);
 
     return (
         <div className='cursor-pointer text-white'>
-            <ToggleBetweenChildren isOpen={isOpen}>
-                <ConnectedComponent/>
+            <ToggleBetweenChildren isOpen={accountState.isConnected}>
+                <ConnectedComponent accountState={accountState}/>
                 <ConnectWalletComponent/>
             </ToggleBetweenChildren>
         </div>
     );
 }
 
-function ConnectedComponent() {
+function ConnectedComponent({accountState}: { accountState: AccountControllerState }) {
 
-
-    const [accountState, setAccountState] = useState(AccountController.state)
 
     const network = useNetwork();
     const chain = getChain(network.chain?.id);
@@ -175,17 +180,6 @@ function ConnectedComponent() {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside)
     }, [boxRef]);
-
-    useEffect(() => {
-        AccountController.subscribe(newState => setAccountState({
-            address: newState.address,
-            isConnected: newState.isConnected,
-            profileImage: newState.profileImage,
-            profileName: newState.profileName,
-            balance: newState.balance,
-            balanceSymbol: newState.balanceSymbol
-        }))
-    }, []);
 
     return <div className='relative text-black' ref={boxRef}>
         <BasicButton onClick={openOrClose}>

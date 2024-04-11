@@ -15,11 +15,11 @@ import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 
 export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
-    return <div className='flex flex-col h-full w-full'>
-        <div className='grid grid-cols-4 gap-2'>
+    return <div className='flex flex-col w-full max-h-full overflow-y-auto'>
+        <div className='flex flex-col gap-2'>
             <DepositPayout contractInfo={contractInfo}/>
             <Settle contractInfo={contractInfo}/>
-            <WithdrawExcessInterest contractInfo={contractInfo}/>
+            <WithdrawExcessPayout contractInfo={contractInfo}/>
             <UpdateBondSupply contractInfo={contractInfo}/>
             <DecreaseMaturityPeriod contractInfo={contractInfo}/>
             <ChangeOwner contractInfo={contractInfo}/>
@@ -84,19 +84,24 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>)
     }
 
     return <button
-        className="flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
-        onClick={submit}>Settle
+        className="col-span-4 flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
+        onClick={submit}>Settle Bonds
         {isLoading && <Loading percent={80}/>}</button>
 }
 
-function WithdrawExcessInterest({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {contractAddress, chainId} = contractInfo;
+function WithdrawExcessPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
+
+    const {contractAddress, chainId, payoutBalance, totalBonds, redeemed, payout} = contractInfo;
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.WithdrawExcessPayout, {contractAddress})
 
+    const excessPayout = BigNumber(payoutBalance).minus(BigNumber(totalBonds - redeemed).times(BigNumber(payout.amount)))
+    const excessPayoutClean = excessPayout.div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
 
     return <button
-        className={`col-span-3 flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
-        onClick={submitTransaction}>Withdraw Excess Payout
+        className={`col-span-4 flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
+        onClick={submitTransaction}>Withdraw Excess Payout <ConditionalRenderer
+        isOpen={Boolean(excessPayoutClean)}>-<span
+        className='text-green-500'>{excessPayoutClean} {payout.symbol}</span></ConditionalRenderer>
         {isLoading && <Loading percent={80}/>}</button>
 }
 

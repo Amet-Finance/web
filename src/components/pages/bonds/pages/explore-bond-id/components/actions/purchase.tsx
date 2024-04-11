@@ -96,11 +96,11 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                 <ConditionalRenderer isOpen={Boolean(totalPrice)}>
                         <div
                             className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-neutral-700 h-full whitespace-nowrap'>
-                    <span
-                        className='text-4xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
+                            <span
+                                className='text-4xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
                             <span className='text-xs'>Total Purchase Amount:</span>
                         </div>
-                    </ConditionalRenderer>
+                </ConditionalRenderer>
                     <div className='flex flex-col gap-2'>
                         <div
                             className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
