@@ -3,7 +3,8 @@ const ModalTypes = {
     ConnectWallet: 'connect-wallet',
     IssuedBondSuccess: "issued-bond-success",
     Quiz: "quiz",
-    ClaimReferralRewards: "claim-referral-rewards"
+    ClaimReferralRewards: "claim-referral-rewards",
+    AcceptTermsConditions: "accept-terms-conditions"
 }
 
 export {

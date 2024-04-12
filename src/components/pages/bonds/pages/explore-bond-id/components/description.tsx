@@ -6,7 +6,7 @@ import SaveSVG from "../../../../../../../public/svg/utils/save";
 import EditSVG from "../../../../../../../public/svg/utils/edit";
 import {ToggleBetweenChildren} from "@/components/utils/container";
 import CloudAPI from "@/modules/api/cloud";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
+import {useConnectWallet} from "@/modules/utils/address";
 
 export default function DescriptionContainer({bondDetailed, setBondDetailed}: Readonly<{
     bondDetailed: ContractExtendedFormat,
@@ -18,7 +18,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: Re
 
     const message = `To ensure the security of your bond description update, please sign this request with your wallet. This signature is needed to verify the authenticity of the modification. Make sure to review the changes before signing. Your signature helps maintain the integrity of the information on the Amet Finance platform\n\nContract: ${contractAddress} \nNonce: ${Date.now()}`;
 
-    const {open} = useWeb3Modal();
+    const {open} = useConnectWallet();
     const {address} = useAccount();
     const [isHidden, setIsHidden] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);

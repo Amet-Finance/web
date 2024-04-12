@@ -10,6 +10,7 @@ import MediumSVG from "../../../public/svg/social/medium";
 import GithubSVG from "../../../public/svg/social/github";
 import FacebookSVG from "../../../public/svg/social/facebook";
 import {GeneralContainer} from "@/components/utils/container";
+import {FOOTER_LINKS} from "@/components/footer/constants";
 
 export default function Footer() {
     return <>
@@ -18,7 +19,7 @@ export default function Footer() {
             <GeneralContainer
                 className="flex md:flex-row flex-col md:items-start items-center gap-8 justify-between py-10 w-full"
                 isPadding>
-                <div className='flex flex-col md:items-start items-center gap-2'>
+                <div className='flex flex-col md:items-start items-center gap-2.5'>
                     <AmetLogo/>
                     <div className='flex gap-3.5 w-full'>
                         <TwitterSVG url={URLS.Twitter}/>
@@ -30,61 +31,60 @@ export default function Footer() {
                         <GithubSVG url={URLS.Github}/>
                         <FacebookSVG url={URLS.Facebook}/>
                     </div>
-                    <span className='text-g2 md:flex hidden'>&#169; 2023 Amet Finance. All rights reserved.</span>
+                    <Disclaimer className='md:flex hidden'/>
                 </div>
                 <Links/>
-                <span className="text-g2 text-center whitespace-nowrap md:hidden flex">&#169; 2023 Amet Finance. All rights reserved.</span>
+                <Disclaimer className='md:hidden flex'/>
+            </GeneralContainer>
+            <GeneralContainer className='flex flex-col gap-0.5 pb-12'>
+                <p className='text-mm text-neutral-600'><b>Disclaimer</b>: Amet Finance is an open-source and
+                    permissionless
+                    platform where anyone can issue, manage, and trade bonds. It is important to understand that all
+                    activities conducted on the platform are at the {`user's`} discretion and risk. The content and
+                    tools
+                    provided by Amet Finance are for informational purposes only and should not be construed as
+                    financial advice. We encourage all users to do their own research (DYOR) and consider their
+                    financial situation and risk tolerance before engaging in bond issuance, management, or trading.
+                    Amet Finance does not take responsibility for individual investment decisions, losses, or gains.</p>
             </GeneralContainer>
         </footer>
     </>
 }
 
+function Disclaimer({className}: { className: string }) {
+    return (
+        <p className={`text-neutral-600 text-xs text-center whitespace-nowrap ${className}`}>&#169; 2023 Amet Finance.
+            All rights reserved.</p>)
+}
+
 function Links() {
 
-    const links = [
-        {
-            title: "About Us",
-            attributes: [
-                {title: 'Terms Of Service', url: URLS.TermsOfService},
-                {title: 'Privacy Policy', url: URLS.PrivacyPolicy},
-                {title: 'Brand Assets', url: URLS.BrandAssets},
-                {title: 'DefiLlama', url: URLS.DefiLlama},
-            ]
-        },
-        {
-            title: "Get Help",
-            attributes: [
-                {title: 'Status', url: URLS.StatusPage},
-                {title: 'Contact Us', url: URLS.ContactUs},
-                {title: 'FAQ', url: URLS.FAQ_INVESTOR},
-            ]
-        }
-    ]
 
-    function LinkComponent({item}: any) {
-        return <>
-            <div className='flex flex-col gap-4' key={item.title}>
-                <span className='text-neutral-200'>{item.title}</span>
-                <div className='flex flex-col gap-1'>
-                    {item.attributes.map((attribute: any, index: number) => <Attribute info={attribute} key={index}/>)}
-                </div>
-            </div>
-        </>
-    }
-
-
-    return <>
+    return (
         <div className='flex gap-8'>
-            {links.map(item => <LinkComponent item={item} key={item.title}/>)}
+            {FOOTER_LINKS.map(item => <LinkComponent item={item} key={item.title}/>)}
         </div>
-    </>
+    )
 }
+
+
+function LinkComponent({item}: any) {
+    return (
+        <div className='flex flex-col gap-4' key={item.title}>
+            <span className='text-neutral-200'>{item.title}</span>
+            <div className='flex flex-col gap-1'>
+                {item.attributes.map((attribute: any, index: number) => <Attribute info={attribute} key={index}/>)}
+            </div>
+        </div>
+    )
+}
+
 
 function Attribute({info}: any) {
     const {title, url} = info;
-    return <>
+    return (
         <Link href={url} target="_blank" rel='noreferrer'>
-            <button className="text-neutral-500 cursor-pointer hover:text-white text-start">{title}</button>
+            <button className="text-neutral-600 cursor-pointer hover:text-white text-start">{title}</button>
         </Link>
-    </>
+    )
 }

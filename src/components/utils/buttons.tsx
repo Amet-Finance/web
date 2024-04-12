@@ -37,7 +37,7 @@ function BasicButton({
 
     return <button
         className={`w-full ${classOnBg} flex justify-center items-center gap-2 rounded-full whitespace-nowrap font-medium ${className}`}
-        onClick={onClick}>
+        onClick={isBlocked ? null : onClick}>
         {children}
     </button>
 }

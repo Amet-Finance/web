@@ -21,9 +21,7 @@ async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise
 }
 
 function copyReferralCode(address: string|undefined) {
-    if (!address) {
-        return open();
-    }
+    if (!address) return;
 
     const url = `${location.href.toLowerCase()}?ref=${address.toLowerCase()}`
     navigator.clipboard.writeText(url)

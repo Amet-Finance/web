@@ -55,7 +55,7 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDeta
     }
 
     return <div
-        className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
+        className="group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='flex justify-between' onClick={openOrClose}>
             <p className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'>Deposit
                 Payout {isLoading &&
@@ -84,7 +84,7 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>)
     }
 
     return <button
-        className="col-span-4 flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
+        className="flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
         onClick={submit}>Settle Bonds
         {isLoading && <Loading percent={80}/>}</button>
 }
@@ -98,7 +98,7 @@ function WithdrawExcessPayout({contractInfo}: Readonly<{ contractInfo: ContractC
     const excessPayoutClean = excessPayout.div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
 
     return <button
-        className={`col-span-4 flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
+        className={`flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
         onClick={submitTransaction}>Withdraw Excess Payout <ConditionalRenderer
         isOpen={Boolean(excessPayoutClean)}>-<span
         className='text-green-500'>{excessPayoutClean} {payout.symbol}</span></ConditionalRenderer>
@@ -124,7 +124,7 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreD
     }
 
     return <div
-        className="group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
+        className="group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
         <button className='flex justify-between' onClick={openOrClose}>
             <p className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'>Update
                 Bond Supply {isLoading &&
@@ -159,7 +159,7 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
     }
 
     return <div
-        className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
+        className={`group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Decrease Maturity Period {isLoading && <Loading percent={80}/>}</button>
         <ConditionalRenderer isOpen={isOpen}>
@@ -190,7 +190,7 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
     }
 
     return <div
-        className={`group col-span-4 flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
+        className={`group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
         <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
                 onClick={openOrClose}>Change Owner {isLoading && <Loading percent={80}/>}</button>
         <ConditionalRenderer isOpen={isOpen}>

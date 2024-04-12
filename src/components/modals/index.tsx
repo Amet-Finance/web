@@ -7,6 +7,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import ClaimReferralRewards from "@/components/modals/claim-referral-rewards";
 import ModalStore from "@/store/redux/modal";
+import AcceptTermsConditions from "@/components/modals/accept-terms-conditions";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -61,6 +62,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.ClaimReferralRewards: {
             return <ClaimReferralRewards additional={additional}/>
+        }
+        case ModalTypes.AcceptTermsConditions: {
+            return <AcceptTermsConditions/>
         }
     }
 }

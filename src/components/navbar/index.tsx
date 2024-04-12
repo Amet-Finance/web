@@ -3,7 +3,6 @@ import {useEffect, useRef, useState} from "react";
 import {useAccount, useDisconnect, useNetwork} from "wagmi";
 import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
 import {LinkBaseType, LinkExtendedType} from "@/components/navbar/types";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
 import makeBlockie from "ethereum-blockies-base64";
 import {zeroAddress} from "viem";
 import {NAV_LINKS} from "@/components/navbar/constants";
@@ -20,7 +19,7 @@ import {toast} from "react-toastify";
 import {AccountController, AccountControllerState} from "@web3modal/core";
 import {shortenString} from "@/modules/utils/string";
 import CopySVG from "../../../public/svg/utils/copy";
-import {copyToClipboard} from "@/modules/utils/address";
+import {copyToClipboard, useConnectWallet} from "@/modules/utils/address";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
@@ -84,7 +83,7 @@ function MobileNavbar() {
         <ConditionalRenderer isOpen={isOpen}>
             <div className='fixed w-full bg-black top-0 left-0 flex flex-col justify-between px-10 h-full py-24'
                  ref={boxRef}>
-                <div>
+                <div className='flex flex-col gap-2'>
                     {
                         NAV_LINKS.map((linkExtended) => <LinkBuilderMobile linkExtended={linkExtended}
                                                                            key={linkExtended.href}/>)
@@ -133,7 +132,7 @@ function LinkBuilderMobile({linkExtended}: Readonly<{ linkExtended: LinkExtended
 function LinkBase({linkBase, isExtended}: Readonly<{ linkBase: LinkBaseType, isExtended?: boolean }>) {
     return <Link href={linkBase.href} target={linkBase.target ?? "_self"}>
             <span
-                className={`text-neutral-400 hover:text-white  whitespace-nowrap ${!isExtended && " px-4"}`}>{linkBase.title}</span>
+                className={`text-neutral-400 hover:text-white whitespace-nowrap ${!isExtended && " px-4"}`}>{linkBase.title}</span>
     </Link>
 }
 
@@ -268,6 +267,6 @@ function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountCont
 
 
 function ConnectWalletComponent() {
-    const web3Modal = useWeb3Modal();
-    return <BasicButton wMin onClick={() => web3Modal.open()}><span className='px-4'>Connect</span></BasicButton>
+    const {open} = useConnectWallet();
+    return <BasicButton wMin onClick={open}><span className='px-4'>Connect</span></BasicButton>
 }

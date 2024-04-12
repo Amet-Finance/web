@@ -13,7 +13,7 @@ import BondCard from "@/components/pages/bonds/utils/bond-card";
 import {DiscordIcon} from "../../../../public/svg/social/discord";
 import RoundedArrowSVG from "../../../../public/svg/utils/rounded-arrow";
 import ArrowBasicSVG from "../../../../public/svg/utils/arrow-basic";
-import {GeneralContainer} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
 
 
 export default function Home() {
@@ -45,7 +45,7 @@ function LandingSection() {
                     investments. Amet Finance is
                     designed to democratize the bond market, making it easy and accessible for all. With us, bond
                     investments are no longer complex and exclusive.</p>
-                <Link href='/bonds' className='relative flex xl:w-min w-full'>
+                <Link href='/bonds' className='relative flex xl:w-min md:w-1/2 w-full'>
                     <BasicButton>
                         <span className='px-4 py-0.5'>Get Started</span>
                     </BasicButton>
@@ -305,9 +305,14 @@ function FaqItem({item, selectId, selectedId, index}: { item: any, selectId: any
             <div className='flex flex-col gap-2 w-full'>
                 <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
                     <span className='text-start text-xl font-medium'>{item.title}</span>
-                    {isSelected ? <MinusSVG/> : <PlusSVG/>}
+                    <ToggleBetweenChildren isOpen={isSelected}>
+                        <MinusSVG/>
+                        <PlusSVG/>
+                    </ToggleBetweenChildren>
                 </div>
-                {isSelected && <span className='text-g2 text-sm max-w-[80%]'>{item.answer}</span>}
+                <ConditionalRenderer isOpen={isSelected}>
+                    <span className='text-neutral-600 text-sm max-w-[80%]'>{item.answer}</span>
+                </ConditionalRenderer>
             </div>
             <div className='h-px bg-neutral-700 w-full'/>
         </div>
