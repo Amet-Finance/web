@@ -23,12 +23,13 @@ export default function HeadlineContainer({refreshHandler, refreshLoader}: {
         return () => clearInterval(interval)
     }, [refreshDate]);
 
+    // todo fix this, fetch from blockchain
     return (
         <div className='flex justify-between'>
-            <button className='flex items-center gap-2 bg-white px-4 py-1.5 rounded-md cursor-pointer'
+            <button className='flex items-center gap-2 px-4 py-1.5 rounded-md cursor-pointer bg-green-500 text-white hover:scale-105'
                     onClick={copyReferralCode.bind(null, address)}>
-                <CopySVG/>
-                <span className='text-neutral-600 text-sm md:flex hidden'>Copy Your Referral URL!</span>
+                <CopySVG color="#fff"/>
+                <span className='text-sm md:flex hidden font-medium'>Copy Your Referral Link & Earn 2%!</span>
             </button>
             <div className='flex items-center gap-2 px-2'>
                 <span className='text-neutral-600 text-xs'>Refreshed {secondsPassed}s ago</span>

@@ -100,7 +100,7 @@ function WithdrawExcessPayout({contractInfo}: Readonly<{ contractInfo: ContractC
     return <button
         className={`flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
         onClick={submitTransaction}>Withdraw Excess Payout <ConditionalRenderer
-        isOpen={Boolean(excessPayoutClean)}>-<span
+        isOpen={Boolean(excessPayoutClean) && excessPayoutClean > 0}>-<span
         className='text-green-500'>{excessPayoutClean} {payout.symbol}</span></ConditionalRenderer>
         {isLoading && <Loading percent={80}/>}</button>
 }
