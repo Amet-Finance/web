@@ -126,6 +126,7 @@ const BOND_CARDS: ContractCoreDetails[] = [
             amountClean: 7600000,
             priceUsd: 0.00003203
         },
+        payoutBalance: "241412411424214421421",
 
         totalBonds: 100,
         purchased: 10,

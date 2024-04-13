@@ -6,7 +6,5 @@ export default function ExplorePage() {
 }
 
 export function getStaticProps() {
-    return {
-        props: {pageId: PageId.ExplorePage}
-    }
+    return {props: {pageId: PageId.ExplorePage}}
 }

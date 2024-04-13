@@ -3,7 +3,7 @@ import {URLS} from "@/modules/utils/urls";
 
 export default function TwitterSVG({url}: { url: string }) {
 
-    const title = url = URLS.Twitter ? "Amet Finance Twitter" : "";
+    const title = url === URLS.Twitter ? "Amet Finance Twitter" : "";
 
     return (
         <Link href={url} target="_blank" rel="noreferrer" title={title}>

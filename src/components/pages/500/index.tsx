@@ -1,8 +1,10 @@
 import Link from "next/link";
+import {GeneralContainer} from "@/components/utils/container";
+import {BasicButton} from "@/components/utils/buttons";
 
 export default function ServerError() {
-    return <>
-        <div className='flex items-center  min-h-screen lg:px-32 px-14'>
+    return (
+        <GeneralContainer className='flex items-center  min-h-screen' isPadding>
             <div className='flex flex-col justify-center gap-4 '>
                 <svg width="750" height="286" viewBox="0 0 750 286" fill="none" xmlns="http://www.w3.org/2000/svg"
                      className='lg:w-96 lg:h-40 w-52 h-24'>
@@ -17,10 +19,9 @@ export default function ServerError() {
                         className='lg:text-l text-sm font-medium text-g'>We can not show the page you requested.</span>
                 </div>
                 <Link href='/'>
-                    <button className='border border-solid border-w1 rounded py-3 hover:border-w5 w-full'>Back to Home!
-                    </button>
+                    <BasicButton>Back to Home!</BasicButton>
                 </Link>
             </div>
-        </div>
-    </>
+        </GeneralContainer>
+    )
 }

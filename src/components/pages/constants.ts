@@ -3,7 +3,8 @@ const PageId = {
     BondsPage: "BondsPage",
     ExplorePage: "ExplorePage",
     AddressId: "AddressId",
-    IssuePage: "IssuePage"
+    IssuePage: "IssuePage",
+    NotFoundPage: "NotFoundPage"
 }
 
 export {
