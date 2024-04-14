@@ -1,10 +1,11 @@
 const ModalTypes = {
-    None: 'none',
+    None: "none",
+    Quiz: "quiz",
     ConnectWallet: 'connect-wallet',
     IssuedBondSuccess: "issued-bond-success",
-    Quiz: "quiz",
+    FirstTimePurchaseBond: "first-time-purchase-bond",
     ClaimReferralRewards: "claim-referral-rewards",
-    AcceptTermsConditions: "accept-terms-conditions"
+    AcceptTermsConditions: "accept-terms-conditions",
 }
 
 export {

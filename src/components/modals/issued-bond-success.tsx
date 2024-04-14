@@ -1,15 +1,14 @@
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import CongratulationsSVG from "../../../public/svg/utils/congratulations";
 import XmarkSVG from "../../../public/svg/utils/xmark";
 import {IssueBondSuccessAdditional} from "@/components/modals/type";
 import {BasicButton} from "@/components/utils/buttons";
 import Link from "next/link";
 import ModalStore from "@/store/redux/modal";
+import {useModal} from "@/modules/utils/modal";
 
 export default function IssuedBondSuccess() {
 
-    const modalState = useSelector((item: RootState) => item.modal)
+    const {modalState} = useModal()
 
     const additional: IssueBondSuccessAdditional = modalState.additional as any;
 
@@ -20,7 +19,7 @@ export default function IssuedBondSuccess() {
 
     const url = `/bonds/explore/${chainId}/${issuedBondDetails?.args?.bondAddress}`
 
-    return <>
+    return (
         <div className='relative flex flex-col items-center rounded-4xl p-3 px-1 max-w-[500px] text-center z-20 gap-4'>
             <CongratulationsSVG/>
             <div className='absolute top-0 right-0'>
@@ -33,5 +32,5 @@ export default function IssuedBondSuccess() {
                 <BasicButton>View Bond Details</BasicButton>
             </Link>
         </div>
-    </>
+    )
 }

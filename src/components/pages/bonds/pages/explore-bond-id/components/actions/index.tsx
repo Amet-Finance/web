@@ -11,6 +11,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {ContractBalance} from "@/modules/api/type";
+import {useBalances} from "@/modules/utils/address";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -46,9 +47,8 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
     const [selected, setSelected] = selectionHandler;
 
 
-    const balances = useSelector((item: RootState) => item.account).balances;
-    const contractBalances: ContractBalance[] = balances[contractAddress.toLowerCase()] || [];
-    const total = Object.values(contractBalances).reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
+    const {contractBalances} = useBalances({contractAddress})
+    const total = contractBalances.reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
 
     const components: ActionHeadlineComponent[] = [
         {

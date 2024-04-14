@@ -14,12 +14,16 @@ import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {ConditionalRenderer, ToggleBetweenChildren} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 import {Erc20Controller} from "amet-utils";
+import ModalStore from "@/store/redux/modal";
+import {ModalTypes} from "@/store/redux/modal/constants";
+import {useBalances} from "@/modules/utils/address";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {contractAddress,chainId, purchase, totalBonds, purchased, payout} = contractInfo;
 
     const {address} = useAccount();
-    const chain = getChain(chainId)
+    const {hasBalance} = useBalances({contractAddress})
+    const chain = getChain(chainId);
     const router = useRouter();
 
     const TitleTypes = {
@@ -82,8 +86,12 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     async function submit() {
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain")
-        await submitTransaction();
-        setRefresh(Math.random());
+        const transaction = await submitTransaction();
+        if (transaction && !hasBalance) {
+            ModalStore.openModal(ModalTypes.FirstTimePurchaseBond)
+            setRefresh(Math.random());
+        }
+
     }
 
     return (

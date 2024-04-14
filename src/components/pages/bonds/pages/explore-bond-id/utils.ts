@@ -20,16 +20,21 @@ async function fetchContractExtended(queryParams: ExploreIdQueryParams): Promise
     })
 }
 
+function generateReferralUrl(address: string) {
+    return `${location.href.toLowerCase()}?ref=${address.toLowerCase()}`
+}
+
 function copyReferralCode(address: string|undefined) {
     if (!address) return;
 
-    const url = `${location.href.toLowerCase()}?ref=${address.toLowerCase()}`
+    const url = generateReferralUrl(address);
     navigator.clipboard.writeText(url)
         .then(() => toast("Referral url was successfully copied to your clipboard."))
         .catch(() => toast.error("An error has occurred."))
 }
 
 export {
+    generateReferralUrl,
     copyReferralCode,
     fetchContractExtended
 }

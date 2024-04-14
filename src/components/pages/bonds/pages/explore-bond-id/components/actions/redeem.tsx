@@ -12,8 +12,7 @@ import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
+import {useBalances} from "@/modules/utils/address";
 
 // todo add capitulation as well
 
@@ -24,19 +23,16 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const {contractAddress, chainId, payout} = contractInfo;
 
     const chain = getChain(chainId);
+    const {contractBalances} = useBalances({contractAddress})
 
     const [bondIndexes, setBondIndexes] = useState([] as Array<number>)
-
-    const balancesStore = useSelector((item: RootState) => item.account).balances;
-    const balances: ContractBalance[] = balancesStore[contractAddress.toLowerCase()] || []
-
     const [redemptionCount, setRedemptionCount] = useState(0);
 
     const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
 
-    const totalQuantity = balances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
-    const matureTokenIds = getMatureTokenIds(contractInfo, balances);
-    const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (balances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
+    const totalQuantity = contractBalances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
+    const matureTokenIds = getMatureTokenIds(contractInfo, contractBalances);
+    const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (contractBalances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
     const notEnoughLiquidity = totalRedeemAmount > interestBalance
@@ -75,7 +71,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
         let valueLeft = value;
         const indexes: number[] = []
 
-        for (const balanceInfo of balances) {
+        for (const balanceInfo of contractBalances) {
             if (!valueLeft) break;
 
             valueLeft -= balanceInfo.balance;

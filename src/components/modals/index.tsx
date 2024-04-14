@@ -3,16 +3,15 @@ import Modal, {setAppElement} from "react-modal";
 import {Montserrat} from "next/font/google";
 import IssuedBondSuccess from "@/components/modals/issued-bond-success";
 import Quiz from "@/components/modals/quiz";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import ClaimReferralRewards from "@/components/modals/claim-referral-rewards";
 import ModalStore from "@/store/redux/modal";
 import AcceptTermsConditions from "@/components/modals/accept-terms-conditions";
+import FirstTimePurchaseBond from "@/components/modals/first-time-purchase-bond";
+import {useModal} from "@/modules/utils/modal";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
-    const modalState = useSelector((item: RootState) => item.modal)
-    const isClosed = modalState.type === ModalTypes.None;
+    const {modalState, isClosed} = useModal()
 
     if (isClosed) {
         return null;
@@ -65,6 +64,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.AcceptTermsConditions: {
             return <AcceptTermsConditions/>
+        }
+        case ModalTypes.FirstTimePurchaseBond: {
+            return <FirstTimePurchaseBond/>
         }
     }
 }
