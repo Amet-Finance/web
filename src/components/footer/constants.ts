@@ -15,6 +15,7 @@ const FOOTER_LINKS = [
         attributes: [
             {title: 'Status', url: URLS.StatusPage},
             {title: 'Contact Us', url: URLS.ContactUs},
+            {title: 'Bug Bounty', url: URLS.BugBounty},
             {title: 'FAQ', url: URLS.FAQ_INVESTOR},
         ]
     }

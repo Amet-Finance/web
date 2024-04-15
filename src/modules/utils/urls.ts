@@ -6,6 +6,7 @@ const URLS = {
     ContactUs: "https://forms.gle/zUcZUT51Zx1wiqoS7",
     StatusPage: "https://status.amet.finance",
     Storage: "https://storage.amet.finance",
+    BugBounty: "https://r.xyz/program/amet-finance",
 
     FAQ_INVESTOR: "https://docs.amet.finance/v2/", // todo update investor FAQ
     FAQ_IOB: "https://docs.amet.finance/v2/fixed-flex/for-issuers/issuing-bonds-on-amet-finance",
