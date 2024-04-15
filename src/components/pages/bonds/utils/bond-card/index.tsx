@@ -10,7 +10,7 @@ import {shortenString} from "@/modules/utils/string";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
-import {ConditionalRenderer, ToggleBetweenChildren} from "@/components/utils/container";
+import {ToggleBetweenChildren} from "@/components/utils/container";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
@@ -24,6 +24,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
         redeemed,
         owner,
         purchased,
+        payoutBalance,
         isSettled,
         totalBonds,
         maturityPeriodInBlocks,
@@ -31,8 +32,6 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     } = bondDetails
 
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
-
-
     const isSoldOut = totalBonds === purchased;
 
     const yieldRate = CalculatorController.yieldRate(bondDetails)

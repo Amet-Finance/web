@@ -7,13 +7,25 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {ContractBalance} from "@/modules/api/type";
 
+const ONE_DAY = 24 * 60 * 60 * 1000
+
 function useConnectWallet() {
     const {open} = useWeb3Modal();
     const [showModal, setShowModal] = useState(true);
 
     useEffect(() => {
         const result = localStorage.getItem(ModalTypes.AcceptTermsConditions);
-        if (Boolean(result)) setShowModal(false)
+        if (result) {
+            const parsedResult = JSON.parse(result);
+            const acceptedDate = new Date(parsedResult.date);
+
+            // Validation for connection should stay one day
+            if (!isFinite(acceptedDate.getTime()) ||  Date.now() - ONE_DAY > acceptedDate.getTime()) {
+                setShowModal(true)
+            } else {
+                setShowModal(false)
+            }
+        }
     }, [])
 
     return {
@@ -26,7 +38,10 @@ function useConnectWallet() {
         },
         setAccepted: () => {
             setShowModal(false);
-            localStorage.setItem(ModalTypes.AcceptTermsConditions, JSON.stringify(true))
+            localStorage.setItem(ModalTypes.AcceptTermsConditions, JSON.stringify({
+                date: new Date(),
+                accepted: true
+            }))
         }
     }
 }
