@@ -17,6 +17,8 @@ import {Erc20Controller} from "amet-utils";
 import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {useBalances} from "@/modules/utils/address";
+import AccountStore from "@/store/redux/account";
+import {nop} from "@/modules/utils/function";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {contractAddress,chainId, purchase, totalBonds, purchased, payout} = contractInfo;
@@ -87,9 +89,12 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain")
         const transaction = await submitTransaction();
-        if (transaction && !hasBalance) {
-            ModalStore.openModal(ModalTypes.FirstTimePurchaseBond)
-            setRefresh(Math.random());
+        if (transaction) {
+            AccountStore.initBalances(address).catch(nop)
+            if (!hasBalance) {
+                ModalStore.openModal(ModalTypes.FirstTimePurchaseBond)
+                setRefresh(Math.random());
+            }
         }
 
     }

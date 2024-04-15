@@ -13,6 +13,9 @@ import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useBalances} from "@/modules/utils/address";
+import AccountStore from "@/store/redux/account";
+import {nop} from "@/modules/utils/function";
+import {useAccount} from "wagmi";
 
 // todo add capitulation as well
 
@@ -22,6 +25,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const {contractAddress, chainId, payout} = contractInfo;
 
+    const {address} = useAccount();
     const chain = getChain(chainId);
     const {contractBalances} = useBalances({contractAddress})
 
@@ -96,7 +100,10 @@ export default function RedeemTab({contractInfo}: Readonly<{
             if (blockClick) return;
             if (!chain) return toast.error("Please select correct chain")
 
-            await submitTransaction();
+            const transaction = await submitTransaction();
+            if (transaction) {
+                AccountStore.initBalances(address).catch(nop)
+            }
         } catch (error) {
             console.log(error)
         }
