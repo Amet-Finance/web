@@ -7,11 +7,10 @@ import PurchaseTab from "@/components/pages/bonds/pages/explore-bond-id/componen
 import RedeemTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/redeem";
 import ManageTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/manage";
 import ReferralTab from "@/components/pages/bonds/pages/explore-bond-id/components/actions/referral";
-import {useSelector} from "react-redux";
-import {RootState} from "@/store/redux/type";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {ContractBalance} from "@/modules/api/type";
 import {useBalances} from "@/modules/utils/address";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
 const Tabs = {
     Purchase: "Purchase",
@@ -48,7 +47,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
 
 
     const {contractBalances} = useBalances({contractAddress})
-    const total = contractBalances.reduce((acc: number, value: ContractBalance) => acc += value.balance, 0);
+    const total = formatLargeNumber(contractBalances.reduce((acc: number, value: ContractBalance) => acc += value.balance, 0));
 
     const components: ActionHeadlineComponent[] = [
         {
@@ -120,9 +119,9 @@ function HeadlineComponent({component, selected, setSelected}: {
             onClick={select}>
             <div className='relative'>
                 <Image src={icon} alt={title} width={24} height={24}/>
-                <ConditionalRenderer isOpen={Number.isFinite(addon?.total)}>
+                <ConditionalRenderer isOpen={Boolean(addon?.total)}>
                     <div
-                        className='absolute flex justify-center items-center px-1 bg-green-500 rounded-full -top-1.5 -right-3'>
+                        className='absolute flex justify-center items-center px-1.5 bg-green-500 rounded-full -top-2.5 -right-3.5'>
                         <span className='text-mm text-white font-medium'>{addon?.total}</span>
                     </div>
                 </ConditionalRenderer>

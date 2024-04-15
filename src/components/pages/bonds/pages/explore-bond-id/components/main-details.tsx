@@ -112,21 +112,19 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
 
         <div className='flex flex-col gap-8'>
             <div className='grid grid-cols-8 gap-4 mt-4 w-full'>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
-                    <span
-                        className='font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`$${formatLargeNumber(purchasePriceUsd)}`}>
+                    <span className='font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
                     <span className='text-xs text-neutral-400'>Purchase</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
-                    <span
-                        className='font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`$${formatLargeNumber(payoutPriceUsd)}`}>
+                    <span className='font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
                     <span className='text-xs text-neutral-400'>Payout</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full'>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`${formatLargeNumber(maturityPeriodInBlocks)} blocks`}>
                     <span className='font-bold'>{maturityPeriodTime}</span>
                     <span className='text-xs text-neutral-400'>Maturity Period</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4 flex flex-col gap-1 justify-end w-full'>
+                <div className='lg:col-span-2 col-span-4 flex flex-col gap-1 justify-end w-full cursor-help'>
                     <div className='flex items-center gap-2'>
                         <Image src={chainIcon} alt={chain?.name || ""} width={24} height={24}/>
                         <span className='font-bold'>{shortenString(chain?.name || "", 7)}</span>
