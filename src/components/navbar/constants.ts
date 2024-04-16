@@ -11,8 +11,8 @@ const NAV_LINKS: LinkExtendedType[] = [
         ]
     },
     {
-        title: "Careers",
-        href: URLS.LinkedIn,
+        title: "AMT Token",
+        href: URLS.AmetFinanceToken,
         target: "_blank"
     },
     {

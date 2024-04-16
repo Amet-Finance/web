@@ -23,8 +23,12 @@ const URLS = {
     LinkedIn: "https://www.linkedin.com/company/amet-finance",
     Medium: "https://medium.com/@amet-finance",
     Github: "https://github.com/Amet-Finance",
+    YouTube: "https://www.youtube.com/channel/UCoXXMgzciQ_QZYKSxexj-fw",
     Facebook: "https://www.facebook.com/people/Amet-Finance/61552721081613/",
     DefiLlama: "https://defillama.com/protocol/amet-finance",
+    DappRadar: "https://dappradar.com/dapp/amet-finance",
+
+    AmetFinanceToken: "https://docs.amet.finance/v2/amet-finance-token-amt/overview-of-amet-finance-token-amt",
 
 
     DiscordProposals: "https://discord.gg/HXkTHxX3pZ",
