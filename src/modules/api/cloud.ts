@@ -6,11 +6,17 @@ import {
     GeneralStatsKey,
     StatisticsTypes,
     TBVStatistics,
-    TokensResponse
+    TokensResponse,
+    User
 } from "@/modules/api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
 import {ContractDescription, DescriptionEditParams} from "@/modules/api/contract-type";
 
+
+async function getUser(address: string): Promise<User> {
+    const url = `${API_URL}/v1/address`;
+    return await requestAPI({url, params: {address}})
+}
 
 async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T extends GeneralStatsKey ? GeneralStatistics : TBVStatistics> {
     const url = `${API_URL}/v1/statistics`;
@@ -59,6 +65,7 @@ async function updateContractDescription(body: DescriptionEditParams, params: Au
 
 
 const CloudAPI = {
+    getUser,
     getStatistics,
     getTokens,
     getTokensDetailed,

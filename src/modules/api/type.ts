@@ -54,7 +54,12 @@ type AuthenticatedRequest = {
     message: string
 }
 
+type User = {
+    xp: number
+}
+
 export type  {
+    User,
     TokenCore,
     TokenResponse,
     TokensResponse,

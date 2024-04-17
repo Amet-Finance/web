@@ -3,8 +3,10 @@ import store from "@/store/store";
 import GraphqlAPI from "@/modules/api/graphql";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import {AccountState} from "@/store/redux/account/type";
+import CloudAPI from "@/modules/api/cloud";
 
 const emptyState: AccountState = {
+    xp: 0,
     balances: {}
 }
 
@@ -15,29 +17,38 @@ const counterSlice = createSlice({
         updateBalance: (state, {payload}) => {
             if (payload) state.balances = payload;
         },
+        updateUser: (state, {payload}) => {
+            if (payload) {
+                state.xp = payload.xp;
+            }
+        },
     },
 });
 
-const reducer = counterSlice.reducer;
 
-const {
-    updateBalance,
-} = counterSlice.actions;
-
+async function initUser(address: string | undefined) {
+    if (!address) return;
+    const response = await CloudAPI.getUser(address)
+    console.log(response)
+    if (response) {
+        store.dispatch(counterSlice.actions.updateUser(response))
+    }
+}
 
 async function initBalances(address: string | undefined) {
-    if (address) {
-        // todo here we need to fix this, defaultChain logic
-        const balances = await GraphqlAPI.getBalances(address, defaultChain.id);
-        if (balances) {
-            store.dispatch(updateBalance(balances))
-        }
+    // todo here we need to fix this, defaultChain logic
+    if (!address) return;
+
+    const balances = await GraphqlAPI.getBalances(address, defaultChain.id);
+    if (balances) {
+        store.dispatch(counterSlice.actions.updateBalance(balances))
     }
 }
 
 const AccountStore = {
     counterSlice,
-    reducer,
+    reducer: counterSlice.reducer,
     initBalances,
+    initUser
 }
 export default AccountStore;

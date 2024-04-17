@@ -25,6 +25,9 @@ import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 import TokenStore from "@/store/redux/token";
+import {formatLargeNumber} from "@/modules/utils/numbers";
+import {useSelector} from "react-redux";
+import {RootState} from "@/store/redux/type";
 
 
 export default function Navbar() {
@@ -32,11 +35,9 @@ export default function Navbar() {
     const {address} = useAccount();
 
     useEffect(() => {
-        if (address) {
-            AccountStore.initBalances(address).catch(nop)
-            const interval = setInterval(() => AccountStore.initBalances(address), UPDATE_INTERVAL);
-            return () => clearInterval(interval);
-        }
+        AccountStore.initBalances(address).catch(nop)
+        const interval = setInterval(() => AccountStore.initBalances(address), UPDATE_INTERVAL);
+        return () => clearInterval(interval);
     }, [address]);
 
     useEffect(() => {
@@ -44,6 +45,12 @@ export default function Navbar() {
         const interval = setInterval(() => TokenStore.initTokens(), UPDATE_INTERVAL);
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        AccountStore.initUser(address).catch(nop)
+        const interval = setInterval(() => AccountStore.initUser(address), UPDATE_INTERVAL * 10);
+        return () => clearInterval(interval);
+    }, [address]);
 
     return <nav className="fixed flex flex-col bg-black z-50 w-full">
         {/*<TopAnnouncement/>*/}
@@ -197,6 +204,8 @@ function ConnectedComponent({accountState}: { accountState: AccountControllerSta
 }
 
 function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountControllerState, setOpen: any }>) {
+    const account = useSelector((item: RootState) => item.account)
+
     const address = accountState.address ?? "";
 
     const icon = accountState.profileImage ?? makeBlockie(address);
@@ -241,11 +250,9 @@ function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountCont
                     </button>
                 </div>
             </div>
-            {/*<div className='flex flex-col'>*/}
-            {/*        <span*/}
-            {/*            className='text-2xl font-semibold'>{format(Number(accountState.balance), 3)} {accountState.balanceSymbol}</span>*/}
-            {/*    <span className='text-sm text-green-500'>$0.00 (0.0%)</span>*/}
-            {/*</div>*/}
+            <div className='flex flex-col'>
+                <p className='text-2xl font-medium'>{formatLargeNumber(account.xp)} XP</p>
+            </div>
             <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
                 <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
                     <span>Portfolio</span>
