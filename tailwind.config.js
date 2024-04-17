@@ -17,18 +17,7 @@ module.exports = {
             '3xl': '1920px',     // 3x large devices, like large desktops
         },
         extend: {
-            colors: {
-                g: "#929292",
-                g2: "#5B5B5B",
-                g3: "#353535",
-            },
             backgroundColor: {
-
-                g5: "#303030",
-                g6: "#141414",
-
-
-                b1: "#0F0F0F",
                 b2: "#1B1B1B",
                 b3: "#090909",
                 b4: "#111111",
@@ -46,13 +35,6 @@ module.exports = {
                 w4: "rgba(255, 255, 255, 0.4)",
                 w5: "rgba(255, 255, 255, 0.5)",
                 w6: "#282828"
-            },
-            minWidth: {
-                500: "500px",
-                600: "625px"
-            },
-            width: {
-                500: "500px"
             },
             fontSize: {
                 mm: "0.6rem"

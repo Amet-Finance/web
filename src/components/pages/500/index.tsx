@@ -16,7 +16,7 @@ export default function ServerError() {
                 <div className='flex flex-col gap-3'>
                     <span className='lg:text-5xl text-xl font-bold'>Internal Server Error!</span>
                     <span
-                        className='lg:text-l text-sm font-medium text-g'>We can not show the page you requested.</span>
+                        className='font-medium text-neutral-600'>We can not show the page you requested.</span>
                 </div>
                 <Link href='/'>
                     <BasicButton>Back to Home!</BasicButton>

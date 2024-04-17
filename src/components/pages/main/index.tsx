@@ -269,10 +269,10 @@ function ArticleBox({article}: { article: Article }) {
                        height={200} className='object-cover rounded-[6rem] w-[400px] h-52'/>
                 <div className='flex flex-col justify-between bg-neutral-950 gap-4 px-10 py-7 rounded-b-3xl h-full'>
                     <div className='flex flex-col gap-4'>
-                        <span className=' text-xl font-bold'>{shortenString(title, 40)}</span>
-                        <p className='text-g'>{shortenString(paragraph, 120)}</p>
+                        <span className='text-xl font-bold'>{shortenString(title, 40)}</span>
+                        <p className='text-neutral-400'>{shortenString(paragraph, 120)}</p>
                     </div>
-                    <span className='text-g3 text-end'>{date}</span>
+                    <span className='text-neutral-600 text-end'>{date}</span>
                 </div>
             </div>
         </Link>

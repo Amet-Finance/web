@@ -6,7 +6,6 @@ const URLS = {
     ContactUs: "https://forms.gle/zUcZUT51Zx1wiqoS7",
     StatusPage: "https://status.amet.finance",
     Storage: "https://storage.amet.finance",
-    BugBounty: "https://r.xyz/program/amet-finance",
 
     FAQ_INVESTOR: "https://docs.amet.finance/v2/", // todo update investor FAQ
     FAQ_IOB: "https://docs.amet.finance/v2/fixed-flex/for-issuers/issuing-bonds-on-amet-finance",
@@ -30,6 +29,9 @@ const URLS = {
 
     AmetFinanceToken: "https://docs.amet.finance/v2/amet-finance-token-amt/overview-of-amet-finance-token-amt",
 
+
+    Audits: "https://github.com/Amet-Finance/contracts/tree/main/contracts/fixed-flex/audits",
+    BugBounty: "https://r.xyz/program/amet-finance",
 
     DiscordProposals: "https://discord.gg/HXkTHxX3pZ",
     DiscordTicket: "https://discord.gg/gcyZddv8Dj",

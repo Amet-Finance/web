@@ -28,7 +28,7 @@ function Introduction({nextState}: any) {
         <div className='flex flex-col gap-4'>
             <span className='text-3xl font-bold'>Amet Finance <br/>Knowledge Check</span>
             <div className='flex flex-col gap-2'>
-                <p className='text-sm text-g'>{`Before you begin purchasing bonds on Amet Finance, we want to ensure you have a fundamental understanding of our platform. This brief quiz will test your knowledge and help you gain more confidence in using our services.`}</p>
+                <p className='text-sm text-neutral-600'>{`Before you begin purchasing bonds on Amet Finance, we want to ensure you have a fundamental understanding of our platform. This brief quiz will test your knowledge and help you gain more confidence in using our services.`}</p>
             </div>
         </div>
         <button className='p-1.5 px-10 rounded bg-green-500' onClick={nextState}>Start Quiz</button>
@@ -219,7 +219,7 @@ function Finish() {
                 </div>
             </div>
             <span className='text-2xl font-bold'>Congratulations!</span>
-            <span className='text-sm text-g'>{`You've successfully completed the Amet Finance Knowledge Check!`}</span>
+            <span className='text-sm text-neutral-600'>{`You've successfully completed the Amet Finance Knowledge Check!`}</span>
         </div>
     </>
 }
