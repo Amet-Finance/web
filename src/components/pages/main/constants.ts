@@ -58,6 +58,11 @@ const FAQ_QUESTIONS: Question[] = [
 
 const commonDetails = {
     block: 1,
+    purchaseRate: 5,
+    referrerRewardRate: 2.5,
+    earlyRedemptionRate: 2.5,
+    uri: "",
+
     contractAddress: "0x1",
     chainId: defaultChain.id,
     payoutBalance: "4142412421",
