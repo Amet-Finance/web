@@ -21,48 +21,54 @@ function getApi(chainId: number) {
     return API[chainId];
 }
 
+const BOND_DETAILS_QUERY = `id
+                    hash
+                    uri
+                    totalBonds
+                    purchased
+                    redeemed
+                    isSettled
+                    issuanceBlock
+                    issuanceDate
+                    issuer {
+                      id
+                    }
+                    owner {
+                      id
+                    }
+                    maturityPeriodInBlocks
+                    payoutAmount
+                    payoutBalance
+                    payoutToken {
+                      decimals
+                      id
+                      name
+                      symbol
+                    }
+                    purchaseAmount
+                    purchaseToken {
+                      decimals
+                      id
+                      name
+                      symbol
+                    }
+                    earlyRedemptionRate
+                    purchaseRate
+                    referrerRewardRate`
+const META_DETAILS = `_meta {
+                        block {
+                          number
+                          timestamp
+                        }
+                      }`
 
 async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[]> {
     const {chainId} = params;
     const query = `
                     {
-                      _meta {
-                        block {
-                          number
-                          timestamp
-                        }
-                      }
+                      ${META_DETAILS}
                       bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
-                        id
-                        isSettled
-                        uri
-                        issuanceBlock
-                        issuanceDate
-                        maturityPeriodInBlocks
-                        issuer {
-                          id
-                        }
-                        owner {
-                          id
-                        }
-                        payoutAmount
-                        payoutToken {
-                          decimals
-                          name
-                          id
-                          symbol
-                        }
-                        purchaseToken {
-                          decimals
-                          id
-                          name
-                          symbol
-                        }
-                        payoutBalance
-                        purchaseAmount
-                        purchased
-                        redeemed
-                        totalBonds
+                        ${BOND_DETAILS_QUERY}
                       }
                     }
         `
@@ -79,43 +85,9 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     const {chainId, contractAddress} = params;
     const query = `
              { 
-             _meta {
-                block {
-                  number
-                  timestamp
-                }
-              }
+              ${META_DETAILS}
               bond(id: "${contractAddress?.toLowerCase()}") {
-                    id
-                    isSettled
-                    uri
-                    issuanceBlock
-                    issuanceDate
-                    issuer {
-                      id
-                    }
-                    maturityPeriodInBlocks
-                    owner {
-                      id
-                    }
-                    payoutAmount
-                    payoutBalance
-                    payoutToken {
-                      decimals
-                      id
-                      name
-                      symbol
-                    }
-                    purchaseAmount
-                    purchaseToken {
-                      decimals
-                      name
-                      id
-                      symbol
-                    }
-                    purchased
-                    redeemed
-                    totalBonds
+                    ${BOND_DETAILS_QUERY}
                     actionLogs {
                       blockNumber
                       count
@@ -123,8 +95,8 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
                       id
                       to
                     }
-                  }
                 }
+               }
             `
 
 
@@ -157,82 +129,19 @@ async function getAccountInformation({chainId, address}: AccountInformationQuery
     const addressLowercase = address.toLowerCase()
     const query = `
     {
+          ${META_DETAILS}
           user(id: "${addressLowercase}") {
             tokenBalances(where: {balance_gt: "0"}) {
               balance
               bond {
-                id
-                isSettled
-                issuanceBlock
-                issuanceDate
-                issuer {
-                  id
-                }
-                maturityPeriodInBlocks
-                owner {
-                  id
-                }
-                payoutAmount
-                payoutBalance
-                payoutToken {
-                  decimals
-                  id
-                  name
-                  symbol
-                }
-                purchaseAmount
-                purchaseToken {
-                  decimals
-                  id
-                  name
-                  symbol
-                }
-                purchased
-                redeemed
-                totalBonds
-                uri
+                ${BOND_DETAILS_QUERY}
               }
               purchaseBlock
               tokenId
             }
           }
-          bonds(where: {owner_: {id: "${addressLowercase}"}}) {
-            id
-            isSettled
-            issuanceBlock
-            issuanceDate
-            issuer {
-              id
-            }
-            maturityPeriodInBlocks
-            owner {
-              id
-            }
-            payoutAmount
-            payoutBalance
-            payoutToken {
-              decimals
-              id
-              name
-              symbol
-            }
-            purchaseAmount
-            purchaseToken {
-              decimals
-              id
-              name
-              symbol
-            }
-            purchased
-            redeemed
-            totalBonds
-            uri
-          }
-          _meta {
-            block {
-              number
-              timestamp
-            }
+          bonds(where: {owner_: {id: "${addressLowercase}"}} orderBy: issuanceDate orderDirection: desc) {
+           ${BOND_DETAILS_QUERY}
           }
         }
 `
@@ -334,6 +243,8 @@ function transformCoreDetails(item: any, chainId: number, block: string): Contra
     return {
         block: Number(block),
         contractAddress: item.id,
+        uri: item.uri,
+
         chainId,
 
         isSettled: item.isSettled,
@@ -345,6 +256,10 @@ function transformCoreDetails(item: any, chainId: number, block: string): Contra
         totalBonds: Number(item.totalBonds),
         purchased: Number(item.purchased),
         redeemed: Number(item.redeemed),
+
+        purchaseRate: Number(item.purchaseRate) / 10,
+        earlyRedemptionRate: Number(item.earlyRedemptionRate) / 10,
+        referrerRewardRate: Number(item.referrerRewardRate) / 10,
 
         payoutBalance: item.payoutBalance as string,
         maturityPeriodInBlocks: Number(item.maturityPeriodInBlocks),

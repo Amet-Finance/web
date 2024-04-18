@@ -34,7 +34,7 @@ export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
     return (
         <GeneralContainer className='flex flex-col gap-4 w-full md:py-24 py-16' isPadding>
-            <HeadlineContainer refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
+            <HeadlineContainer contractInfo={bondDetailed.contractInfo} refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
             <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>
             <div className='grid grid-cols-12 w-full gap-4 h-full'>

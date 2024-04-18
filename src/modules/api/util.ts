@@ -20,8 +20,8 @@ async function postAPI({url, body, params, headers}: { url: string, body: any, p
     try {
         const response = await axios.post(url, body, {params, headers})
         return response.data;
-    } catch (error) {
-        console.error(`postAPI`, error)
+    } catch (error: any) {
+        console.error(`postAPI`, error.message)
         return undefined;
     }
 }

@@ -39,6 +39,8 @@ type PurchasePayoutExtended = {
 }
 
 type ContractDetails = {
+    uri: string,
+
     block: number, // the last updated block(current block) from The Graph
     contractAddress: string,
     chainId: number,
@@ -56,6 +58,9 @@ type ContractDetails = {
     issuanceDate: Date | string,
     isSettled: boolean,
     issuanceBlock: number,
+    referrerRewardRate: number,
+    purchaseRate: number,
+    earlyRedemptionRate: number,
 }
 
 type ContractInfoDetails = ContractDetails & PurchasePayoutInfo
