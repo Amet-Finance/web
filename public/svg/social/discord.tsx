@@ -1,15 +1,19 @@
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
 
-export default function DiscordSVG({isWhite, isBig}: { isWhite?: boolean, isBig?: boolean }) {
+export default function DiscordSVG({url = URLS.Discord, isWhite, isBig}: Readonly<{
+    url?: string
+    isWhite?: boolean,
+    isBig?: boolean
+}>) {
     const size = isBig ? 32 : 26
     const color = isWhite ? "#000" : "#7D7D7D"
 
-    return <>
-        <Link href={URLS.Discord} target="_blank" rel="noreferrer" title="Amet Finance Discord">
+    return (
+        <Link href={url} target="_blank" rel="noreferrer" title="Amet Finance Discord">
             <DiscordIcon size={size} color={color} hoverColor={"#fff"}/>
         </Link>
-    </>
+    )
 }
 
 export function DiscordIcon({size, color, hoverColor}: { size: number, color: string, hoverColor?: string }) {

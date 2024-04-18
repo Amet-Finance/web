@@ -1,8 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    corePlugins: {
+        preflight: true
+    },
     content: [
         "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
+
     theme: {
         screens: {
             'xs': '475px',       // Extra small devices, like small phones

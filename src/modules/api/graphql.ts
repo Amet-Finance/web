@@ -152,6 +152,7 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
 async function getAccountInformation({chainId, address}: AccountInformationQuery): Promise<AccountExtendedFormat> {
     // todo we can add historical purchases as well by removing balance_gt: "0"
     // todo can add action logs as well
+    // referral and rewards as well
 
     const addressLowercase = address.toLowerCase()
     const query = `

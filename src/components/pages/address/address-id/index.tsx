@@ -9,6 +9,9 @@ import CopySVG from "../../../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";
 import makeBlockie from "ethereum-blockies-base64";
 import Image from "next/image";
+import TwitterSVG from "../../../../../public/svg/social/twitter";
+import DiscordSVG from "../../../../../public/svg/social/discord";
+import TelegramSVG from "../../../../../public/svg/social/telegram";
 
 export default function AddressId({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
 
@@ -25,24 +28,29 @@ export default function AddressId({accountExtendedFormat}: { accountExtendedForm
     )
 }
 
-function AccountContainer({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
+function AccountContainer({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
     const {address} = accountExtendedFormat;
 
     const icon = makeBlockie(address);
 
     return (
-        <div className='flex col-span-5 w-full'>
+        <div className='flex flex-col gap-8 col-span-5 w-full'>
            <div className='flex items-center gap-2 h-fit'>
                <Image src={icon} alt={address} width={1000} height={1000} className='rounded-full w-24 h-24'/>
                <div className='flex flex-col gap-2'>
                    <span>No Name</span>
-                   <div className='group flex items-center gap-2 cursor-pointer'
-                        onClick={copyToClipboard.bind(null, address, "Address")}>
+                   <button className='group flex items-center gap-2 cursor-pointer'
+                           onClick={copyToClipboard.bind(null, address, "Address")}>
                        <span className='text-sm text-neutral-500 p-1 w-full'>{address}</span>
                        <div className='group-hover:flex hidden'><CopySVG color="#fff"/></div>
-                   </div>
+                   </button>
                </div>
            </div>
+            {/*<div className='flex items-center gap-2'>*/}
+            {/*    <TwitterSVG url=''/>*/}
+            {/*    <DiscordSVG url=''/>*/}
+            {/*    <TelegramSVG url=''/>*/}
+            {/*</div>*/}
         </div>
     )
 }
@@ -66,15 +74,14 @@ function AnalysisContainer({accountExtendedFormat}: { accountExtendedFormat: Acc
     return (
         <div className='col-span-5 flex w-full'>
             <div className='flex flex-col items-end w-full'>
-                <span
-                    className={`text-4xl font-bold`}>${formatLargeNumber(analysis.unrealizedProfitUSD, false, 5)}</span>
+                <span className="text-4xl font-bold">${formatLargeNumber(analysis.unrealizedProfitUSD, false, 2)}</span>
                 <span className='text-sm'>Unrealized Profit</span>
             </div>
         </div>
     )
 }
 
-function BondsContainer({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
+function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
 
     const {balances, issued} = accountExtendedFormat;
 

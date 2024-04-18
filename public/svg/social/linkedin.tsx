@@ -4,6 +4,8 @@ import {URLS} from "@/modules/utils/urls";
 export default function LinkedInSVG() {
 
     return (
+
+    <>
         <Link href={URLS.LinkedIn} target="_blank" rel="noreferrer" title="Amet Finance LinkedIn">
             <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"
                  className='cursor-pointer hover:fill-white'>
@@ -12,6 +14,16 @@ export default function LinkedInSVG() {
                     fill="#7D7D7D"/>
             </svg>
         </Link>
-    )
+        <style jsx>{`
+            path {
+                fill: #7D7D7D;
+            }
+
+            svg:hover path {
+                fill: #fff;
+            }
+        `}</style>
+    </>
+)
 
 }
