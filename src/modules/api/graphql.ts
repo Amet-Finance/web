@@ -16,7 +16,7 @@ import {base} from "wagmi/chains";
 
 function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
-        [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/version/0.5.2/api`
+        [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/api`
     }
     return API[chainId];
 }
