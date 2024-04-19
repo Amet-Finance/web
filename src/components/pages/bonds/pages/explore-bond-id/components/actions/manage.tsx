@@ -1,6 +1,6 @@
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {TxTypes} from "@/modules/web3/constants";
-import {useRef, useState} from "react";
+import {ReactNode, useRef, useState} from "react";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
 import {Percentages} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/utils";
@@ -10,13 +10,74 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, useShow} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
+import {StringKeyedObject} from "@/components/utils/general";
+import InfoBox from "@/components/utils/info-box";
+import {InfoData} from "@/components/utils/types";
+import {URLS} from "@/modules/utils/urls";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
 // todo make this section cleaner and add visualisation(icons)
 
+
+const ACTION_CONSTANTS: StringKeyedObject<{ title: string, infoData: InfoData, placeholder?: string, }> = {
+    DepositPayout: {
+        title: "Add Payout",
+        infoData: {
+            text: "Add funds to the payout pool to ensure bondholders can withdraw their expected returns.",
+            link: URLS.AddPayout,
+            isBlank: true
+        },
+        placeholder: "Enter payout amount"
+    },
+    SettleBonds: {
+        title: "Settle All Bonds",
+        infoData: {
+            text: "Finalize all outstanding bonds and prepare for closure of the bond series.",
+            link: URLS.SettleBonds,
+            isBlank: true
+        }
+    },
+    WithdrawExcessPayout: {
+        title: "Withdraw Excess",
+        infoData: {
+            text: "Remove excess funds from the payout pool not required for current bond obligations.",
+            link: URLS.WithdrawExcessPayout,
+            isBlank: true
+        }
+    },
+    UpdateBondSupply: {
+        title: "Modify Bond Supply",
+        infoData: {
+            text: "Adjust the total supply of bonds available for purchase to reflect changes in strategy or demand.",
+            link: URLS.UpdateBondSupply,
+            isBlank: true
+        },
+        placeholder: "Set new bond supply"
+    },
+    DecreaseMaturityPeriod: {
+        title: "Shorten Maturity",
+        infoData: {
+            text: "Reduce the maturity period, accelerating the timeline for bond settlement.",
+            link: URLS.DecreaseMaturityPeriod,
+            isBlank: true
+        },
+        placeholder: "Maturity period in blocks"
+    },
+    ChangeOwner: {
+        title: "Transfer Ownership",
+        infoData: {
+            text: "Change the ownership of the bond contract to a new address.",
+            link: URLS.ChangeOwner,
+            isBlank: true
+        },
+        placeholder: "Enter new owner address"
+    }
+}
+
 export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
-    return <div className='flex flex-col w-full max-h-full overflow-y-auto'>
-        <div className='flex flex-col gap-2'>
+    return (
+        <div className='relative flex flex-col gap-2 w-full overflow-y-scroll h-72'>
             <DepositPayout contractInfo={contractInfo}/>
             <Settle contractInfo={contractInfo}/>
             <WithdrawExcessPayout contractInfo={contractInfo}/>
@@ -24,7 +85,7 @@ export default function ManageTab({contractInfo}: Readonly<{ contractInfo: Contr
             <DecreaseMaturityPeriod contractInfo={contractInfo}/>
             <ChangeOwner contractInfo={contractInfo}/>
         </div>
-    </div>
+    )
 }
 
 function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -54,24 +115,24 @@ function DepositPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDeta
         }
     }
 
-    return <div
-        className="group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
-        <button className='flex justify-between' onClick={openOrClose}>
-            <p className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'>Deposit
-                Payout {isLoading &&
-                    <Loading percent={80}/>}</p>
+    return (
+        <ActionContainer isOpen={isOpen}>
+            <ContentContainer info={ACTION_CONSTANTS.DepositPayout}
+                              additionalChildren={<ConditionalRenderer isOpen={maxPayoutDeposit > 0}>
+                                  <span className='text-mm text-red-500 whitespace-nowrap'
+                                        title={maxPayoutDeposit.toString()}>Payout Deficit: {formatLargeNumber(maxPayoutDeposit)} {payout.symbol}</span>
+                              </ConditionalRenderer>}
+                              isOpen={isOpen} isLoading={isLoading}
+                              openOrClose={openOrClose}/>
             <ConditionalRenderer isOpen={isOpen}>
-                <XmarkSVG onClick={openOrClose} isSmall/>
+                <InputContainer handler={handler}
+                                placeholder={ACTION_CONSTANTS.DepositPayout.placeholder}
+                                maxValue={maxPayoutDeposit}
+                                symbol={payout.symbol}
+                                submit={submit}/>
             </ConditionalRenderer>
-        </button>
-        <ConditionalRenderer isOpen={isOpen}>
-            <InputContainer handler={handler}
-                            placeholder='Payout Amount'
-                            maxValue={maxPayoutDeposit}
-                            symbol={payout.symbol}
-                            submit={submit}/>
-        </ConditionalRenderer>
-    </div>
+        </ActionContainer>
+    )
 }
 
 function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -83,10 +144,11 @@ function Settle({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>)
         return submitTransaction();
     }
 
-    return <button
-        className="flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white"
-        onClick={submit}>Settle Bonds
-        {isLoading && <Loading percent={80}/>}</button>
+    return (
+        <ActionContainer onClick={submit}>
+            <ContentContainer info={ACTION_CONSTANTS.SettleBonds} isLoading={isLoading}/>
+        </ActionContainer>
+    )
 }
 
 function WithdrawExcessPayout({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -96,13 +158,19 @@ function WithdrawExcessPayout({contractInfo}: Readonly<{ contractInfo: ContractC
 
     const excessPayout = BigNumber(payoutBalance).minus(BigNumber(totalBonds - redeemed).times(BigNumber(payout.amount)))
     const excessPayoutClean = excessPayout.div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
+    const showExcess = Boolean(excessPayoutClean) && excessPayoutClean > 0
 
-    return <button
-        className={`flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap bg-neutral-800 rounded-md p-2 cursor-pointer hover:text-white`}
-        onClick={submitTransaction}>Withdraw Excess Payout <ConditionalRenderer
-        isOpen={Boolean(excessPayoutClean) && excessPayoutClean > 0}>-<span
-        className='text-green-500'>{excessPayoutClean} {payout.symbol}</span></ConditionalRenderer>
-        {isLoading && <Loading percent={80}/>}</button>
+    return (
+        <ActionContainer onClick={submitTransaction}>
+            <ContentContainer info={ACTION_CONSTANTS.WithdrawExcessPayout} isLoading={isLoading}
+                              additionalChildren={
+                                  <ConditionalRenderer isOpen={showExcess}>
+                                      <span
+                                          className='text-green-500 whitespace-nowrap text-mm'>Excess Available: +{formatLargeNumber(excessPayoutClean)} {payout.symbol}</span>
+                                  </ConditionalRenderer>
+                              }/>
+        </ActionContainer>
+    )
 }
 
 function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -123,20 +191,17 @@ function UpdateBondSupply({contractInfo}: Readonly<{ contractInfo: ContractCoreD
         await submitTransaction();
     }
 
-    return <div
-        className="group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800">
-        <button className='flex justify-between' onClick={openOrClose}>
-            <p className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'>Update
-                Bond Supply {isLoading &&
-                    <Loading percent={80}/>}</p>
+    return (
+        <ActionContainer isOpen={isOpen}>
+            <ContentContainer info={ACTION_CONSTANTS.UpdateBondSupply} isOpen={isOpen} isLoading={isLoading}
+                              openOrClose={openOrClose}/>
             <ConditionalRenderer isOpen={isOpen}>
-                <XmarkSVG onClick={openOrClose} isSmall/>
+                <InputContainer handler={handler}
+                                placeholder={ACTION_CONSTANTS.UpdateBondSupply.placeholder}
+                                submit={submit}/>
             </ConditionalRenderer>
-        </button>
-        <ConditionalRenderer isOpen={isOpen}>
-            <InputContainer handler={handler} submit={submit} placeholder='New Bond Supply'/>
-        </ConditionalRenderer>
-    </div>
+        </ActionContainer>
+    )
 }
 
 function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -158,14 +223,17 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
         await submitTransaction();
     }
 
-    return <div
-        className={`group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
-        <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
-                onClick={openOrClose}>Decrease Maturity Period {isLoading && <Loading percent={80}/>}</button>
-        <ConditionalRenderer isOpen={isOpen}>
-            <InputContainer handler={handler} submit={submit} placeholder='Maturit Period In Blocks'/>
-        </ConditionalRenderer>
-    </div>
+    return (
+        <ActionContainer isOpen={isOpen}>
+            <ContentContainer info={ACTION_CONSTANTS.DecreaseMaturityPeriod} isOpen={isOpen} isLoading={isLoading}
+                              openOrClose={openOrClose}/>
+            <ConditionalRenderer isOpen={isOpen}>
+                <InputContainer handler={handler}
+                                placeholder={ACTION_CONSTANTS.DecreaseMaturityPeriod.placeholder}
+                                submit={submit}/>
+            </ConditionalRenderer>
+        </ActionContainer>
+    )
 }
 
 function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
@@ -179,27 +247,24 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
     const handler = [owner, setOwner];
 
 
-    const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.ChangeOwner, {
-        contractAddress: contractAddress,
-        owner
-    })
+    const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.ChangeOwner, {contractAddress, owner})
 
     async function submit() {
         if (!owner || !isAddress(owner)) return toast.error("Invalid owner");
         await submitTransaction()
     }
 
-    return <div
-        className={`group flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-800`}>
-        <button className='group-hover:text-white flex items-center gap-1 text-sm text-neutral-400 whitespace-nowrap'
-                onClick={openOrClose}>Change Owner {isLoading && <Loading percent={80}/>}</button>
-        <ConditionalRenderer isOpen={isOpen}>
-            <InputContainer handler={handler}
-                            submit={submit}
-                            type="string"
-                            placeholder='New Owner Address'/>
-        </ConditionalRenderer>
-    </div>
+    return (
+        <ActionContainer isOpen={isOpen}>
+            <ContentContainer info={ACTION_CONSTANTS.ChangeOwner} isOpen={isOpen} isLoading={isLoading}
+                              openOrClose={openOrClose}/>
+            <ConditionalRenderer isOpen={isOpen}>
+                <InputContainer handler={handler}
+                                placeholder={ACTION_CONSTANTS.ChangeOwner.placeholder}
+                                submit={submit}/>
+            </ConditionalRenderer>
+        </ActionContainer>
+    )
 }
 
 function InputContainer({handler, maxValue, symbol, submit, placeholder, type}: Readonly<{
@@ -231,22 +296,63 @@ function InputContainer({handler, maxValue, symbol, submit, placeholder, type}: 
         ref.current.value = value;
     }
 
-    return <div className='flex flex-col gap-2'>
-        <div className='flex flex-col justify-between items-center gap-2 bg-neutral-950 rounded-md w-full'>
-            <div className='flex justify-between w-full items-center gap-2 px-2'>
-                <input type="text"
-                       ref={ref}
-                       className='w-full bg-transparent placeholder:text-sm'
-                       onChange={change}
-                       placeholder={placeholder}/>
-                <ConditionalRenderer isOpen={Boolean(symbol)}>
-                    <span className='text-sm text-neutral-400 font-medium'>{symbol}</span>
+    return (
+        <div className='flex flex-col gap-2 w-full bg-black rounded-md'>
+            <div className='flex justify-between items-center gap-2 rounded-md w-full py-1 px-1'>
+                <div className='flex justify-between w-full items-center gap-2 px-1'>
+                    <input type="text"
+                           ref={ref}
+                           className='bg-transparent w-full placeholder:text-sm placeholder:text-neutral-600 text-xs'
+                           onChange={change}
+                           placeholder={placeholder}/>
+                    <ConditionalRenderer isOpen={Boolean(symbol)}>
+                        <span className='text-xs text-neutral-400 font-medium'>{symbol}</span>
+                    </ConditionalRenderer>
+                </div>
+                <DefaultButton classType='1' onClick={submit}>Submit</DefaultButton>
+            </div>
+            <ConditionalRenderer isOpen={Boolean(maxValue)}>
+                <Percentages setter={setPercentage}/>
+            </ConditionalRenderer>
+        </div>
+    )
+}
+
+
+function ContentContainer({info, isLoading, additionalChildren, isOpen, openOrClose}: Readonly<{
+    info: { title: string, infoData: InfoData },
+    isLoading: boolean,
+    additionalChildren?: ReactNode
+    isOpen?: boolean,
+    openOrClose?: () => any
+}>) {
+
+    const {infoData, title} = info;
+    return (
+        <button className='flex items-center justify-between gap-2 w-full' onClick={openOrClose}>
+            <div className='flex items-center justify-between gap-2 w-full'>
+                <div className='flex items-center gap-1 w-full'>
+                    <p className='whitespace-nowrap text-sm'>{title}</p>
+                    <ConditionalRenderer isOpen={isLoading}><Loading percent={80}/></ConditionalRenderer>
+                </div>
+                {additionalChildren}
+                <ConditionalRenderer isOpen={!Boolean(isOpen)}>
+                    <InfoBox info={infoData} isRight className='w-[1000%]'/>
                 </ConditionalRenderer>
             </div>
-            <DefaultButton classType='1' onClick={submit}>Submit</DefaultButton>
-        </div>
-        <ConditionalRenderer isOpen={Boolean(maxValue)}>
-            <Percentages setter={setPercentage}/>
-        </ConditionalRenderer>
-    </div>
+            <ConditionalRenderer isOpen={Boolean(isOpen)}>
+                <XmarkSVG onClick={openOrClose} isSmall/>
+            </ConditionalRenderer>
+        </button>
+    )
+}
+
+function ActionContainer({children, isOpen, onClick}: { children: ReactNode, isOpen?: boolean, onClick?: () => any }) {
+    return (
+        <button
+            className={`relative flex flex-col gap-2 p-2 border border-neutral-900 rounded-md cursor-pointer bg-neutral-900 ${Boolean(isOpen) ? "" : "hover:bg-neutral-800"} px-4 w-full`}
+            onClick={onClick}>
+            {children}
+        </button>
+    )
 }

@@ -114,12 +114,12 @@ function StatisticsBox({classAttributes, value, title, isLoading}: {
 }) {
     return <>
         <div
-            className={"flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white hover:text-black overflow-x-auto" + classAttributes}>
+            className={"group flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white overflow-x-auto" + classAttributes}>
             <ToggleBetweenChildren isOpen={isLoading}>
                 <Loading/>
                 <div className='flex flex-col gap-2'>
-                    <span className='md:text-3xl text-xl font-bold'>{value}</span>
-                    <span className='text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
+                    <span className='group-hover:text-black md:text-3xl text-xl font-bold'>{value}</span>
+                    <span className='group-hover:text-black text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
                 </div>
             </ToggleBetweenChildren>
         </div>

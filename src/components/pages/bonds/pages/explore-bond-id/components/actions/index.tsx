@@ -29,7 +29,7 @@ export default function ActionsContainer({contractInfo}: Readonly<{
     return (
         <div className='relative xl:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-96'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
-            <div className='flex w-full h-full'>
+            <div className='flex justify-center h-full w-full'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>
             </div>
         </div>

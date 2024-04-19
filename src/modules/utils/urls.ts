@@ -37,6 +37,14 @@ const URLS = {
     DiscordTicket: "https://discord.gg/gcyZddv8Dj",
 
 
+    AddPayout: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#add-payout",
+    SettleBonds: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#settle-bonds",
+    WithdrawExcessPayout: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#withdraw-excess-payout",
+    UpdateBondSupply: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#update-bond-supply",
+    DecreaseMaturityPeriod: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#decrease-maturity-period",
+    ChangeOwner: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#change-owner",
+
+
     others: {
         MantaNetwork: "https://manta.network/ecosystem.html",
         Polygon: "https://polygon.technology/ecosystem",
