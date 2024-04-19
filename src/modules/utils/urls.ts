@@ -26,6 +26,7 @@ const URLS = {
     Facebook: "https://www.facebook.com/people/Amet-Finance/61552721081613/",
     DefiLlama: "https://defillama.com/protocol/amet-finance",
     DappRadar: "https://dappradar.com/dapp/amet-finance",
+    Snapshot: "https://snapshot.org/#/amet-finance.eth",
 
     AmetFinanceToken: "https://docs.amet.finance/v2/amet-finance-token-amt/overview-of-amet-finance-token-amt",
 

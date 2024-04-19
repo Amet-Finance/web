@@ -6,6 +6,7 @@ const FOOTER_LINKS = [
         attributes: [
             {title: 'DefiLlama', url: URLS.DefiLlama},
             {title: 'DappRadar', url: URLS.DappRadar},
+            {title: "Snapshot", url: URLS.Snapshot}
         ]
     },
     {
