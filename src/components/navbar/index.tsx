@@ -211,9 +211,11 @@ function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountCont
     const icon = accountState.profileImage ?? makeBlockie(address);
     const name = accountState.profileName ?? "";
     const {disconnect} = useDisconnect();
+    const close = () => setOpen(false)
+
 
     function disconnectWallet() {
-        setOpen(false);
+        close();
         disconnect();
     }
 
@@ -254,11 +256,12 @@ function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountCont
                 <p className='text-2xl font-medium'>{formatLargeNumber(account.xp)} XP</p>
             </div>
             <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
-                <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'
+                      onClick={close}>
                     <span>Portfolio</span>
                 </Link>
                 <Link href={`/address/${address}?tab=watchlist`}
-                      className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'>
+                      className='px-4 py-2 rounded-md w-full hover:bg-neutral-200' onClick={close}>
                     <span>Watchlist</span>
                 </Link>
             </div>
