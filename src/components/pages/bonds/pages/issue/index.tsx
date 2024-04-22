@@ -132,9 +132,6 @@ function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo, is
                 className='flex items-center justify-center gap-1 px-2 py-2.5 font-medium bg-neutral-200 text-black rounded-full hover:bg-white'
                 onClick={issueBonds}>
                 <span>Issue Bonds</span>
-                <ConditionalRenderer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
-                    <span className='text-red-500'>({issuerContractInfo.issuanceFeeUI})</span>
-                </ConditionalRenderer>
             </button>
         </div>
     </div>
@@ -448,48 +445,60 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
     const maturityPeriodStrLong = formatTime(maturityPeriodTime)
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 
-    return (
-        <div className='grid grid-cols-12 mt-4 gap-4'>
+    const showTotalBondsContainer = Number.isFinite(bondInfo.totalBonds)
+    const showMaturityContainer = Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0
+    const showChainContainer = Number.isFinite(bondInfo.chainId)
+    const showPurchaseTokenContainer = Boolean(bondInfo.purchaseToken)
+    const showPayoutTokenContainer = Boolean(bondInfo.payoutToken)
 
-            <ConditionalRenderer isOpen={Number.isFinite(bondInfo.totalBonds)}>
-                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                     title={bondInfo.totalBonds?.toString()}>
-                    <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
-                    <span className='text-neutral-500 text-xs'>Total</span>
-                </div>
-            </ConditionalRenderer>
-            <ConditionalRenderer
-                isOpen={Number.isFinite(bondInfo.maturityPeriodInBlocks) && bondInfo.maturityPeriodInBlocks > 0}>
-                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
-                     title={`${maturityPeriodStrLong} or ${bondInfo.maturityPeriodInBlocks} blocks`}>
+    return (
+        <div className='flex flex-col justify-between h-full gap-2'>
+            <div className='grid grid-cols-12 mt-4 gap-4'>
+                <ConditionalRenderer isOpen={showTotalBondsContainer}>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                         title={bondInfo.totalBonds?.toString()}>
+                        <span className='text-base font-medium'>{formatLargeNumber(bondInfo.totalBonds)}</span>
+                        <span className='text-neutral-500 text-xs'>Total</span>
+                    </div>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={showMaturityContainer}>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'
+                         title={`${maturityPeriodStrLong} or ${format(bondInfo.maturityPeriodInBlocks)} blocks`}>
                     <span
                         className='text-base whitespace-nowrap font-medium'>{shortenString(maturityPeriodStr, 9)}</span>
-                    <span className='text-neutral-500 text-xs'>Maturity Period</span>
-                </div>
-            </ConditionalRenderer>
-            <ConditionalRenderer isOpen={Number.isFinite(bondInfo.chainId)}>
-                <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
-                    <div className='flex gap-2 items-center texee'>
-                        <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
-                               width={24}
-                               height={24}/>
-                        <span className='text-base font-medium'>{shortenString(chainInfo?.name ?? "", 5)}</span>
+                        <span className='text-neutral-500 text-xs'>Maturity Period</span>
                     </div>
-                    <span className='text-neutral-500 text-xs'>Chain</span>
-                </div>
-            </ConditionalRenderer>
-            <ConditionalRenderer isOpen={Boolean(bondInfo.purchaseToken)}>
-                <TokenPreview
-                    type='purchaseToken'
-                    token={tokens[bondInfo.purchaseToken]}
-                    issuerContractInfo={issuerContractInfo}
-                    bondInfo={bondInfo}/>
-            </ConditionalRenderer>
-            <ConditionalRenderer isOpen={Boolean(bondInfo.payoutToken)}>
-                <TokenPreview type='payoutToken'
-                              token={tokens[bondInfo.payoutToken]}
-                              issuerContractInfo={issuerContractInfo}
-                              bondInfo={bondInfo}/>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={showChainContainer}>
+                    <div className='col-span-4 w-full flex flex-col items-center gap-0.5 cursor-pointer'>
+                        <div className='flex gap-2 items-center texee'>
+                            <Image src={`/svg/chains/${chainInfo?.id}.svg`} alt={chainInfo?.name ?? ""}
+                                   width={24}
+                                   height={24}/>
+                            <span className='text-base font-medium'>{shortenString(chainInfo?.name ?? "", 5)}</span>
+                        </div>
+                        <span className='text-neutral-500 text-xs'>Chain</span>
+                    </div>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={showPurchaseTokenContainer}>
+                    <TokenPreview
+                        type='purchaseToken'
+                        token={tokens[bondInfo.purchaseToken]}
+                        issuerContractInfo={issuerContractInfo}
+                        bondInfo={bondInfo}/>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={showPayoutTokenContainer}>
+                    <TokenPreview type='payoutToken'
+                                  token={tokens[bondInfo.payoutToken]}
+                                  issuerContractInfo={issuerContractInfo}
+                                  bondInfo={bondInfo}/>
+                </ConditionalRenderer>
+            </div>
+            <ConditionalRenderer isOpen={Boolean(issuerContractInfo.issuanceFeeUI)}>
+                <p className='text-mm text-neutral-600'>You will incur an issuance fee
+                    of {issuerContractInfo.issuanceFeeUI} and a {issuerContractInfo.purchaseRate / 10}% fee on each bond
+                    purchase. If bondholders choose capitulation redeem, you will
+                    receive {issuerContractInfo.earlyRedemptionRate / 10}% of the payout tokens back.</p>
             </ConditionalRenderer>
         </div>
     )

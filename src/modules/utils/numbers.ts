@@ -1,5 +1,7 @@
 function format(number: number, maxDigestsForSmallNumbers = 4) {
 
+    if (!Number.isFinite(number)) return number;
+
     if (number < 1) {
         if (number.toString().length > maxDigestsForSmallNumbers) {
             return number.toFixed(maxDigestsForSmallNumbers)
