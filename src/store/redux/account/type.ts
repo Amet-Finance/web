@@ -1,8 +1,13 @@
 import {Balances} from "@/modules/api/type";
 
 type AccountState = {
-    xp: 0,
-    balances: Balances
+    _id: string,
+    balances: Balances,
+    xp?: 0,
+    code?: string
+    active?: boolean
+    twitter?: string
+    discord?: string
 }
 
 export type {

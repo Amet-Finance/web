@@ -147,9 +147,10 @@ async function getAccountInformation({chainId, address}: AccountInformationQuery
 `
     const response = await indexerRequest(chainId, query)
 
-    const block = response._meta.block.number;
-    const issued = response.bonds.map((item: any) => transformCoreDetails(item, chainId, block))
-    const balances = response.user.tokenBalances.map((item: any) => {
+
+    const block = response?._meta?.block?.number || 0;
+    const issued = (response?.bonds || []).map((item: any) => transformCoreDetails(item, chainId, block))
+    const balances = (response?.user?.tokenBalances || []).map((item: any) => {
         const bond = transformCoreDetails(item.bond, chainId, block);
         return {
             bond,
@@ -183,8 +184,8 @@ async function getBalances(address: string, chainId: number): Promise<Balances> 
     const response = await indexerRequest(chainId, query);
     const userInfo = response.user;
 
-    const balances: Balances = {}
-    userInfo.tokenBalances.forEach((item: any) => {
+
+    return (userInfo?.tokenBalances || []).reduce((acc: Balances, item: any) => {
         const contractAddress: string = item.bond.id as string;
         const balanceInfo = {
             balance: Number(item.balance),
@@ -192,12 +193,12 @@ async function getBalances(address: string, chainId: number): Promise<Balances> 
             tokenId: Number(item.tokenId)
         }
 
-        if (!balances[contractAddress]) {
-            balances[contractAddress] = []
+        if (!acc[contractAddress]) {
+            acc[contractAddress] = []
         }
-        balances[contractAddress].push(balanceInfo);
-    })
-    return balances;
+        acc[contractAddress].push(balanceInfo);
+        return acc;
+    }, {} as Balances);
 }
 
 async function getBalance(address: string, bondAddress: string, chainId: number): Promise<ContractBalance[]> {

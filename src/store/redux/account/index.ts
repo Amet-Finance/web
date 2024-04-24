@@ -6,7 +6,7 @@ import {AccountState} from "@/store/redux/account/type";
 import CloudAPI from "@/modules/api/cloud";
 
 const emptyState: AccountState = {
-    xp: 0,
+    _id: "0x0",
     balances: {}
 }
 
@@ -19,7 +19,12 @@ const counterSlice = createSlice({
         },
         updateUser: (state, {payload}) => {
             if (payload) {
-                state.xp = payload.xp;
+                state._id = payload._id;
+                if (payload.xp) state.xp = payload.xp;
+                if (payload.active) state.active = Boolean(payload.active);
+                if (payload.code) state.code = payload.code;
+                if (payload.twitter) state.twitter = payload.twitter;
+                if (payload.discord) state.discord = payload.discord;
             }
         },
     },
@@ -29,7 +34,6 @@ const counterSlice = createSlice({
 async function initUser(address: string | undefined) {
     if (!address) return;
     const response = await CloudAPI.getUser(address)
-    console.log(response)
     if (response) {
         store.dispatch(counterSlice.actions.updateUser(response))
     }

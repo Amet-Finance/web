@@ -1,6 +1,6 @@
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useNetworkValidator} from "@/modules/utils/chain";
-import {useAccount, useSendTransaction} from "wagmi";
+import {useAccount, useSendTransaction, useSignMessage} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {StringKeyedObject} from "@/components/utils/general";
 import {useConnectWallet} from "@/modules/utils/address";
@@ -21,7 +21,10 @@ function useTransaction(chainId: number | string, txType: string, txConfig: Stri
 
     async function submitTransaction() {
         try {
-            if (!address) return open();
+            if (!address) {
+                open()
+                return undefined;
+            }
             await validator.validateAndSwitch()
             const response = await sendTransactionAsync();
             return await trackTransaction(chain, response.hash);
@@ -38,6 +41,42 @@ function useTransaction(chainId: number | string, txType: string, txConfig: Stri
     }
 }
 
+function useSignature(message: string, nonce?: boolean, contractAddress?: string) {
+
+    const {address} = useAccount();
+    const {open} = useConnectWallet();
+
+    if (contractAddress) {
+        message += `\nContract: ${contractAddress}`
+    }
+
+    if (nonce) {
+        message += `\nNonce: ${Date.now()}`
+    }
+
+    const {signMessageAsync} = useSignMessage({message});
+
+    async function submitSignature(): Promise<string | undefined> {
+        try {
+            if (!address) {
+                open()
+                return undefined
+            }
+            return await signMessageAsync();
+        } catch (error: any) {
+            console.error(error)
+            return undefined;
+        }
+    }
+
+    return {
+        address,
+        message,
+        submitSignature
+    }
+}
+
 export {
-    useTransaction
+    useTransaction,
+    useSignature
 }

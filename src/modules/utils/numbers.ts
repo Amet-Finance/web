@@ -27,8 +27,8 @@ function format(number: number, maxDigestsForSmallNumbers = 4) {
     return parts.length === 2 ? formattedIntegerPart + '.' + parts[1] : formattedIntegerPart;
 }
 
-function formatLargeNumber(number: number, includeThousand?: boolean, maxFixedLength = 1) {
-    if(!Number.isFinite(number)) return 0
+function formatLargeNumber(number: number | undefined, includeThousand?: boolean, maxFixedLength = 1) {
+    if (typeof number === 'undefined' || !Number.isFinite(number)) return 0
 
     const trillion = 1000000000000; // 1 trillion
     const billion = 1000000000;  // 1 billion

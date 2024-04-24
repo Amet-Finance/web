@@ -6,8 +6,22 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {ContractBalance} from "@/modules/api/type";
+import {useAccount} from "wagmi";
 
 const ONE_DAY = 24 * 60 * 60 * 1000
+
+function useAccountExtended() {
+    const account = useSelector((item: RootState) => item.account)
+    const {open} = useConnectWallet()
+    const {address} = useAccount()
+
+    return {
+        ...account,
+        open,
+        address,
+        isConnected: Boolean(address)
+    }
+}
 
 function useConnectWallet() {
     const {open} = useWeb3Modal();
@@ -65,6 +79,7 @@ async function copyToClipboard(text: string, type: string) {
 }
 
 export {
+    useAccountExtended,
     useConnectWallet,
     useBalances,
     copyToClipboard
