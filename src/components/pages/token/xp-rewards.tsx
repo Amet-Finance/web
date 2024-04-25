@@ -4,10 +4,13 @@ import {useSignature} from "@/modules/utils/transaction";
 import XpAPI from "@/modules/api/xp";
 import {useRouter} from "next/router";
 import React, {ReactNode, useEffect, useState} from "react";
-import {useAccountExtended} from "@/modules/utils/address";
+import {copyToClipboard, useAccountExtended} from "@/modules/utils/address";
 import Link from "next/link";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import {defaultChain} from "@/modules/utils/wallet-connect";
+import Image from "next/image";
+import makeBlockie from "ethereum-blockies-base64";
+import InfinitySVG from "../../../../public/svg/utils/infinity";
 
 const ScreenTypes = {
     Activate: "activate",
@@ -31,9 +34,16 @@ export default function XpRewards() {
 }
 
 function XpScreen() {
-    const {_id, twitter, discord, xp, isConnected, address, open} = useAccountExtended();
+    const {
+        _id, twitter,
+        discord, xp,
+        code, active,
+        isConnected, address,
+        open
+    } = useAccountExtended();
 
-    // todo after success connect
+    const referralUrl = `${location.href}?ref=${code}`
+
     function connectTwitter() {
         const clientId = process.env.TWITTER_CLIENT_ID || "d295SDkyRFFPWV9mZDZMUV95RDg6MTpjaQ";
         const redirectUri = 'https://api.amet.finance/validate/twitter'
@@ -67,13 +77,13 @@ function XpScreen() {
     return (
         <GeneralContainer className='grid grid-cols-12 py-32 gap-4' isPadding>
             <div
-                className='col-span-6 flex flex-col justify-between bg-neutral-900 rounded-3xl p-4 cursor-pointer h-56'>
+                className='col-span-6 flex flex-col justify-between bg-neutral-900 rounded-3xl p-4 cursor-pointer'>
                 <div className='flex justify-between w-full'>
                     <span className='text-xs text-neutral-600'>Updated 3h. ago</span>
                     <span className='text-xs text-neutral-600'>Share</span>
                 </div>
                 <div className='flex flex-col justify-center items-center w-full'>
-                    <span className='text-7xl font-bold'>{xp}</span>
+                    <span className='text-7xl font-bold'>{xp || 0}</span>
                     <span className='text-sm text-neutral-400'>Your Experience Points(XP)</span>
                 </div>
                 <div/>
@@ -89,7 +99,21 @@ function XpScreen() {
                             <u className='text-white'>{shorten(_id, 5)}</u>
                         </Link>
                     </div>)}
-                    isFinished={Boolean(_id)}
+                    isFinished={Boolean(active)}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Refer a Friend"
+                    description="Refer a friend using your unique code, and earn a percentage of their earned XP."
+                    value="10%"
+                    isInfinite={true}
+                    result={(
+                        <ActionButton onClick={copyToClipboard.bind(null, referralUrl, "Referral Url")}>
+                            Copy Referral Url
+                        </ActionButton>
+                    )}
+                    isFinished={false}
                 />
             </div>
             <div className='col-span-3 w-full'>
@@ -101,17 +125,20 @@ function XpScreen() {
                         <ToggleBetweenChildren isOpen={Boolean(twitter?.id)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
                                 <span>Connected:</span>
-                                <Link href={`https://x.com/${twitter?.username}`} target="_blank" className='text-white'>
+                                <Link href={`https://x.com/${twitter?.username}`} target="_blank"
+                                      className='text-white'>
                                     <span className='underline underline-offset-4'>{twitter?.username}</span>
                                 </Link>
                             </div>
-                            <button onClick={connectTwitter} className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-neutral-600'>Connect</button>
+                            <ActionButton onClick={connectTwitter}>
+                                Connect
+                            </ActionButton>
                         </ToggleBetweenChildren>
                     )}
                     isFinished={Boolean(twitter)}
                 />
             </div>
-            <div className='col-span-3 w-full h-56'>
+            <div className='col-span-3 w-full '>
                 <Action
                     title="Join Amet's Discord"
                     description="Join our Discord community to engage with other users and access exclusive content."
@@ -125,12 +152,98 @@ function XpScreen() {
                                     <span className='underline underline-offset-4'>{discord?.username}</span>
                                 </Link>
                             </div>
-                            <button onClick={connectDiscord}
-                                    className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-neutral-600'>Connect
-                            </button>
+                            <ActionButton onClick={connectDiscord}>
+                                Connect
+                            </ActionButton>
                         </ToggleBetweenChildren>
                     )}
                     isFinished={Boolean(discord)}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Issue Bonds"
+                    description="Issue bonds on Amet Finance and contribute to our ecosystem's growth."
+                    value="500"
+                    isInfinite
+                    result={(
+                        <Link href='/bonds/issue' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                Issue Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Purchase Bonds"
+                    description="Purchase any bond on the platform to invest in your future and earn XP on every $1 purchased."
+                    value="6"
+                    isInfinite
+                    result={(
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                Explore Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Purchase AMT Bonds"
+                    description="Specifically purchase AMT bonds for higher rewards."
+                    value="10"
+                    isInfinite
+                    result={(
+                        // todo add exact url
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                Explore Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Referr Users"
+                    description="Refer new users to purchase bonds and earn 4 XP per $1 value of referral purchase."
+                    value="4"
+                    isInfinite
+                    result={(
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                Explore Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Complete Redemption"
+                    description="Earn additional XP when all your issued bonds are redeemed. 8 XP per $1 value of redeemed."
+                    value="8"
+                    isInfinite
+                    result={(
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                Explore Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
                 />
             </div>
 
@@ -139,24 +252,28 @@ function XpScreen() {
     )
 }
 
-function Action({title, description, value, result, isFinished}: {
+function Action({title, description, value, result, isInfinite, isFinished}: {
     title: string,
     description: string,
     value: string,
     isFinished: boolean
+    isInfinite?: boolean
     result?: ReactNode
 }) {
     return (
         <div
-            className={`relative flex flex-col justify-around items-center gap-4 w-full
+            className={`relative flex flex-col justify-between items-center gap-8 w-full
                         h-full rounded-3xl bg-neutral-950 hover:bg-neutral-900
                         ${isFinished ? "cursor-not-allowed" : "cursor-pointer"} p-4
                         border border-neutral-900 hover:border-neutral-800
                         `}>
-            <div className='absolute flex items-center justify-center bg-green-500 w-8 h-8 rounded-full top-3 right-3'>
-                <span className='text-sm font-bold'>{value}</span>
+            <div className='flex items-center justify-between w-full'>
+                <ToggleBetweenChildren isOpen={Boolean(isInfinite)}>
+                    <InfinitySVG/>
+                    <span/>
+                </ToggleBetweenChildren>
+                <span className={`font-bold ${!isFinished ? "text-green-500" : "text-neutral-500 "} whitespace-nowrap`}>+{value}</span>
             </div>
-            <span/>
             <div className='flex flex-col gap-2 items-center'>
                 <span className='text-xl font-semibold'>{title}</span>
                 <p className='text-xs text-center text-neutral-600'>{description}</p>
@@ -173,7 +290,6 @@ function ActivateScreen({setScreen}: { setScreen: any }) {
 
     const preMessage = `By signing this message, you confirm your participation in the Amet XP Rewards System.\nThis system rewards your engagement with Experience Points (XP), which can be used to unlock exclusive benefits on our platform.\n`;
     const {address, message, submitSignature} = useSignature(preMessage, true);
-
 
     async function activateXPAccount() {
         const signature = await submitSignature();
@@ -194,9 +310,15 @@ function ActivateScreen({setScreen}: { setScreen: any }) {
 
     }
 
+    const randomAddresses = [
+        "0x038db6c62d0f072616e2b8db7d3d7cfc829f7f65",
+        "0x08a4e866425b4ed4ea8af9c5eb2e5eab21b3078a",
+        "0x44c4503c34079759100191d2a36b2ebb38892c48"
+    ]
+
     return (
-        <GeneralContainer className='flex flex-col py-64 gap-4'>
-            <div className='flex flex-col gap-8 max-w-2xl'>
+        <GeneralContainer className='relative flex items-center py-28 gap-4'>
+            <div className='flex flex-col gap-12 max-w-2xl z-10'>
                 <div className='flex flex-col gap-4'>
                     <h1 className='text-5xl font-bold'>Welcome to the Amet XP Rewards System</h1>
                     <p className='text-sm text-neutral-400'>Dive into the Amet XP Rewards System, where your engagement
@@ -209,8 +331,32 @@ function ActivateScreen({setScreen}: { setScreen: any }) {
                         perks
                         and benefits.</p>
                 </div>
-                <BasicButton wMin onClick={activateXPAccount}>Activate Your XP Account</BasicButton>
+                <div className='flex items-center  gap-4'>
+                    <BasicButton wMin onClick={activateXPAccount}>Activate Account</BasicButton>
+                    <div className='flex items-center gap-2'>
+                        <span className='text-xs text-neutral-600'>500+ participants</span>
+                        <div className='relative flex items-center'>
+                            <Image src={makeBlockie(randomAddresses[0])} alt={""} width={30} height={30}
+                                   className='rounded-full border border-neutral-600'/>
+                            <Image src={makeBlockie(randomAddresses[1])} alt={""} width={30} height={30}
+                                   className='rounded-full border border-neutral-600 -translate-x-3'/>
+                            <Image src={makeBlockie(randomAddresses[2])} alt={""} width={30} height={30}
+                                   className='rounded-full border border-neutral-600 -translate-x-6'/>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <Image src='/pngs/coins-amet.png' alt="Coins Dropping from top on Amet Finance"
+                   width={864} height={1008}
+                   className='object-cover rounded-xl'/>
         </GeneralContainer>
+    )
+}
+
+
+function ActionButton({children, onClick}: { children?: ReactNode, onClick?: any }) {
+    return (
+        <button onClick={onClick} className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-green-500'>{children}
+        </button>
     )
 }

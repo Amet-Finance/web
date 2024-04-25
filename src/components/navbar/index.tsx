@@ -48,7 +48,7 @@ export default function Navbar() {
 
     useEffect(() => {
         AccountStore.initUser(address).catch(nop)
-        const interval = setInterval(() => AccountStore.initUser(address), UPDATE_INTERVAL * 10);
+        const interval = setInterval(() => AccountStore.initUser(address), UPDATE_INTERVAL);
         return () => clearInterval(interval);
     }, [address]);
 
