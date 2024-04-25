@@ -3,9 +3,11 @@ import {BasicButton} from "@/components/utils/buttons";
 import {useSignature} from "@/modules/utils/transaction";
 import XpAPI from "@/modules/api/xp";
 import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {useAccountExtended} from "@/modules/utils/address";
 import Link from "next/link";
+import {getExplorer, shorten} from "@/modules/web3/util";
+import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ScreenTypes = {
     Activate: "activate",
@@ -29,8 +31,9 @@ export default function XpRewards() {
 }
 
 function XpScreen() {
-    const {twitter, discord, xp, isConnected, address, open} = useAccountExtended();
+    const {_id, twitter, discord, xp, isConnected, address, open} = useAccountExtended();
 
+    // todo after success connect
     function connectTwitter() {
         const clientId = process.env.TWITTER_CLIENT_ID || "d295SDkyRFFPWV9mZDZMUV95RDg6MTpjaQ";
         const redirectUri = 'https://api.amet.finance/validate/twitter'
@@ -62,34 +65,104 @@ function XpScreen() {
     }
 
     return (
-        <GeneralContainer className='flex flex-col items-center py-64 gap-12'>
-            <div className='flex justify-between w-full'>
-                <div className='flex flex-col items-center'>
-                    <span className='text-2xl font-bold'>{xp || 0}</span>
-                    <span className='text-sm text-neutral-600'>Your XP</span>
+        <GeneralContainer className='grid grid-cols-12 py-32 gap-4' isPadding>
+            <div
+                className='col-span-6 flex flex-col justify-between bg-neutral-900 rounded-3xl p-4 cursor-pointer h-56'>
+                <div className='flex justify-between w-full'>
+                    <span className='text-xs text-neutral-600'>Updated 3h. ago</span>
+                    <span className='text-xs text-neutral-600'>Share</span>
                 </div>
-                <button className='bg-green-500 hover:bg-green-600 px-8  rounded-3xl'>Refer and earn!</button>
+                <div className='flex flex-col justify-center items-center w-full'>
+                    <span className='text-7xl font-bold'>{xp}</span>
+                    <span className='text-sm text-neutral-400'>Your Experience Points(XP)</span>
+                </div>
+                <div/>
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Join XP System"
+                    description="Click the join button and sign with your wallet to start earning XP."
+                    value="50"
+                    result={(<div className='flex items-center gap-2 text-sm text-neutral-400'>
+                        <span>Address:</span>
+                        <Link href={getExplorer(defaultChain.id, "address", _id)} target="_blank">
+                            <u className='text-white'>{shorten(_id, 5)}</u>
+                        </Link>
+                    </div>)}
+                    isFinished={Boolean(_id)}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Follow Amet on Twitter"
+                    description="Follow us on Twitter to stay updated with the latest news and announcements."
+                    value="50"
+                    result={(
+                        <ToggleBetweenChildren isOpen={Boolean(twitter?.id)}>
+                            <div className='flex items-center gap-2 text-sm text-neutral-400'>
+                                <span>Connected:</span>
+                                <Link href={`https://x.com/${twitter?.username}`} target="_blank" className='text-white'>
+                                    <span className='underline underline-offset-4'>{twitter?.username}</span>
+                                </Link>
+                            </div>
+                            <button onClick={connectTwitter} className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-neutral-600'>Connect</button>
+                        </ToggleBetweenChildren>
+                    )}
+                    isFinished={Boolean(twitter)}
+                />
+            </div>
+            <div className='col-span-3 w-full h-56'>
+                <Action
+                    title="Join Amet's Discord"
+                    description="Join our Discord community to engage with other users and access exclusive content."
+                    value="50"
+                    result={(
+                        <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
+                            <div className='flex items-center gap-2 text-sm text-neutral-400'>
+                                <span>Connected:</span>
+                                <Link href={`https://discord.com/users/${discord?.id}`} target="_blank"
+                                      className='text-white'>
+                                    <span className='underline underline-offset-4'>{discord?.username}</span>
+                                </Link>
+                            </div>
+                            <button onClick={connectDiscord}
+                                    className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-neutral-600'>Connect
+                            </button>
+                        </ToggleBetweenChildren>
+                    )}
+                    isFinished={Boolean(discord)}
+                />
             </div>
 
-            <div className='flex justify-between w-full'>
-                <div className='flex flex-col gap-4'>
-                    <span className='text-3xl'>Social Activities</span>
-                    <ToggleBetweenChildren isOpen={!Boolean(twitter)}>
-                        <BasicButton wMin onClick={connectTwitter}>Connect your X</BasicButton>
-                        <p>Twitter: <Link href={`https://x.com/${twitter}`}
-                                             target="_blank"><u>{twitter}</u></Link></p>
-                    </ToggleBetweenChildren>
-                    <ToggleBetweenChildren isOpen={!Boolean(discord)}>
-                        <BasicButton wMin onClick={connectDiscord}>Join Amet Discord</BasicButton>
-                        <p>Discord: <Link href={`https://discord.com/users/${discord}`} target="_blank"><u>{discord}</u></Link></p>
-                    </ToggleBetweenChildren>
-                </div>
-                <div className='flex flex-col items-center gap-4'>
-                    <span className='text-3xl'>Social Activities</span>
 
-                </div>
-            </div>
         </GeneralContainer>
+    )
+}
+
+function Action({title, description, value, result, isFinished}: {
+    title: string,
+    description: string,
+    value: string,
+    isFinished: boolean
+    result?: ReactNode
+}) {
+    return (
+        <div
+            className={`relative flex flex-col justify-around items-center gap-4 w-full
+                        h-full rounded-3xl bg-neutral-950 hover:bg-neutral-900
+                        ${isFinished ? "cursor-not-allowed" : "cursor-pointer"} p-4
+                        border border-neutral-900 hover:border-neutral-800
+                        `}>
+            <div className='absolute flex items-center justify-center bg-green-500 w-8 h-8 rounded-full top-3 right-3'>
+                <span className='text-sm font-bold'>{value}</span>
+            </div>
+            <span/>
+            <div className='flex flex-col gap-2 items-center'>
+                <span className='text-xl font-semibold'>{title}</span>
+                <p className='text-xs text-center text-neutral-600'>{description}</p>
+            </div>
+            {result || <span/>}
+        </div>
     )
 }
 

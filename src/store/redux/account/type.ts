@@ -6,8 +6,14 @@ type AccountState = {
     xp?: 0,
     code?: string
     active?: boolean
-    twitter?: string
-    discord?: string
+    twitter?: {
+        id: string,
+        username: string
+    }
+    discord?: {
+        id: string,
+        username: string
+    }
 }
 
 export type {
