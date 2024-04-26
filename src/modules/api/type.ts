@@ -1,4 +1,4 @@
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 type TokenCore = {
     contractAddress: string,

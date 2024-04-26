@@ -1,7 +1,7 @@
 import {AccountState} from "@/store/redux/account/type";
 import {ModalState} from "@/store/redux/modal/type";
 import {TokensResponse} from "@/modules/api/type";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 type RootState = {
     modal: ModalState;

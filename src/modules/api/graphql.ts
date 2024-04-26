@@ -11,7 +11,7 @@ import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/ty
 import {constants} from "amet-utils";
 import {Balances, ContractBalance} from "@/modules/api/type";
 import {LogTypes} from "@/modules/web3/constants";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 import {base} from "wagmi/chains";
 
 function getApi(chainId: number) {

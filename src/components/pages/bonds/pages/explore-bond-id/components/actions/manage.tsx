@@ -10,7 +10,7 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, useShow} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 import InfoBox from "@/components/utils/info-box";
 import {InfoData} from "@/components/utils/types";
 import {URLS} from "@/modules/utils/urls";

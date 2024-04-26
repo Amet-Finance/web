@@ -1,5 +1,5 @@
 import {URLS} from "@/modules/utils/urls";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 type MetaInfo = {
     title: string,

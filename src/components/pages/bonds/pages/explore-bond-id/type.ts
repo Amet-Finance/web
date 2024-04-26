@@ -1,5 +1,5 @@
 import {ContractExtendedFormat} from "@/modules/api/contract-type";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 type ExploreIdQueryParams = {
     contractAddress: string,

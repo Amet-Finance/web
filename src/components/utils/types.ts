@@ -1,3 +1,5 @@
+type StringKeyedObject<T> = { [key: string]: T };
+
 type InfoData = {
     text: string;
     link?: string;
@@ -5,5 +7,6 @@ type InfoData = {
 }
 
 export type {
+    StringKeyedObject,
     InfoData
 }

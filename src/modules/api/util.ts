@@ -1,5 +1,5 @@
 import axios, {AxiosHeaders} from "axios";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 async function requestAPI({url, params, headers, showError}: {
     url: string,

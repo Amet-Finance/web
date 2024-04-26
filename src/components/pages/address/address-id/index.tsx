@@ -1,7 +1,7 @@
 import {GeneralContainer} from "@/components/utils/container";
-import {AccountExtendedFormat} from "@/modules/api/contract-type";
+import {AccountExtendedFormat, ContractCoreDetails} from "@/modules/api/contract-type";
 import BondCard from "@/components/pages/bonds/utils/bond-card";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTokensByChain} from "@/modules/utils/token";
 import {defaultChain} from "@/modules/utils/wallet-connect";
 import {formatLargeNumber} from "@/modules/utils/numbers";
@@ -9,13 +9,9 @@ import CopySVG from "../../../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";
 import makeBlockie from "ethereum-blockies-base64";
 import Image from "next/image";
-import TwitterSVG from "../../../../../public/svg/social/twitter";
-import DiscordSVG from "../../../../../public/svg/social/discord";
-import TelegramSVG from "../../../../../public/svg/social/telegram";
+import {useRouter} from "next/router";
 
 export default function AddressId({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
-
-    const {balances, issued, address} = accountExtendedFormat;
 
     return (
         <GeneralContainer className='flex flex-col gap-4 py-12 min-h-screen'>
@@ -84,15 +80,37 @@ function AnalysisContainer({accountExtendedFormat}: { accountExtendedFormat: Acc
 function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
 
     const {balances, issued} = accountExtendedFormat;
+    const {query} = useRouter();
 
     const Tabs = {
-        Purchased: "Purchased",
-        Issued: "Issued"
+        PurchasedBonds: "purchased-bonds",
+        IssuedBonds: "issued-bonds",
+        Watchlist: 'watchlist'
+
         // add watchilist as well
     }
 
-    const [tab, setTab] = useState(Tabs.Purchased)
-    const isPurchased = tab === Tabs.Purchased;
+    const Titles = {
+        [Tabs.PurchasedBonds]: "Purchased Bonds",
+        [Tabs.IssuedBonds]: "Issued Bonds",
+        [Tabs.Watchlist]: "Watchlist"
+    }
+
+    const [tab, setTab] = useState(Tabs.PurchasedBonds)
+    const isPurchased = tab === Tabs.PurchasedBonds;
+
+
+    useEffect(() => {
+        if (query.tab) setTab(query.tab.toString());
+    }, [query]);
+
+    const tabContent = (): ContractCoreDetails[] => {
+        if (isPurchased) {
+            return ((balances || []).map(i => i.bond))
+        } else {
+            return issued || []
+        }
+    }
 
     return (
         <div className='flex flex-col gap-4 w-full'>
@@ -100,17 +118,13 @@ function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedForma
                 {Object.values(Tabs).map(value => (
                     <button className={`rounded-2xl px-4 p-2 ${value === tab ? "bg-neutral-500" : "bg-neutral-700 "}`}
                             key={value} onClick={() => setTab(value)}>
-                        <span>{value}</span>
+                        <span>{Titles[value]}</span>
                     </button>
                 ))}
             </div>
             <div className='grid grid-cols-3 gap-2'>
                 {
-                    isPurchased ?
-                        Boolean(balances.length) && balances.map(item => <BondCard info={item.bond}
-                                                                                   key={item.bond.contractAddress}/>) :
-                        Boolean(issued.length) && issued.map(bond => <BondCard info={bond}
-                                                                               key={bond.contractAddress}/>)
+                    tabContent().map(item => <BondCard info={item} key={item.contractAddress}/>)
                 }
             </div>
 

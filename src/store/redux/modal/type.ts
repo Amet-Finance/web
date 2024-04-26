@@ -1,6 +1,6 @@
 import {BondInfo} from "@/components/pages/bonds/pages/issue/type";
 import {TransactionReceipt} from "viem";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 
 type ModalState = {

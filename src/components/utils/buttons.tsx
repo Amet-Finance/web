@@ -1,5 +1,5 @@
 import React from "react";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 
 function BasicButton({
                          children,

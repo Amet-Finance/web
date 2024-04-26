@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {TokensResponse} from "@/modules/api/type";
 import CloudAPI from "@/modules/api/cloud";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 import store from "@/store/store";
 
 // chainId => contractAddress => TokenResponse

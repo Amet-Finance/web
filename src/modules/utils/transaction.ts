@@ -2,7 +2,7 @@ import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useNetworkValidator} from "@/modules/utils/chain";
 import {useAccount, useSendTransaction, useSignMessage} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 import {useConnectWallet} from "@/modules/utils/address";
 
 function useTransaction(chainId: number | string, txType: string, txConfig: StringKeyedObject<any>) {

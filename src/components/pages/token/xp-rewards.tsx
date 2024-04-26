@@ -1,4 +1,4 @@
-import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
+import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
 import {BasicButton} from "@/components/utils/buttons";
 import {useSignature} from "@/modules/utils/transaction";
 import XpAPI from "@/modules/api/xp";
@@ -6,11 +6,11 @@ import {useRouter} from "next/router";
 import React, {ReactNode, useEffect, useState} from "react";
 import {copyToClipboard, useAccountExtended} from "@/modules/utils/address";
 import Link from "next/link";
-import {getExplorer, shorten} from "@/modules/web3/util";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {shorten} from "@/modules/web3/util";
 import Image from "next/image";
 import makeBlockie from "ethereum-blockies-base64";
 import InfinitySVG from "../../../../public/svg/utils/infinity";
+import {hourInSec} from "@/modules/utils/dates";
 
 const ScreenTypes = {
     Activate: "activate",
@@ -39,10 +39,30 @@ function XpScreen() {
         discord, xp,
         code, active,
         isConnected, address,
+        lastUpdated,
         open
     } = useAccountExtended();
 
+    const [settings, setSettings] = useState({
+        hideCompleted: false
+    })
+
+    const updateHoursAgo = lastUpdated ? (Date.now() - new Date(lastUpdated).getDate()) / hourInSec : "Invalid"
+
     const referralUrl = `${location.href}?ref=${code}`
+    const addressUrl = `${location.href}/address/${address}`
+
+    const showTwitter = !settings.hideCompleted || !Boolean(twitter);
+    const showDiscord = !settings.hideCompleted || !Boolean(discord);
+
+
+    function updateSettings(event: any) {
+
+        setSettings({
+            ...settings,
+            [event.target.id]: event.target.checked
+        })
+    }
 
     function connectTwitter() {
         const clientId = process.env.TWITTER_CLIENT_ID || "d295SDkyRFFPWV9mZDZMUV95RDg6MTpjaQ";
@@ -77,88 +97,102 @@ function XpScreen() {
     return (
         <GeneralContainer className='grid grid-cols-12 py-32 gap-4' isPadding>
             <div
-                className='col-span-6 flex flex-col justify-between bg-neutral-900 rounded-3xl p-4 cursor-pointer'>
+                className='col-span-12 flex flex-col justify-between bg-neutral-900 rounded-3xl p-4 gap-8 cursor-pointer'>
                 <div className='flex justify-between w-full'>
-                    <span className='text-xs text-neutral-600'>Updated 3h. ago</span>
+                    <span className='text-xs text-neutral-600'>Updated {updateHoursAgo}h. ago</span>
                     <span className='text-xs text-neutral-600'>Share</span>
                 </div>
                 <div className='flex flex-col justify-center items-center w-full'>
                     <span className='text-7xl font-bold'>{xp || 0}</span>
                     <span className='text-sm text-neutral-400'>Your Experience Points(XP)</span>
                 </div>
-                <div/>
+                <div className='flex items-center w-full'>
+                    <button className='flex items-center gap-2 text-sm text-neutral-400 cursor-pointer'>
+                        <input type="checkbox" id='hideCompleted' onChange={updateSettings} className='cursor-pointer'/>
+                        <label htmlFor="hideCompleted" className='cursor-pointer'>Hide completed actions</label>
+                    </button>
+                </div>
             </div>
-            <div className='col-span-3 w-full'>
+
+            <div className='col-span-12 flex items-center justify-center py-8'>
+                <span className='text-2xl font-medium'>Basic Actions</span>
+            </div>
+            <ConditionalContainer isOpen={!settings.hideCompleted || !Boolean(active)}>
                 <Action
                     title="Join XP System"
                     description="Click the join button and sign with your wallet to start earning XP."
                     value="50"
+                    isFinished={Boolean(active)}
                     result={(<div className='flex items-center gap-2 text-sm text-neutral-400'>
                         <span>Address:</span>
-                        <Link href={getExplorer(defaultChain.id, "address", _id)} target="_blank">
-                            <u className='text-white'>{shorten(_id, 5)}</u>
+                        <Link href={addressUrl} target="_blank">
+                            <span className='underline underline-offset-4 text-white'>{shorten(_id, 5)}</span>
                         </Link>
                     </div>)}
-                    isFinished={Boolean(active)}
                 />
-            </div>
-            <div className='col-span-3 w-full'>
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={true}>
                 <Action
                     title="Refer a Friend"
                     description="Refer a friend using your unique code, and earn a percentage of their earned XP."
                     value="10%"
                     isInfinite={true}
+                    isFinished={false}
                     result={(
                         <ActionButton onClick={copyToClipboard.bind(null, referralUrl, "Referral Url")}>
                             Copy Referral Url
                         </ActionButton>
                     )}
-                    isFinished={false}
                 />
-            </div>
-            <div className='col-span-3 w-full'>
+            </ConditionalContainer>
+
+            <ConditionalRenderer isOpen={showDiscord || showTwitter}>
+                <div className='col-span-12 flex items-center justify-center py-8'>
+                    <span className='text-2xl font-medium'>Social Actions</span>
+                </div>
+            </ConditionalRenderer>
+            <ConditionalContainer isOpen={showTwitter}>
                 <Action
                     title="Follow Amet on Twitter"
                     description="Follow us on Twitter to stay updated with the latest news and announcements."
                     value="50"
+                    isFinished={Boolean(twitter)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(twitter?.id)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
                                 <span>Connected:</span>
-                                <Link href={`https://x.com/${twitter?.username}`} target="_blank"
-                                      className='text-white'>
-                                    <span className='underline underline-offset-4'>{twitter?.username}</span>
+                                <Link href={`https://x.com/${twitter?.username}`} target="_blank">
+                                    <span className='text-white underline underline-offset-4'>{twitter?.username}</span>
                                 </Link>
                             </div>
-                            <ActionButton onClick={connectTwitter}>
-                                Connect
-                            </ActionButton>
+                            <ActionButton onClick={connectTwitter}>Connect</ActionButton>
                         </ToggleBetweenChildren>
                     )}
-                    isFinished={Boolean(twitter)}
                 />
-            </div>
-            <div className='col-span-3 w-full '>
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={showDiscord}>
                 <Action
                     title="Join Amet's Discord"
                     description="Join our Discord community to engage with other users and access exclusive content."
                     value="50"
+                    isFinished={Boolean(discord)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
                                 <span>Connected:</span>
-                                <Link href={`https://discord.com/users/${discord?.id}`} target="_blank"
-                                      className='text-white'>
-                                    <span className='underline underline-offset-4'>{discord?.username}</span>
+                                <Link href={`https://discord.com/users/${discord?.id}`} target="_blank">
+                                    <span className='text-white underline underline-offset-4'>{discord?.username}</span>
                                 </Link>
                             </div>
-                            <ActionButton onClick={connectDiscord}>
-                                Connect
-                            </ActionButton>
+                            <ActionButton onClick={connectDiscord}>Connect</ActionButton>
                         </ToggleBetweenChildren>
                     )}
-                    isFinished={Boolean(discord)}
                 />
+            </ConditionalContainer>
+
+
+            <div className='col-span-12 flex items-center justify-center py-8'>
+                <span className='text-2xl font-medium'>Issuer Actions</span>
             </div>
             <div className='col-span-3 w-full'>
                 <Action
@@ -169,13 +203,50 @@ function XpScreen() {
                     result={(
                         <Link href='/bonds/issue' target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Issue Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Complete Redemption"
+                    description="Earn additional XP when all your issued bonds are redeemed. 8 XP per $1 value of redeemed."
+                    value="8"
+                    isInfinite
+                    result={(
+                        <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
                             <ActionButton onClick={connectDiscord}>
-                                Issue Bonds
+                                My Issued Bonds
                             </ActionButton>
                         </Link>
                     )}
                     isFinished={false}
                 />
+            </div>
+            <div className='col-span-3 w-full'>
+                <Action
+                    title="Settling Bond"
+                    description="Settle bonds responsibly and secure your financial interactions."
+                    value="20"
+                    isInfinite
+                    result={(
+                        <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton onClick={connectDiscord}>
+                                My Issued Bonds
+                            </ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </div>
+
+
+            <div className='col-span-12 flex items-center justify-center py-8'>
+                <span className='text-2xl font-medium'>Bond Actions</span>
             </div>
             <div className='col-span-3 w-full'>
                 <Action
@@ -229,23 +300,6 @@ function XpScreen() {
                     isFinished={false}
                 />
             </div>
-            <div className='col-span-3 w-full'>
-                <Action
-                    title="Complete Redemption"
-                    description="Earn additional XP when all your issued bonds are redeemed. 8 XP per $1 value of redeemed."
-                    value="8"
-                    isInfinite
-                    result={(
-                        <Link href='/bonds/explore' target='_blank'
-                              className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                Explore Bonds
-                            </ActionButton>
-                        </Link>
-                    )}
-                    isFinished={false}
-                />
-            </div>
 
 
         </GeneralContainer>
@@ -272,7 +326,8 @@ function Action({title, description, value, result, isInfinite, isFinished}: {
                     <InfinitySVG/>
                     <span/>
                 </ToggleBetweenChildren>
-                <span className={`font-bold ${!isFinished ? "text-green-500" : "text-neutral-500 "} whitespace-nowrap`}>+{value}</span>
+                <span
+                    className={`font-bold ${!isFinished ? "text-green-500" : "text-neutral-500 "} whitespace-nowrap`}>+{value}</span>
             </div>
             <div className='flex flex-col gap-2 items-center'>
                 <span className='text-xl font-semibold'>{title}</span>
@@ -354,9 +409,18 @@ function ActivateScreen({setScreen}: { setScreen: any }) {
 }
 
 
+function ConditionalContainer({children, isOpen}: { children: ReactNode, isOpen: boolean }) {
+    return (<ConditionalRenderer isOpen={isOpen}>
+        <div className='xl:col-span-3 md:col-span-4 sm:col-span-6 col-span-12 w-full'>
+            {children}
+        </div>
+    </ConditionalRenderer>)
+}
+
 function ActionButton({children, onClick}: { children?: ReactNode, onClick?: any }) {
     return (
-        <button onClick={onClick} className='px-4 py-1 bg-neutral-700 rounded-3xl hover:bg-green-500'>{children}
+        <button onClick={onClick}
+                className='text-sm font-medium px-8 py-2 bg-neutral-700 rounded-3xl hover:bg-green-500 whitespace-nowrap'>{children}
         </button>
     )
 }

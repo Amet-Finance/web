@@ -29,7 +29,7 @@ import {URLS} from "@/modules/utils/urls";
 import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {StringKeyedObject} from "@/components/utils/general";
+import {StringKeyedObject} from "@/components/utils/types";
 import {constants, FixedFlexIssuerController, utils} from "amet-utils";
 import {InfoData} from "@/components/utils/types";
 import ModalStore from "@/store/redux/modal";
