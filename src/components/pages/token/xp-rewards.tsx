@@ -11,6 +11,7 @@ import Image from "next/image";
 import makeBlockie from "ethereum-blockies-base64";
 import InfinitySVG from "../../../../public/svg/utils/infinity";
 import {hourInSec} from "@/modules/utils/dates";
+import {formatLargeNumber} from "@/modules/utils/numbers";
 
 const ScreenTypes = {
     Activate: "activate",
@@ -47,13 +48,16 @@ function XpScreen() {
         hideCompleted: false
     })
 
-    const updateHoursAgo = lastUpdated ? (Date.now() - new Date(lastUpdated).getDate()) / hourInSec : "Invalid"
+
+    const utcTimeInMs = new Date(new Date().toUTCString()).getTime()
+    const updateHoursAgo = lastUpdated ? Math.floor((utcTimeInMs - new Date(lastUpdated).getTime()) / (hourInSec * 1000)) : "Invalid"
+
 
     const referralUrl = `${location.href}?ref=${code}`
     const addressUrl = `${location.href}/address/${address}`
 
-    const showTwitter = !settings.hideCompleted || !Boolean(twitter);
-    const showDiscord = !settings.hideCompleted || !Boolean(discord);
+    const showTwitter = !settings.hideCompleted || !twitter?.id;
+    const showDiscord = !settings.hideCompleted || !discord?.id;
 
 
     function updateSettings(event: any) {
@@ -103,7 +107,7 @@ function XpScreen() {
                     <span className='text-xs text-neutral-600'>Share</span>
                 </div>
                 <div className='flex flex-col justify-center items-center w-full'>
-                    <span className='text-7xl font-bold'>{xp || 0}</span>
+                    <span className='text-7xl font-bold'>{formatLargeNumber(xp || 0)}</span>
                     <span className='text-sm text-neutral-400'>Your Experience Points(XP)</span>
                 </div>
                 <div className='flex items-center w-full'>

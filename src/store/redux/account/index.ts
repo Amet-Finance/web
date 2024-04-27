@@ -25,6 +25,7 @@ const counterSlice = createSlice({
                 if (payload.code) state.code = payload.code;
                 if (payload.twitter) state.twitter = payload.twitter;
                 if (payload.discord) state.discord = payload.discord;
+                if (payload.lastUpdated) state.lastUpdated = payload.lastUpdated;
             }
         },
     },
