@@ -222,9 +222,7 @@ function XpScreen() {
                     result={(
                         <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                My Issued Bonds
-                            </ActionButton>
+                            <ActionButton>My Issued Bonds</ActionButton>
                         </Link>
                     )}
                     isFinished={false}
@@ -239,9 +237,7 @@ function XpScreen() {
                     result={(
                         <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                My Issued Bonds
-                            </ActionButton>
+                            <ActionButton>My Issued Bonds</ActionButton>
                         </Link>
                     )}
                     isFinished={false}
@@ -261,9 +257,7 @@ function XpScreen() {
                     result={(
                         <Link href='/bonds/explore' target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                Explore Bonds
-                            </ActionButton>
+                            <ActionButton>Explore Bonds</ActionButton>
                         </Link>
                     )}
                     isFinished={false}
@@ -279,9 +273,7 @@ function XpScreen() {
                         // todo add exact url
                         <Link href='/bonds/explore' target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                Explore Bonds
-                            </ActionButton>
+                            <ActionButton>Explore Bonds</ActionButton>
                         </Link>
                     )}
                     isFinished={false}
@@ -296,9 +288,7 @@ function XpScreen() {
                     result={(
                         <Link href='/bonds/explore' target='_blank'
                               className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton onClick={connectDiscord}>
-                                Explore Bonds
-                            </ActionButton>
+                            <ActionButton>Explore Bonds</ActionButton>
                         </Link>
                     )}
                     isFinished={false}
