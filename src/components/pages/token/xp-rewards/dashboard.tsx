@@ -12,6 +12,7 @@ import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {shortenString} from "@/modules/utils/string";
 import {URLS} from "@/modules/utils/urls";
+import InfinitySVG from "../../../../../public/svg/utils/infinity";
 
 
 export default function XpRewardsDashboard() {
@@ -115,7 +116,7 @@ export default function XpRewardsDashboard() {
                     description="Click the join button and sign with your wallet to start earning XP."
                     value="50"
                     isFinished={Boolean(active)}
-                    type={<SimpleSVG size={24}/>}
+                    type={<BasicType/>}
                     result={(<div className='flex items-center gap-2 text-sm text-neutral-400'>
                         <span>Address:</span>
                         <Link href={addressUrl} target="_blank">
@@ -129,9 +130,7 @@ export default function XpRewardsDashboard() {
                     title="Refer a Friend"
                     description="Refer a friend using your unique code, and earn a percentage of their earned XP."
                     value="10%"
-                    isInfinite={true}
-                    isFinished={false}
-                    type={<SimpleSVG size={24}/>}
+                    type={<BasicType/>}
                     result={(
                         <ActionButton onClick={copyToClipboard.bind(null, referralUrl, "Referral Url")}>
                             Copy Referral Url
@@ -144,7 +143,7 @@ export default function XpRewardsDashboard() {
                     title="Follow Amet on Twitter"
                     description="Follow us on Twitter to stay updated with the latest news and announcements."
                     value="50"
-                    type={<SocialSVG size={24}/>}
+                    type={<SocialType/>}
                     isFinished={Boolean(twitter)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(twitter?.id)}>
@@ -164,7 +163,7 @@ export default function XpRewardsDashboard() {
                     title="Join Amet's Discord"
                     description="Join our Discord community to engage with other users and access exclusive content."
                     value="50"
-                    type={<SocialSVG size={24}/>}
+                    type={<SocialType/>}
                     isFinished={Boolean(discord)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
@@ -184,7 +183,7 @@ export default function XpRewardsDashboard() {
                     title="Connect Email"
                     description="Connect your email and earn extra points"
                     value="50"
-                    type={<SocialSVG size={24}/>}
+                    type={<SocialType/>}
                     isFinished={Boolean(email)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(email)}>
@@ -204,11 +203,25 @@ export default function XpRewardsDashboard() {
                     title="Community Contribution"
                     description="Contribute valuable content such as guides or tutorials to our platform."
                     value="Up To 500"
-                    type={<SocialSVG size={24}/>}
-                    isFinished={false}
+                    type={<SocialType/>}
                     result={(
                         <Link href={URLS.CommunityContribution} target="_blank">
                             <ActionButton>Submit</ActionButton>
+                        </Link>
+
+                    )}
+                />
+            </ConditionalContainer>
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Donate & Earn"
+                    description="Join Amet Finance in supporting the vibrant open-source community by making a donation through Gitcoin. For every donation of at least $1, you will earn 20 XP."
+                    value="20"
+                    limited={"Until May 8, 2024"}
+                    type={<BasicType additionalText='Note: Points for this task will be credited at the end of the grant period'/>}
+                    result={(
+                        <Link href={URLS.GitCoinDonate} target="_blank">
+                            <ActionButton>Donate</ActionButton>
                         </Link>
 
                     )}
@@ -315,12 +328,12 @@ export default function XpRewardsDashboard() {
     )
 }
 
-function Action({title, description, value, result, type, isInfinite, isFinished}: {
+function Action({title, description, value, result, type, isFinished, limited}: {
     title: string,
     description: string,
     value: string,
-    isFinished: boolean
-    isInfinite?: boolean
+    isFinished?: boolean
+    limited?: string
     type?: ReactNode
     result?: ReactNode
 }) {
@@ -333,12 +346,12 @@ function Action({title, description, value, result, type, isInfinite, isFinished
                         `}>
             <div className='flex justify-between w-full'>
                 {type || <span/>}
-                <div className='flex flex-col items-center'>
+                <div className='flex flex-col items-end'>
                     <span
                         className={`font-semibold ${!isFinished ? "text-green-500" : "text-neutral-500 "} whitespace-nowrap`}>+{value}</span>
-                    {/*<ConditionalRenderer isOpen={Boolean(isInfinite)}>*/}
-                    {/*    <InfinitySVG/>*/}
-                    {/*</ConditionalRenderer>*/}
+                    <ConditionalRenderer isOpen={Boolean(limited)}>
+                        <span className='text-neutral-700 text-mm'>{limited}</span>
+                    </ConditionalRenderer>
                 </div>
             </div>
             <div className='flex flex-col gap-2 items-center'>
@@ -364,5 +377,29 @@ function ActionButton({children, onClick}: Readonly<{ children?: ReactNode, onCl
         <button onClick={onClick}
                 className='text-sm font-medium px-8 py-2 bg-neutral-700 rounded-3xl hover:bg-green-500 whitespace-nowrap'>{children}
         </button>
+    )
+}
+
+
+function BasicType({additionalText}: {additionalText?: string}) {
+    return (
+        <div className='group relative'>
+            <SimpleSVG size={24}/>
+            <div className='group-hover:flex hidden flex-col gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+                <span className='text-neutral-400 text-xs text-start'>This is a basic task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
+                <span className='text-neutral-300 text-xs text-start'>{additionalText}</span>
+            </div>
+        </div>
+    )
+}
+
+function SocialType() {
+    return (
+        <div className='group relative'>
+            <SocialSVG size={24}/>
+            <div className='group-hover:flex hidden absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+                <span className='text-neutral-400 text-xs text-start'>This is a social task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
+            </div>
+        </div>
     )
 }

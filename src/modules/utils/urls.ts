@@ -47,6 +47,7 @@ const URLS = {
 
 
     CommunityContribution: "https://forms.gle/LX56GugJNRndFTUs8",
+    GitCoinDonate: "https://explorer.gitcoin.co/#/round/42161/25/151",
 
     others: {
         MantaNetwork: "https://manta.network/ecosystem.html",
