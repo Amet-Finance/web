@@ -42,7 +42,7 @@ export default function XpRewardsLending({setScreen}: Readonly<{ setScreen: any 
     return (
         <GeneralContainer className='relative flex items-center justify-between py-28 gap-4'>
             <div className='flex flex-col gap-16 max-w-2xl z-10'>
-                <div className='flex flex-col gap-6'>
+                <div className='flex flex-col gap-6 md:text-start text-center'>
                     <h1 className='text-5xl font-bold'>{`Rewards Hub: Unlock Your Potential with Amet Finance`}</h1>
                     <p className='text-sm text-neutral-400'>Welcome to the Rewards Hub, your gateway to making the most
                         out of your engagement with Amet Finance. Here, every action not only brings you closer to
@@ -51,7 +51,7 @@ export default function XpRewardsLending({setScreen}: Readonly<{ setScreen: any 
                         community. Unlock exclusive rewards, gain access to special events, and leverage your XP to
                         enhance your financial journey.</p>
                 </div>
-                <div className='flex items-center  gap-4'>
+                <div className='flex sm:flex-row flex-col-reverse justify-center items-center gap-4'>
                     <BasicButton wMin onClick={activateXPAccount}>Activate Account</BasicButton>
                     <div className='flex items-center gap-2'>
                         <span className='text-xs text-neutral-600'>500+ participants</span>
@@ -68,7 +68,7 @@ export default function XpRewardsLending({setScreen}: Readonly<{ setScreen: any 
             </div>
             <Image src='/pngs/coin.png' alt="Coins Dropping from top on Amet Finance"
                    width={300} height={817}
-                   className='object-cover rounded-xl'/>
+                   className='object-cover rounded-xl md:flex hidden'/>
         </GeneralContainer>
     )
 
