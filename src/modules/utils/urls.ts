@@ -46,6 +46,8 @@ const URLS = {
     ChangeOwner: "https://docs.amet.finance/v2/fixed-flex/for-issuers/managing-bonds-on-amet-finance#change-owner",
 
 
+    CommunityContribution: "https://forms.gle/LX56GugJNRndFTUs8",
+
     others: {
         MantaNetwork: "https://manta.network/ecosystem.html",
         Polygon: "https://polygon.technology/ecosystem",

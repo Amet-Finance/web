@@ -11,6 +11,7 @@ import SocialSVG from "../../../../../public/svg/utils/social";
 import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {shortenString} from "@/modules/utils/string";
+import {URLS} from "@/modules/utils/urls";
 
 
 export default function XpRewardsDashboard() {
@@ -23,6 +24,7 @@ export default function XpRewardsDashboard() {
         lastUpdated,
         open
     } = useAccountExtended();
+
 
     const [settings, setSettings] = useState({
         hideCompleted: false
@@ -197,6 +199,21 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Community Contribution"
+                    description="Contribute valuable content such as guides or tutorials to our platform."
+                    value="Up To 500"
+                    type={<SocialSVG size={24}/>}
+                    isFinished={false}
+                    result={(
+                        <Link href={URLS.CommunityContribution} target="_blank">
+                            <ActionButton>Submit</ActionButton>
+                        </Link>
+
+                    )}
+                />
+            </ConditionalContainer>
 
 
             {/*<ConditionalContainer isOpen={true}>*/}
@@ -334,7 +351,7 @@ function Action({title, description, value, result, type, isInfinite, isFinished
 }
 
 
-function ConditionalContainer({children, isOpen}: { children: ReactNode, isOpen: boolean }) {
+function ConditionalContainer({children, isOpen}: Readonly<{ children: ReactNode, isOpen: boolean }>) {
     return (<ConditionalRenderer isOpen={isOpen}>
         <div className='xl:col-span-3 md:col-span-4 sm:col-span-6 col-span-12 w-full text-center'>
             {children}
@@ -342,7 +359,7 @@ function ConditionalContainer({children, isOpen}: { children: ReactNode, isOpen:
     </ConditionalRenderer>)
 }
 
-function ActionButton({children, onClick}: { children?: ReactNode, onClick?: any }) {
+function ActionButton({children, onClick}: Readonly<{ children?: ReactNode, onClick?: any }>) {
     return (
         <button onClick={onClick}
                 className='text-sm font-medium px-8 py-2 bg-neutral-700 rounded-3xl hover:bg-green-500 whitespace-nowrap'>{children}
