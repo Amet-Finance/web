@@ -34,7 +34,7 @@ function LandingSection() {
 
     return (
         <GeneralContainer
-            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden md:min-h-[90vh] min-h-[75vh]'>
+            className='relative flex justify-center items-center gap-4 rounded-b-[4rem] overflow-hidden min-h-[90vh]'>
             <div className='flex flex-col gap-8 xl:items-start xl:text-start items-center text-center justify-center'>
                 <h1 className='xl:text-7xl md:text-8xl text-5xl font-bold leading-snug max-w-7xl'>Simplified
                     Bond

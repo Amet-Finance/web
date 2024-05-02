@@ -85,7 +85,7 @@ export default function XpRewardsDashboard() {
     }
 
     return (
-        <GeneralContainer className='grid grid-cols-12 py-32 gap-4' isPadding>
+        <GeneralContainer className='grid grid-cols-12 md:py-32 py-8 gap-4' isPadding>
             <div
                 className='col-span-12 flex flex-col justify-between bg-neutral-950 rounded-3xl p-6 gap-8 cursor-pointer border border-neutral-900'>
                 <div className='flex justify-between w-full'>
