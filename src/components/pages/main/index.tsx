@@ -25,7 +25,7 @@ export default function Home() {
             <TradeOnChainBondsSection/>
             <InTheNewsSection/>
             <FAQ/>
-            <Partnerships/>
+            {/*<Partnerships/>*/}
         </div>
     </>
 }

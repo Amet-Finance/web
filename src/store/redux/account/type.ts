@@ -15,6 +15,7 @@ type AccountState = {
         id: string,
         username: string
     }
+    email?: string
 }
 
 export type {

@@ -8,6 +8,7 @@ import ModalStore from "@/store/redux/modal";
 import AcceptTermsConditions from "@/components/modals/accept-terms-conditions";
 import FirstTimePurchaseBond from "@/components/modals/first-time-purchase-bond";
 import {useModal} from "@/modules/utils/modal";
+import ConnectEmail from "@/components/modals/connect-email";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -20,7 +21,7 @@ export default function ModalHandler() {
     const customStyles = {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.87)',
-            zIndex: "1000",
+            zIndex: "60",
         },
         content: {
             top: '50%',
@@ -67,6 +68,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.FirstTimePurchaseBond: {
             return <FirstTimePurchaseBond/>
+        }
+        case ModalTypes.ConnectEmail: {
+            return <ConnectEmail/>
         }
     }
 }

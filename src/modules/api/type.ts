@@ -1,5 +1,14 @@
 import {StringKeyedObject} from "@/components/utils/types";
 
+type SuccessResult = {
+    success: true
+}
+
+type FailedResult = {
+    success: false
+}
+
+
 type TokenCore = {
     contractAddress: string,
     chainId: number,
@@ -49,7 +58,7 @@ type ContractBalance = {
 }
 
 type AuthenticatedRequest = {
-    address: string,
+    address: string | `0x${string}`,
     signature: string,
     message: string
 }
@@ -70,5 +79,7 @@ export type  {
     TBVStatsKey,
     Balances,
     ContractBalance,
-    AuthenticatedRequest
+    AuthenticatedRequest,
+    SuccessResult,
+    FailedResult
 }

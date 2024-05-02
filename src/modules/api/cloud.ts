@@ -4,13 +4,13 @@ import {
     AuthenticatedRequest,
     GeneralStatistics,
     GeneralStatsKey,
-    StatisticsTypes,
+    StatisticsTypes, SuccessResult,
     TBVStatistics,
     TokensResponse,
     User
 } from "@/modules/api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
-import {ContractDescription, DescriptionEditParams} from "@/modules/api/contract-type";
+import {ContractDescription, DescriptionEditParams, EmailEditParams} from "@/modules/api/contract-type";
 
 
 async function getUser(address: string): Promise<User> {
@@ -63,12 +63,21 @@ async function updateContractDescription(body: DescriptionEditParams, params: Au
     });
 }
 
+async function updateEmail(body: EmailEditParams, params: AuthenticatedRequest): Promise<SuccessResult> {
+    return await patchAPI({
+        url: `${API_URL}/v1/address`,
+        body: body,
+        params: params
+    });
+}
+
 
 const CloudAPI = {
     getUser,
     getStatistics,
     getTokens,
     getTokensDetailed,
-    updateContractDescription
+    updateContractDescription,
+    updateEmail
 }
 export default CloudAPI

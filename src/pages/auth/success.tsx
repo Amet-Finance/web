@@ -1,17 +1,25 @@
 import {GeneralContainer} from "@/components/utils/container";
 import {useEffect} from "react";
 import CongratulationsSVG from "../../../public/svg/utils/congratulations";
+import {useRouter} from "next/router";
 
 export default function AuthSuccess() {
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (typeof window !== "undefined") {
-                window.close();
-            }
-        }, 2500)
+    const router = useRouter()
 
-        return () => clearTimeout(timeout);
+    useEffect(() => {
+
+        if (router.query.redirectTo === "twitter_follow") {
+            router.push('https://twitter.com/intent/user?screen_name=amet_finance')
+        } else {
+            const timeout = setTimeout(() => {
+                if (typeof window !== "undefined") {
+                    window.close();
+                }
+            }, 2500)
+
+            return () => clearTimeout(timeout);
+        }
     }, []);
 
     return (

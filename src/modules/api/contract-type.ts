@@ -102,6 +102,10 @@ type DescriptionEditParams = {
     description: string
 }
 
+type EmailEditParams = {
+    email: string
+}
+
 type AccountExtendedFormat = {
     address: string,
     balances: (ContractBalance & { bond: ContractCoreDetails })[],
@@ -119,7 +123,8 @@ export type  {
     ContractExtendedFormatAPI,
     ContractExtendedFormat,
     DescriptionEditParams,
-    AccountExtendedFormat
+    AccountExtendedFormat,
+    EmailEditParams
 }
 
 
