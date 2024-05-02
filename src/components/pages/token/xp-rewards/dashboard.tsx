@@ -111,7 +111,7 @@ export default function XpRewardsDashboard() {
 
             <ConditionalContainer isOpen={!settings.hideCompleted || !active}>
                 <Action
-                    title="Join XP System"
+                    title="Join Rewards Hub"
                     description="Click the join button and sign with your wallet to start earning XP."
                     value="50"
                     isFinished={Boolean(active)}
