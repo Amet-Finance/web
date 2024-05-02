@@ -20,7 +20,7 @@ export default function AuthSuccess() {
 
             return () => clearTimeout(timeout);
         }
-    }, []);
+    }, [router]);
 
     return (
         <GeneralContainer className='flex flex-col justify-center items-center gap-8 py-40' isPadding>
