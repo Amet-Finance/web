@@ -1,7 +1,7 @@
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {tColor} from "@/components/pages/bonds/utils/colors";
-import InfoBox from "@/components/utils/info-box";
+import {InfoBox} from "@/components/utils/info-box";
 import {STATISTICS_DEFINITION} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import BigNumber from "bignumber.js";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";

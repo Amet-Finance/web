@@ -1,5 +1,5 @@
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
-import {useNetworkValidator} from "@/modules/utils/chain";
+import {useNetworkExtended} from "@/modules/utils/chain";
 import {useAccount, useSendTransaction, useSignMessage} from "wagmi";
 import {getChain} from "@/modules/utils/wallet-connect";
 import {StringKeyedObject} from "@/components/utils/types";
@@ -10,7 +10,7 @@ function useTransaction(chainId: number | string, txType: string, txConfig: Stri
     const {address} = useAccount();
     const {open} = useConnectWallet();
     const chain = getChain(chainId);
-    const validator = useNetworkValidator(chainId);
+    const {validateAndSwitch} = useNetworkExtended(chainId);
 
     const config = getContractInfoByType(chain, txType, txConfig);
     const {sendTransactionAsync, isLoading} = useSendTransaction({
@@ -25,7 +25,7 @@ function useTransaction(chainId: number | string, txType: string, txConfig: Stri
                 open()
                 return undefined;
             }
-            await validator.validateAndSwitch()
+            await validateAndSwitch()
             const response = await sendTransactionAsync();
             return await trackTransaction(chain, response.hash);
         } catch (error: any) {

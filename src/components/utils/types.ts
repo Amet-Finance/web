@@ -6,7 +6,16 @@ type InfoData = {
     isBlank?: boolean;
 }
 
+type InfoBoxData = {
+    info: InfoData,
+    children?: any,
+    isRight?: boolean,
+    className?: string,
+    parentClassName?: string,
+}
+
 export type {
     StringKeyedObject,
-    InfoData
+    InfoData,
+    InfoBoxData
 }

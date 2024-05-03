@@ -8,10 +8,12 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import WarningSVG from "../../../../../../../public/svg/utils/warning";
-import InfoBox from "@/components/utils/info-box";
+import {InfoBox, InfoDescription} from "@/components/utils/info-box";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {constants} from 'amet-utils';
+import SecureSVG from "../../../../../../../public/svg/utils/secure";
+import SoldOutSVG from "../../../../../../../public/svg/utils/sold-out";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 
@@ -47,6 +49,8 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0)
 
+    const isSoldOut = totalBonds - purchased === 0
+
     return <div
         className='flex flex-col justify-between gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
         <div className='flex flex-col gap-4 w-full'>
@@ -74,7 +78,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                             className='bg-neutral-900 h-min px-3 py-1 rounded-md text-neutral-200 text-sm'>Fixed Flex</span>
                     </div>
                 </div>
-                <div className='flex flex-col justify-end items-end gap-2 md:w-max w-full'>
+                <div className='flex flex-col justify-end items-end gap-3 md:w-max w-full'>
                     <div className='relative grid grid-cols-3 items-end gap-x-2 md:w-max w-full'>
                         <div className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
                             <span className='text-md font-semibold'>{formatLargeNumber(totalBonds)}</span>
@@ -97,7 +101,22 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                             <div className='absolute h-full bg-white rounded-full w-full'/>
                         </div>
                     </div>
-                    {contractInfo.isSettled && <SettledContract/>}
+                    <div className='flex items-center gap-2'>
+                        <ConditionalRenderer isOpen={contractInfo.isSettled}>
+                            <InfoDescription
+                                text="Settled: This status indicates that the issuer can not increase the bond supply and the total payout is locked within the contract.">
+                                <SecureSVG size={24}/>
+                            </InfoDescription>
+                        </ConditionalRenderer>
+
+                        <ConditionalRenderer isOpen={isSoldOut}>
+                            <InfoDescription
+                                text="Sold Out: This status means that all available bonds have been purchased and no more are currently available for sale.">
+                                <SoldOutSVG size={24}/>
+                            </InfoDescription>
+                        </ConditionalRenderer>
+
+                    </div>
                 </div>
             </div>
             <div className='flex flex-col gap-1'>

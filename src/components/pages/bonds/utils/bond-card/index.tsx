@@ -10,7 +10,10 @@ import {shortenString} from "@/modules/utils/string";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
-import {ToggleBetweenChildren} from "@/components/utils/container";
+import {ConditionalRenderer, ToggleBetweenChildren} from "@/components/utils/container";
+import SecureSVG from "../../../../../../public/svg/utils/secure";
+import SoldOutSVG from "../../../../../../public/svg/utils/sold-out";
+import {InfoDescription} from "@/components/utils/info-box";
 
 const {CHAIN_BLOCK_TIMES} = constants;
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
@@ -59,7 +62,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                 className='relative group border border-neutral-900 rounded-2xl hover:border-neutral-800 hover:bg-neutral-950'>
                 <div
                     className='flex flex-col justify-between gap-14 rounded-2xl p-4 py-4 bg-black w-full overflow-clip'>
-                    <div className='flex justify-between w-full z-10'>
+                    <div className='flex justify-between items-start w-full z-10'>
                         <div className='flex items-start gap-2'>
                             <div className='flex items-center gap-2 w-full whitespace-nowrap'>
                                 <Image src={payoutIcon}
@@ -74,20 +77,26 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                                 </div>
                             </div>
                         </div>
-                        <div className='flex flex-col items-end'>
+                        <div className='flex items-center gap-2 z-20'>
+                            <ConditionalRenderer isOpen={isSettled}>
+                                <InfoDescription
+                                    text="Settled: This status indicates that the issuer can not increase the bond supply and the total payout is locked within the contract.">
+                                    <SecureSVG size={18}/>
+                                </InfoDescription>
+                            </ConditionalRenderer>
                             <ToggleBetweenChildren isOpen={isSoldOut}>
-                                <span className='font-bold '>SOLD OUT</span>
+                                <InfoDescription
+                                    text="Sold Out: This status means that all available bonds have been purchased and no more are currently available for sale.">
+                                    <SoldOutSVG size={18}/>
+                                </InfoDescription>
                                 <div className='flex flex-col items-end'>
                                     <span className={`text-lg font-bold ${scoreColor} leading-5`}>{formatLargeNumber(score, false, 2)}</span>
                                     <span className='text-neutral-500 text-mm'>Score</span>
                                 </div>
                             </ToggleBetweenChildren>
-                            {/*<ConditionalRenderer isOpen={isSettled}>*/}
-                            {/*    <span className='text-xs'>Settled</span>*/}
-                            {/*</ConditionalRenderer>*/}
                         </div>
                     </div>
-                    <div className='flex flex-col gap-3 z-10'>
+                    <div className='flex flex-col gap-3'>
                         <div className='flex justify-between items-stretch  whitespace-nowrap'>
                             <DetailContainer
                                 value={`${formatLargeNumber(purchase.amountClean, true, 3)} ${purchaseSymbolShort}`}

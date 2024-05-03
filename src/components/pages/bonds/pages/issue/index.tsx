@@ -7,7 +7,7 @@ import {
     BondInfoForIssuance
 } from "@/components/pages/bonds/pages/issue/type";
 import {Chain, useAccount} from "wagmi";
-import InfoBox from "@/components/utils/info-box";
+import {InfoBox} from "@/components/utils/info-box";
 import {CHAINS, defaultChain, getChain} from "@/modules/utils/wallet-connect";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import Image from "next/image";

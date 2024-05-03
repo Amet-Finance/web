@@ -1,11 +1,12 @@
 import {useNetwork, useSwitchNetwork} from "wagmi";
 
-function useNetworkValidator(chainId: number | string) {
+function useNetworkExtended(chainId: number | string) {
 
     const {chain} = useNetwork();
     const {switchNetworkAsync} = useSwitchNetwork({chainId: Number(chainId)})
 
     return {
+        chain,
         validateAndSwitch: async () => {
             if (Number(chainId) !== chain?.id) {
                 await switchNetworkAsync?.();
@@ -15,5 +16,5 @@ function useNetworkValidator(chainId: number | string) {
 }
 
 export {
-    useNetworkValidator
+    useNetworkExtended
 }

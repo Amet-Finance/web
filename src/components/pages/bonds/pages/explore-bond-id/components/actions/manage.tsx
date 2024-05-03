@@ -11,7 +11,7 @@ import {ConditionalRenderer, useShow} from "@/components/utils/container";
 import {DefaultButton} from "@/components/utils/buttons";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {StringKeyedObject} from "@/components/utils/types";
-import InfoBox from "@/components/utils/info-box";
+import {InfoBox} from "@/components/utils/info-box";
 import {InfoData} from "@/components/utils/types";
 import {URLS} from "@/modules/utils/urls";
 import {formatLargeNumber} from "@/modules/utils/numbers";

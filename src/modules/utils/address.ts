@@ -6,19 +6,23 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {useSelector} from "react-redux";
 import {RootState} from "@/store/redux/type";
 import {ContractBalance} from "@/modules/api/type";
-import {useAccount} from "wagmi";
+import {useAccount, useNetwork} from "wagmi";
+import {useNetworkExtended} from "@/modules/utils/chain";
 
 const ONE_DAY = 24 * 60 * 60 * 1000
 
 function useAccountExtended() {
     const account = useSelector((item: RootState) => item.account)
-    const {open} = useConnectWallet()
-    const {address} = useAccount()
+
+    const {open} = useConnectWallet();
+    const {address} = useAccount();
+    const {chain} = useNetwork();
 
     return {
         ...account,
         open,
         address,
+        chain,
         isConnected: Boolean(address)
     }
 }

@@ -51,7 +51,7 @@ export default function XpRewardsLending({setScreen}: Readonly<{ setScreen: any 
                         community. Unlock exclusive rewards, gain access to special events, and leverage your XP to
                         enhance your financial journey.</p>
                 </div>
-                <div className='flex sm:flex-row flex-col-reverse justify-center items-center gap-4'>
+                <div className='flex sm:flex-row flex-col-reverse sm:justify-start justify-center items-center gap-4'>
                     <BasicButton wMin onClick={activateXPAccount}>Activate Account</BasicButton>
                     <div className='flex items-center gap-2'>
                         <span className='text-xs text-neutral-600'>500+ participants</span>

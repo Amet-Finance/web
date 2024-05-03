@@ -1,17 +1,11 @@
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
 import {ConditionalRenderer} from "@/components/utils/container";
-import {InfoData} from "@/components/utils/types";
+import {InfoBoxData} from "@/components/utils/types";
+import React, {ReactNode} from "react";
 
-type InfoBox = {
-    info: InfoData,
-    children?: any,
-    isRight?: boolean,
-    className?: string,
-    parentClassName?: string,
-}
 
-export default function InfoBox({children, info, isRight, className, parentClassName}: Readonly<InfoBox>) {
+function InfoBox({children, info, isRight, className, parentClassName}: Readonly<InfoBoxData>) {
 
     const isBlank = info.isBlank || !info.link;
 
@@ -43,3 +37,17 @@ export default function InfoBox({children, info, isRight, className, parentClass
         </div>
     )
 }
+
+
+function InfoDescription({children, text}: { children: ReactNode, text: string }) {
+    return (
+        <div className='group/description relative'>
+            {children}
+            <div className='group-hover/description:flex hidden absolute top-full right-0 bg-neutral-900 p-2 my-2 rounded-md w-[1000%] z-20'>
+                <span className='text-neutral-400 text-xs text-start'>{text}</span>
+            </div>
+        </div>
+    )
+}
+
+export {InfoBox, InfoDescription}
