@@ -4,7 +4,7 @@ import {defaultChain} from "@/modules/utils/wallet-connect";
 import {AccountExtendedFormat} from "@/modules/api/contract-type";
 import {PageId} from "@/components/pages/constants";
 
-export default function AddressPage({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
+export default function AddressPage({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
     return <AddressId accountExtendedFormat={accountExtendedFormat}/>
 }
 

@@ -1,10 +1,8 @@
 import Head from "next/head";
 import {MetaConstants} from "@/components/headers/constants";
+import {MetaInfo} from "@/components/headers/types";
 
-export default function Headers({id, meta}: {
-    id: string,
-    meta?: { title: string, description: string, ogImage: string }
-}) {
+export default function Headers({id, meta}: Readonly<{ id: string, meta?: MetaInfo }>) {
 
     const defaultMeta = MetaConstants[id] || MetaConstants["default"];
     const {title, description, ogImage} = {
@@ -12,9 +10,9 @@ export default function Headers({id, meta}: {
         ...(meta || {})
     }
 
-    const ogImg = ogImage || MetaConstants["default"].ogImage
+    const ogImg = ogImage ?? MetaConstants["default"].ogImage
 
-    return <>
+    return (
         <Head>
             <title>{title}</title>
             <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
@@ -38,5 +36,5 @@ export default function Headers({id, meta}: {
             <meta name="twitter:description" content={description}/>
             <meta name="twitter:image" content={ogImg}/>
         </Head>
-    </>
+    )
 }

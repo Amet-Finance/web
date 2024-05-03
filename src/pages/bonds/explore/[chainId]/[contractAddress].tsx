@@ -3,6 +3,7 @@ import ExploreBondId from "@/components/pages/bonds/pages/explore-bond-id";
 import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
 import Graphql from "@/modules/api/graphql";
+import {PageId} from "@/components/pages/constants";
 
 export default function ExploreIdPage({bondInfoDetailed, queryParams}: Readonly<{
     bondInfoDetailed: ContractExtendedFormat,
@@ -14,7 +15,7 @@ export default function ExploreIdPage({bondInfoDetailed, queryParams}: Readonly<
 export async function getServerSideProps({query}: any) {
 
     const props: any = {
-        pageId: "ExploreIdPage",
+        pageId: PageId.ExploreIdPage,
         queryParams: {
             contractAddress: query.contractAddress,
             chainId: query.chainId,
