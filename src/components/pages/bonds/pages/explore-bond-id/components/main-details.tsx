@@ -49,6 +49,9 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0)
 
+    const totalPurchase = totalBonds * purchase.amountClean;
+    const totalPayout = totalBonds * payout.amountClean
+
     const isSoldOut = totalBonds - purchased === 0
 
     return <div
@@ -131,15 +134,19 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
 
         <div className='flex flex-col gap-8'>
             <div className='grid grid-cols-8 gap-4 mt-4 w-full'>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`$${formatLargeNumber(purchasePriceUsd)}`}>
-                    <span className='font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'
+                     title={`$${formatLargeNumber(purchasePriceUsd)}`}>
+                    <span
+                        className='font-bold'>{formatLargeNumber(purchase.amountClean, false, 5)} {purchase.symbol}</span>
                     <span className='text-xs text-neutral-400'>Purchase</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`$${formatLargeNumber(payoutPriceUsd)}`}>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'
+                     title={`$${formatLargeNumber(payoutPriceUsd)}`}>
                     <span className='font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
                     <span className='text-xs text-neutral-400'>Payout</span>
                 </div>
-                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help' title={`${formatLargeNumber(maturityPeriodInBlocks)} blocks`}>
+                <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'
+                     title={`${formatLargeNumber(maturityPeriodInBlocks)} blocks`}>
                     <span className='font-bold'>{maturityPeriodTime}</span>
                     <span className='text-xs text-neutral-400'>Maturity Period</span>
                 </div>
@@ -150,9 +157,20 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                     </div>
                     <span className='text-xs text-neutral-400'>Chain</span>
                 </div>
+
+                {/*<div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'*/}
+                {/*     title={`${formatLargeNumber(totalPurchase)}`}>*/}
+                {/*    <span className='font-bold'>{formatLargeNumber(totalPurchase)}</span>*/}
+                {/*    <span className='text-xs text-neutral-400'>Total Raise</span>*/}
+                {/*</div>*/}
+                {/*<div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'*/}
+                {/*     title={`${formatLargeNumber(totalPayout)}`}>*/}
+                {/*    <span className='font-bold'>{formatLargeNumber(totalPayout)}</span>*/}
+                {/*    <span className='text-xs text-neutral-400'>Total Payout</span>*/}
+                {/*</div>*/}
             </div>
             <div className='flex items-center justify-between w-full text-sm'>
-                <div className='flex items-center gap-2 text-neutral-400'>
+            <div className='flex items-center gap-2 text-neutral-400'>
                     <span>Issuer:</span>
                     <Link href={`/address/${issuer}`}>
                         <span className='underline'>{shorten(issuer, 5)}</span>
