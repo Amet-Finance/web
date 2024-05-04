@@ -77,7 +77,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                                 </div>
                             </div>
                         </div>
-                        <div className='flex items-center gap-2 z-20'>
+                        <div className='flex items-start gap-2 z-20'>
                             <ConditionalRenderer isOpen={isSettled}>
                                 <InfoDescription
                                     text="Settled: This status indicates that the issuer can not increase the bond supply and the total payout is locked within the contract.">
