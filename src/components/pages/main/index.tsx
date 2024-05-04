@@ -10,7 +10,6 @@ import ArrowCurveSVG from "../../../../public/svg/utils/arrow-curve";
 import MinusSVG from "../../../../public/svg/utils/minus";
 import PlusSVG from "../../../../public/svg/utils/plus";
 import BondCard from "@/components/pages/bonds/utils/bond-card";
-import {DiscordIcon} from "../../../../public/svg/social/discord";
 import RoundedArrowSVG from "../../../../public/svg/utils/rounded-arrow";
 import ArrowBasicSVG from "../../../../public/svg/utils/arrow-basic";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
@@ -25,7 +24,6 @@ export default function Home() {
             <TradeOnChainBondsSection/>
             <InTheNewsSection/>
             <FAQ/>
-            {/*<Partnerships/>*/}
         </div>
     )
 }
@@ -281,7 +279,7 @@ function ArticleBox({article}: { article: Article }) {
 function FAQ() {
     const [selectedId, selectId] = useState(1);
 
-    return <>
+    return (
         <GeneralContainer className='flex flex-col justify-center items-center py-40 gap-16 text-white' isPadding>
             <h4 className='md:text-4xl text-3xl font-semibold'>Frequently Asked Questions(FAQ)</h4>
             <div className='flex flex-col gap-8 w-full'>
@@ -291,84 +289,26 @@ function FAQ() {
                                                                 index={index} key={index}/>)}
             </div>
         </GeneralContainer>
-    </>
+    )
 }
 
 function FaqItem({item, selectId, selectedId, index}: { item: any, selectId: any, selectedId: any, index: number }) {
     const isSelected = index === selectedId;
     const selectItemId = () => selectId(isSelected ? -1 : index)
 
-    return <>
-        <div className='flex flex-col gap-10 w-full text-start'>
-            <div className='flex flex-col gap-2 w-full'>
-                <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
-                    <span className='text-start text-xl font-medium'>{item.title}</span>
-                    <ToggleBetweenChildren isOpen={isSelected}>
-                        <MinusSVG/>
-                        <PlusSVG/>
-                    </ToggleBetweenChildren>
-                </div>
-                <ConditionalRenderer isOpen={isSelected}>
-                    <span className='text-neutral-600 text-sm max-w-[80%]'>{item.answer}</span>
-                </ConditionalRenderer>
+    return (<div className='flex flex-col gap-10 w-full text-start'>
+        <div className='flex flex-col gap-2 w-full'>
+            <div className='flex justify-between items-center cursor-pointer' onClick={selectItemId}>
+                <span className='text-start text-xl font-medium'>{item.title}</span>
+                <ToggleBetweenChildren isOpen={isSelected}>
+                    <MinusSVG/>
+                    <PlusSVG/>
+                </ToggleBetweenChildren>
             </div>
-            <div className='h-px bg-neutral-700 w-full'/>
+            <ConditionalRenderer isOpen={isSelected}>
+                <span className='text-neutral-600 text-sm max-w-[80%]'>{item.answer}</span>
+            </ConditionalRenderer>
         </div>
-    </>
-}
-
-function Partnerships() {
-
-    const partners = [
-        {
-            url: URLS.others.MantaNetwork,
-            alt: "Manta Network",
-            src: "/pngs/manta-partner.png"
-        },
-        {
-            url: URLS.others.Polygon,
-            alt: "Polygon",
-            src: "/pngs/polygon-partner.png"
-        },
-        {
-            url: URLS.others.ZetaChain,
-            alt: "Zeta Chain",
-            src: "/pngs/zeta-partner.png"
-        },
-
-
-    ]
-
-    return (
-        <GeneralContainer className='flex flex-col justify-center gap-24 py-12 items-center bg-neutral-950' isPadding>
-            <div className='flex flex-col items-center gap-4 text-center'>
-                <h2 className='md:text-4xl text-3xl font-semibold'>Our Esteemed Partners: Collaborating for Success</h2>
-                <p className='max-w-3xl text-neutral-400 text-sm'>Each partner plays a pivotal role in our ecosystem,
-                    bringing
-                    unique expertise and value to our platform. Discover the synergy that makes our service stand out in
-                    the world of finance</p>
-            </div>
-            <div className='grid grid-cols-6 md:gap-20 gap-12'>
-                {partners.map((item) => <TargetLink item={item} key={item.url}/>)}
-            </div>
-            <Link href={URLS.Discord} target="_blank">
-                <BasicButton wMin>
-                    <div className='flex gap-2 items-center px-4 p-0.5 rounded-3xl text-black'>
-                        <DiscordIcon color='#000' size={32}/>
-                        <span>Join Our Discord</span>
-                    </div>
-                </BasicButton>
-            </Link>
-        </GeneralContainer>
-    )
-}
-
-function TargetLink({item}: any) {
-    return <>
-        <Link href={item.url} target="_blank"
-              className='flex justify-center md:col-span-2 col-span-6'>
-            <Image src={item.src} alt={item.alt} width={200} height={50}
-                   className='object-contain filter invert brightness-0 hover:brightness-100 hover:invert-0'/>
-        </Link>
-    </>
+        <div className='h-px bg-neutral-700 w-full'/>
+    </div>)
 }
