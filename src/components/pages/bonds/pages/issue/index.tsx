@@ -271,6 +271,16 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
 
 }
 
+// Total AMT: 65000000000
+// Price per AMT: 0.000012
+// Total USD: 780000
+
+// 1
+
+
+// 65 - 100
+// 30 - 46%
+
 function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onClick: any }>) {
 
     const iconSrc = token.icon ?? makeBlockie(zeroAddress);
@@ -279,7 +289,7 @@ function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onC
         className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md whitespace-nowrap'
                    onClick={() => onClick(token.contractAddress)}>
         <Image src={iconSrc} alt={token.name} width={22} height={22}
-               className='rounded-full border border-neutral-400'/>
+               className='rounded-full border border-neutral-800'/>
         <p className='text-neutral-300 text-sm'>{token.name} <span
             className='text-neutral-500'>({token.symbol})</span></p>
     </button>

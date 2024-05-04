@@ -1,4 +1,4 @@
-import {ContractBalance, TokenCore, TokenResponse} from "@/modules/api/type";
+import {ContractBalance, TokenCore, TokenResponse, User} from "@/modules/api/type";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
 
 type AccountInformationQuery = {
@@ -106,14 +106,15 @@ type EmailEditParams = {
     email: string
 }
 
-type AccountExtendedFormat = {
-    address: string,
+type AccountHoldings = {
     balances: (ContractBalance & { bond: ContractCoreDetails })[],
     issued: ContractCoreDetails[]
 }
 
+type AccountExtendedFormat = User & AccountHoldings
 
 export type  {
+    AccountHoldings,
     AccountInformationQuery,
     ContractCoreDetails,
     ContractDescription,

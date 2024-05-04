@@ -393,7 +393,7 @@ function TVL() {
                     <span className='text-3xl font-bold'>${formatLargeNumber(currentTotal)}</span>
                 </div>
                 <div className='bg-neutral-200 rounded-full px-2'>
-                    <span>{changePercentage > 0 ? "+" : ""}{change}%</span>
+                    <span>{changePercentage >= 0 ? "+" : ""}{change}%</span>
                 </div>
             </div>
             <div className='rounded-3xl'>

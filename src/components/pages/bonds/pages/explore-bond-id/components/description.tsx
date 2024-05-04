@@ -60,6 +60,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: Re
                 title: descriptionDetails.title || contractDescription?.details?.title || "",
                 description: descriptionDetails.description || contractDescription?.details?.description || "",
             }
+
             const descriptionUpdated = await CloudAPI.updateContractDescription(body, params);
             setBondDetailed({...bondDetailed, contractDescription: descriptionUpdated})
             setIsEditMode(false);
@@ -100,7 +101,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: Re
                       className='bg-transparent border-b-2 border-w1 placeholder:text-neutral-400'
                       defaultValue={contractDescription?.details?.description}
                       placeholder='Describe you bonds, the purpose and etc..'/>
-                <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto'>{contractDescription?.details?.description}</p>
+                <p className='text-sm text-neutral-400 max-h-60 overflow-y-auto whitespace-pre-wrap'>{contractDescription?.details?.description}</p>
             </ToggleBetweenChildren>
         </div>
     )

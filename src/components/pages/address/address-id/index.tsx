@@ -10,12 +10,14 @@ import {copyToClipboard} from "@/modules/utils/address";
 import makeBlockie from "ethereum-blockies-base64";
 import Image from "next/image";
 import {useRouter} from "next/router";
+import TwitterSVG from "../../../../../public/svg/social/twitter";
+import DiscordSVG from "../../../../../public/svg/social/discord";
 
-export default function AddressId({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
+export default function AddressId({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
 
     return (
-        <GeneralContainer className='flex flex-col gap-4 py-12 min-h-screen'>
-            <div className='grid grid-cols-10 w-full h-52 gap-4'>
+        <GeneralContainer className='flex flex-col gap-8 py-12 min-h-screen'>
+            <div className='grid grid-cols-10 w-full gap-4'>
                 <AccountContainer accountExtendedFormat={accountExtendedFormat}/>
                 <AnalysisContainer accountExtendedFormat={accountExtendedFormat}/>
             </div>
@@ -25,33 +27,31 @@ export default function AddressId({accountExtendedFormat}: { accountExtendedForm
 }
 
 function AccountContainer({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
-    const {address} = accountExtendedFormat;
+    const {_id, twitter, discord} = accountExtendedFormat;
 
-    const icon = makeBlockie(address);
+    const icon = makeBlockie(_id);
 
     return (
         <div className='flex flex-col gap-8 col-span-5 w-full'>
-           <div className='flex items-center gap-2 h-fit'>
-               <Image src={icon} alt={address} width={1000} height={1000} className='rounded-full w-24 h-24'/>
-               <div className='flex flex-col gap-2'>
-                   <span>No Name</span>
+            <div className='flex items-center gap-4 h-fit'>
+                <Image src={icon} alt={_id} width={1000} height={1000} className='rounded-full w-20 h-20'/>
+                <div className='flex flex-col gap-1 items-start'>
                    <button className='group flex items-center gap-2 cursor-pointer'
-                           onClick={copyToClipboard.bind(null, address, "Address")}>
-                       <span className='text-sm text-neutral-500 p-1 w-full'>{address}</span>
+                           onClick={copyToClipboard.bind(null, _id, "Address")}>
+                       <span className='text-sm text-neutral-500 w-full'>{_id}</span>
                        <div className='group-hover:flex hidden'><CopySVG color="#fff"/></div>
                    </button>
                </div>
            </div>
-            {/*<div className='flex items-center gap-2'>*/}
-            {/*    <TwitterSVG url=''/>*/}
-            {/*    <DiscordSVG url=''/>*/}
-            {/*    <TelegramSVG url=''/>*/}
-            {/*</div>*/}
+            <div className='flex items-center gap-2'>
+                <TwitterSVG url={`https://x.com/${twitter?.username}`}/>
+                <DiscordSVG url={`https://discord.com/users/${discord?.id}`}/>
+            </div>
         </div>
     )
 }
 
-function AnalysisContainer({accountExtendedFormat}: { accountExtendedFormat: AccountExtendedFormat }) {
+function AnalysisContainer({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
     // unrealizedProfitUSD
     const {balances} = accountExtendedFormat;
     const tokensByChains = useTokensByChain(defaultChain.id);
@@ -98,6 +98,7 @@ function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedForma
 
     const [tab, setTab] = useState(Tabs.PurchasedBonds)
     const isPurchased = tab === Tabs.PurchasedBonds;
+    const isWatchlist = tab === Tabs.Watchlist;
 
 
     useEffect(() => {
@@ -107,6 +108,8 @@ function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedForma
     const tabContent = (): ContractCoreDetails[] => {
         if (isPurchased) {
             return ((balances || []).map(i => i.bond))
+        } else if (isWatchlist) {
+            return [];
         } else {
             return issued || []
         }
@@ -116,9 +119,10 @@ function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedForma
         <div className='flex flex-col gap-4 w-full'>
             <div className='flex items-center w-full gap-2'>
                 {Object.values(Tabs).map(value => (
-                    <button className={`rounded-2xl px-4 p-2 ${value === tab ? "bg-neutral-500" : "bg-neutral-700 "}`}
+                    <button className={`rounded-md px-4 p-2 ${value === tab ? "bg-neutral-800" : "bg-neutral-900 "}`}
                             key={value} onClick={() => setTab(value)}>
-                        <span>{Titles[value]}</span>
+                        <span
+                            className={`text-sm ${value === tab ? "text-white" : "text-neutral-400"}`}>{Titles[value]}</span>
                     </button>
                 ))}
             </div>

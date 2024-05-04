@@ -52,3 +52,24 @@ textarea:focus {
     -ms-overflow-style: none;  /* Hide scrollbar for IE and Edge */
     scrollbar-width: none;  /* Hide scrollbar for Firefox */
 }
+
+
+/* Style the scrollbar */
+::-webkit-scrollbar {
+    width: 5px; /* width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: black; /* background color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: white; /* color of the thumb */
+    border-radius: 5px; /* roundness of the thumb */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc; /* color of the thumb on hover */
+}
