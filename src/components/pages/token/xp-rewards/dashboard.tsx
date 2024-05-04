@@ -12,7 +12,7 @@ import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {shortenString} from "@/modules/utils/string";
 import {URLS} from "@/modules/utils/urls";
-import InfinitySVG from "../../../../../public/svg/utils/infinity";
+import ActionSVG from "../../../../../public/svg/utils/action";
 
 
 export default function XpRewardsDashboard() {
@@ -138,6 +138,23 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Donate & Earn"
+                    description="Join us in supporting the open-source community by making a donation through Gitcoin."
+                    value="20"
+                    limited={"Until May 8, 2024"}
+                    type={<BasicType
+                        additionalText='Note: Points for this task will be credited at the end of the grant period'/>}
+                    result={(
+                        <Link href={URLS.GitCoinDonate} target="_blank">
+                            <ActionButton>Donate</ActionButton>
+                        </Link>
+
+                    )}
+                />
+            </ConditionalContainer>
+
             <ConditionalContainer isOpen={showTwitter}>
                 <Action
                     title="Follow Amet on Twitter"
@@ -198,6 +215,88 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
+
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Purchase AMT Bonds"
+                    description="Specifically purchase AMT bonds for higher rewards."
+                    value="60"
+                    type={<BondType/>}
+                    limited={"Per $1 Value Of Purchase"}
+                    result={(
+                        <Link
+                            href={"https://amet.finance/bonds/explore/8453/0xa6693f3c87ac6f853159a72e54144a7ede784661"}
+                            target='_blank'
+                            className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Purchase Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={true}>
+                <Action
+                    title="Issue Bonds"
+                    description="Issue bonds on Amet Finance and contribute to our ecosystem's growth."
+                    value="500"
+                    type={<BondType/>}
+                    result={(
+                        <Link href='/bonds/issue' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Issue Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={true}>
+                <Action
+                    title="Settling Bond"
+                    description="Settle bonds responsibly and secure your financial interactions."
+                    value="100"
+                    type={<BondType/>}
+                    result={(
+                        <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>My Issued Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
+
+            <ConditionalContainer isOpen={true}>
+                <Action
+                    title="Purchase Bonds"
+                    description="Purchase any bond on the platform to invest in your future and earn XP."
+                    value="40"
+                    type={<BondType/>}
+                    limited={"Per $1 Value Of Purchase"}
+                    result={(
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Explore Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={true}>
+                <Action
+                    title="Referr Users"
+                    description="Refer new users to purchase bonds and earn 4 XP per $1 value of referral purchase."
+                    value="5"
+                    type={<BondType/>}
+                    limited={"Per $1 Value Of Referral Purchase"}
+                    result={(
+                        <Link href='/bonds/explore' target='_blank'
+                              className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Explore Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
             <ConditionalContainer isOpen>
                 <Action
                     title="Community Contribution"
@@ -212,118 +311,6 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
-            <ConditionalContainer isOpen>
-                <Action
-                    title="Donate & Earn"
-                    description="Join Amet Finance in supporting the vibrant open-source community by making a donation through Gitcoin. For every donation of at least $1, you will earn 20 XP."
-                    value="20"
-                    limited={"Until May 8, 2024"}
-                    type={<BasicType additionalText='Note: Points for this task will be credited at the end of the grant period'/>}
-                    result={(
-                        <Link href={URLS.GitCoinDonate} target="_blank">
-                            <ActionButton>Donate</ActionButton>
-                        </Link>
-
-                    )}
-                />
-            </ConditionalContainer>
-
-
-            {/*<ConditionalContainer isOpen={true}>*/}
-            {/*    <Action*/}
-            {/*        title="Issue Bonds"*/}
-            {/*        description="Issue bonds on Amet Finance and contribute to our ecosystem's growth."*/}
-            {/*        value="500"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            <Link href='/bonds/issue' target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>Issue Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-            {/*<ConditionalContainer isOpen={true}>*/}
-            {/*    <Action*/}
-            {/*        title="Complete Redemption"*/}
-            {/*        description="Earn additional XP when all your issued bonds are redeemed. 8 XP per $1 value of redeemed."*/}
-            {/*        value="8"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>My Issued Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-            {/*<ConditionalContainer isOpen={true}>*/}
-            {/*    <Action*/}
-            {/*        title="Settling Bond"*/}
-            {/*        description="Settle bonds responsibly and secure your financial interactions."*/}
-            {/*        value="20"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            <Link href={`/address/${address}?tab=issued-bonds`} target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>My Issued Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-
-
-            {/*<ConditionalContainer isOpen={true}>*/}
-            {/*    <Action*/}
-            {/*        title="Purchase Bonds"*/}
-            {/*        description="Purchase any bond on the platform to invest in your future and earn XP on every $1 purchased."*/}
-            {/*        value="6"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            <Link href='/bonds/explore' target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>Explore Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-            {/*<ConditionalContainer isOpen>*/}
-            {/*    <Action*/}
-            {/*        title="Purchase AMT Bonds"*/}
-            {/*        description="Specifically purchase AMT bonds for higher rewards."*/}
-            {/*        value="10"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            // todo add exact url*/}
-            {/*            <Link href='/bonds/explore' target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>Explore Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-            {/*<ConditionalContainer isOpen={true}>*/}
-            {/*    <Action*/}
-            {/*        title="Referr Users"*/}
-            {/*        description="Refer new users to purchase bonds and earn 4 XP per $1 value of referral purchase."*/}
-            {/*        value="4"*/}
-            {/*        isInfinite*/}
-            {/*        result={(*/}
-            {/*            <Link href='/bonds/explore' target='_blank'*/}
-            {/*                  className='rounded-3xl hover:bg-neutral-600'>*/}
-            {/*                <ActionButton>Explore Bonds</ActionButton>*/}
-            {/*            </Link>*/}
-            {/*        )}*/}
-            {/*        isFinished={false}*/}
-            {/*    />*/}
-            {/*</ConditionalContainer>*/}
-
-
         </GeneralContainer>
     )
 }
@@ -399,6 +386,17 @@ function SocialType() {
             <SocialSVG size={24}/>
             <div className='group-hover:flex hidden absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
                 <span className='text-neutral-400 text-xs text-start'>This is a social task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
+            </div>
+        </div>
+    )
+}
+
+function BondType() {
+    return (
+        <div className='group relative'>
+            <ActionSVG size={24}/>
+            <div className='group-hover:flex hidden absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+                <span className='text-neutral-400 text-xs text-start'>This is an Invest & Prosper task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
             </div>
         </div>
     )
