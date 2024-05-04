@@ -385,7 +385,7 @@ function TVL() {
         return () => chart.destroy()
     }, [values])
 
-    return <>
+    return (
         <div className="bg-white rounded-3xl h-full w-full">
             <div className='flex justify-between items-center px-5 py-6'>
                 <div className='flex flex-col text-black'>
@@ -401,12 +401,11 @@ function TVL() {
             </div>
             <div className='text-black py-3'/>
         </div>
-
-    </>
+    )
 }
 
 function SectionEnd() {
-    return <>
+    return (
         <div className='flex flex-col justify-center items-center bg-zinc-950 w-full py-32 gap-8'>
             <h3 className='md:text-5xl text-4xl font-bold max-w-2xl text-center capitalize'>Be a part of our journey
                 at Amet Finance</h3>
@@ -419,5 +418,5 @@ function SectionEnd() {
                 </div>
             </Link>
         </div>
-    </>
+    )
 }

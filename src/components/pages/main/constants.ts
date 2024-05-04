@@ -4,6 +4,13 @@ import {defaultChain} from "@/modules/utils/wallet-connect";
 
 const ARTICLES: Article[] = [
     {
+        title: "Introducing the Rewards Hub: Earn While You Engage with Amet Finance",
+        href: "https://medium.com/@amet-finance/introducing-the-rewards-hub-earn-while-you-engage-with-amet-finance-bad9dd6043dd",
+        image: "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*O-H9djajXYYdQIcNW4UW1A.png",
+        date: "May 4, 2024",
+        paragraph: "The Rewards Hub is Amet Finance’s latest feature designed to enhance your interaction with our platform. By participating in various activities ranging from educational contributions to financial transactions, users can earn XP points."
+    },
+    {
         title: "Introducing AMT: The Backbone of Amet Finance’s Ecosystem",
         href: "https://medium.com/@amet-finance/introducing-amt-the-backbone-of-amet-finances-ecosystem-e183f55b2548",
         image: "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*1Tp8Bp2HhXqygBylTFb5wA.png",

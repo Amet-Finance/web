@@ -252,9 +252,11 @@ function Portfolio({accountState, setOpen}: Readonly<{ accountState: AccountCont
                     </button>
                 </div>
             </div>
-            <div className='flex flex-col'>
-                <p className='text-2xl font-medium'>{formatLargeNumber(account.xp)} XP</p>
-            </div>
+            <Link href='/token/rewards-hub' onClick={close}>
+                <div className='flex flex-col'>
+                    <p className='text-2xl font-semibold'>{formatLargeNumber(account.xp)} XP</p>
+                </div>
+            </Link>
             <div className='flex flex-col text-black bg-neutral-100 rounded-md w-full'>
                 <Link href={`/address/${address}`} className='px-4 py-2 rounded-md w-full hover:bg-neutral-200'
                       onClick={close}>

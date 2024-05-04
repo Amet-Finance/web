@@ -4,7 +4,6 @@ import {ConditionalRenderer} from "@/components/utils/container";
 import {InfoBoxData} from "@/components/utils/types";
 import React, {ReactNode} from "react";
 
-
 function InfoBox({children, info, isRight, className, parentClassName}: Readonly<InfoBoxData>) {
 
     const isBlank = info.isBlank || !info.link;
@@ -37,7 +36,6 @@ function InfoBox({children, info, isRight, className, parentClassName}: Readonly
         </div>
     )
 }
-
 
 function InfoDescription({children, text}: { children: ReactNode, text: string }) {
     return (

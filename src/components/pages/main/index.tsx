@@ -17,7 +17,7 @@ import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren} from "@/co
 
 
 export default function Home() {
-    return <>
+    return (
         <div className='flex flex-col justify-center w-full'>
             <LandingSection/>
             <OnChainBondsSection/>
@@ -27,7 +27,7 @@ export default function Home() {
             <FAQ/>
             {/*<Partnerships/>*/}
         </div>
-    </>
+    )
 }
 
 function LandingSection() {
@@ -235,38 +235,36 @@ function InTheNewsSection() {
     }
 
 
-    return <>
-        <GeneralContainer className='flex flex-col py-12 gap-12 bg-neutral-950' isPadding>
-            <div className='flex justify-between items-center'>
-                <h4 className='md:text-4xl text-3xl font-bold'>In The News</h4>
-                <div className='flex gap-2 items-center'>
-                    <BasicButton isBgGrey onClick={() => scrollToRight('right')}>
-                        <ArrowCurveSVG angle={-140} color='#fff'/>
-                    </BasicButton>
-                    <BasicButton isBgGrey onClick={scrollToRight}>
-                        <ArrowCurveSVG angle={40} color='#fff'/>
-                    </BasicButton>
+    return (<GeneralContainer className='flex flex-col py-12 gap-12 bg-neutral-950' isPadding>
+        <div className='flex justify-between items-center'>
+            <h4 className='md:text-4xl text-3xl font-bold'>In The News</h4>
+            <div className='flex gap-2 items-center'>
+                <BasicButton isBgGrey onClick={() => scrollToRight('right')}>
+                    <ArrowCurveSVG angle={-140} color='#fff'/>
+                </BasicButton>
+                <BasicButton isBgGrey onClick={scrollToRight}>
+                    <ArrowCurveSVG angle={40} color='#fff'/>
+                </BasicButton>
 
-                </div>
             </div>
-            <div className='flex gap-4 items-stretch overflow-x-auto hide-scrollbar' ref={articlesRef}>
-                {ARTICLES.map((article, index) => <ArticleBox article={article} key={index}/>)}
-            </div>
-        </GeneralContainer>
-    </>
+        </div>
+        <div className='flex gap-4 items-stretch overflow-x-auto hide-scrollbar' ref={articlesRef}>
+            {ARTICLES.map((article, index) => <ArticleBox article={article} key={index}/>)}
+        </div>
+    </GeneralContainer>)
 }
 
 function ArticleBox({article}: { article: Article }) {
     const {href, image, paragraph, title, date} = article;
 
-    return <>
+    return (
         <Link href={href} target='_blank' className='cursor-pointer'>
             <div
-                className='relative flex flex-col gap-4 rounded-3xl border border-w1 min-w-[400px] max-w-[400px] h-full bg-black'>
+                className='relative flex flex-col gap-0 rounded-3xl border border-w1 min-w-[400px] max-w-[400px] h-full bg-black'>
                 <Image src={image}
                        alt={title}
-                       width={400}
-                       height={200} className='object-cover rounded-[6rem] w-[400px] h-52'/>
+                       width={1200}
+                       height={1200} className='object-cover rounded-t-[1.4rem] w-[400px] h-52 bg-neutral-900'/>
                 <div className='flex flex-col justify-between bg-neutral-950 gap-4 px-10 py-7 rounded-b-3xl h-full'>
                     <div className='flex flex-col gap-4'>
                         <span className='text-xl font-bold'>{shortenString(title, 40)}</span>
@@ -276,7 +274,7 @@ function ArticleBox({article}: { article: Article }) {
                 </div>
             </div>
         </Link>
-    </>
+    )
 }
 
 

@@ -5,7 +5,6 @@ import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-
 import Graphql from "@/modules/api/graphql";
 import {PageId} from "@/components/pages/constants";
 import {MetaConstants} from "@/components/headers/constants";
-import {URLS} from "@/modules/utils/urls";
 
 export default function ExploreIdPage({bondInfoDetailed, queryParams}: Readonly<{
     bondInfoDetailed: ContractExtendedFormat,
