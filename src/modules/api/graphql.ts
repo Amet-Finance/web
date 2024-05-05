@@ -1,6 +1,6 @@
 import {postAPI, requestAPI} from "@/modules/api/util";
 import {
-    AccountExtendedFormat, AccountHoldings,
+    AccountHoldings,
     AccountInformationQuery,
     ContractCoreDetails,
     ContractExtendedFormatAPI,
@@ -64,15 +64,30 @@ const META_DETAILS = `_meta {
 
 async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[]> {
     const {chainId} = params;
+
+    const purchaseExists = Boolean(params.purchaseToken);
+    const payoutExists = Boolean(params.payoutToken);
+
+    const showWhere = payoutExists || purchaseExists;
+    const purchaseWhere = purchaseExists ? `purchaseToken: "${params.purchaseToken?.toLowerCase()}"` : "";
+    const payoutWhere = payoutExists ? `payoutToken: "${params.payoutToken?.toLowerCase()}"` : "";
+
+
+    const whereText = `where: {${purchaseWhere}${purchaseExists && payoutExists ? "," : ""}${payoutWhere}}`
     const query = `
                     {
                       ${META_DETAILS}
-                      bonds(first: ${params.limit ?? 50}, skip: ${params.skip ?? 0} orderBy: issuanceDate, orderDirection: desc) {
+                      bonds(
+                      first: ${params.limit ?? 50}
+                      skip: ${params.skip ?? 0}
+                      orderBy: issuanceDate
+                      orderDirection: desc
+                      ${showWhere ? whereText : ""}
+                      ) {
                         ${BOND_DETAILS_QUERY}
                       }
                     }
         `
-
     const response = await indexerRequest(chainId, query)
 
     const bonds: any = response.bonds;

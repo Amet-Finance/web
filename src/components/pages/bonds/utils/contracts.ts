@@ -6,7 +6,7 @@ import GraphqlAPI from "@/modules/api/graphql";
 
 function useContracts(params: ContractQuery, intervalMs = UPDATE_INTERVAL) {
 
-    const [isLoading, setLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [contracts, setContracts] = useState<ContractCoreDetails[]>([])
 
 
@@ -16,17 +16,17 @@ function useContracts(params: ContractQuery, intervalMs = UPDATE_INTERVAL) {
                 .then(result => {
                     if (result?.length) {
                         setContracts(result)
-                        setLoading(false)
+                        setIsLoading(false)
                     }
                 }).catch(nop)
         }
 
-        setLoading(true);
+        setIsLoading(true);
         updater()
 
         const interval = setInterval(updater, intervalMs)
         return () => clearInterval(interval);
-    }, [intervalMs, params.chainId, params.skip, params.limit]);
+    }, [intervalMs, params.chainId, params.skip, params.limit, params]);
 
 
     return {

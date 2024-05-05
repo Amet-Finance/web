@@ -72,7 +72,7 @@ export default function DescriptionContainer({bondDetailed, setBondDetailed}: Re
 
 
     return (
-        <div className='flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
+        <div className='flex flex-col gap-8 w-full p-8 border border-neutral-900 rounded-3xl'>
             <div className='grid grid-cols-12 gap-4'>
                 <div className='col-span-11'>
                     <ToggleBetweenChildren isOpen={isEditMode}>

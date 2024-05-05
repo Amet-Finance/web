@@ -8,8 +8,7 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import Link from "next/link";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import WarningSVG from "../../../../../../../public/svg/utils/warning";
-import {InfoBox, InfoDescription} from "@/components/utils/info-box";
-import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
+import {InfoDescription} from "@/components/utils/info-box";
 import {ConditionalRenderer} from "@/components/utils/container";
 import {constants} from 'amet-utils';
 import SecureSVG from "../../../../../../../public/svg/utils/secure";
@@ -60,9 +59,11 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
             <div className='flex md:flex-row flex-col justify-between w-full gap-4 items-start'>
                 <div className='flex items-center gap-2 md:w-max w-full'>
                     <div className='md:w-12 md:h-12 w-10 h-10 rounded-full'>
-                        <Image src={payoutIcon} alt={payout.name}
-                               width={1000} height={1000}
-                               className='w-full h-full object-contain rounded-full'/>
+                        <Link href={payoutTokenExplorer} target='_blank'>
+                            <Image src={payoutIcon} alt={payout.name}
+                                   width={1000} height={1000}
+                                   className='w-full h-full object-contain rounded-full border border-neutral-900 hover:border-neutral-800 cursor-pointer'/>
+                        </Link>
                     </div>
                     <div className='flex gap-2'>
                         <div className='flex flex-col'>
@@ -123,10 +124,10 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                 </div>
             </div>
             <div className='flex flex-col gap-1'>
-                <ConditionalRenderer isOpen={!Boolean(payout.isVerified)}>
+                <ConditionalRenderer isOpen={!payout.isVerified}>
                     <NotVerifiedAsset title={"Payout"}/>
                 </ConditionalRenderer>
-                <ConditionalRenderer isOpen={!Boolean(purchase.isVerified)}>
+                <ConditionalRenderer isOpen={!purchase.isVerified}>
                     <NotVerifiedAsset title={"Purchase"}/>
                 </ConditionalRenderer>
             </div>
@@ -182,22 +183,12 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     </div>
 }
 
-function SettledContract() {
-    return <>
-        <div className='text-sm font-medium'>
-            <InfoBox info={InfoSections.Settled} className='w-[400%]' parentClassName="py-2" isRight={true}>
-                <span className='text-green-500 whitespace-nowrap px-1 cursor-pointer'>Settled</span>
-            </InfoBox>
-        </div>
-    </>
-}
-
 function NotVerifiedAsset({title}: { title: string }) {
-    return <>
+    return (
         <div
             className='flex items-center gap-2 px-4 py-1 border w-min whitespace-nowrap rounded-md border-w1 cursor-pointer'>
             <WarningSVG/>
             <span className='text-red-500 text-sm font-light'><b>Caution</b>: {title} token has not been verified. Please proceed carefully!</span>
         </div>
-    </>
+    )
 }

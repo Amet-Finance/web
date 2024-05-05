@@ -1,7 +1,5 @@
 import BondCard from "@/components/pages/bonds/utils/bond-card";
-import SearchSVG from "../../../../../../public/svg/utils/search";
-import FilterSVG from "../../../../../../public/svg/utils/filter";
-import {useState} from "react";
+import React, {useState} from "react";
 import {ContractQuery} from "@/modules/api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
 import {CHAINS, defaultChain, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
@@ -11,10 +9,16 @@ import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} f
 import {Chain} from "wagmi";
 import {useContracts} from "@/components/pages/bonds/utils/contracts";
 import {HorizontalLoading} from "@/components/utils/loading";
+import {useTokensByChain} from "@/modules/utils/token";
+import {TokenResponse} from "@/modules/api/type";
+import makeBlockie from "ethereum-blockies-base64";
+import {zeroAddress} from "viem";
+import XmarkSVG from "../../../../../../public/svg/utils/xmark";
 
 export default function Explore() {
 
-    const {isOpen, openOrClose} = useShow()
+
+    const [filter, setFilter] = useState<ContractQuery>({chainId: defaultChain.id})
 
 
     return (
@@ -27,45 +31,28 @@ export default function Explore() {
                     filters and
                     intuitive search options.</p>
             </div>
-            <div className='flex flex-col gap-12 w-full pt-8'>
-                <div className='flex flex-col gap-4'>
-                    <div className='flex items-stretch justify-end gap-4'>
-                        <button className='flex items-center gap-2 px-4 py-1.5 bg-neutral-900 rounded-md cursor-pointer'
-                                onClick={openOrClose}>
-                            <span>Filter</span>
-                            <FilterSVG size={16}/>
-                        </button>
-                        <div className='flex gap-2 items-center border border-w1 rounded-md px-4 py-1.5'>
-                            <input type="text"
-                                   className='h-full bg-transparent w-full md:min-w-[18rem] min-w-0 placeholder:text-neutral-500 placeholder:text-sm'
-                                   placeholder='Search By Contract Address, Issuer Address, Token Symbol'/>
-                            <SearchSVG/>
-                        </div>
-                    </div>
-                    <ConditionalRenderer isOpen={isOpen}>
-                        <FilterContainer/>
-                    </ConditionalRenderer>
-                </div>
+            <div className='flex flex-col gap-8 w-full pt-8'>
+                <FilterContainer filterHandler={[filter, setFilter]}/>
                 <div className='grid 2xl:grid-cols-3 md-lg:grid-cols-2 grid-cols-1 gap-2'>
-                    <BondCards/>
+                    <BondCards filter={filter}/>
                 </div>
             </div>
         </GeneralContainer>
     )
 }
 
-function FilterContainer() {
+function FilterContainer({filterHandler}: Readonly<{ filterHandler: [ContractQuery, any] }>) {
 
-    //todo fix this defaultChain logic
-    const [params, setParams] = useState<ContractQuery>({chainId: defaultChain.id});
-    const selectChain = (chainId: number) => setParams({...params, chainId})
-    const selectToken = (type: string, contractAddress: string) => setParams({...params, [type]: contractAddress})
+
+    const [filter, setFilter] = filterHandler
+
+    const selectChain = (chainId: number) => setFilter({...filter, chainId})
 
     return (
         <div className='flex gap-4 items-center z-50'>
-            <ChainSelector params={params} selectChain={selectChain}/>
-            {/*<TokenSelector params={params} type={"purchaseToken"} setter={selectToken}/>*/}
-            {/*<TokenSelector params={params} type={"payoutToken"} setter={selectToken}/>*/}
+            <ChainSelector params={filter} selectChain={selectChain}/>
+            <TokenSelector filterHandler={filterHandler} type={"purchaseToken"}/>
+            <TokenSelector filterHandler={filterHandler} type={"payoutToken"}/>
         </div>
     )
 }
@@ -111,54 +98,86 @@ function ChainSelector({params, selectChain}: Readonly<{
 }
 
 
-// function TokenSelector({
-//                            params, type, setter
-//                        }: {
-//     params: ContractQuery,
-//     type: string,
-//     setter: any
-// }) {
-//     const {isOpen, openOrClose} = useShow();
-//
-//     const selectTokenAndClose = (chainId: number) => {
-//         openOrClose()
-//         setter(type, chainId)
-//     }
-//
-//
-//     const title = type === "purchaseToken" ? "Purchase" : "Payout";
-//
-//     return (
-//         <div className='relative'>
-//             <button className='flex items-center gap-1.5 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
-//                     onClick={openOrClose}>
-//                 <ToggleBetweenChildren isOpen={Boolean(params[type])}>
-//                     <>
-//                         <Image src={chainIcon} alt={`${chain?.name}`} width={24} height={24}/>
-//                         <span className='text-sm'>{chain?.name}</span>
-//                     </>
-//                     <span className='text-sm'>{title} Token</span>
-//                 </ToggleBetweenChildren>
-//                 <ArrowBasicSVG classname={`stroke-white ${isOpen && "rotate-180"}`} sPercentage={-25}/>
-//             </button>
-//             <ConditionalRenderer isOpen={isOpen}>
-//                 <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-md p-2 w-max'>
-//
-//                 </div>
-//             </ConditionalRenderer>
-//         </div>
-//     )
-// }
+function TokenSelector({filterHandler, type}: Readonly<{
+    filterHandler: [ContractQuery, any],
+    type: "purchaseToken" | "payoutToken"
+}>) {
 
-function TokenWrapper() {
+    const [filter, setFilter] = filterHandler
+    const {isOpen, openOrClose} = useShow();
+    const isPurchase = type === "purchaseToken"
+
+
+    const selectToken = (contractAddress: string) => setFilter({...filter, [type]: contractAddress})
+    const removeToken = (event: Event) => {
+        delete filter[type];
+        setFilter({...filter})
+        event.stopPropagation()
+    }
+
+    const tokens = useTokensByChain(filter.chainId);
+    const verifiedTokens = Object.values(tokens);
+    let selectedToken;
+    if (isPurchase) {
+        selectedToken = filter.purchaseToken ? tokens[filter.purchaseToken] : undefined
+    } else {
+        selectedToken = filter.payoutToken ? tokens[filter.payoutToken] : undefined
+    }
+
+    const icon = selectedToken?.icon ?? makeBlockie(`${selectedToken?.contractAddress}`)
+    const name = `${selectedToken?.name}`.toString()
+
+    const selectTokenAndClose = (contractAddress: string) => {
+        selectToken(contractAddress)
+        openOrClose()
+    }
+
+
+    const title = isPurchase ? "Purchase" : "Payout";
+
     return (
-        <div>
-
+        <div className='relative'>
+            <button className='flex items-center gap-2 bg-neutral-900 p-2 px-4 rounded-full cursor-pointer'
+                    onClick={openOrClose}>
+                <ToggleBetweenChildren isOpen={Boolean(selectedToken)}>
+                    <>
+                        <Image src={icon} alt={name} width={24} height={24} className='rounded-full'/>
+                        <span className='text-sm'>{name}</span>
+                    </>
+                    <span className='text-sm'>{title} Token</span>
+                </ToggleBetweenChildren>
+                <ToggleBetweenChildren isOpen={isOpen || !selectedToken}>
+                    <ArrowBasicSVG classname={`stroke-white ${isOpen && "rotate-180"}`} sPercentage={-25}
+                                   onClick={openOrClose}/>
+                    <XmarkSVG isSmall onClick={removeToken}/>
+                </ToggleBetweenChildren>
+            </button>
+            <ConditionalRenderer isOpen={isOpen}>
+                <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-md p-2 w-max'>
+                    {verifiedTokens.map(token => <TokenForSelector token={token}
+                                                                   key={token.contractAddress}
+                                                                   onClick={selectTokenAndClose}/>)}
+                </div>
+            </ConditionalRenderer>
         </div>
     )
 }
 
-function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainId: number) => void }) {
+function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onClick: any }>) {
+
+    const iconSrc = token.icon ?? makeBlockie(zeroAddress);
+
+    return <button
+        className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md whitespace-nowrap'
+        onClick={() => onClick(token.contractAddress)}>
+        <Image src={iconSrc} alt={token.name} width={22} height={22}
+               className='rounded-full border border-neutral-800'/>
+        <p className='text-neutral-300 text-sm'>{token.name} <span
+            className='text-neutral-500'>({token.symbol})</span></p>
+    </button>
+}
+
+function ChainWrapper({chain, selectChain}: Readonly<{ chain: Chain, selectChain: (chainId: number) => void }>) {
 
     return (
         <button className='flex items-center gap-1 w-full px-2 py-1 hover:bg-neutral-700 rounded-md cursor-pointer'
@@ -169,10 +188,8 @@ function ChainWrapper({chain, selectChain}: { chain: Chain, selectChain: (chainI
     )
 }
 
-function BondCards() {
-    // todo fix this defaultchain logic
-    const params: ContractQuery = {chainId: defaultChain.id};
-    const {isLoading, contracts} = useContracts(params);
+function BondCards({filter}: Readonly<{ filter: ContractQuery }>) {
+    const {isLoading, contracts} = useContracts(filter);
 
     return (
         <ToggleBetweenChildren isOpen={isLoading}>

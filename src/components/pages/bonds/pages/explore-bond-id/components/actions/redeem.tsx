@@ -29,6 +29,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const chain = getChain(chainId);
     const {contractBalances} = useBalances({contractAddress})
 
+    const [isCapitulation, setIsCapitulation] = useState(false);
     const [bondIndexes, setBondIndexes] = useState([] as Array<number>)
     const [redemptionCount, setRedemptionCount] = useState(0);
 
@@ -44,25 +45,25 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const notMature = redemptionCount > matureQuantity
 
 
-    const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity || notMature || redemptionCount <= 0;
+    const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity && !isCapitulation || notMature && !isCapitulation || redemptionCount <= 0;
     let title = "Redeem"
-    if (notEnoughLiquidity) title = "Not Enough Liquidity"
+    if (notEnoughLiquidity && !isCapitulation) title = "Not Enough Liquidity"
     if (redeemingMoreThenAvailable) title = "Max Bonds Reached"
-    if (notMature) title = "Not Mature"
+    if (notMature && !isCapitulation) title = "Not Mature"
 
 
     const config = {
         contractAddress,
         bondIndexes,
         redemptionCount,
-        isCapitulation: false
+        isCapitulation
     }
 
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.RedeemBonds, config)
 
     function onChange(event: any) {
-        const value = Number(event.target.value);
-        setCount(value);
+        const number = Number(Math.round(event.target.value));
+        if (Number.isFinite(number)) setCount(number);
     }
 
     function setPercentage(percent: number) {
@@ -71,7 +72,6 @@ export default function RedeemTab({contractInfo}: Readonly<{
     }
 
     function setCount(value: number) {
-
         let valueLeft = value;
         const indexes: number[] = []
 
@@ -109,13 +109,17 @@ export default function RedeemTab({contractInfo}: Readonly<{
         }
     }
 
+    function capitulationRedeem() {
+        setIsCapitulation(!isCapitulation);
+    }
+
     return (
         <div className='flex flex-col gap-1 justify-end w-full'>
             <ConditionalRenderer isOpen={Boolean(totalRedeemAmount)}>
                 <div
                     className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap'>
                     <span
-                        className='text-4xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
+                        className='md:text-4xl text-2xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
                     <span className='text-xs'>Total Redeem Amount:</span>
                 </div>
             </ConditionalRenderer>
@@ -136,14 +140,28 @@ export default function RedeemTab({contractInfo}: Readonly<{
                 </div>
                 <Percentages setter={setPercentage}/>
                 <Agreement actionType={"redeeming"}/>
-                <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
-                        <div className='flex items-center gap-2'>
-                            <ConditionalRenderer isOpen={isLoading}>
-                                <Loading percent={75} color="#000"/>
-                            </ConditionalRenderer>
-                            {title}
-                        </div>
-                </DefaultButton>
+                <div className='grid grid-cols-12 gap-1'>
+                    <div className='col-span-8'>
+                        <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
+                            <div className='flex items-center gap-2'>
+                                <ConditionalRenderer isOpen={isLoading}>
+                                    <Loading percent={75} color="#000"/>
+                                </ConditionalRenderer>
+                                {title}
+                            </div>
+                        </DefaultButton>
+                    </div>
+                    <div className='col-span-4 flex'>
+                        <DefaultButton onClick={capitulationRedeem} classType={isCapitulation ? "3" : "4"}>
+                            <div className='flex items-center gap-2 text-xs'>
+                                <ConditionalRenderer isOpen={isLoading}>
+                                    <Loading percent={75} color="#000"/>
+                                </ConditionalRenderer>
+                                Capitulation
+                            </div>
+                        </DefaultButton>
+                    </div>
+                </div>
             </div>
         </div>
     )

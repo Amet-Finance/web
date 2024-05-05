@@ -75,7 +75,8 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     function onChange(event: any) {
         const {value} = event.target;
-        setAmount(Number(value))
+        const number = Number(Math.round(value));
+        if (Number.isFinite(number)) setAmount(number);
     }
 
     function setPercentage(percent: number) {
@@ -110,7 +111,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                         <div
                             className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-neutral-700 h-full whitespace-nowrap'>
                             <span
-                                className='text-4xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
+                                className='md:text-4xl text-2xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
                             <span className='text-xs'>Total Purchase Amount:</span>
                         </div>
                 </ConditionalRenderer>
