@@ -13,7 +13,7 @@ import {GeneralContainer} from "@/components/utils/container";
 import {FOOTER_LINKS} from "@/components/footer/constants";
 
 export default function Footer() {
-    return <>
+    return (
         <footer className="flex flex-col items-center z-20 bg-black w-full">
             <div className='w-full h-px bg-b2'/>
             <GeneralContainer
@@ -48,7 +48,7 @@ export default function Footer() {
                     Amet Finance does not take responsibility for individual investment decisions, losses, or gains.</p>
             </GeneralContainer>
         </footer>
-    </>
+    )
 }
 
 function Disclaimer({className}: { className: string }) {

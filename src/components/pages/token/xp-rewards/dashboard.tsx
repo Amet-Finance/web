@@ -86,7 +86,7 @@ export default function XpRewardsDashboard() {
     }
 
     return (
-        <GeneralContainer className='grid grid-cols-12 md:py-32 py-8 gap-4' isPadding>
+        <GeneralContainer className='grid grid-cols-12 md:py-16 py-8 gap-4' isPadding>
             <div
                 className='col-span-12 flex flex-col justify-between bg-neutral-950 rounded-3xl p-6 gap-8 cursor-pointer border border-neutral-900'>
                 <div className='flex justify-between w-full'>
@@ -221,7 +221,7 @@ export default function XpRewardsDashboard() {
                     title="Purchase AMT Bonds"
                     description="Specifically purchase AMT bonds for higher rewards."
                     value="60"
-                    type={<BondType/>}
+                    type={<BondType isHot/>}
                     limited={"Per $1 Value Of Purchase"}
                     result={(
                         <Link
@@ -327,11 +327,11 @@ function Action({title, description, value, result, type, isFinished, limited}: 
     return (
         <div
             className={`relative flex flex-col justify-between items-center gap-12 w-full
-                        h-full rounded-3xl bg-neutral-950 hover:bg-neutral-900
-                        ${isFinished ? "cursor-not-allowed" : "cursor-pointer"} p-4
+                        h-full rounded-3xl bg-neutral-950 hover:bg-neutral-900 p-4
+                        ${isFinished ? "cursor-not-allowed" : "cursor-pointer"}
                         border border-neutral-900 hover:border-neutral-800
                         `}>
-            <div className='flex justify-between w-full'>
+            <div className='flex justify-between items-start w-full'>
                 {type || <span/>}
                 <div className='flex flex-col items-end'>
                     <span
@@ -368,11 +368,12 @@ function ActionButton({children, onClick}: Readonly<{ children?: ReactNode, onCl
 }
 
 
-function BasicType({additionalText}: {additionalText?: string}) {
+function BasicType({additionalText}: { additionalText?: string }) {
     return (
         <div className='group relative'>
             <SimpleSVG size={24}/>
-            <div className='group-hover:flex hidden flex-col gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+            <div
+                className='group-hover:flex hidden flex-col gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
                 <span className='text-neutral-400 text-xs text-start'>This is a basic task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
                 <span className='text-neutral-300 text-xs text-start'>{additionalText}</span>
             </div>
@@ -391,11 +392,11 @@ function SocialType() {
     )
 }
 
-function BondType() {
+function BondType({isHot = false}) {
     return (
-        <div className='group relative'>
-            <ActionSVG size={24}/>
-            <div className='group-hover:flex hidden absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+        <div className={`group relative`}>
+            <ActionSVG size={24} color={isHot ? "#f43f5e" : "#fff"}/>
+            <div className='group-hover:flex hidden gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
                 <span className='text-neutral-400 text-xs text-start'>This is an Invest & Prosper task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
             </div>
         </div>
