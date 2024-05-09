@@ -21,7 +21,7 @@ import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
-    const {contractAddress,chainId, purchase, totalBonds, purchased, payout} = contractInfo;
+    const {contractAddress, chainId, purchase, totalBonds, purchased, payout} = contractInfo;
 
     const {address} = useAccount();
     const {hasBalance} = useBalances({contractAddress})
@@ -89,13 +89,14 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     async function submit() {
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain")
+
         const transaction = await submitTransaction();
         if (transaction) {
-            AccountStore.initBalances(address).catch(nop)
             if (!hasBalance) {
                 ModalStore.openModal(ModalTypes.FirstTimePurchaseBond)
                 setRefresh(Math.random());
             }
+            AccountStore.initBalances(address).catch(nop);
         }
 
     }
@@ -107,14 +108,14 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                     <span className='text-3xl font-bold text-neutral-400'>SOLD OUT</span>
                 </div>
                 <>
-                <ConditionalRenderer isOpen={Boolean(totalPrice)}>
+                    <ConditionalRenderer isOpen={Boolean(totalPrice)}>
                         <div
                             className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-neutral-700 h-full whitespace-nowrap'>
                             <span
                                 className='md:text-4xl text-2xl font-bold'>-{formatLargeNumber(totalPrice, false, 2)} {purchase.symbol}</span>
                             <span className='text-xs'>Total Purchase Amount:</span>
                         </div>
-                </ConditionalRenderer>
+                    </ConditionalRenderer>
                     <div className='flex flex-col gap-2'>
                         <div
                             className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>

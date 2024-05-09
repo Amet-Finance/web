@@ -4,10 +4,12 @@ import {URLS} from "@/modules/utils/urls";
 import {useState} from "react";
 import {useConnectWallet} from "@/modules/utils/address";
 import ModalStore from "@/store/redux/modal";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export default function AcceptTermsConditions() {
 
-    const {setAccepted, open} = useConnectWallet()
+    const {open} = useWeb3Modal();
+    const {setAccepted} = useConnectWallet()
     const [isChecked, setIsChecked] = useState(false);
 
     const checkInputChanger = (event: any) => {
@@ -17,14 +19,14 @@ export default function AcceptTermsConditions() {
     const connect = () => {
         setAccepted();
         ModalStore.closeModal();
-        open();
+        return open();
     }
 
     return (
         <div className='flex flex-col gap-8 max-w-2xl'>
             <h1 className='text-2xl font-bold'>Connect Wallet</h1>
             <div className='flex flex-col gap-3 text-xs text-neutral-400'>
-                <p >By proceeding to connect your wallet, you acknowledge
+                <p>By proceeding to connect your wallet, you acknowledge
                     and agree
                     to {`Amet Finance's `}
                     <Link href={URLS.TermsOfService} target="_blank">
@@ -46,7 +48,8 @@ export default function AcceptTermsConditions() {
                     platform and the nature of on-chain bond investments before connecting your wallet.</p>
                 <button className='flex items-center gap-2 text-sm text-neutral-400 cursor-pointer'>
                     <input id='checkbox' type="checkbox" onChange={checkInputChanger} className='cursor-pointer'/>
-                    <label htmlFor="checkbox" className='cursor-pointer'>I have read and agree to the Terms and Conditions and Privacy
+                    <label htmlFor="checkbox" className='cursor-pointer'>I have read and agree to the Terms and
+                        Conditions and Privacy
                         Policy.</label>
                 </button>
             </div>

@@ -2,7 +2,6 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import Modal, {setAppElement} from "react-modal";
 import {Montserrat} from "next/font/google";
 import IssuedBondSuccess from "@/components/modals/issued-bond-success";
-import Quiz from "@/components/modals/quiz";
 import ClaimReferralRewards from "@/components/modals/claim-referral-rewards";
 import ModalStore from "@/store/redux/modal";
 import AcceptTermsConditions from "@/components/modals/accept-terms-conditions";
@@ -56,9 +55,6 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
     switch (type) {
         case ModalTypes.IssuedBondSuccess: {
             return <IssuedBondSuccess/>
-        }
-        case ModalTypes.Quiz: {
-            return <Quiz/>
         }
         case ModalTypes.ClaimReferralRewards: {
             return <ClaimReferralRewards additional={additional}/>

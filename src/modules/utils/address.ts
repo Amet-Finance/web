@@ -38,7 +38,7 @@ function useConnectWallet() {
             const acceptedDate = new Date(parsedResult.date);
 
             // Validation for connection should stay one day
-            if (!isFinite(acceptedDate.getTime()) ||  Date.now() - ONE_DAY > acceptedDate.getTime()) {
+            if (!isFinite(acceptedDate.getTime()) || Date.now() - ONE_DAY > acceptedDate.getTime()) {
                 setShowModal(true)
             } else {
                 setShowModal(false)
