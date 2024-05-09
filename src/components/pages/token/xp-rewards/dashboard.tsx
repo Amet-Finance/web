@@ -110,6 +110,24 @@ export default function XpRewardsDashboard() {
                 </div>
             </div>
 
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Purchase AMT Bonds"
+                    description="Specifically purchase AMT bonds for higher rewards."
+                    value="60"
+                    type={<BondType isHot/>}
+                    limited={"Per $1 Value Of Purchase"}
+                    result={(
+                        <Link
+                            href={"https://amet.finance/bonds/explore/8453/0xa6693f3c87ac6f853159a72e54144a7ede784661"}
+                            target='_blank'
+                            className='rounded-3xl hover:bg-neutral-600'>
+                            <ActionButton>Purchase Bonds</ActionButton>
+                        </Link>
+                    )}
+                    isFinished={false}
+                />
+            </ConditionalContainer>
             <ConditionalContainer isOpen={!settings.hideCompleted || !active}>
                 <Action
                     title="Join Rewards Hub"
@@ -138,22 +156,22 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
-            <ConditionalContainer isOpen>
-                <Action
-                    title="Donate & Earn"
-                    description="Join us in supporting the open-source community by making a donation through Gitcoin."
-                    value="20"
-                    limited={"Until May 8, 2024"}
-                    type={<BasicType
-                        additionalText='Note: Points for this task will be credited at the end of the grant period'/>}
-                    result={(
-                        <Link href={URLS.GitCoinDonate} target="_blank">
-                            <ActionButton>Donate</ActionButton>
-                        </Link>
+            {/*<ConditionalContainer isOpen>*/}
+            {/*    <Action*/}
+            {/*        title="Donate & Earn"*/}
+            {/*        description="Join us in supporting the open-source community by making a donation through Gitcoin."*/}
+            {/*        value="20"*/}
+            {/*        limited={"Until May 8, 2024"}*/}
+            {/*        type={<BasicType*/}
+            {/*            additionalText='Note: Points for this task will be credited at the end of the grant period'/>}*/}
+            {/*        result={(*/}
+            {/*            <Link href={URLS.GitCoinDonate} target="_blank">*/}
+            {/*                <ActionButton>Donate</ActionButton>*/}
+            {/*            </Link>*/}
 
-                    )}
-                />
-            </ConditionalContainer>
+            {/*        )}*/}
+            {/*    />*/}
+            {/*</ConditionalContainer>*/}
 
             <ConditionalContainer isOpen={showTwitter}>
                 <Action
@@ -216,24 +234,7 @@ export default function XpRewardsDashboard() {
                 />
             </ConditionalContainer>
 
-            <ConditionalContainer isOpen>
-                <Action
-                    title="Purchase AMT Bonds"
-                    description="Specifically purchase AMT bonds for higher rewards."
-                    value="60"
-                    type={<BondType isHot/>}
-                    limited={"Per $1 Value Of Purchase"}
-                    result={(
-                        <Link
-                            href={"https://amet.finance/bonds/explore/8453/0xa6693f3c87ac6f853159a72e54144a7ede784661"}
-                            target='_blank'
-                            className='rounded-3xl hover:bg-neutral-600'>
-                            <ActionButton>Purchase Bonds</ActionButton>
-                        </Link>
-                    )}
-                    isFinished={false}
-                />
-            </ConditionalContainer>
+
             <ConditionalContainer isOpen={true}>
                 <Action
                     title="Issue Bonds"
