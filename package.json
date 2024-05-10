@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
+    "@vercel/og": "^0.6.2",
     "@web3modal/wagmi": "^3.5.7",
     "amet-utils": "^1.5.4",
     "axios": "^1.6.8",

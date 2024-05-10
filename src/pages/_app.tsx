@@ -19,7 +19,6 @@ const montserrat = Montserrat({
 })
 
 export default function App({Component, pageProps}: AppProps) {
-
     return (
         <WagmiConfig config={wagmiConfig}>
             <Provider store={store}>

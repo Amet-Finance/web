@@ -19,6 +19,7 @@ import {ModalTypes} from "@/store/redux/modal/constants";
 import {useBalances} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
+import CalculatorController from "@/components/pages/bonds/utils/calculator";
 
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {contractAddress, chainId, purchase, totalBonds, purchased, payout} = contractInfo;
@@ -27,6 +28,8 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const {hasBalance} = useBalances({contractAddress})
     const chain = getChain(chainId);
     const router = useRouter();
+
+    const securedPercentage = CalculatorController.securedPercentage(contractInfo)
 
     const TitleTypes = {
         Purchase: "Purchase",
@@ -38,6 +41,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const [allowance, setAllowance] = useState("0")
     const [amount, setAmount] = useState(0);
     const [refresh, setRefresh] = useState(0);
+    const [lowPayoutModalOpened, setLowPayoutModalOpened] = useState(false);
 
     const currentAllowance = BigNumber(allowance.toString())
     const required = BigNumber(amount).times(BigNumber(purchase.amount))
@@ -45,6 +49,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const isApprove = needed.isLessThan(BigNumber(0))
     const isSoldOut = totalBonds === purchased;
+    const openLowPayoutModal = securedPercentage < 10 && !lowPayoutModalOpened
 
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
     let blockClick = purchasingMoreThenAllowed || amount <= 0
@@ -88,7 +93,11 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     async function submit() {
         if (blockClick) return;
-        if (!chain) return toast.error("Please select correct chain")
+        if (!chain) return toast.error("Please select correct chain");
+        if (openLowPayoutModal) {
+            ModalStore.openModal(ModalTypes.LowPayout)
+            return setLowPayoutModalOpened(true);
+        }
 
         const transaction = await submitTransaction();
         if (transaction) {

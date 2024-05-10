@@ -8,6 +8,7 @@ import AcceptTermsConditions from "@/components/modals/accept-terms-conditions";
 import FirstTimePurchaseBond from "@/components/modals/first-time-purchase-bond";
 import {useModal} from "@/modules/utils/modal";
 import ConnectEmail from "@/components/modals/connect-email";
+import LowPayout from "@/components/modals/low-payout";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -67,6 +68,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.ConnectEmail: {
             return <ConnectEmail/>
+        }
+        case ModalTypes.LowPayout: {
+            return <LowPayout/>
         }
     }
 }

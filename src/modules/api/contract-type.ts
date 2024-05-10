@@ -10,7 +10,7 @@ type ContractQuery = {
     chainId: number,
     skip?: number,
     limit?: number,
-    contractAddress?: string, // JSON.stringify([contractAddress,contractAddress,])
+    contractAddress?: string,
 
     trending?: boolean,
     sortByBondScore?: "asc"|"desc",
