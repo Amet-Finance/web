@@ -39,6 +39,7 @@ export async function getServerSideProps({query}: any) {
             props.meta = {
                 title: contractDescription?.name || MetaConstants[PageId.ExploreIdPage].title,
                 description: contractDescription?.details?.description ?? MetaConstants[PageId.ExploreIdPage].description,
+                ogImage: `https://amet.finance/api/dynamic-images/bond/${chain.id}/${contractAddress}`
             };
         }
     }

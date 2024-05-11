@@ -58,10 +58,8 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
 
     return (
         <Link href={url}>
-            <div
-                className='relative group border border-neutral-900 rounded-2xl hover:border-neutral-800 hover:bg-neutral-950'>
-                <div
-                    className='flex flex-col justify-between gap-14 rounded-2xl p-4 py-4 bg-black w-full overflow-clip'>
+            <div className='relative group border border-neutral-900 rounded-2xl hover:border-neutral-800 hover:bg-neutral-950'>
+                <div className='flex flex-col justify-between gap-14 rounded-2xl p-4 py-4 bg-black w-full overflow-clip'>
                     <div className='flex justify-between items-start w-full z-10'>
                         <div className='flex items-start gap-2'>
                             <div className='flex items-center gap-2 w-full whitespace-nowrap'>
@@ -72,8 +70,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                                        className='object-contain w-[34px] rounded-full'/>
                                 <div className='flex flex-col items-start'>
                                     <span className='text-base font-semibold'>{payout.name}</span>
-                                    <span
-                                        className='text-mm text-neutral-500'>{purchaseSymbolShort} - {payoutSymbolShort}</span>
+                                    <span className='text-mm text-neutral-500'>{purchaseSymbolShort} - {payoutSymbolShort}</span>
                                 </div>
                             </div>
                         </div>

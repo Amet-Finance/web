@@ -236,12 +236,14 @@ async function getBalance(address: string, bondAddress: string, chainId: number)
 }
 
 async function indexerRequest(chainId: number, query: string): Promise<any> {
-    if (!getApi(chainId)) {
+    const graphQlUrl = getApi(chainId)
+
+    if (!graphQlUrl) {
         throw Error(`Indexer for ${chainId} is not supported!`)
     }
 
     const response = await postAPI({
-        url: getApi(chainId),
+        url: graphQlUrl,
         body: {query}
     });
 

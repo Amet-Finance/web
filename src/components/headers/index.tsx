@@ -1,6 +1,7 @@
 import Head from "next/head";
 import {MetaConstants} from "@/components/headers/constants";
 import {MetaInfo} from "@/components/headers/types";
+import {URLS} from "@/modules/utils/urls";
 
 export default function Headers({id, meta}: Readonly<{ id: string, meta?: MetaInfo }>) {
 
@@ -29,7 +30,7 @@ export default function Headers({id, meta}: Readonly<{ id: string, meta?: MetaIn
             <meta property="og:title" content={title}/>
             <meta property="og:description" content={description}/>
             <meta property="og:image" content={ogImg}/>
-            <meta property="og:url" content="https://amet.finance"/>
+            <meta property="og:url" content={URLS.BaseUrlHttps}/>
 
             <meta name="twitter:card" content="summary_large_image"/>
             <meta name="twitter:title" content={title}/>

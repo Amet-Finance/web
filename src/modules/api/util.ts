@@ -18,8 +18,14 @@ async function requestAPI({url, params, headers, showError}: {
 
 async function postAPI({url, body, params, headers}: { url: string, body: any, params?: any, headers?: any }) {
     try {
-        const response = await axios.post(url, body, {params, headers})
-        return response.data;
+        const paramsString = new URLSearchParams(params);
+        const response = await fetch(`${url}${paramsString.toString()}`, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(body)
+        })
+
+        return await response.json();
     } catch (error: any) {
         console.error(`postAPI`, error.message)
         return undefined;
