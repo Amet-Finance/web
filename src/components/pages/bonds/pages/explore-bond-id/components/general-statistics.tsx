@@ -182,6 +182,8 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
         return true;
     }
 
+    const logsClone = logs.filter(filterMyLogs)
+
     return (
         <div className='flex flex-col gap-8 border border-neutral-900 w-full rounded-3xl p-8'>
             <div className='flex md:flex-row flex-col justify-between md:items-center items-start gap-2'>
@@ -217,8 +219,7 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                     <span className='text-neutral-400 '>Hash</span>
                 </div>
                 {
-                    logs.sort((a, b) => b.block - a.block).filter(filterMyLogs)
-                    .map(log =>
+                    logsClone.map(log =>
                         <LogContainer
                             contractInfo={contractInfo}
                             log={log}

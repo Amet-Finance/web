@@ -103,7 +103,7 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
               ${META_DETAILS}
               bond(id: "${contractAddress?.toLowerCase()}") {
                     ${BOND_DETAILS_QUERY}
-                    actionLogs {
+                    actionLogs(orderBy: blockNumber, orderDirection: desc) {
                       blockNumber
                       count
                       from
