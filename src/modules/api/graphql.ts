@@ -1,5 +1,6 @@
 import {postAPI, requestAPI} from "@/modules/api/util";
 import {
+    AccountBalances,
     AccountHoldings,
     AccountInformationQuery,
     ContractCoreDetails,
@@ -165,15 +166,17 @@ async function getAccountInformation({chainId, address}: AccountInformationQuery
 
     const block = response?._meta?.block?.number || 0;
     const issued = (response?.bonds || []).map((item: any) => transformCoreDetails(item, chainId, block))
-    const balances = (response?.user?.tokenBalances || []).map((item: any) => {
-        const bond = transformCoreDetails(item.bond, chainId, block);
-        return {
-            bond,
-            balance: Number(item.balance),
-            purchaseBlock: Number(item.purchaseBlock),
-            tokenId: Number(item.tokenId)
-        }
-    });
+
+    const balances = (response?.user?.tokenBalances || [])
+        .map((item: any) => {
+            const bond = transformCoreDetails(item.bond, chainId, block);
+            return {
+                bond,
+                balance: Number(item.balance),
+                purchaseBlock: Number(item.purchaseBlock),
+                tokenId: Number(item.tokenId)
+            }
+        }).sort((a: AccountBalances, b: AccountBalances) => b.purchaseBlock - a.purchaseBlock);
 
     return {
         balances,

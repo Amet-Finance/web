@@ -13,7 +13,7 @@ type ContractQuery = {
     contractAddress?: string,
 
     trending?: boolean,
-    sortByBondScore?: "asc"|"desc",
+    sortByBondScore?: "asc" | "desc",
     issuer?: string
     purchaseToken?: string,
     payoutToken?: string
@@ -106,14 +106,17 @@ type EmailEditParams = {
     email: string
 }
 
+type AccountBalances = (ContractBalance & { bond: ContractCoreDetails })
+
 type AccountHoldings = {
-    balances: (ContractBalance & { bond: ContractCoreDetails })[],
+    balances: AccountBalances[],
     issued: ContractCoreDetails[]
 }
 
 type AccountExtendedFormat = User & AccountHoldings
 
 export type  {
+    AccountBalances,
     AccountHoldings,
     AccountInformationQuery,
     ContractCoreDetails,

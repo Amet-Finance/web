@@ -12,6 +12,7 @@ import Image from "next/image";
 import {useRouter} from "next/router";
 import TwitterSVG from "../../../../../public/svg/social/twitter";
 import DiscordSVG from "../../../../../public/svg/social/discord";
+import {StringKeyedObject} from "@/components/utils/types";
 
 export default function AddressId({accountExtendedFormat}: Readonly<{ accountExtendedFormat: AccountExtendedFormat }>) {
 
@@ -36,13 +37,13 @@ function AccountContainer({accountExtendedFormat}: Readonly<{ accountExtendedFor
             <div className='flex items-center gap-4 h-fit'>
                 <Image src={icon} alt={_id} width={1000} height={1000} className='rounded-full w-20 h-20'/>
                 <div className='flex flex-col gap-1 items-start'>
-                   <button className='group flex items-center gap-2 cursor-pointer'
-                           onClick={copyToClipboard.bind(null, _id, "Address")}>
-                       <span className='text-sm text-neutral-500 w-full'>{_id}</span>
-                       <div className='group-hover:flex hidden'><CopySVG color="#fff"/></div>
-                   </button>
-               </div>
-           </div>
+                    <button className='group flex items-center gap-2 cursor-pointer'
+                            onClick={copyToClipboard.bind(null, _id, "Address")}>
+                        <span className='text-sm text-neutral-500 w-full'>{_id}</span>
+                        <div className='group-hover:flex hidden'><CopySVG color="#fff"/></div>
+                    </button>
+                </div>
+            </div>
             <div className='flex items-center gap-2'>
                 <TwitterSVG url={`https://x.com/${twitter?.username}`}/>
                 <DiscordSVG url={`https://discord.com/users/${discord?.id}`}/>
@@ -58,7 +59,7 @@ function AnalysisContainer({accountExtendedFormat}: Readonly<{ accountExtendedFo
 
     const analysis = balances.reduce((acc, item) => {
         const {bond, balance} = item;
-        const payoutPre = tokensByChains[bond.purchase.contractAddress]
+        const payoutPre = tokensByChains[bond.payout.contractAddress]
 
         if (payoutPre?.priceUsd) {
             acc.unrealizedProfitUSD += ((balance * bond.payout.amountClean) * payoutPre.priceUsd)
@@ -107,7 +108,9 @@ function BondsContainer({accountExtendedFormat}: Readonly<{ accountExtendedForma
 
     const tabContent = (): ContractCoreDetails[] => {
         if (isPurchased) {
-            return ((balances || []).map(i => i.bond))
+            const uniqueBonds: StringKeyedObject<ContractCoreDetails> = {};
+            ((balances || []).forEach(item => uniqueBonds[item.bond.uri] = item.bond))
+            return Object.values(uniqueBonds);
         } else if (isWatchlist) {
             return [];
         } else {

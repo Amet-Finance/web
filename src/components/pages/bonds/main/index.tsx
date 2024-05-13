@@ -81,7 +81,7 @@ function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatis
 function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
 
 
-    const totalVolume = `$${formatLargeNumber((statistics.volume || 0), false).toString()}`
+    const totalValueLocked = `$${formatLargeNumber((statistics.tvl || 0), false).toString()}`
 
     return <>
         <div className='relative grid grid-cols-2 grid-rows-3 gap-4 h-min hollow-shadow w-full '>
@@ -89,9 +89,9 @@ function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStat
                            isLoading={isStatisticsLoading}
                            title="Total Issued"
                            classAttributes="col-span-1 row-span-1"/>
-            <StatisticsBox value={totalVolume}
+            <StatisticsBox value={totalValueLocked}
                            isLoading={isStatisticsLoading}
-                           title="Total Volume"
+                           title="Total Value Locked(TVL)"
                            classAttributes='col-span-1 row-span-2 pr-16'/>
             <StatisticsBox value={formatLargeNumber(statistics.purchased)}
                            isLoading={isStatisticsLoading}
