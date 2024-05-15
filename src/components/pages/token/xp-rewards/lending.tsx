@@ -18,11 +18,14 @@ export default function XpRewardsLending({setScreen}: Readonly<{ setScreen: any 
         const signature = await submitSignature();
         if (!signature || !address) return;
 
-        const params = {
+        const params: any = {
             address,
             signature,
             message,
-            ref: query.ref
+        }
+
+        if (query.ref) {
+            params.ref = query.ref
         }
 
         const response = await XpAPI.activateAccount(params);
