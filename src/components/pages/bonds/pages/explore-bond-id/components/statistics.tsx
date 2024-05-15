@@ -24,7 +24,7 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
     const payoutBalanceClean = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(contractInfo.payout.decimals))).toNumber();
 
     return (
-        <div className='grid grid-cols-4 gap-4 w-full'>
+        <div className='grid grid-cols-4 sm:gap-4 gap-2 w-full'>
             <Container title='Bond Score'
                        value={isTotallyRedeemed ? soldOutTitle : `${format(score, 2)}`}
                        info={STATISTICS_DEFINITION.BondScore}

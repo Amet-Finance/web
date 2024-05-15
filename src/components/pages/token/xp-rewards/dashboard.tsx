@@ -71,7 +71,7 @@ export default function XpRewardsDashboard() {
 
     function connectDiscord() {
 
-        const clientId = "1232655689386692689"
+        const clientId = "1232655689386692689" // Amet Finance Client Id
 
         const redirectUri = 'https://api.amet.finance/validate/discord'
 

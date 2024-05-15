@@ -37,7 +37,7 @@ export default function Bonds() {
         return () => clearInterval(interval);
     }, []);
 
-    return <>
+    return (
         <div className='flex flex-col w-full'>
             <GeneralContainer className='flex flex-col gap-20' isPadding>
                 <Headline statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
@@ -46,11 +46,11 @@ export default function Bonds() {
             </GeneralContainer>
             <SectionEnd/>
         </div>
-    </>
+    )
 }
 
 function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
-    return <>
+    return (
         <div
             className='relative flex lg:flex-row flex-col lg:items-end items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
             <div
@@ -75,7 +75,7 @@ function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatis
             </div>
             <Statistics statistics={statistics} isStatisticsLoading={isStatisticsLoading}/>
         </div>
-    </>
+    )
 }
 
 function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
@@ -83,8 +83,8 @@ function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStat
 
     const totalValueLocked = `$${formatLargeNumber((statistics.tvl || 0), false).toString()}`
 
-    return <>
-        <div className='relative grid grid-cols-2 grid-rows-3 gap-4 h-min hollow-shadow w-full '>
+    return (
+        <div className='relative grid grid-cols-2 grid-rows-3 sm:gap-4 gap-2 h-min hollow-shadow w-full '>
             <StatisticsBox value={formatLargeNumber(statistics.issued)}
                            isLoading={isStatisticsLoading}
                            title="Total Issued"
@@ -103,27 +103,28 @@ function Statistics({statistics, isStatisticsLoading}: { statistics: any, isStat
                            classAttributes='col-span-1 row-span-1 pr-16'/>
             <div className="absolute w-[626px] h-[489px] bg-neutral-800 bg-opacity-75 rounded-full blur-[500px] "/>
         </div>
-    </>
+    )
 }
 
-function StatisticsBox({classAttributes, value, title, isLoading}: {
+function StatisticsBox({classAttributes, value, title, isLoading}: Readonly<{
     value: string | number,
     title: string,
     classAttributes?: string
     isLoading: boolean
-}) {
-    return <>
+}>) {
+    return (
         <div
-            className={"group flex flex-col justify-end p-8 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white overflow-x-auto" + classAttributes}>
+            className={"group flex flex-col justify-end sm:p-8 p-6 w-full gap-2 h-full rounded-2xl border border-zinc-900 z-10 cursor-pointer hover:scale-105 hover:bg-white overflow-x-auto " + classAttributes}>
             <ToggleBetweenChildren isOpen={isLoading}>
                 <Loading/>
                 <div className='flex flex-col gap-2'>
                     <span className='group-hover:text-black md:text-3xl text-xl font-bold'>{value}</span>
-                    <span className='group-hover:text-black text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
+                    <span
+                        className='group-hover:text-black text-neutral-500 font-medium md:text-sm text-xs'>{title}</span>
                 </div>
             </ToggleBetweenChildren>
         </div>
-    </>
+    )
 }
 
 

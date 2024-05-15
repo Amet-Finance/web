@@ -28,7 +28,8 @@ function InfoBox({children, info, isRight, className, parentClassName}: Readonly
                     </svg>
                 </Link>
                 <ConditionalRenderer isOpen={Boolean(info?.text)}>
-                    <div className={`${className} group-hover:flex hidden absolute top-[130%] bg-neutral-700 border border-neutral-600 rounded-md px-3 p-1 z-50 h-max ${isRight ? "right-0 " : "left-0"}`}>
+                    <div
+                        className={`${className} group-hover:flex hidden absolute top-[130%] bg-neutral-700 border border-neutral-600 rounded-md px-3 p-1 z-50 h-max ${isRight ? "right-0 " : "left-0"}`}>
                         <span className='text-start text-xs'>{info?.text}</span>
                     </div>
                 </ConditionalRenderer>
@@ -37,11 +38,21 @@ function InfoBox({children, info, isRight, className, parentClassName}: Readonly
     )
 }
 
-function InfoDescription({children, text}: { children: ReactNode, text: string }) {
+function InfoDescription({children, text, className, isRight = false, width = 1000}: Readonly<{
+    children: ReactNode,
+    text: string,
+    className?: string,
+    isRight?: boolean,
+    width?: number
+}>) {
+
+
+
     return (
-        <div className='group/description relative'>
+        <div className={`group/description relative ${className}`}>
             {children}
-            <div className='group-hover/description:flex hidden absolute top-full right-0 bg-neutral-900 p-2 my-2 rounded-md w-[1000%] z-20'>
+            <div
+                className={`group-hover/description:flex hidden absolute top-full ${isRight ? "left-0" : "right-0"} bg-neutral-900 p-2 my-2 rounded-md w-[${width}%] z-20`}>
                 <span className='text-neutral-400 text-xs text-start'>{text}</span>
             </div>
         </div>
