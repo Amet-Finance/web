@@ -19,7 +19,7 @@ async function requestAPI({url, params, headers, showError}: {
 async function postAPI({url, body, params, headers}: { url: string, body: any, params?: any, headers?: any }) {
     try {
         const paramsString = new URLSearchParams(params);
-        const response = await fetch(`${url}${paramsString.toString()}`, {
+        const response = await fetch(`${url}?${paramsString.toString()}`, {
             method: "POST",
             headers: headers,
             body: JSON.stringify(body)
