@@ -312,6 +312,20 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
+            <ConditionalContainer isOpen>
+                <Action
+                    title="Video Tutorial Creation"
+                    description="Create video tutorials about Amet Finance to help others understand and use our platform."
+                    value="Up To 1000"
+                    type={<SocialType/>}
+                    result={(
+                        <Link href={URLS.CommunityContribution} target="_blank">
+                            <ActionButton>Submit</ActionButton>
+                        </Link>
+
+                    )}
+                />
+            </ConditionalContainer>
         </GeneralContainer>
     )
 }
@@ -382,10 +396,10 @@ function BasicType({additionalText}: { additionalText?: string }) {
     )
 }
 
-function SocialType() {
+function SocialType({isHot = false}) {
     return (
         <div className='group relative'>
-            <SocialSVG size={24}/>
+            <SocialSVG size={24} color={isHot ? "#f43f5e" : "#fff"}/>
             <div className='group-hover:flex hidden absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
                 <span className='text-neutral-400 text-xs text-start'>This is a social task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
             </div>
@@ -397,7 +411,8 @@ function BondType({isHot = false}) {
     return (
         <div className={`group relative`}>
             <ActionSVG size={24} color={isHot ? "#f43f5e" : "#fff"}/>
-            <div className='group-hover:flex hidden gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
+            <div
+                className='group-hover:flex hidden gap-1 absolute top-full left-0 bg-neutral-950 p-2 my-2 rounded-md w-64'>
                 <span className='text-neutral-400 text-xs text-start'>This is an Invest & Prosper task. Points are updated every 24 hours. If you do not see your points immediately, do not worry — they will be credited within a day.</span>
             </div>
         </div>
