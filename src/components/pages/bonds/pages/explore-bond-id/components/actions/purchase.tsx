@@ -33,11 +33,13 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const TitleTypes = {
         Purchase: "Purchase",
+        PurchaseToken: `Get ${purchase.symbol} to Purchase`,
         Approve: "Approve",
         NotEnough: "Not Enough Bonds to Purchase",
         SoldOut: "Sold Out"
     }
 
+    const [balance, setBalance] = useState<number>(0);
     const [allowance, setAllowance] = useState("0")
     const [amount, setAmount] = useState(0);
     const [refresh, setRefresh] = useState(0);
@@ -47,8 +49,11 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const required = BigNumber(amount).times(BigNumber(purchase.amount))
     const needed = currentAllowance.minus(required);
 
+    const totalPrice = purchase.amountClean * amount;
+
     const isApprove = needed.isLessThan(BigNumber(0))
     const isSoldOut = totalBonds === purchased;
+    const isSwapToken = totalPrice > balance
     const openLowPayoutModal = securedPercentage < 10 && !lowPayoutModalOpened
 
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
@@ -56,12 +61,14 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     let title = TitleTypes.Purchase
     if (isApprove) title = TitleTypes.Approve
+    if (isSwapToken) title = TitleTypes.PurchaseToken
     if (purchasingMoreThenAllowed) title = TitleTypes.NotEnough
     if (isSoldOut) title = TitleTypes.SoldOut
 
-    const totalPrice = purchase.amountClean * amount;
 
-    const initialReferrer = Boolean(router.query.ref) ? `${router.query.ref}` : undefined
+    const swapUrl = `https://swap.defillama.com/?chain=base&from=0x0000000000000000000000000000000000000000&to=${purchase.contractAddress}&utm_source=amet.finance`
+
+    const initialReferrer = router.query.ref ? `${router.query.ref}` : undefined
     const referrer = initialReferrer?.toLowerCase() !== address?.toLowerCase() ? initialReferrer : undefined;
     const transactionType = isApprove ? TxTypes.ApproveToken : TxTypes.PurchaseBonds;
     const config = isApprove ?
@@ -77,6 +84,19 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                 .then(response => setAllowance(response.toString()))
         }
     }, [amount, chain, address, contractAddress, purchase.contractAddress, refresh]);
+
+    useEffect(() => {
+        const updater = () => {
+            if (chain && address) {
+                Erc20Controller.getTokenBalanceNormalized(chainId, purchase.contractAddress, address, purchase.decimals)
+                    .then(response => setBalance(response.normalizedBalance))
+            }
+        }
+
+        updater();
+        const interval = setInterval(() => updater, 5000);
+        return () => clearInterval(interval)
+    }, [chain, address, chainId, purchase.contractAddress, purchase.decimals]);
 
     function onChange(event: any) {
         const {value} = event.target;
@@ -94,6 +114,11 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     async function submit() {
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain");
+
+        if (swapUrl) {
+            return window.open(swapUrl, '_ blank');
+        }
+
         if (openLowPayoutModal) {
             ModalStore.openModal(ModalTypes.LowPayout)
             return setLowPayoutModalOpened(true);
