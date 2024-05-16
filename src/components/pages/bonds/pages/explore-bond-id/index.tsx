@@ -15,9 +15,6 @@ import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/co
 import {GeneralContainer} from "@/components/utils/container";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
 
-// todo add "Get purchase token" button on purchase screen
-// todo somehow show the USD equivalent for purchase and payout
-
 export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
     const {
