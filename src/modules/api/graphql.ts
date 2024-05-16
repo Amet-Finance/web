@@ -15,6 +15,10 @@ import {LogTypes} from "@/modules/web3/constants";
 import {StringKeyedObject} from "@/components/utils/types";
 import {base} from "wagmi/chains";
 
+const ChainStartBlock: any = {
+    [base.id]: 14022551
+}
+
 function getApi(chainId: number) {
     const API: StringKeyedObject<string> = {
         [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/api`
@@ -69,12 +73,14 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     const purchaseExists = Boolean(params.purchaseToken);
     const payoutExists = Boolean(params.payoutToken);
 
-    const showWhere = payoutExists || purchaseExists;
-    const purchaseWhere = purchaseExists ? `purchaseToken: "${params.purchaseToken?.toLowerCase()}"` : "";
-    const payoutWhere = payoutExists ? `payoutToken: "${params.payoutToken?.toLowerCase()}"` : "";
+    const whereObject: any = {"issuanceBlock_gt": ChainStartBlock[chainId]}
+
+    if (purchaseExists) whereObject.purchaseToken = params.purchaseToken?.toLowerCase();
+    if (payoutExists) whereObject.payoutToken = params.payoutToken?.toLowerCase();
 
 
-    const whereText = `where: {${purchaseWhere}${purchaseExists && payoutExists ? "," : ""}${payoutWhere}}`
+    const whereQuery = Object.keys(whereObject).reduce((acc, key, index) => acc += `${key}: "${whereObject[key]}",`, "")
+
     const query = `
                     {
                       ${META_DETAILS}
@@ -83,12 +89,13 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
                       skip: ${params.skip ?? 0}
                       orderBy: issuanceDate
                       orderDirection: desc
-                      ${showWhere ? whereText : ""}
+                      where: {${whereQuery}}
                       ) {
                         ${BOND_DETAILS_QUERY}
                       }
                     }
         `
+
     const response = await indexerRequest(chainId, query)
 
     const bonds: any = response.bonds;
