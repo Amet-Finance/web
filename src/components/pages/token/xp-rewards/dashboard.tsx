@@ -44,8 +44,9 @@ export default function XpRewardsDashboard() {
     const shareUrl = `https://x.com/intent/tweet?text=${linkText}&url=${referralUrl}&hashtags=${hashtags}`
 
     const showTwitter = !settings.hideCompleted || !twitter?.id;
-    const showDiscord = !settings.hideCompleted || !discord?.id;
-    const showEmail = !settings.hideCompleted || !Boolean(email);
+    const showAmetDiscord = !settings.hideCompleted || !discord?.ametConnected;
+    const showHuntDiscord = !settings.hideCompleted || !discord?.huntConnected;
+    const showEmail = !settings.hideCompleted || !email;
 
 
     function updateSettings(event: any) {
@@ -195,13 +196,13 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
-            <ConditionalContainer isOpen={showDiscord}>
+            <ConditionalContainer isOpen={showAmetDiscord}>
                 <Action
                     title="Join Amet's Discord"
                     description="Join our Discord community to engage with other users and access exclusive content."
                     value="50"
                     type={<SocialType/>}
-                    isFinished={Boolean(discord)}
+                    isFinished={Boolean(discord?.ametConnected)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
@@ -215,13 +216,13 @@ export default function XpRewardsDashboard() {
                     )}
                 />
             </ConditionalContainer>
-            <ConditionalContainer isOpen={showDiscord}>
+            <ConditionalContainer isOpen={showHuntDiscord}>
                 <Action
                     title="Join Hunt Town Discord"
                     description="Connect with fellow Web3 builders, share resources, and collaborate on exciting projects."
                     value="50"
                     type={<SocialType/>}
-                    isFinished={Boolean(discord)}
+                    isFinished={Boolean(discord?.huntConnected)}
                     result={(
                         <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>

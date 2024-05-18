@@ -13,7 +13,9 @@ type AccountState = {
     }
     discord?: {
         id: string,
-        username: string
+        username: string,
+        ametConnected?: boolean
+        huntConnected?: boolean
     }
     email?: string
 }
