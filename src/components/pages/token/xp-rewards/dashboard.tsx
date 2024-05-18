@@ -204,7 +204,7 @@ export default function XpRewardsDashboard() {
                     type={<SocialType/>}
                     isFinished={Boolean(discord?.ametConnected)}
                     result={(
-                        <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
+                        <ToggleBetweenChildren isOpen={Boolean(discord?.ametConnected)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
                                 <span>Connected:</span>
                                 <Link href={`https://discord.com/users/${discord?.id}`} target="_blank">
@@ -224,7 +224,7 @@ export default function XpRewardsDashboard() {
                     type={<SocialType/>}
                     isFinished={Boolean(discord?.huntConnected)}
                     result={(
-                        <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
+                        <ToggleBetweenChildren isOpen={Boolean(discord?.huntConnected)}>
                             <div className='flex items-center gap-2 text-sm text-neutral-400'>
                                 <span>Connected:</span>
                                 <Link href={`https://discord.com/users/${discord?.id}`} target="_blank">
