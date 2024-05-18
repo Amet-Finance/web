@@ -69,11 +69,13 @@ export default function XpRewardsDashboard() {
         window.open(url, "TwitterAuthPopup", `popup=true,width=${width},height=${height},left=${left},top=${top}`)
     }
 
-    function connectDiscord() {
+    function connectDiscord(type: "amet" | "hunt") {
 
         const clientId = "1232655689386692689" // Amet Finance Client Id
 
         const redirectUri = 'https://api.amet.finance/validate/discord'
+
+        const state = `${type}_${address}`
 
         const width = 600, height = 800;
         const left = (window.innerWidth - width) / 2;
@@ -81,7 +83,7 @@ export default function XpRewardsDashboard() {
 
         if (!isConnected) return open();
 
-        const url = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify+guilds.join+guilds+guilds.members.read&state=${address}&prompt=consent&integration_type=0`
+        const url = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=identify+guilds.join+guilds+guilds.members.read&state=${state}&prompt=consent&integration_type=0`
         window.open(url, "DiscordAuthPopup", `popup=true,width=${width},height=${height},left=${left},top=${top}`)
     }
 
@@ -208,7 +210,27 @@ export default function XpRewardsDashboard() {
                                     <span className='text-white underline underline-offset-4'>{discord?.username}</span>
                                 </Link>
                             </div>
-                            <ActionButton onClick={connectDiscord}>Connect</ActionButton>
+                            <ActionButton onClick={() => connectDiscord('amet')}>Connect</ActionButton>
+                        </ToggleBetweenChildren>
+                    )}
+                />
+            </ConditionalContainer>
+            <ConditionalContainer isOpen={showDiscord}>
+                <Action
+                    title="Join Hunt Town Discord"
+                    description="Connect with fellow Web3 builders, share resources, and collaborate on exciting projects."
+                    value="50"
+                    type={<SocialType/>}
+                    isFinished={Boolean(discord)}
+                    result={(
+                        <ToggleBetweenChildren isOpen={Boolean(discord?.id)}>
+                            <div className='flex items-center gap-2 text-sm text-neutral-400'>
+                                <span>Connected:</span>
+                                <Link href={`https://discord.com/users/${discord?.id}`} target="_blank">
+                                    <span className='text-white underline underline-offset-4'>{discord?.username}</span>
+                                </Link>
+                            </div>
+                            <ActionButton onClick={() => connectDiscord('hunt')}>Connect</ActionButton>
                         </ToggleBetweenChildren>
                     )}
                 />
