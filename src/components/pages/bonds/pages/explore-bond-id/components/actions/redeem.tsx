@@ -98,10 +98,10 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     async function submit() {
         try {
+            if (!address) return open();
+
             if (blockClick) return;
             if (!chain) return toast.error("Please select correct chain")
-
-            if (!address) return open();
 
             const transaction = await submitTransaction();
             if (transaction) {

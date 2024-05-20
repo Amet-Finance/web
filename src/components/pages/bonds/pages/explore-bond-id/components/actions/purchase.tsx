@@ -62,6 +62,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const blockClick = purchasingMoreThenAllowed || amount <= 0
 
     let title = TitleTypes.Purchase
+
     if (isApprove) title = TitleTypes.Approve
     if (isSwapToken) title = TitleTypes.PurchaseToken
     if (purchasingMoreThenAllowed) title = TitleTypes.NotEnough
@@ -115,12 +116,12 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     }
 
     async function submit() {
-        if (blockClick) return;
-        if (!chain) return toast.error("Please select correct chain");
-
         if (!address) {
             return open();
         }
+
+        if (blockClick) return;
+        if (!chain) return toast.error("Please select correct chain");
 
         if (isSwapToken) {
             return window.open(swapUrl, '_ blank');
@@ -130,7 +131,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
             ModalStore.openModal(ModalTypes.LowPayout)
             return setLowPayoutModalOpened(true);
         }
-
+        
         const transaction = await submitTransaction();
         if (transaction) {
             if (!hasBalance) {
