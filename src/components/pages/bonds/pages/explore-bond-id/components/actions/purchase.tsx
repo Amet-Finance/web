@@ -16,7 +16,7 @@ import {DefaultButton} from "@/components/utils/buttons";
 import {Erc20Controller} from "amet-utils";
 import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {useBalances} from "@/modules/utils/address";
+import {useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
@@ -24,6 +24,7 @@ import CalculatorController from "@/components/pages/bonds/utils/calculator";
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {contractAddress, chainId, purchase, totalBonds, purchased, payout} = contractInfo;
 
+    const {open} = useConnectWallet();
     const {address} = useAccount();
     const {hasBalance} = useBalances({contractAddress})
     const chain = getChain(chainId);
@@ -36,7 +37,8 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
         PurchaseToken: `Get ${purchase.symbol} to Purchase`,
         Approve: "Approve",
         NotEnough: "Not Enough Bonds to Purchase",
-        SoldOut: "Sold Out"
+        SoldOut: "Sold Out",
+        Connect: "Connect"
     }
 
     const [balance, setBalance] = useState<number>(0);
@@ -53,17 +55,19 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const isApprove = needed.isLessThan(BigNumber(0))
     const isSoldOut = totalBonds === purchased;
-    const isSwapToken = totalPrice > balance && Boolean(address);
+
+    const isSwapToken = totalPrice > balance;
     const openLowPayoutModal = securedPercentage < 10 && !lowPayoutModalOpened
 
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
-    let blockClick = purchasingMoreThenAllowed || amount <= 0
+    let blockClick = purchasingMoreThenAllowed || amount <= 0 || !address
 
     let title = TitleTypes.Purchase
     if (isApprove) title = TitleTypes.Approve
     if (isSwapToken) title = TitleTypes.PurchaseToken
     if (purchasingMoreThenAllowed) title = TitleTypes.NotEnough
     if (isSoldOut) title = TitleTypes.SoldOut
+    if (!address) title = TitleTypes.Connect
 
 
     const swapUrl = `https://swap.defillama.com/?chain=base&from=0x0000000000000000000000000000000000000000&to=${purchase.contractAddress}&utm_source=amet.finance`
@@ -114,6 +118,10 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     async function submit() {
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain");
+
+        if (!address) {
+            return open();
+        }
 
         if (isSwapToken) {
             return window.open(swapUrl, '_ blank');
