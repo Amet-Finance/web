@@ -16,7 +16,7 @@ import {DefaultButton} from "@/components/utils/buttons";
 import {Erc20Controller} from "amet-utils";
 import ModalStore from "@/store/redux/modal";
 import {ModalTypes} from "@/store/redux/modal/constants";
-import {useBalances, useConnectWallet} from "@/modules/utils/address";
+import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 import CalculatorController from "@/components/pages/bonds/utils/calculator";
@@ -24,8 +24,7 @@ import CalculatorController from "@/components/pages/bonds/utils/calculator";
 export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
     const {contractAddress, chainId, purchase, totalBonds, purchased, payout} = contractInfo;
 
-    const {open} = useConnectWallet();
-    const {address} = useAccount();
+    const {address, open} = useAccountExtended();
     const {hasBalance} = useBalances({contractAddress})
     const chain = getChain(chainId);
     const router = useRouter();

@@ -12,7 +12,7 @@ import {ConditionalRenderer} from "@/components/utils/container";
 import XmarkSVG from "../../../../../../../../public/svg/utils/xmark";
 import {DefaultButton} from "@/components/utils/buttons";
 import {ContractCoreDetails} from "@/modules/api/contract-type";
-import {useBalances} from "@/modules/utils/address";
+import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
 import {useAccount} from "wagmi";
@@ -25,7 +25,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const {contractAddress, chainId, payout} = contractInfo;
 
-    const {address} = useAccount();
+    const {address, open} = useAccountExtended();
     const chain = getChain(chainId);
     const {contractBalances} = useBalances({contractAddress})
 
@@ -44,12 +44,13 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const redeemingMoreThenAvailable = redemptionCount > totalQuantity
     const notMature = redemptionCount > matureQuantity
 
-
     const blockClick = redeemingMoreThenAvailable || notEnoughLiquidity && !isCapitulation || notMature && !isCapitulation || redemptionCount <= 0;
-    let title = "Redeem"
-    if (notEnoughLiquidity && !isCapitulation) title = "Not Enough Liquidity"
-    if (redeemingMoreThenAvailable) title = "Max Bonds Reached"
-    if (notMature && !isCapitulation) title = "Not Mature"
+
+    let title = "Redeem";
+    if (notEnoughLiquidity && !isCapitulation) title = "Not Enough Liquidity";
+    if (redeemingMoreThenAvailable) title = "Max Bonds Reached";
+    if (notMature && !isCapitulation) title = "Not Mature";
+    if (!address) title = "Connect";
 
 
     const config = {
@@ -99,6 +100,8 @@ export default function RedeemTab({contractInfo}: Readonly<{
         try {
             if (blockClick) return;
             if (!chain) return toast.error("Please select correct chain")
+
+            if (!address) return open();
 
             const transaction = await submitTransaction();
             if (transaction) {
