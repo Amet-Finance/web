@@ -53,7 +53,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
 
     const isApprove = needed.isLessThan(BigNumber(0))
     const isSoldOut = totalBonds === purchased;
-    const isSwapToken = totalPrice > balance
+    const isSwapToken = totalPrice > balance && Boolean(address);
     const openLowPayoutModal = securedPercentage < 10 && !lowPayoutModalOpened
 
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
