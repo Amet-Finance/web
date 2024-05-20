@@ -60,7 +60,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
     const openLowPayoutModal = securedPercentage < 10 && !lowPayoutModalOpened
 
     const purchasingMoreThenAllowed = purchased + amount > totalBonds
-    let blockClick = purchasingMoreThenAllowed || amount <= 0 || !address
+    const blockClick = purchasingMoreThenAllowed || amount <= 0
 
     let title = TitleTypes.Purchase
     if (isApprove) title = TitleTypes.Approve
