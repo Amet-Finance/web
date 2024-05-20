@@ -115,7 +115,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
         if (blockClick) return;
         if (!chain) return toast.error("Please select correct chain");
 
-        if (swapUrl) {
+        if (isSwapToken) {
             return window.open(swapUrl, '_ blank');
         }
 
