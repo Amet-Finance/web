@@ -15,9 +15,6 @@ import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {useAccount} from "wagmi";
-
-// todo add capitulation as well
 
 export default function RedeemTab({contractInfo}: Readonly<{
     contractInfo: ContractCoreDetails
@@ -145,9 +142,9 @@ export default function RedeemTab({contractInfo}: Readonly<{
                 <Agreement actionType={"redeeming"}/>
                 <div className='grid grid-cols-12 gap-1'>
                     <div className='col-span-8'>
-                        <DefaultButton onClick={submit} disabled={blockClick} classType='1'>
+                        <DefaultButton onClick={submit} disabled={blockClick && Boolean(address)} classType='1'>
                             <div className='flex items-center gap-2'>
-                                <ConditionalRenderer isOpen={isLoading}>
+                                <ConditionalRenderer isOpen={isLoading && !isCapitulation}>
                                     <Loading percent={75} color="#000"/>
                                 </ConditionalRenderer>
                                 {title}
@@ -157,7 +154,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
                     <div className='col-span-4 flex'>
                         <DefaultButton onClick={capitulationRedeem} classType={isCapitulation ? "3" : "4"}>
                             <div className='flex items-center gap-2 text-xs'>
-                                <ConditionalRenderer isOpen={isLoading}>
+                                <ConditionalRenderer isOpen={isLoading && isCapitulation}>
                                     <Loading percent={75} color="#000"/>
                                 </ConditionalRenderer>
                                 Capitulation

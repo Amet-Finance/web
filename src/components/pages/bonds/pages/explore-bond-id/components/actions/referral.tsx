@@ -18,10 +18,6 @@ import {ToggleBetweenChildren} from "@/components/utils/container";
 import {FixedFlexIssuerController, FixedFlexVaultController, utils, VaultFeeDetails,} from "amet-utils";
 import {BigNumber} from "ethers";
 
-// todo here also include a few cases
-// 1. if there's no reward give the referral link so the person can refer
-// 4. After claiming ask him to share in Twitter with a modal or something similar content
-
 export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     const {contractAddress, chainId, purchase} = contractInfo;
@@ -84,7 +80,6 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
             symbol: purchase.symbol
         });
     }
-
 
     return (
         <div className='flex flex-col gap-4 justify-end h-full w-full'>

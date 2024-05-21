@@ -238,7 +238,6 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
 
 function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
-    // todo also show pending owner if there's any
     const {contractAddress, chainId} = contractInfo;
 
     const {isOpen, openOrClose} = useShow()

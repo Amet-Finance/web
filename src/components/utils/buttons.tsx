@@ -52,15 +52,18 @@ function DefaultButton({children, disabled, className, additionalClassName, clas
 }>) {
 
     const ClassTypes: StringKeyedObject<string> = {
-        '1': "flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 cursor-pointer hover:bg-neutral-300 text-sm px-4 w-full",
+        '1': "flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 hover:bg-neutral-300 text-sm px-4 w-full",
         '2': "bg-white w-min h-full px-4 rounded-md hover:bg-neutral-300",
-        '3': "flex items-center justify-center gap-2 bg-red-500 rounded-md py-1 cursor-pointer w-full hover:bg-red-600",
-        '4': "flex items-center justify-center gap-2 bg-neutral-600 rounded-md py-1 cursor-pointer w-full hover:bg-neutral-700",
+        '3': "flex items-center justify-center gap-2 bg-red-500 rounded-md py-1 w-full hover:bg-red-600",
+        '4': "flex items-center justify-center gap-2 bg-neutral-600 rounded-md py-1 w-full hover:bg-neutral-700",
     }
+
+    const generatedClass = className || ClassTypes[classType] + " " + additionalClassName || ""
+    const finalClassName = generatedClass + ` ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`
 
     return (
         <button disabled={disabled} onClick={onClick}
-                className={className || ClassTypes[classType] + " " + additionalClassName || ""}>
+                className={finalClassName}>
             {children}
         </button>
     )

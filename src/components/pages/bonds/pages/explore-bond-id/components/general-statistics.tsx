@@ -5,8 +5,10 @@ import {useAccount} from "wagmi";
 import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, registerables} from "chart.js";
-import {formatLargeNumber} from "@/modules/utils/numbers";
+import {format, formatLargeNumber} from "@/modules/utils/numbers";
 import {LogTypes} from "@/modules/web3/constants";
+import {StringKeyedObject} from "@/components/utils/types";
+import {constants} from "amet-utils";
 
 const StatisticsTypes = {
     Purchase: "Purchase",
@@ -33,6 +35,7 @@ function GraphsContainer({contractInfo, logs}: Readonly<{
     const purchased: ActionLogFormat[] = []
     const redeemed: ActionLogFormat[] = [];
 
+
     logs.forEach(log => {
         if (log.type === LogTypes.Purchase) {
             totalPurchased += (log.count * purchase.amountClean);
@@ -46,15 +49,18 @@ function GraphsContainer({contractInfo, logs}: Readonly<{
 
     return (
         <div className='grid grid-cols-2 gap-4'>
-            <Container type={StatisticsTypes.Purchase} total={totalPurchased} data={purchased} asset={purchase}/>
-            <Container type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed} asset={payout}/>
+            <Container contractInfo={contractInfo} type={StatisticsTypes.Purchase} total={totalPurchased}
+                       data={purchased} asset={purchase}/>
+            <Container contractInfo={contractInfo} type={StatisticsTypes.Redeem} total={totalRedeemed} data={redeemed}
+                       asset={payout}/>
         </div>
     )
 }
 
-function Container({type, total, data, asset}: Readonly<{
+function Container({type, total, contractInfo, data, asset}: Readonly<{
     type: string,
     total: number,
+    contractInfo: ContractCoreDetails,
     data: ActionLogFormat[],
     asset: FinancialAttributeExtended
 }>) {
@@ -66,7 +72,28 @@ function Container({type, total, data, asset}: Readonly<{
     const totalInUsd = (asset.priceUsd ?? 0) * total
     const title = Boolean(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
 
-    //todo fix this today with fixed 0%
+    const dayIntoBlocks = (24 * 60 * 60) / constants.CHAIN_BLOCK_TIMES[contractInfo.chainId]
+
+    const rangeBlock = contractInfo.block - dayIntoBlocks;
+    const minBlock = contractInfo.block - dayIntoBlocks;
+
+
+    const lastAnalytics = data.reduce((acc, item) => {
+        if (item.block > minBlock) {
+            if (item.block > rangeBlock) {
+                acc.current += item.count * (asset.priceUsd ?? 1);
+            } else {
+                acc.past += item.count * (asset.priceUsd ?? 1);
+            }
+        }
+
+        return acc;
+    }, {current: 0, past: 0} as { current: number, past: number })
+
+    const differencePure = ((lastAnalytics.current - lastAnalytics.past) * 100) / lastAnalytics.past || 0;
+    const difference = differencePure == Infinity ? 100 : differencePure
+    const isDifferencePositive = difference >= 0;
+
     return (
         <div
             className='md:col-span-1 col-span-2 flex flex-col gap-4 w-full p-8 border border-neutral-900 rounded-3xl'>
@@ -75,9 +102,10 @@ function Container({type, total, data, asset}: Readonly<{
                 <div className='flex flex-col items-end gap-1'>
                     <span className='text-2xl font-bold'>{title}</span>
                     <p className='text-neutral-500 text-sm'>
-                        Today
+                        Last Day
                         {" "}
-                        <span className='text-green-500'>(+0%)</span>
+                        <span
+                            className={isDifferencePositive ? "text-green-500" : "text-red-500"}>({isDifferencePositive ? "+" : ""}{format(difference, 2)}%)</span>
                     </p>
                 </div>
             </div>

@@ -21,7 +21,6 @@ function score(contract: ContractCoreDetails) {
 function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
     const {payout, payoutBalance, totalBonds, redeemed,} = contract;
 
-    // todo do something if payout balance is missing
     const payoutBalanceClean = BigNumber(payoutBalance.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
     const notRedeemed = BigNumber(totalBonds - redeemed).times(payout.amountClean).toNumber();
     if (!notRedeemed) return 0; // this means all the bonds were purchased and redeemed

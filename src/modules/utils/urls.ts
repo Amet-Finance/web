@@ -8,10 +8,10 @@ const URLS = {
     StatusPage: "https://status.amet.finance",
     Storage: "https://storage.amet.finance",
 
-    FAQ_INVESTOR: "https://docs.amet.finance/v2/", // todo update investor FAQ
+    FAQ_INVESTOR: "https://docs.amet.finance/v2/fixed-flex/for-investors",
     FAQ_IOB: "https://docs.amet.finance/v2/fixed-flex/for-issuers/issuing-bonds-on-amet-finance",
 
-    Docs_Trade_Bonds: "https://docs.amet.finance/v2/", // todo update this in investor section
+    Docs_Trade_Bonds: "https://docs.amet.finance/v2/fixed-flex/for-investors/faq#can-i-sell-my-bonds-before-maturity",
 
     BrandAssets: "https://docs.amet.finance/v2/references/brand-assets",
 

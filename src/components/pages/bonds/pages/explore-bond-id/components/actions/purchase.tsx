@@ -131,7 +131,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
             ModalStore.openModal(ModalTypes.LowPayout)
             return setLowPayoutModalOpened(true);
         }
-        
+
         const transaction = await submitTransaction();
         if (transaction) {
             if (!hasBalance) {
@@ -177,7 +177,7 @@ export default function PurchaseTab({contractInfo}: Readonly<{ contractInfo: Con
                         <Agreement actionType={"purchasing"}/>
 
 
-                        <DefaultButton onClick={submit} disabled={blockClick} classType="1">
+                        <DefaultButton onClick={submit} disabled={blockClick && Boolean(address)} classType="1">
                             <div className='flex items-center gap-2'>
                                 <ConditionalRenderer isOpen={isLoading}>
                                     <Loading percent={75} color="#000"/>

@@ -25,7 +25,7 @@ export default function HeadlineContainer({contractInfo, refreshHandler, refresh
         return () => clearInterval(interval)
     }, [refreshDate]);
 
-    // todo fix this, fetch from blockchain
+
     return (
         <div className='flex justify-between'>
             <button className='flex items-center gap-2 px-4 py-1.5 rounded-md cursor-pointer bg-green-500 text-white hover:scale-105'

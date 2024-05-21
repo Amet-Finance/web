@@ -54,8 +54,6 @@ function useExtendedFetch({bondDetailedTmp, queryParams}: Readonly<ExploreBondId
     const purchase = useFinancialAttributeExtended(bondDetailed?.contractInfo?.purchase || {});
     const payout = useFinancialAttributeExtended(bondDetailed?.contractInfo?.payout || {});
 
-    // todo here we need to see what is the vault address and what are fees, fetch that and add to the bondDetailed
-
     useEffect(() => {
         const updater = () => {
             setRefreshLoader(true);
