@@ -28,8 +28,13 @@ const LogTypes = {
     Transfer: "Transfer"
 }
 
+const BondContractTypes = {
+    IBO: "IBO"
+}
+
 export {
     TxTypes,
     TransactionMessages,
-    LogTypes
+    LogTypes,
+    BondContractTypes
 }

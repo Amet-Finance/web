@@ -14,6 +14,7 @@ import {Balances, ContractBalance} from "@/modules/api/type";
 import {LogTypes} from "@/modules/web3/constants";
 import {StringKeyedObject} from "@/components/utils/types";
 import {base} from "wagmi/chains";
+import {priorityBonds} from "@/modules/web3/featured";
 
 const ChainStartBlock: any = {
     [base.id]: 14022551
@@ -101,7 +102,17 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
     const bonds: any = response.bonds;
     const block = response._meta.block.number;
 
-    return bonds.map((item: any) => transformCoreDetails(item, chainId, block)) as ContractCoreDetails[]
+
+    const contractsTransformed: ContractCoreDetails[] = bonds.map((item: any) => transformCoreDetails(item, chainId, block))
+    const priorityBondsByChain = priorityBonds[chainId];
+
+    contractsTransformed.sort((a, b) => {
+        const aPriority = priorityBondsByChain[a.contractAddress.toUpperCase()];
+        const bPriority = priorityBondsByChain[b.contractAddress.toLowerCase()]
+        return (bPriority?.score || 0) - (aPriority?.score || 0)
+    });
+
+    return contractsTransformed;
 }
 
 async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormatAPI | null> {
