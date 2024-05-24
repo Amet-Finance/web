@@ -28,11 +28,15 @@ export default function Headers({id, meta}: Readonly<{ id: string, meta?: MetaIn
             <meta name="author" content="Amet Finance"/>
 
             <meta property="og:title" content={title}/>
+            <meta property="og:type" content="website"/>
             <meta property="og:description" content={description}/>
             <meta property="og:image" content={ogImg}/>
             <meta property="og:url" content={URLS.BaseUrlHttps}/>
 
+            <meta name="robots" content="index, follow"/>
+
             <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="twitter:site" content="@amet_finance"/>
             <meta name="twitter:title" content={title}/>
             <meta name="twitter:description" content={description}/>
             <meta name="twitter:image" content={ogImg}/>
