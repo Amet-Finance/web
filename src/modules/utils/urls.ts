@@ -1,7 +1,7 @@
 const URLS = {
     BaseUrl: "amet.finance",
     BaseUrlHttps: "https://amet.finance",
-    OgImage: "https://amet.finance/meta/amet-finance-og-exp.jpg", // "https://amet.finance/meta/og-image.jpg",
+    OgImage: "https://amet.finance/meta/amet-finance-og.jpg",
     TermsOfService: "https://docs.amet.finance/v2/references/terms-of-service",
     PrivacyPolicy: 'https://docs.amet.finance/v2/references/privacy-policy',
     ContactUs: "https://forms.gle/zUcZUT51Zx1wiqoS7",
