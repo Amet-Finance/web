@@ -68,6 +68,14 @@ const META_DETAILS = `_meta {
                         }
                       }`
 
+const ACTION_LOGS = `actionLogs(orderBy: blockNumber, orderDirection: desc) {
+                      blockNumber
+                      count
+                      from
+                      id
+                      to
+                    }`
+
 async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[]> {
     const {chainId} = params;
 
@@ -116,19 +124,13 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
 }
 
 async function getContractExtended(params: ContractQuery): Promise<ContractExtendedFormatAPI | null> {
-    const {chainId, contractAddress} = params;
+    const {chainId, contractAddress, includeActionLogs} = params;
     const query = `
              { 
               ${META_DETAILS}
               bond(id: "${contractAddress?.toLowerCase()}") {
                     ${BOND_DETAILS_QUERY}
-                    actionLogs(orderBy: blockNumber, orderDirection: desc) {
-                      blockNumber
-                      count
-                      from
-                      id
-                      to
-                    }
+                    ${includeActionLogs ? ACTION_LOGS : ""}
                 }
                }
             `
