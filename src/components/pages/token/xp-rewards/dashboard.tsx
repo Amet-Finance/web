@@ -117,7 +117,7 @@ export default function XpRewardsDashboard() {
                 <Action
                     title="Purchase AMT Bonds"
                     description="Specifically purchase AMT bonds for higher rewards."
-                    value="60"
+                    value="120"
                     type={<BondType isHot/>}
                     limited={"Per $1 Value Of Purchase"}
                     result={(
@@ -309,7 +309,7 @@ export default function XpRewardsDashboard() {
                 <Action
                     title="Referr Users"
                     description="Refer new users to purchase bonds and earn 4 XP per $1 value of referral purchase."
-                    value="5"
+                    value="10"
                     type={<BondType/>}
                     limited={"Per $1 Value Of Referral Purchase"}
                     result={(
