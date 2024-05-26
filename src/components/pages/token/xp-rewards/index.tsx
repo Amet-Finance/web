@@ -5,11 +5,11 @@ import XpRewardsLending from "@/components/pages/token/xp-rewards/lending";
 import XpRewardsDashboard from "@/components/pages/token/xp-rewards/dashboard";
 
 export default function XpRewards() {
-    const {address,active} = useAccountExtended()
+    const {address, active} = useAccountExtended()
     const [screen, setScreen] = useState(ScreenTypes.Activate);
 
     useEffect(() => {
-        if (active) setScreen(ScreenTypes.Xp)
+        if (active && address) setScreen(ScreenTypes.Xp)
     }, [active, address])
 
     switch (screen) {
