@@ -21,7 +21,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
         <div className="grid grid-cols-12 justify-between gap-2 rounded-3xl p-6 border border-neutral-900 w-full">
             <ConditionalRenderer isOpen={contractInfo.isSettled}>
                 <InfoDescription
-                    width={200}
+                    width={300}
                     isRight
                     className='flex justify-center items-center col-span-1 cursor-help'
                     text={TagTexts.Settled}>
@@ -39,7 +39,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={isIBO}>
                 <InfoDescription
-                    width={200}
+                    width={500}
                     className='flex justify-center items-center col-span-1 cursor-help bg-amber-400 w-min px-4 p-1 rounded-xl ml-8 border-t-2 border-neutral-900'
                     text={TagTexts.IBO}
                     isRight>
