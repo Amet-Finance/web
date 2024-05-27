@@ -17,11 +17,12 @@ import CopySVG from "../../../../../../../../public/svg/utils/copy";
 import {ToggleBetweenChildren} from "@/components/utils/container";
 import {FixedFlexIssuerController, FixedFlexVaultController, utils, VaultFeeDetails,} from "amet-utils";
 import {BigNumber} from "ethers";
+import {useAccountExtended} from "@/modules/utils/address";
 
 export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
     const {contractAddress, chainId, purchase} = contractInfo;
-    const {address} = useAccount();
+    const {address, open} = useAccountExtended();
     const chain = getChain(chainId);
 
     const [isDataLoading, setIsDataLoading] = useState(true);
@@ -33,10 +34,11 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
     const rewardsLeft = referralInfo.quantity - referralInfo.claimed
     const totalReward = rewardsLeft * purchase.amountClean * feeDetails.referrerRewardRate / 1000;
 
-    const isBlocked = isBlacklisted || !Boolean(rewardsLeft) || !Boolean(totalReward);
+    const isBlocked = isBlacklisted;
     let title = "Claim Rewards"
     if (isBlacklisted) title = "Address Blocked";
-    if (!rewardsLeft && referralInfo.quantity) title = "Already Repaid";
+    if (!rewardsLeft) title = "Copy Your Referral Link";
+    if (!address) title = "Connect";
 
 
     const {submitTransaction} = useTransaction(chainId, TxTypes.ClaimReferralRewards, {vaultAddress, contractAddress})
@@ -71,7 +73,9 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
 
     async function claimReferralRewards() {
+        if (!address) return open();
         if (isBlocked) return toast.error("Action Is Blocked.");
+        if (!rewardsLeft) return copyReferralCode(address)
 
         const result = await submitTransaction();
         if (result) ModalStore.openModal(ModalTypes.ClaimReferralRewards, {
@@ -93,7 +97,8 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
                 <span className='text-neutral-400 text-sm'>in referral rewards with Amet Finance</span>
             </div>
             <div className='flex gap-1 items-center'>
-                <DefaultButton disabled={isBlocked} onClick={claimReferralRewards} classType='1'>
+                <DefaultButton disabled={isBlocked}
+                               onClick={claimReferralRewards} classType='1'>
                     <span>{title}</span>
                 </DefaultButton>
                 <DefaultButton onClick={copyReferralCode.bind(null, address)} classType="2">

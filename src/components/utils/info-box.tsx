@@ -51,8 +51,7 @@ function InfoDescription({children, text, className, isRight = false, width = 10
     return (
         <div className={`group/description relative ${className}`}>
             {children}
-            <div
-                className={`group-hover/description:flex hidden absolute top-full ${isRight ? "left-0" : "right-0"} bg-neutral-900 p-2 my-2 rounded-md w-[${width}%] z-20`}>
+            <div className={`group-hover/description:flex hidden absolute top-full ${isRight ? "left-0" : "right-0"} bg-neutral-900 p-2 my-2 rounded-md w-[${width}%] z-20`}>
                 <span className='text-neutral-400 text-xs text-start'>{text}</span>
             </div>
         </div>

@@ -29,8 +29,10 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
         redeemed,
         maturityPeriodInBlocks,
         issuanceDate,
+        purchaseRate
     } = contractInfo;
 
+    const maturityPeriodLong = formatTime(CHAIN_BLOCK_TIMES[chainId] * maturityPeriodInBlocks, false, true);
     const maturityPeriodTime = formatTime(CHAIN_BLOCK_TIMES[chainId] * maturityPeriodInBlocks, true, true, true)
     const chain = getChain(chainId)
     const chainIcon = getChainIcon(chainId);
@@ -48,10 +50,13 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
     const purchasePriceUsd = purchase.amountClean * (purchase.priceUsd ?? 0)
     const payoutPriceUsd = payout.amountClean * (payout.priceUsd ?? 0)
 
-    const totalPurchase = totalBonds * purchase.amountClean;
-    const totalPayout = totalBonds * payout.amountClean
+    const totalPurePurchase = totalBonds * purchase.amountClean
+    const totalPurchase = totalPurePurchase - (totalPurePurchase * purchaseRate) / 100;
+    const totalPurchaseText = `${formatLargeNumber(totalPurchase)} = ${formatLargeNumber(totalPurePurchase)} (Total Bonds * Purchase Price) - ${purchaseRate}% (Purchase Fee)`;
 
-    const isSoldOut = totalBonds - purchased === 0
+
+    const totalPayout = totalBonds * payout.amountClean
+    const totalPayoutText = `${formatLargeNumber(totalPayout)} =  ${formatLargeNumber(totalPayout)} (Total Bonds * Payout Amount)`
 
     return (
         <div
@@ -59,11 +64,11 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
             <div className='flex flex-col gap-4 w-full'>
                 <div className='flex md:flex-row flex-col justify-between w-full sm:gap-4 gap-8 items-start'>
                     <div className='flex justify-start gap-2 md:w-max w-full'>
-                            <Link href={payoutTokenExplorer} target='_blank' className='md:w-12 md:h-12 w-10 h-10'>
-                                <Image src={payoutIcon} alt={payout.name}
-                                       width={1000} height={1000}
-                                       className=' object-contain rounded-full border border-neutral-900 hover:border-neutral-800 cursor-pointer'/>
-                            </Link>
+                        <Link href={payoutTokenExplorer} target='_blank' className='md:w-12 md:h-12 w-10 h-10'>
+                            <Image src={payoutIcon} alt={payout.name}
+                                   width={1000} height={1000}
+                                   className=' object-contain rounded-full border border-neutral-900 hover:border-neutral-800 cursor-pointer'/>
+                        </Link>
                         <div className='flex justify-between gap-2 w-full'>
                             <div className='flex flex-col'>
                                 <span className='xl:text-xl md:text-xl text-base font-bold'>{payout.name}</span>
@@ -84,42 +89,26 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                     </div>
                     <div className='flex flex-col justify-end items-end gap-3 md:w-max w-full'>
                         <div className='relative grid grid-cols-3 items-end gap-x-2 md:w-max w-full'>
-                            <div className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
+                            <div className='flex flex-col items-center px-2 cursor-pointer text-center'>
                                 <span className='text-md font-semibold'>{formatLargeNumber(totalBonds)}</span>
                                 <span className='text-xs text-neutral-400 font-light'>Total Bonds</span>
                             </div>
-                            <div className='flex flex-col items-center px-2 py-1.5 cursor-pointer text-center'>
+                            <div className='flex flex-col items-center px-2 cursor-pointer text-center'>
                                 <span className='text-md font-semibold'>{formatLargeNumber(purchased)}</span>
                                 <span className='text-xs text-neutral-400 font-light'>Purchased</span>
                             </div>
                             <div
-                                className='flex flex-col items-center px-2 py-1.5 cursor-pointer rounded-tr-md text-center'>
+                                className='flex flex-col items-center px-2 cursor-pointer text-center'>
                                 <span className='text-md font-semibold'>{formatLargeNumber(redeemed)}</span>
                                 <span className='text-xs text-neutral-400 font-light'>Redeemed</span>
                             </div>
-                            <div className='relative w-full col-span-3 h-0.5'>
-                                <div className='absolute h-full bg-green-900 rounded-full z-20'
-                                     style={{width: `${redeemedPercentage}%`}}/>
-                                <div className='absolute h-full bg-green-500 rounded-full z-10'
-                                     style={{width: `${purchasedPercentage}%`}}/>
-                                <div className='absolute h-full bg-white rounded-full w-full'/>
-                            </div>
-                        </div>
-                        <div className='flex items-center gap-2'>
-                            <ConditionalRenderer isOpen={contractInfo.isSettled}>
-                                <InfoDescription
-                                    text="Settled: This status indicates that the issuer can not increase the bond supply and the total payout is locked within the contract.">
-                                    <SecureSVG size={24}/>
-                                </InfoDescription>
-                            </ConditionalRenderer>
-
-                            <ConditionalRenderer isOpen={isSoldOut}>
-                                <InfoDescription
-                                    text="Sold Out: This status means that all available bonds have been purchased and no more are currently available for sale.">
-                                    <SoldOutSVG size={24}/>
-                                </InfoDescription>
-                            </ConditionalRenderer>
-
+                            {/*<div className='relative w-full col-span-3 h-0.5'>*/}
+                            {/*    <div className='absolute h-full bg-green-900 rounded-full z-20'*/}
+                            {/*         style={{width: `${redeemedPercentage}%`}}/>*/}
+                            {/*    <div className='absolute h-full bg-green-500 rounded-full z-10'*/}
+                            {/*         style={{width: `${purchasedPercentage}%`}}/>*/}
+                            {/*    <div className='absolute h-full bg-white rounded-full w-full'/>*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                 </div>
@@ -134,7 +123,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
             </div>
 
             <div className='flex flex-col gap-8'>
-                <div className='grid grid-cols-8 gap-4 mt-4 w-full'>
+                <div className='grid grid-cols-8 gap-4 mt-4 w-full items-start'>
                     <InfoDescription className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'
                                      isRight
                                      width={100}
@@ -151,12 +140,14 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                             className='font-bold'>{formatLargeNumber(payout.amountClean, false, 5)} {payout.symbol}</span>
                         <span className='text-xs text-neutral-400'>Payout</span>
                     </InfoDescription>
-
-                    <div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'
-                         title={`${formatLargeNumber(maturityPeriodInBlocks)} blocks`}>
+                    <InfoDescription
+                        text={`${maturityPeriodLong} or ${formatLargeNumber(maturityPeriodInBlocks)} blocks`}
+                        isRight
+                        width={100}
+                        className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'>
                         <span className='font-bold'>{maturityPeriodTime}</span>
                         <span className='text-xs text-neutral-400'>Maturity Period</span>
-                    </div>
+                    </InfoDescription>
                     <div className='lg:col-span-2 col-span-4 flex flex-col gap-1 justify-end w-full cursor-help'>
                         <div className='flex items-center gap-2'>
                             <Image src={chainIcon} alt={chain?.name ?? ""} width={24} height={24}/>
@@ -164,17 +155,23 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
                         </div>
                         <span className='text-xs text-neutral-400'>Chain</span>
                     </div>
+                    <InfoDescription
+                        text={totalPurchaseText}
+                        isRight
+                        width={200}
+                        className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'>
+                        <span className='font-bold'>{formatLargeNumber(totalPurchase)} {purchase.symbol}</span>
+                        <span className='text-xs text-neutral-400'>Total Purchase Amount</span>
+                    </InfoDescription>
 
-                    {/*<div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'*/}
-                    {/*     title={`${formatLargeNumber(totalPurchase)}`}>*/}
-                    {/*    <span className='font-bold'>{formatLargeNumber(totalPurchase)}</span>*/}
-                    {/*    <span className='text-xs text-neutral-400'>Total Raise</span>*/}
-                    {/*</div>*/}
-                    {/*<div className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'*/}
-                    {/*     title={`${formatLargeNumber(totalPayout)}`}>*/}
-                    {/*    <span className='font-bold'>{formatLargeNumber(totalPayout)}</span>*/}
-                    {/*    <span className='text-xs text-neutral-400'>Total Payout</span>*/}
-                    {/*</div>*/}
+                    <InfoDescription
+                        text={totalPayoutText}
+                        isRight
+                        width={200}
+                        className='lg:col-span-2 col-span-4 flex flex-col justify-end w-full cursor-help'>
+                        <span className='font-bold'>{formatLargeNumber(totalPayout)} {payout.symbol}</span>
+                        <span className='text-xs text-neutral-400'>Total Payout Amount</span>
+                    </InfoDescription>
                 </div>
                 <div className='flex items-center justify-between w-full text-sm'>
                     <div className='flex items-center gap-2 text-neutral-400'>

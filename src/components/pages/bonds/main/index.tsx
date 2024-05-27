@@ -154,19 +154,14 @@ function BondCards() {
     )
 }
 
-function Loader() {
-    return <div className='p-12'><Loading percent={-50}/></div>
-}
-
 function ContractsContainer({contracts}: { contracts: ContractCoreDetails[] }) {
-    return <>
+    return (
         <div className='relative w-full'>
             <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>
                 {contracts.map(contract => <BondCard info={contract} key={contract.contractAddress}/>)}
             </div>
-            <div className='absolute top-[85%] left-0 h-[20%] w-full bg-gradient-to-b from-transparent to-black z-30'/>
         </div>
-    </>
+    )
 }
 
 function BondsExplanation({statistics, isStatisticsLoading}: {

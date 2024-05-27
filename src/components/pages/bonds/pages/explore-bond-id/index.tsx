@@ -14,6 +14,7 @@ import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/co
 import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/components/finished";
 import {GeneralContainer} from "@/components/utils/container";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
+import Insights from "@/components/pages/bonds/pages/explore-bond-id/components/insights";
 
 export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
@@ -38,6 +39,7 @@ export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
                 <MainDetailsContainer bondDetailed={bondDetailed}/>
                 <ActionsContainer contractInfo={bondDetailed.contractInfo}/>
             </div>
+            <Insights bondDetailed={bondDetailed}/>
             <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
             <GeneralStatisticsContainer bondDetailed={bondDetailed}/>
         </GeneralContainer>
