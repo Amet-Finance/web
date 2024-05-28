@@ -35,19 +35,22 @@ function formatLargeNumber(number: number | undefined, includeThousand?: boolean
     const million = 1000000;  // 1 million
     const thousand = 1000; // 1 thousand
 
+    const fixNumber = (number: number) => parseFloat(number.toFixed(maxFixedLength))
+
     if (number >= 10 * trillion) {
-        return (number / 10 * trillion).toFixed(maxFixedLength) + 'T';
+        return fixNumber(number / 10 * trillion) + 'T';
     } else if (number >= trillion) {
-        return (number / trillion).toFixed(maxFixedLength) + 'T';
+        return fixNumber(number / trillion) + 'T';
     } else if (number >= billion) {
-        return (number / billion).toFixed(maxFixedLength) + 'B';
+        return fixNumber(number / billion) + 'B';
     } else if (number >= million) {
-        return (number / million).toFixed(maxFixedLength) + 'M';
+        return fixNumber(number / million) + 'M';
     } else if (number >= thousand && includeThousand) {
-        return (number / thousand).toFixed(maxFixedLength) + 'K';
+        return fixNumber(number / thousand) + 'K';
     } else {
         return format(number, maxFixedLength);
     }
+
 }
 
 export {
