@@ -9,7 +9,11 @@ export default function XpRewards() {
     const [screen, setScreen] = useState(ScreenTypes.Activate);
 
     useEffect(() => {
-        if (active && address) setScreen(ScreenTypes.Xp)
+        if (active && address) {
+            setScreen(ScreenTypes.Xp)
+        } else {
+            setScreen(ScreenTypes.Activate)
+        }
     }, [active, address])
 
     switch (screen) {
