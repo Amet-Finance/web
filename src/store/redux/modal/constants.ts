@@ -7,6 +7,7 @@ const ModalTypes = {
     AcceptTermsConditions: "accept-terms-conditions",
     ConnectEmail: "connect-email",
     LowPayout: "low-payout",
+    ReportBondOffering: "report-bond-offering",
 }
 
 export {

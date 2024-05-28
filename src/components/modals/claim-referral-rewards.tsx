@@ -5,11 +5,11 @@ import {BasicButton} from "@/components/utils/buttons";
 import {URLS} from "@/modules/utils/urls";
 import Link from "next/link";
 import {formatLargeNumber} from "@/modules/utils/numbers";
+import {useModal} from "@/modules/utils/modal";
 
-export default function ClaimReferralRewards({additional}: Readonly<{
-    additional: { address: string, totalReward: number, symbol: string }
-}>) {
-    const {totalReward, symbol} = additional;
+export default function ClaimReferralRewards() {
+    const {modalState, isClosed} = useModal()
+    const {totalReward, symbol} = modalState.additional as {address: string, totalReward: number, symbol: string};
 
     const rewardFormatted = formatLargeNumber(totalReward);
     const linkText = `Just made ${rewardFormatted} ${symbol} with Amet Finance! Check it out and start earning too.`

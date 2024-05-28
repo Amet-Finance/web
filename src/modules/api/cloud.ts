@@ -1,4 +1,4 @@
-import {patchAPI, requestAPI} from "@/modules/api/util";
+import {patchAPI, postAPI, requestAPI} from "@/modules/api/util";
 import {API_URL} from "@/modules/api/constants";
 import {
     AuthenticatedRequest,
@@ -10,7 +10,7 @@ import {
     User
 } from "@/modules/api/type";
 import {TokenResponseDetailed} from "@/modules/web3/type";
-import {ContractDescription, DescriptionEditParams, EmailEditParams} from "@/modules/api/contract-type";
+import {ContractDescription, DescriptionEditParams, EmailEditParams, ReportBody} from "@/modules/api/contract-type";
 
 
 async function getUser(address: string): Promise<User> {
@@ -57,7 +57,7 @@ async function getTokensDetailed(params: {
 
 async function updateContractDescription(body: DescriptionEditParams, params: AuthenticatedRequest): Promise<ContractDescription> {
     return await patchAPI({
-        url: `${API_URL}/v1/description`,
+        url: `${API_URL}/v1/bond/description`,
         body: body,
         params: params
     });
@@ -72,12 +72,21 @@ async function updateEmail(body: EmailEditParams, params: AuthenticatedRequest):
 }
 
 
+async function reportContract(body: ReportBody, params: AuthenticatedRequest): Promise<SuccessResult> {
+    return await postAPI({
+        url: `${API_URL}/v1/bond/report`,
+        body: body,
+        params: params
+    })
+}
+
 const CloudAPI = {
     getUser,
     getStatistics,
     getTokens,
     getTokensDetailed,
     updateContractDescription,
-    updateEmail
+    updateEmail,
+    reportContract
 }
 export default CloudAPI

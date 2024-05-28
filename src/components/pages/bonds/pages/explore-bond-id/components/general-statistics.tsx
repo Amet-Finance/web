@@ -227,11 +227,11 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                     }
                 </div>
             </div>
-            <div className='grid grid-cols-6 gap-4 min-h-[10rem] max-h-72 overflow-auto whitespace-nowrap'>
-                <div className='col-span-1 text-sm'>
+            <div className='grid md:grid-cols-6 grid-cols-3 gap-4 min-h-[10rem] max-h-72 overflow-auto whitespace-nowrap '>
+                <div className='md:flex col-span-1 text-sm hidden'>
                     <span className='text-neutral-400'>From</span>
                 </div>
-                <div className='col-span-1 text-sm'>
+                <div className='md:flex col-span-1 text-sm hidden'>
                     <span className='text-neutral-400'>To</span>
                 </div>
                 <div className='col-span-1 text-sm'>
@@ -240,7 +240,7 @@ function RecentActivityContainer({contractInfo, logs}: Readonly<{
                 <div className='col-span-1 text-sm'>
                     <span className='text-neutral-400'>Value</span>
                 </div>
-                <div className='col-span-1 text-sm'>
+                <div className='md:flex col-span-1 text-sm hidden'>
                     <span className='text-neutral-400'>Block</span>
                 </div>
                 <div className='col-span-1 text-sm'>
@@ -279,10 +279,10 @@ function LogContainer({contractInfo, log}: Readonly<{ contractInfo: ContractCore
 
     return <>
         <div className='h-px col-span-6 bg-neutral-600 w-full'/>
-        <div className='col-span-1 text-sm'>
+        <div className='md:flex col-span-1 text-sm hidden'>
             <span className='text-neutral-200'>{shorten(log.from, 5)}</span>
         </div>
-        <div className='col-span-1 text-sm'>
+        <div className='md:flex col-span-1 text-sm hidden'>
             <span className='text-neutral-200'>{shorten(log.to, 5)}</span>
         </div>
         <div className='col-span-1 text-sm w-full'>
@@ -291,12 +291,12 @@ function LogContainer({contractInfo, log}: Readonly<{ contractInfo: ContractCore
         <div className='col-span-1 text-sm'>
             <span className='text-neutral-200'>{value}</span>
         </div>
-        <div className='col-span-1 text-sm'>
+        <div className='md:flex col-span-1 text-sm hidden'>
             <span className='text-neutral-200'>{log.block}</span>
         </div>
         <div className='col-span-1 text-sm'>
-            <Link href={hashUrl} target='_blank'>
-                <span className='text-neutral-200 underline'>{shorten(log.id)}</span>
+        <Link href={hashUrl} target='_blank'>
+                <span className='text-neutral-200 underline'>{shorten(log.id, 3)}</span>
             </Link>
         </div>
     </>

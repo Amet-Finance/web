@@ -107,6 +107,15 @@ type EmailEditParams = {
     email: string
 }
 
+type ReportBody = {
+    name?: string,
+    email?: string,
+    telegram?:string,
+    description?: string,
+    contractAddress: string,
+    chainId: number
+}
+
 type AccountBalances = (ContractBalance & { bond: ContractCoreDetails })
 
 type AccountHoldings = {
@@ -129,7 +138,8 @@ export type  {
     ContractExtendedFormat,
     DescriptionEditParams,
     AccountExtendedFormat,
-    EmailEditParams
+    EmailEditParams,
+    ReportBody
 }
 
 

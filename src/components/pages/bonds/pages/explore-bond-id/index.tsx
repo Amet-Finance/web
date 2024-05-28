@@ -15,6 +15,7 @@ import FinishedComponent from "@/components/pages/bonds/pages/explore-bond-id/co
 import {GeneralContainer} from "@/components/utils/container";
 import {useFinancialAttributeExtended} from "@/modules/utils/token";
 import Insights from "@/components/pages/bonds/pages/explore-bond-id/components/insights";
+import Report from "@/components/pages/bonds/pages/explore-bond-id/components/report";
 
 export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
@@ -42,6 +43,7 @@ export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
             <Insights bondDetailed={bondDetailed}/>
             <DescriptionContainer bondDetailed={bondDetailed} setBondDetailed={setBondDetailed}/>
             <GeneralStatisticsContainer bondDetailed={bondDetailed}/>
+            <Report contractInfo={bondDetailed.contractInfo}/>
         </GeneralContainer>
     )
 }

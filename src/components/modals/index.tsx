@@ -9,6 +9,7 @@ import FirstTimePurchaseBond from "@/components/modals/first-time-purchase-bond"
 import {useModal} from "@/modules/utils/modal";
 import ConnectEmail from "@/components/modals/connect-email";
 import LowPayout from "@/components/modals/low-payout";
+import ReportBondOffering from "@/components/modals/report-bond-offering";
 
 const montserrat = Montserrat({subsets: ['latin']})
 export default function ModalHandler() {
@@ -46,19 +47,19 @@ export default function ModalHandler() {
             onRequestClose={ModalStore.closeModal}
             contentLabel="Example Modal">
             <div className={montserrat.className + " z-50"}>
-                <ModalContent type={modalState.type} additional={modalState.additional}/>
+                <ModalContent type={modalState.type}/>
             </div>
         </Modal>
     </>
 }
 
-function ModalContent({type, additional}: { type: string, additional: any }) {
+function ModalContent({type}: { type: string }) {
     switch (type) {
         case ModalTypes.IssuedBondSuccess: {
             return <IssuedBondSuccess/>
         }
         case ModalTypes.ClaimReferralRewards: {
-            return <ClaimReferralRewards additional={additional}/>
+            return <ClaimReferralRewards/>
         }
         case ModalTypes.AcceptTermsConditions: {
             return <AcceptTermsConditions/>
@@ -71,6 +72,9 @@ function ModalContent({type, additional}: { type: string, additional: any }) {
         }
         case ModalTypes.LowPayout: {
             return <LowPayout/>
+        }
+        case ModalTypes.ReportBondOffering: {
+            return <ReportBondOffering/>
         }
     }
 }
