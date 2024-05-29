@@ -60,7 +60,7 @@ export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDeta
 
     return (
         <div
-            className='flex flex-col justify-between gap-8 xl:col-span-8 col-span-12  rounded-3xl p-6 border border-neutral-900 w-full'>
+            className='flex flex-col justify-between gap-8 xl:col-span-8 col-span-12 rounded-3xl p-6 border border-neutral-900 w-full'>
             <div className='flex flex-col gap-4 w-full'>
                 <div className='flex md:flex-row flex-col justify-between w-full sm:gap-4 gap-8 items-start'>
                     <div className='flex justify-start gap-2 md:w-max w-full'>

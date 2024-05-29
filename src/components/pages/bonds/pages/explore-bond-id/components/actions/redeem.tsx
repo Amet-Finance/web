@@ -15,6 +15,10 @@ import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
+import {CHAINS, constants} from "amet-utils";
+import {formatTime} from "@/modules/utils/dates";
+import {shorten} from "@/modules/web3/util";
+import {shortenString} from "@/modules/utils/string";
 
 export default function RedeemTab({contractInfo}: Readonly<{
     contractInfo: ContractCoreDetails
@@ -33,7 +37,9 @@ export default function RedeemTab({contractInfo}: Readonly<{
     const interestBalance = BigNumber(contractInfo.payoutBalance).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber();
 
     const totalQuantity = contractBalances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
-    const matureTokenIds = getMatureTokenIds(contractInfo, contractBalances);
+    const {matureTokenIds, minBlocksLeft} = filterTokenIds(contractInfo, contractBalances);
+    const minTimeTillMaturity = minBlocksLeft !== null ? formatTime(minBlocksLeft * constants.CHAIN_BLOCK_TIMES[contractInfo.chainId]) : null;
+
     const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (contractBalances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
 
     const totalRedeemAmount = redemptionCount * payout.amountClean
@@ -115,14 +121,18 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     return (
         <div className='flex flex-col gap-1 justify-end w-full'>
-            <ConditionalRenderer isOpen={Boolean(totalRedeemAmount)}>
-                <div
-                    className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap'>
+            <div className='flex flex-col h-full items-center justify-center'>
+                <ConditionalRenderer isOpen={Boolean(minTimeTillMaturity) && !Boolean(totalRedeemAmount)}>
+                    <p className='text-xs text-neutral-400'>First Redemption Available in  {shortenString(minTimeTillMaturity?.toString(), 15)}</p>
+                </ConditionalRenderer>
+                <ConditionalRenderer isOpen={Boolean(totalRedeemAmount)}>
+                    <div className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap w-full h-full'>
                     <span
                         className='md:text-4xl text-2xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
-                    <span className='text-xs'>Total Redeem Amount:</span>
-                </div>
-            </ConditionalRenderer>
+                        <span className='text-xs'>Total Redeem Amount:</span>
+                    </div>
+                </ConditionalRenderer>
+            </div>
             <div className='flex flex-col gap-2'>
                 <div
                     className='flex flex-col items-center justify-between  rounded-md py-1 w-full border border-neutral-900 px-2'>
@@ -168,16 +178,26 @@ export default function RedeemTab({contractInfo}: Readonly<{
 }
 
 
-function getMatureTokenIds(contractInfo: ContractCoreDetails, balances: ContractBalance[]): number[] {
+function filterTokenIds(contractInfo: ContractCoreDetails, balances: ContractBalance[]): {
+    matureTokenIds: number[],
+    minBlocksLeft: number | null
+} {
 
     const {block, maturityPeriodInBlocks} = contractInfo;
     const matureTokenIds = []
+    let minBlocksLeft = null
 
     for (const balanceInfo of balances) {
-        if (block - maturityPeriodInBlocks > balanceInfo.purchaseBlock) {
+
+        const blocksLeft = balanceInfo.purchaseBlock + maturityPeriodInBlocks - block
+        if (blocksLeft <= 0) {
             matureTokenIds.push(balanceInfo.tokenId);
+        }
+
+        if (!minBlocksLeft || minBlocksLeft > blocksLeft) {
+            minBlocksLeft = blocksLeft;
         }
     }
 
-    return matureTokenIds
+    return {matureTokenIds, minBlocksLeft}
 }

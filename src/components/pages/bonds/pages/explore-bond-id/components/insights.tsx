@@ -18,7 +18,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
     const isSoldOut = totalBonds === purchased;
 
     return (
-        <div className="grid grid-cols-12 justify-between gap-2 rounded-3xl p-6 border border-neutral-900 w-full">
+        <div className="grid sm:grid-cols-12 grid-cols-2 justify-between gap-2 rounded-3xl p-6 border border-neutral-900 w-full">
             <ConditionalRenderer isOpen={contractInfo.isSettled}>
                 <InfoDescription
                     width={300}
