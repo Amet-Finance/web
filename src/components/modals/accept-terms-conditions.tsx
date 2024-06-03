@@ -46,7 +46,7 @@ export default function AcceptTermsConditions() {
                 <p>Please ensure you understand and are comfortable with
                     the terms of our
                     platform and the nature of on-chain bond investments before connecting your wallet.</p>
-                <button className='flex items-center gap-2 text-sm text-neutral-400 cursor-pointer'>
+                <button className='flex sm:items-center items-start gap-2 text-sm text-neutral-400 cursor-pointer'>
                     <input id='checkbox' type="checkbox" onChange={checkInputChanger} className='cursor-pointer'/>
                     <label htmlFor="checkbox" className='cursor-pointer'>I have read and agree to the Terms and
                         Conditions and Privacy

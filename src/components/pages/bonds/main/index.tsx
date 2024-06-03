@@ -52,7 +52,7 @@ export default function Bonds() {
 function Headline({statistics, isStatisticsLoading}: { statistics: any, isStatisticsLoading: boolean }) {
     return (
         <div
-            className='relative flex lg:flex-row flex-col lg:items-end items-center justify-between w-full gap-12 py-24 rounded-[4rem]'>
+            className='relative flex lg:flex-row flex-col lg:items-end items-center justify-between w-full gap-12 sm:py-24 py-12 rounded-[4rem]'>
             <div
                 className='flex flex-col md:items-start items-center md:text-start text-center w-full gap-12 '>
                 <h1 className='lg:text-7xl md:text-8xl text-5xl font-bold max-2w-xl'>Unlock Financial

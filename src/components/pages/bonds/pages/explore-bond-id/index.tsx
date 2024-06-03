@@ -32,7 +32,7 @@ export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
     if (isLoading) return <LoadingScreen/>
 
     return (
-        <GeneralContainer className='flex flex-col gap-4 w-full md:py-24 py-16' isPadding>
+        <GeneralContainer className='flex flex-col gap-4 w-full sm:py-24 py-12' isPadding>
             <HeadlineContainer contractInfo={bondDetailed.contractInfo} refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
             <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>

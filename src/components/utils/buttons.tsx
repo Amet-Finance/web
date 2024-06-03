@@ -51,11 +51,13 @@ function DefaultButton({children, disabled, className, additionalClassName, clas
     classType?: string
 }>) {
 
+    const flexCenter = "flex items-center justify-center gap-2 py-1.5 w-full rounded-3xl"
+
     const ClassTypes: StringKeyedObject<string> = {
-        '1': "flex items-center justify-center gap-2 bg-white text-black rounded-md py-1 hover:bg-neutral-300 text-sm px-4 w-full",
-        '2': "bg-white w-min h-full px-4 rounded-md hover:bg-neutral-300",
-        '3': "flex items-center justify-center gap-2 bg-red-500 rounded-md py-1 w-full hover:bg-red-600",
-        '4': "flex items-center justify-center gap-2 bg-neutral-600 rounded-md py-1 w-full hover:bg-neutral-700",
+        '1': `${flexCenter} bg-white hover:bg-neutral-300 text-black`,
+        '2': `${flexCenter} bg-white w-min h-full px-8 hover:bg-neutral-300`,
+        '3': `${flexCenter} bg-red-500 hover:bg-red-600`,
+        '4': `${flexCenter} bg-neutral-600 hover:bg-neutral-700`,
     }
 
     const generatedClass = className || ClassTypes[classType] + " " + additionalClassName || ""

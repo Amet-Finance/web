@@ -115,7 +115,7 @@ function HeadlineComponent({component, selected, setSelected}: {
 
     return (
         <button
-            className={`flex flex-col justify-end gap-0.5 py-1.5 items-center hover:bg-neutral-900 rounded-md cursor-pointer ${isSelected && "bg-neutral-800"}`}
+            className={`flex flex-col items-center gap-1 py-1 hover:bg-neutral-900 rounded-md cursor-pointer ${isSelected && "bg-neutral-800"}`}
             onClick={select}>
             <div className='relative'>
                 <Image src={icon} alt={title} width={24} height={24}/>
@@ -130,6 +130,18 @@ function HeadlineComponent({component, selected, setSelected}: {
         </button>
     )
 }
+
+// Unlocked Initially
+// 100_000_000_000 - Community and Ecosystem
+// 30_000_000_000 - Development and Future Operations
+// 10_000_000_000 - Marketing and Partnerships
+// 1_250_000_000 - Liquidity Provision
+
+
+// IBO price in USD - $0.000012
+// IBO offering - 0.96 USDC = 80000 $AMT = 3 months
+// MC - $12_000_000
+// FDV - $1_695_000
 
 function TabSelector({title, contractInfo}: Readonly<{
     title: string,
@@ -146,7 +158,7 @@ function TabSelector({title, contractInfo}: Readonly<{
         case Tabs.ReferralRewards:
             return <ReferralTab contractInfo={contractInfo}/>
         default:
-            return <></>
+            return null
     }
 }
 

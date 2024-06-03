@@ -22,7 +22,7 @@ export default function Explore() {
 
 
     return (
-        <GeneralContainer className='flex flex-col justify-center items-center w-full py-24 gap-12' isPadding>
+        <GeneralContainer className='flex flex-col justify-center items-center w-full sm:py-24 py-12 gap-12' isPadding>
             <div className='flex flex-col items-center gap-8 px-8'>
                 <h1 className='text-5xl text-center font-bold'>Explore On-Chain Bonds: <br/>
                     Find, Filter, and Invest</h1>

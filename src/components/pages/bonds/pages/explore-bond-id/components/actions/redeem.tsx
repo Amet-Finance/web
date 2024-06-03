@@ -15,9 +15,8 @@ import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {CHAINS, constants} from "amet-utils";
+import {constants} from "amet-utils";
 import {formatTime} from "@/modules/utils/dates";
-import {shorten} from "@/modules/web3/util";
 import {shortenString} from "@/modules/utils/string";
 
 export default function RedeemTab({contractInfo}: Readonly<{
@@ -123,10 +122,12 @@ export default function RedeemTab({contractInfo}: Readonly<{
         <div className='flex flex-col gap-1 justify-end w-full'>
             <div className='flex flex-col h-full items-center justify-center'>
                 <ConditionalRenderer isOpen={Boolean(minTimeTillMaturity) && !Boolean(totalRedeemAmount)}>
-                    <p className='text-xs text-neutral-400'>First Redemption Available in  {shortenString(minTimeTillMaturity?.toString(), 15)}</p>
+                    <p className='text-xs text-neutral-400'>First Redemption Available
+                        in {shortenString(minTimeTillMaturity?.toString(), 15)}</p>
                 </ConditionalRenderer>
                 <ConditionalRenderer isOpen={Boolean(totalRedeemAmount)}>
-                    <div className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap w-full h-full'>
+                    <div
+                        className='flex flex-col justify-center items-center rounded-md px-4 py-1 bg-green-500 h-full whitespace-nowrap w-full h-full'>
                     <span
                         className='md:text-4xl text-2xl font-bold'>-{formatLargeNumber(totalRedeemAmount, false, 2)} {payout.symbol}</span>
                         <span className='text-xs'>Total Redeem Amount:</span>

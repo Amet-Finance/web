@@ -13,10 +13,6 @@ const MetaConstants: StringKeyedObject<MetaInfo> = {
         title: "Invest in On-Chain Bonds - Secure & Transparent | Amet Finance",
         description: "Explore secure and transparent on-chain bonds on Amet Finance. Invest wisely in the future of decentralized finance with trusted on-chain solutions."
     },
-    [PageId.ExploreIdPage]: {
-        title: "Detailed Bond Insights | Amet Finance",
-        description: "Delve into detailed insights on Amet Finance’s on-chain bonds. Understand investment terms, security features, and potential returns."
-    },
     [PageId.ExplorePage]: {
         title: "Explore Top On-Chain Bonds | Amet Finance",
         description: "Browse through top on-chain bonds offered by Amet Finance. Discover the best investment opportunities in a decentralized finance environment."
@@ -36,6 +32,12 @@ const MetaConstants: StringKeyedObject<MetaInfo> = {
     [PageId.ServerError]: {
         title: "Internal Server Error | Amet Finance",
         description: "We are currently experiencing technical issues. Please try again later or contact Amet Finance support for assistance."
+    },
+
+    // Mostly not used
+    [PageId.ExploreIdPage]: {
+        title: "Detailed Bond Insights | Amet Finance",
+        description: "Delve into detailed insights on Amet Finance’s on-chain bonds. Understand investment terms, security features, and potential returns."
     },
     default: {
         title: "Leading On-Chain Bonds Platform | Amet Finance",
