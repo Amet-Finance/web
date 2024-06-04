@@ -131,18 +131,6 @@ function HeadlineComponent({component, selected, setSelected}: {
     )
 }
 
-// Unlocked Initially
-// 100_000_000_000 - Community and Ecosystem
-// 30_000_000_000 - Development and Future Operations
-// 10_000_000_000 - Marketing and Partnerships
-// 1_250_000_000 - Liquidity Provision
-
-
-// IBO price in USD - $0.000012
-// IBO offering - 0.96 USDC = 80000 $AMT = 3 months
-// MC - $12_000_000
-// FDV - $1_695_000
-
 function TabSelector({title, contractInfo}: Readonly<{
     title: string,
     contractInfo: ContractCoreDetails
