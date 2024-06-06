@@ -35,7 +35,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             className="grid lg:grid-cols-5 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 justify-between gap-2 rounded-3xl p-6 border border-neutral-900 w-full">
             <ConditionalRenderer isOpen={contractInfo.isSettled}>
                 <InfoDescription
-                    width={300}
+                    width={100}
                     isRight
                     className='flex justify-center items-center col-span-1 cursor-help bg-cyan-500 px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'
                     text={TagTexts.Settled}>
@@ -44,7 +44,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={isSoldOut}>
                 <InfoDescription
-                    width={200}
+                    width={100}
                     isRight
                     className='flex justify-center items-center col-span-1 cursor-help bg-neutral-500 px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'
                     text={TagTexts.SoldOut}>
@@ -53,7 +53,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={Boolean(owner?.gitcoinScore)}>
                 <InfoDescription
-                    width={200}
+                    width={100}
                     text={TagTexts.GitcoinPassport}
                     className='flex justify-center items-center col-span-1 cursor-help bg-emerald-600  px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'
                     isRight>
@@ -62,7 +62,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={isIBO}>
                 <InfoDescription
-                    width={500}
+                    width={100}
                     className='flex justify-center items-center col-span-1 cursor-help bg-amber-400 px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'
                     text={TagTexts.IBO}
                     isRight>
@@ -71,7 +71,7 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={Boolean(additionalInfo?.boostedMultiplier)}>
                 <InfoDescription
-                    width={200}
+                    width={100}
                     text={TagTexts.Boosted}
                     className='flex justify-center items-center col-span-1 cursor-help bg-rose-600 px-4 p-1 rounded-xl  border-t-2 border-neutral-900 w-full'
                     isRight>
@@ -80,10 +80,9 @@ export default function Insights({bondDetailed}: { bondDetailed: ContractExtende
             </ConditionalRenderer>
             <ConditionalRenderer isOpen={Boolean(additionalInfo?.verifiedIssuer)}>
                 <InfoDescription
-                    width={200}
+                    width={100}
                     text={TagTexts.VerifiedIssuer}
-                    className='flex justify-center items-center col-span-1 cursor-help bg-blue-600  px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'
-                    isRight>
+                    className='flex justify-center items-center col-span-1 cursor-help bg-blue-600  px-4 p-1 rounded-xl border-t-2 border-neutral-900 w-full'>
                     <b className='text-sm whitespace-nowrap'>Verified Issuer</b>
                 </InfoDescription>
             </ConditionalRenderer>

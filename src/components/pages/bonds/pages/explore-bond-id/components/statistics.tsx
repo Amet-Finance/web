@@ -14,7 +14,7 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
     const isTotallyRedeemed = totalBonds === redeemed;
     const soldOutTitle = "SOLD OUT";
 
-    const calculatedYield = CalculatorController.yieldRate(contractInfo);
+    const aprPercentage = CalculatorController.apr(contractInfo);
     const score = CalculatorController.score(contractInfo);
     const securedPercentage = CalculatorController.securedPercentage(contractInfo)
     const volume = CalculatorController.tbv(contractInfo)
@@ -39,9 +39,9 @@ export default function StatisticsContainer({contractInfo}: Readonly<{ contractI
                        valueTitle={`${volume} USD`}
                        info={STATISTICS_DEFINITION.Volume}
                        valueColor={tColor(volume / maxVolume * 100)}/>
-            <Container title='Yield Rate'
-                       value={`${formatLargeNumber(calculatedYield)}%`}
-                       info={STATISTICS_DEFINITION.FixedYieldRate}
+            <Container title='APR'
+                       value={`${formatLargeNumber(aprPercentage)}%`}
+                       info={STATISTICS_DEFINITION.APR}
                        valueColor={tColor(100)}/>
         </div>
     )

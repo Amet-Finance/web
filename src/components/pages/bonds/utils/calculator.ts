@@ -1,5 +1,6 @@
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
+import {CHAIN_BLOCK_TIMES} from "@/modules/web3/constants";
 
 function tbv(contractInfo: ContractCoreDetails) {
     const {purchased, redeemed, payout, purchase} = contractInfo;
@@ -41,11 +42,23 @@ function yieldRate({purchase, payout}: ContractCoreDetails): number {
     return Number.isFinite(yieldRate) ? yieldRate : 0;
 }
 
+function apr(contractCoreDetails: ContractCoreDetails) {
+    const {chainId, maturityPeriodInBlocks} = contractCoreDetails;
+    const yieldPercentage = yieldRate(contractCoreDetails);
+    const secondsToMature = maturityPeriodInBlocks * CHAIN_BLOCK_TIMES[chainId]
+    const oneYearInSeconds = 365 * 24 * 60 * 60;
+
+    const timesInYear = oneYearInSeconds / secondsToMature;
+
+    return timesInYear * yieldPercentage;
+}
+
 const CalculatorController = {
     tbv,
     score,
     securedPercentage,
-    yieldRate
+    yieldRate,
+    apr
 }
 
 export default CalculatorController;

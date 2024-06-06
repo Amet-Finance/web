@@ -40,7 +40,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const url = link ?? `/bonds/explore/${chainId}/${contractAddress}`
     const isSoldOut = totalBonds === purchased;
 
-    const yieldRate = CalculatorController.yieldRate(bondDetails)
+    const aprRate = CalculatorController.apr(bondDetails)
     const score = CalculatorController.score(bondDetails)
     const scoreColor = tColor(score * 10)
 
@@ -135,9 +135,9 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
                                     value={maturityInTime}
                                     title="Period"/>
                                 <DetailContainer
-                                    value={`${formatLargeNumber(yieldRate)}%`}
-                                    title="Yield Rate"
-                                    valueClass={`${yieldRate > 0 ? "text-green-500" : "text-red-500"} font-bold`}/>
+                                    value={`${formatLargeNumber(aprRate)}%`}
+                                    title="APR"
+                                    valueClass={`${aprRate > 0 ? "text-green-500" : "text-red-500"} font-bold`}/>
                             </div>
                             <div className='relative w-full '>
                                 <div className="absolute h-[3px] bg-green-900 z-20"

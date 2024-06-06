@@ -12,6 +12,9 @@ const STATISTICS_DEFINITION = {
     },
     FixedYieldRate: {
         text: "The yield rate represents the percentage return investors receive upon bond redemption, calculated based on the bond's purchase price and the payout at maturity, irrespective of the annualization or the underlying asset's price fluctuations"
+    },
+    APR: {
+        text: "The APR represents the yearly interest rate earned on an investment, calculated without considering compounding. It reflects the cost of borrowing or the return on investment over a year, providing a straightforward percentage rate."
     }
 }
 
