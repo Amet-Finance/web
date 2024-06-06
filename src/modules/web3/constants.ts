@@ -1,6 +1,7 @@
 import {polygon} from "viem/chains";
 import {joltevmDev} from "@/modules/utils/custom-chains";
 import {arbitrum, base} from "wagmi/chains";
+import {Chains} from "amet-utils";
 
 const TxTypes = {
     IssueBond: 'issue-bonds',
@@ -15,6 +16,7 @@ const TxTypes = {
     DecreaseMaturityPeriod: 'decrease-maturity-period',
 
     ChangeOwner: 'change-owner',
+    AcceptOwnership: 'accept-ownership',
     IssueMoreBonds: 'issue-more-bonds',
     BurnUnsoldBonds: 'burn-unsold-bonds',
     DecreaseRedeemLockPeriod: 'decrease-redeem-lock-period'
@@ -50,17 +52,19 @@ const FIXED_FLEX_ISSUER_CONTRACTS: { [chainId: number | string]: string[] } = {
 }
 
 
-
-const GRAPH_CONFIG: {[chainId: number]: {startBlock: number, url: string}} = {
-    [base.id]: {
+const GRAPH_CONFIG: { [chainId: number]: { startBlock: number; url: string } } = {
+    [Chains.Base]: {
         startBlock: 14022551,
-        url: "https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/api",
+        url: 'https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/api',
+        //     https://gateway-arbitrum.network.thegraph.com/api/07d0ecc03fc3f9aeffea03e59ee0f10f/subgraphs/id/JBBiYxUHriMu5GpUtiuPLzroZbD6aGkaoipdLRn47BMy
     },
-    [arbitrum.id]: {
+    [Chains.Arbitrum]: {
         startBlock: 218790445,
-        url: "https://gateway-arbitrum.network.thegraph.com/api/07d0ecc03fc3f9aeffea03e59ee0f10f/subgraphs/id/4cT2qznsGi3npkRR6y2WuUPoEGMwcpUDewdCCJ6wHrvh",
-    }
-}
+        url: 'https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-42161/api',
+        // https://gateway-arbitrum.network.thegraph.com/api/07d0ecc03fc3f9aeffea03e59ee0f10f/subgraphs/id/4cT2qznsGi3npkRR6y2WuUPoEGMwcpUDewdCCJ6wHrvh
+    },
+};
+
 
 export {
     TxTypes,

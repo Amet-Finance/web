@@ -61,8 +61,9 @@ type ContractDetails = {
     payoutBalance: string,
 
     issuer: string,
-
     owner: string,
+    pendingOwner?: string,
+
     issuanceDate: Date | string,
     isSettled: boolean,
     issuanceBlock: number,
@@ -117,7 +118,7 @@ type EmailEditParams = {
 type ReportBody = {
     name?: string,
     email?: string,
-    telegram?:string,
+    telegram?: string,
     description?: string,
     contractAddress: string,
     chainId: number

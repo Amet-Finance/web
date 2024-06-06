@@ -30,6 +30,9 @@ const BOND_DETAILS_QUERY = `id
                     owner {
                       id
                     }
+                    pendingOwner {
+                      id
+                    }                  
                     maturityPeriodInBlocks
                     payoutAmount
                     payoutBalance
@@ -273,6 +276,7 @@ async function indexerRequest(chainId: number, query: string): Promise<any> {
         throw Error("Indexer response is missing")
     }
 
+
     return response.data;
 }
 
@@ -291,6 +295,7 @@ function transformCoreDetails(item: any, chainId: number, block: string): Contra
         issuanceDate: new Date(item.issuanceDate * 1000).toString(),
         issuer: item.issuer.id,
         owner: item.owner.id,
+        pendingOwner: item.pendingOwner?.id,
 
         totalBonds: Number(item.totalBonds),
         purchased: Number(item.purchased),

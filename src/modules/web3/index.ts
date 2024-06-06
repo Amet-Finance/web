@@ -139,6 +139,13 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                         .encodeFunctionData('transferOwnership', [owner])
                 }
             }
+            case TxTypes.AcceptOwnership: {
+                const {contractAddress} = config;
+                return {
+                    to: contractAddress,
+                    data: FixedFlexBondController.getBondInterface().encodeFunctionData("acceptOwnership")
+                }
+            }
             default: {
                 throw Error("Invalid type")
             }

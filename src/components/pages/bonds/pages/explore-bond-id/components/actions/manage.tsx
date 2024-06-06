@@ -15,9 +15,10 @@ import {InfoBox} from "@/components/utils/info-box";
 import {InfoData} from "@/components/utils/types";
 import {URLS} from "@/modules/utils/urls";
 import {formatLargeNumber} from "@/modules/utils/numbers";
+import {useAccountExtended} from "@/modules/utils/address";
+import {shorten} from "@/modules/web3/util";
 
 // todo make this section cleaner and add visualisation(icons)
-
 
 const ACTION_CONSTANTS: StringKeyedObject<{ title: string, infoData: InfoData, placeholder?: string, }> = {
     DepositPayout: {
@@ -71,19 +72,45 @@ const ACTION_CONSTANTS: StringKeyedObject<{ title: string, infoData: InfoData, p
             isBlank: true
         },
         placeholder: "Enter new owner address"
-    }
+    },
+    AcceptOwnership: {
+        title: "Accept Ownership",
+        infoData: {
+            text: "Click to accept the ownership of the bond contract.",
+            link: URLS.ChangeOwner,
+            isBlank: true
+        }
+    },
 }
 
 export default function ManageTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
+    const {address} = useAccountExtended();
+
+    const isOwner = contractInfo.owner.toLowerCase() === address?.toLowerCase()
+    const isPendingOwner = contractInfo.pendingOwner?.toLowerCase() === address?.toLowerCase()
+
     return (
         <div className='relative flex flex-col gap-2 w-full overflow-y-scroll h-72'>
             <DepositPayout contractInfo={contractInfo}/>
-            <Settle contractInfo={contractInfo}/>
-            <WithdrawExcessPayout contractInfo={contractInfo}/>
-            <UpdateBondSupply contractInfo={contractInfo}/>
-            <DecreaseMaturityPeriod contractInfo={contractInfo}/>
-            <ChangeOwner contractInfo={contractInfo}/>
+            <ConditionalRenderer isOpen={isOwner}>
+                <Settle contractInfo={contractInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={isOwner}>
+                <WithdrawExcessPayout contractInfo={contractInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={isOwner}>
+                <UpdateBondSupply contractInfo={contractInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={isOwner}>
+                <DecreaseMaturityPeriod contractInfo={contractInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={isOwner}>
+                <ChangeOwner contractInfo={contractInfo}/>
+            </ConditionalRenderer>
+            <ConditionalRenderer isOpen={isPendingOwner}>
+                <AcceptOwnership contractInfo={contractInfo}/>
+            </ConditionalRenderer>
         </div>
     )
 }
@@ -238,7 +265,7 @@ function DecreaseMaturityPeriod({contractInfo}: Readonly<{ contractInfo: Contrac
 
 function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
-    const {contractAddress, chainId} = contractInfo;
+    const {contractAddress, chainId, pendingOwner} = contractInfo;
 
     const {isOpen, openOrClose} = useShow()
     const [owner, setOwner] = useState();
@@ -254,7 +281,13 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
 
     return (
         <ActionContainer isOpen={isOpen}>
-            <ContentContainer info={ACTION_CONSTANTS.ChangeOwner} isOpen={isOpen} isLoading={isLoading}
+            <ContentContainer info={ACTION_CONSTANTS.ChangeOwner} isOpen={isOpen}
+                              isLoading={isLoading}
+                              additionalChildren={
+                                  <ConditionalRenderer isOpen={Boolean(pendingOwner)}>
+                                  <span className='text-mm text-neutral-500 whitespace-nowrap'>Pending: {shorten(pendingOwner, 4)}</span>
+                                  </ConditionalRenderer>
+                              }
                               openOrClose={openOrClose}/>
             <ConditionalRenderer isOpen={isOpen}>
                 <InputContainer handler={handler}
@@ -262,6 +295,18 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
                                 placeholder={ACTION_CONSTANTS.ChangeOwner.placeholder}
                                 submit={submit}/>
             </ConditionalRenderer>
+        </ActionContainer>
+    )
+}
+
+function AcceptOwnership({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
+
+    const {contractAddress, chainId} = contractInfo;
+    const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.AcceptOwnership, {contractAddress})
+
+    return (
+        <ActionContainer onClick={submitTransaction}>
+            <ContentContainer info={ACTION_CONSTANTS.AcceptOwnership} isLoading={isLoading}/>
         </ActionContainer>
     )
 }

@@ -27,7 +27,8 @@ export default function ActionsContainer({contractInfo}: Readonly<{
     const selectionHandler = [selected, setSelected];
 
     return (
-        <div className='relative xl:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-96'>
+        <div
+            className='relative xl:col-span-4 col-span-12 flex flex-col gap-2 justify-between rounded-3xl p-6 border border-neutral-900 w-full h-96'>
             <ActionsHeadline contractInfo={contractInfo} selectionHandler={selectionHandler}/>
             <div className='flex justify-center h-full w-full'>
                 <TabSelector title={selected} contractInfo={contractInfo}/>
@@ -42,7 +43,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
 }>) {
 
 
-    const {contractAddress, chainId, owner} = contractInfo;
+    const {contractAddress, chainId, owner, pendingOwner} = contractInfo;
     const [selected, setSelected] = selectionHandler;
 
 
@@ -68,7 +69,8 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
             type: Tabs.Manage,
             icon: "/svg/images/manage.svg",
             addon: {
-                onlyOwner: true
+                onlyOwner: true,
+                onlyPendingOwner: true
             }
         },
         {
@@ -82,7 +84,7 @@ function ActionsHeadline({contractInfo, selectionHandler}: Readonly<{
         <div className='grid grid-cols-4 gap-2'>
             {
                 components.map(component => <HeadlineComponent
-                    component={{...component, addon: {...component.addon, owner: owner}}}
+                    component={{...component, addon: {...component.addon, owner, pendingOwner}}}
                     selected={selected}
                     key={component.type}
                     setSelected={setSelected}/>)
@@ -104,10 +106,10 @@ function HeadlineComponent({component, selected, setSelected}: {
     const select = () => setSelected(type)
 
     useEffect(() => {
-
-        const hide = addon?.onlyOwner && address && address?.toLowerCase() !== addon.owner?.toLowerCase()
-        setHide(Boolean(hide))
-
+        const showForOwner = addon?.onlyOwner && address && address?.toLowerCase() === addon.owner?.toLowerCase()
+        const showForPendingOwner = addon?.onlyPendingOwner && address && address?.toLowerCase() === addon.pendingOwner?.toLowerCase()
+        const allOtherCases = !addon?.onlyOwner && !addon?.onlyPendingOwner;
+        if (showForOwner || showForPendingOwner || allOtherCases) setHide(false);
     }, [address, addon]);
 
     if (isHide) return null;
