@@ -1,6 +1,7 @@
 import {StringKeyedObject} from "@/components/utils/types";
-import {base} from "wagmi/chains";
+import {arbitrum, base} from "wagmi/chains";
 import {BondContractTypes} from "@/modules/web3/constants";
+import {joltevmDev} from "@/modules/utils/custom-chains";
 
 const priorityBonds: StringKeyedObject<StringKeyedObject<{ type: string, boostedMultiplier?: number, score: number }>> = {
     [base.id]: {
@@ -9,7 +10,9 @@ const priorityBonds: StringKeyedObject<StringKeyedObject<{ type: string, boosted
             boostedMultiplier: 3,
             score: 50
         }
-    }
+    },
+    [arbitrum.id]: {},
+    [joltevmDev.id]: {}
 }
 
 export {

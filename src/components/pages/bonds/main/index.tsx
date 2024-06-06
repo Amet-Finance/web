@@ -12,8 +12,11 @@ import CloudAPI from "../../../../modules/api/cloud";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/api/type";
 import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
-import {useContracts} from "@/components/pages/bonds/utils/contracts";
+import {useContracts, useMixedContracts} from "@/components/pages/bonds/utils/contracts";
 import {defaultChain} from "@/modules/utils/wallet-connect";
+import {priorityBonds} from "@/modules/web3/featured";
+import {polygonZkEvm} from "viem/chains";
+import {base} from "wagmi/chains";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)
@@ -130,8 +133,8 @@ function StatisticsBox({classAttributes, value, title, isLoading}: Readonly<{
 
 function BondCards() {
 
-    const [params, setParams] = useState<ContractQuery>({limit: 12, chainId: defaultChain.id})
-    const {contracts, isLoading} = useContracts(params);
+
+    const {isLoading, contracts} = useMixedContracts()
 
     return (
         <div className='flex flex-col justify-center items-center w-full gap-4 rounded-3xl'>
@@ -157,7 +160,7 @@ function BondCards() {
 function ContractsContainer({contracts}: { contracts: ContractCoreDetails[] }) {
     return (
         <div className='relative w-full'>
-            <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4'>
+            <div className='grid xl-2xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-4 items-end'>
                 {contracts.map(contract => <BondCard info={contract} key={contract.contractAddress}/>)}
             </div>
         </div>

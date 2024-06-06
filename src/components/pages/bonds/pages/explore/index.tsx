@@ -20,7 +20,6 @@ export default function Explore() {
 
     const [filter, setFilter] = useState<ContractQuery>({chainId: defaultChain.id})
 
-
     return (
         <GeneralContainer className='flex flex-col justify-center items-center w-full sm:py-24 py-12 gap-12' isPadding>
             <div className='flex flex-col items-center gap-8 px-8'>
@@ -33,7 +32,7 @@ export default function Explore() {
             </div>
             <div className='flex flex-col gap-8 w-full pt-8'>
                 <FilterContainer filterHandler={[filter, setFilter]}/>
-                <div className='grid 2xl:grid-cols-3 md-lg:grid-cols-2 grid-cols-1 gap-2'>
+                <div className='grid 2xl:grid-cols-3 md-lg:grid-cols-2 grid-cols-1 gap-2 items-end'>
                     <BondCards filter={filter}/>
                 </div>
             </div>
@@ -191,6 +190,7 @@ function ChainWrapper({chain, selectChain}: Readonly<{ chain: Chain, selectChain
 function BondCards({filter}: Readonly<{ filter: ContractQuery }>) {
     const {isLoading, contracts} = useContracts(filter);
 
+    console.log(isLoading, contracts)
     return (
         <ToggleBetweenChildren isOpen={isLoading}>
             <HorizontalLoading className='col-span-3 h-32'/>

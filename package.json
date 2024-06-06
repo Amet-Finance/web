@@ -14,7 +14,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@vercel/og": "^0.6.2",
     "@web3modal/wagmi": "^3.5.7",
-    "amet-utils": "^1.5.4",
+    "amet-utils": "^1.6.2",
     "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",
     "chart.js": "^4.4.0",

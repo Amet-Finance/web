@@ -3,7 +3,6 @@ import {formatLargeNumber} from "@/modules/utils/numbers";
 import {shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {tColor} from "@/components/pages/bonds/utils/colors";
-import {constants} from 'amet-utils'
 import {formatTime} from "@/modules/utils/dates";
 import makeBlockie from "ethereum-blockies-base64";
 import {shortenString} from "@/modules/utils/string";
@@ -15,10 +14,9 @@ import SecureSVG from "../../../../../../public/svg/utils/secure";
 import SoldOutSVG from "../../../../../../public/svg/utils/sold-out";
 import {InfoDescription} from "@/components/utils/info-box";
 import {priorityBonds} from "@/modules/web3/featured";
-import {BondContractTypes} from "@/modules/web3/constants";
+import {BondContractTypes, CHAIN_BLOCK_TIMES} from "@/modules/web3/constants";
 import {TagTexts} from "@/components/pages/bonds/utils/constants";
 
-const {CHAIN_BLOCK_TIMES} = constants;
 
 export default function BondCard({info, link}: Readonly<{ info: ContractCoreDetails, link?: string }>) {
     const purchase = useFinancialAttributeExtended(info.purchase);
@@ -49,7 +47,7 @@ export default function BondCard({info, link}: Readonly<{ info: ContractCoreDeta
     const redeemedPercentage = Math.round(redeemed * 100 / totalBonds);
     const purchasedPercentage = Math.round(purchased * 100 / totalBonds);
 
-    const maturityPeriodClean = (CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
+    const maturityPeriodClean = CHAIN_BLOCK_TIMES[chainId] * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
     const payoutIcon = payout.icon ?? makeBlockie(contractAddress);

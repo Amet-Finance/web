@@ -1,6 +1,6 @@
 import {getChain} from "@/modules/utils/wallet-connect";
 import {useState} from "react";
-import {TxTypes} from "@/modules/web3/constants";
+import {CHAIN_BLOCK_TIMES, TxTypes} from "@/modules/web3/constants";
 import BigNumber from "bignumber.js";
 import {toast} from "react-toastify";
 import {Loading} from "@/components/utils/loading";
@@ -15,7 +15,6 @@ import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccountExtended, useBalances, useConnectWallet} from "@/modules/utils/address";
 import AccountStore from "@/store/redux/account";
 import {nop} from "@/modules/utils/function";
-import {constants} from "amet-utils";
 import {formatTime} from "@/modules/utils/dates";
 import {shortenString} from "@/modules/utils/string";
 
@@ -37,7 +36,7 @@ export default function RedeemTab({contractInfo}: Readonly<{
 
     const totalQuantity = contractBalances.reduce((acc: number, value: ContractBalance) => acc + value.balance, 0);
     const {matureTokenIds, minBlocksLeft} = filterTokenIds(contractInfo, contractBalances);
-    const minTimeTillMaturity = minBlocksLeft !== null ? formatTime(minBlocksLeft * constants.CHAIN_BLOCK_TIMES[contractInfo.chainId]) : null;
+    const minTimeTillMaturity = minBlocksLeft !== null ? formatTime(minBlocksLeft * CHAIN_BLOCK_TIMES[contractInfo.chainId]) : null;
 
     const matureQuantity = matureTokenIds.reduce((acc: number, tokenId: number) => acc + (contractBalances.find(item => item.tokenId === tokenId)?.balance ?? 0), 0)
 

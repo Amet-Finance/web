@@ -1,5 +1,11 @@
 import {getChain} from "@/modules/utils/wallet-connect";
 import {ExplorerTypes} from "@/modules/web3/type";
+import {FIXED_FLEX_ISSUER_CONTRACTS} from "@/modules/web3/constants";
+
+function getIssuerContract(chainId: number | string) {
+    const issuerContracts = FIXED_FLEX_ISSUER_CONTRACTS[chainId]
+    return issuerContracts[issuerContracts.length - 1]
+}
 
 function getExplorer(chainId: number | string | undefined, type: ExplorerTypes, value: string) {
     const chain = getChain(chainId)
@@ -29,6 +35,7 @@ function shorten(address: string | any, length = 6) {
 }
 
 export {
+    getIssuerContract,
     getExplorer,
     shorten
 }

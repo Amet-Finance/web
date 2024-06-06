@@ -10,11 +10,7 @@ import {getExplorer, shorten} from "@/modules/web3/util";
 import WarningSVG from "../../../../../../../public/svg/utils/warning";
 import {InfoDescription} from "@/components/utils/info-box";
 import {ConditionalRenderer} from "@/components/utils/container";
-import {constants} from 'amet-utils';
-import SecureSVG from "../../../../../../../public/svg/utils/secure";
-import SoldOutSVG from "../../../../../../../public/svg/utils/sold-out";
-
-const {CHAIN_BLOCK_TIMES} = constants;
+import {CHAIN_BLOCK_TIMES} from "@/modules/web3/constants";
 
 export default function MainDetailsContainer({bondDetailed}: Readonly<{ bondDetailed: ContractExtendedFormat }>) {
     const {contractInfo} = bondDetailed;

@@ -245,6 +245,7 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
 
     const handler = [owner, setOwner];
 
+    console.log(`owner`, owner)
 
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.ChangeOwner, {contractAddress, owner})
 
@@ -259,6 +260,7 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
                               openOrClose={openOrClose}/>
             <ConditionalRenderer isOpen={isOpen}>
                 <InputContainer handler={handler}
+                                type="string"
                                 placeholder={ACTION_CONSTANTS.ChangeOwner.placeholder}
                                 submit={submit}/>
             </ConditionalRenderer>

@@ -2,7 +2,6 @@ import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
 import {getChain} from "@/modules/utils/wallet-connect";
-import {useAccount} from "wagmi";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {nop} from "@/modules/utils/function";
 import {formatLargeNumber} from "@/modules/utils/numbers";
@@ -15,9 +14,10 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {copyReferralCode} from "@/components/pages/bonds/pages/explore-bond-id/utils";
 import CopySVG from "../../../../../../../../public/svg/utils/copy";
 import {ToggleBetweenChildren} from "@/components/utils/container";
-import {FixedFlexIssuerController, FixedFlexVaultController, utils, VaultFeeDetails,} from "amet-utils";
+import {FixedFlexIssuerController, FixedFlexVaultController, VaultFeeDetails} from "amet-utils";
 import {BigNumber} from "ethers";
 import {useAccountExtended} from "@/modules/utils/address";
+import {getIssuerContract} from "@/modules/web3/util";
 
 export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: ContractCoreDetails }>) {
 
@@ -45,7 +45,7 @@ export default function ReferralTab({contractInfo}: Readonly<{ contractInfo: Con
 
     useEffect(() => {
         if (chain) {
-            FixedFlexIssuerController.getVaultContract(chain.id, utils.getIssuerContract(chain.id))
+            FixedFlexIssuerController.getVaultContract(chain.id, getIssuerContract(chain.id))
                 .then(response => setVaultAddress(response.address))
                 .catch(nop)
         }

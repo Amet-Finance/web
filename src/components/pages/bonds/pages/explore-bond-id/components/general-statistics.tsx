@@ -6,9 +6,7 @@ import {getExplorer, shorten} from "@/modules/web3/util";
 import Link from "next/link";
 import {Chart, ChartOptions, registerables} from "chart.js";
 import {format, formatLargeNumber} from "@/modules/utils/numbers";
-import {LogTypes} from "@/modules/web3/constants";
-import {StringKeyedObject} from "@/components/utils/types";
-import {constants} from "amet-utils";
+import {CHAIN_BLOCK_TIMES, LogTypes} from "@/modules/web3/constants";
 
 const StatisticsTypes = {
     Purchase: "Purchase",
@@ -72,7 +70,7 @@ function Container({type, total, contractInfo, data, asset}: Readonly<{
     const totalInUsd = (asset.priceUsd ?? 0) * total
     const title = Boolean(totalInUsd) ? `$${formatLargeNumber(totalInUsd)}` : `${formatLargeNumber(total)} ${asset.symbol}`
 
-    const dayIntoBlocks = (24 * 60 * 60) / constants.CHAIN_BLOCK_TIMES[contractInfo.chainId]
+    const dayIntoBlocks = (24 * 60 * 60) / CHAIN_BLOCK_TIMES[contractInfo.chainId]
 
     const rangeBlock = contractInfo.block - dayIntoBlocks;
     const minBlock = contractInfo.block - dayIntoBlocks;

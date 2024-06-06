@@ -9,23 +9,10 @@ import {
 } from "@/modules/api/contract-type";
 import BigNumber from "bignumber.js";
 import {ActionLogFormat} from "@/components/pages/bonds/pages/explore-bond-id/type";
-import {constants} from "amet-utils";
 import {Balances, ContractBalance} from "@/modules/api/type";
-import {LogTypes} from "@/modules/web3/constants";
-import {StringKeyedObject} from "@/components/utils/types";
-import {base} from "wagmi/chains";
+import {GRAPH_CONFIG, LogTypes} from "@/modules/web3/constants";
 import {priorityBonds} from "@/modules/web3/featured";
-
-const ChainStartBlock: any = {
-    [base.id]: 14022551
-}
-
-function getApi(chainId: number) {
-    const API: StringKeyedObject<string> = {
-        [base.id]: `https://subgraph.satsuma-prod.com/10c8c7e96744/unconstraineds-team--970943/Amet-Finance-8453/api`
-    }
-    return API[chainId];
-}
+import {ethers} from "ethers";
 
 const BOND_DETAILS_QUERY = `id
                     hash
@@ -77,18 +64,26 @@ const ACTION_LOGS = `actionLogs(orderBy: blockNumber, orderDirection: desc) {
                     }`
 
 async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[]> {
-    const {chainId} = params;
+    const {chainId, contractAddresses} = params;
 
     const purchaseExists = Boolean(params.purchaseToken);
     const payoutExists = Boolean(params.payoutToken);
 
-    const whereObject: any = {"issuanceBlock_gt": ChainStartBlock[chainId]}
+    const whereObject: any = {"issuanceBlock_gt": GRAPH_CONFIG[chainId].startBlock}
 
     if (purchaseExists) whereObject.purchaseToken = params.purchaseToken?.toLowerCase();
     if (payoutExists) whereObject.payoutToken = params.payoutToken?.toLowerCase();
+    if (contractAddresses?.length) whereObject.id_in = contractAddresses.map(i => i.toLowerCase());
 
+    const whereQuery = Object.keys(whereObject).reduce((acc, key, index) => {
 
-    const whereQuery = Object.keys(whereObject).reduce((acc, key, index) => acc += `${key}: "${whereObject[key]}",`, "")
+        if (typeof whereObject[key] !== "object") {
+            acc += `${key}: "${whereObject[key]}",`
+        } else {
+            acc += `${key}: ${JSON.stringify(whereObject[key])},`
+        }
+        return acc;
+    }, "")
 
     const query = `
                     {
@@ -104,6 +99,7 @@ async function getContracts(params: ContractQuery): Promise<ContractCoreDetails[
                       }
                     }
         `
+
 
     const response = await indexerRequest(chainId, query)
 
@@ -259,7 +255,7 @@ async function getBalance(address: string, bondAddress: string, chainId: number)
 }
 
 async function indexerRequest(chainId: number, query: string): Promise<any> {
-    const graphQlUrl = getApi(chainId)
+    const graphQlUrl = GRAPH_CONFIG[chainId].url;
 
     if (!graphQlUrl) {
         throw Error(`Indexer for ${chainId} is not supported!`)
@@ -333,9 +329,9 @@ function transformActionDetails(item: any): ActionLogFormat[] {
     return logs.map((log: any) => {
 
         let type = LogTypes.Transfer;
-        if (log.from.toLowerCase() === constants.AddressZero.toLowerCase()) {
+        if (log.from.toLowerCase() === ethers.constants.AddressZero.toLowerCase()) {
             type = LogTypes.Purchase
-        } else if (log.to.toLowerCase() === constants.AddressZero.toLowerCase()) {
+        } else if (log.to.toLowerCase() === ethers.constants.AddressZero.toLowerCase()) {
             type = LogTypes.Redeem
         }
 

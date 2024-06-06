@@ -11,6 +11,7 @@ type ContractQuery = {
     skip?: number,
     limit?: number,
     contractAddress?: string,
+    contractAddresses?: string[],
     includeActionLogs?: boolean,
 
     trending?: boolean,

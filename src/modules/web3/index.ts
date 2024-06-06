@@ -7,23 +7,18 @@ import {ToastPromiseParams} from "react-toastify/dist/core/toast";
 import {ContractInfoType} from "@/modules/web3/type";
 
 import {
-    constants,
     Erc20Controller,
     FixedFlexBondController,
     FixedFlexIssuerController,
     FixedFlexVaultController,
     ProviderController,
-    utils
 } from "amet-utils";
 
 import {TransactionReceipt} from "@ethersproject/abstract-provider";
 import BigNumber from "bignumber.js";
 import {BondInfoForIssuance} from "@/components/pages/bonds/pages/issue/type";
-
-async function getBlockNumber(chain: Chain) {
-    const {provider} = new ProviderController(chain.id);
-    return await provider.getBlockNumber();
-}
+import {getIssuerContract} from "@/modules/web3/util";
+import {ethers} from "ethers";
 
 function getContractInfoByType(chain: Chain | undefined, txType: string, config: any): ContractInfoType {
     try {
@@ -41,7 +36,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                     payoutToken,
                     payoutAmount
                 } = bondInfo as BondInfoForIssuance;
-                const issuerContract = utils.getIssuerContract(chain.id);
+                const issuerContract = getIssuerContract(chain.id);
 
                 // for total etc... check uint40
                 if (totalBonds > 1099511627775) throw Error("Total Bonds MAX reached")
@@ -77,7 +72,7 @@ function getContractInfoByType(chain: Chain | undefined, txType: string, config:
                 return {
                     to: contractAddress,
                     data: FixedFlexBondController.getBondInterface()
-                        .encodeFunctionData("purchase", [count, (referrer ?? constants.AddressZero)])
+                        .encodeFunctionData("purchase", [count, (referrer ?? ethers.constants.AddressZero)])
                 }
             }
             case TxTypes.RedeemBonds: {
@@ -198,7 +193,7 @@ async function trackTransactionReceipt(chain: Chain, txHash: string, recursionCo
 
 
 async function decodeTransactionLogs(chain: Chain, transaction: TransactionReceipt) {
-    const isFixedFlexIssuer = utils.getIssuerContract(chain.id).toLowerCase() === transaction.to?.toLowerCase();
+    const isFixedFlexIssuer = getIssuerContract(chain.id).toLowerCase() === transaction.to?.toLowerCase();
 
     switch (true) {
         case isFixedFlexIssuer: {
@@ -218,7 +213,6 @@ async function decodeTransactionLogs(chain: Chain, transaction: TransactionRecei
 }
 
 export {
-    getBlockNumber,
     getContractInfoByType,
     trackTransaction,
 }

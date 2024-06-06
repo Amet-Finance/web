@@ -22,7 +22,7 @@ import {IssuerContractInfoDetailed} from "@/modules/web3/type";
 import VerifiedSVG from "../../../../../../public/svg/utils/verified";
 import {Loading} from "@/components/utils/loading";
 import WarningSVG from "../../../../../../public/svg/utils/warning";
-import {TxTypes} from "@/modules/web3/constants";
+import {CHAIN_BLOCK_TIMES, TxTypes} from "@/modules/web3/constants";
 import {toast} from "react-toastify";
 import Link from "next/link";
 import {URLS} from "@/modules/utils/urls";
@@ -30,13 +30,14 @@ import {useTransaction} from "@/modules/utils/transaction";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
 import {ModalTypes} from "@/store/redux/modal/constants";
 import {StringKeyedObject} from "@/components/utils/types";
-import {constants, FixedFlexIssuerController, utils} from "amet-utils";
+import {FixedFlexIssuerController} from "amet-utils";
 import {InfoData} from "@/components/utils/types";
 import ModalStore from "@/store/redux/modal";
 import {useTokenBalance} from "@/components/pages/bonds/utils/balance";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import BigNumber from "bignumber.js";
 import {useTokensByChain} from "@/modules/utils/token";
+import {getIssuerContract} from "@/modules/web3/util";
 
 export default function Issue() {
     const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
@@ -53,7 +54,7 @@ export default function Issue() {
         if (chain) {
             setIssuerContractInfo({} as IssuerContractInfoDetailed);
             setIsOpen(true);
-            FixedFlexIssuerController.getIssuerDetails(chain.id, utils.getIssuerContract(chain.id))
+            FixedFlexIssuerController.getIssuerDetails(chain.id, getIssuerContract(chain.id))
                 .then(response => {
                     setIsOpen(false);
                     const normalizedAmount = Number(response.issuanceFee) / 10 ** chain.nativeCurrency.decimals;
@@ -314,7 +315,7 @@ function MaturityPeriodSelector({bondInfoHandler}: Readonly<BondData>) {
     const boxRef = useRef<any>(null)
     const [type, setType] = useState(Types.Days);
     const {isOpen, setIsOpen, openOrClose} = useShow();
-    const inputValue = type === Types.Blocks ? bondInfo.maturityPeriodInBlocks : (bondInfo.maturityPeriodInBlocks * constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]) / Timers[type];
+    const inputValue = type === Types.Blocks ? bondInfo.maturityPeriodInBlocks : (bondInfo.maturityPeriodInBlocks * CHAIN_BLOCK_TIMES[bondInfo.chainId]) / Timers[type];
 
     useEffect(() => {
         const handleClickOutside = (event: Event) => {
@@ -331,9 +332,9 @@ function MaturityPeriodSelector({bondInfoHandler}: Readonly<BondData>) {
 
     function updateMaturityPeriod(calculationType: string, value: number) {
         const preValue = Timers[calculationType] * Number(value)
-        if (!constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]) return toast.error("Please select the chain first!")
+        if (!CHAIN_BLOCK_TIMES[bondInfo.chainId]) return toast.error("Please select the chain first!")
 
-        const maturityPeriodInBlocks = calculationType === Types.Blocks ? preValue : preValue / constants.CHAIN_BLOCK_TIMES[bondInfo.chainId]
+        const maturityPeriodInBlocks = calculationType === Types.Blocks ? preValue : preValue / CHAIN_BLOCK_TIMES[bondInfo.chainId]
         setBondInfo({...bondInfo, maturityPeriodInBlocks})
     }
 
@@ -451,7 +452,7 @@ function Preview({bondInfoHandler, tokensHandler, issuerContractInfo}: BondCombi
 
     const chainInfo = getChain(bondInfo.chainId)
 
-    const maturityPeriodTime = (constants.CHAIN_BLOCK_TIMES[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
+    const maturityPeriodTime = (CHAIN_BLOCK_TIMES[bondInfo.chainId] * bondInfo.maturityPeriodInBlocks) || 0
     const maturityPeriodStrLong = formatTime(maturityPeriodTime)
     const maturityPeriodStr = formatTime(maturityPeriodTime, true)
 

@@ -1,7 +1,6 @@
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react';
-import {base} from 'wagmi/chains';
+import {arbitrum, base} from 'wagmi/chains';
 import {Chain} from "wagmi";
-import {joltevmDev} from "@/modules/utils/custom-chains";
 
 const projectId = '777e05ce479a4c4b6e33deaed761ef5b'
 
@@ -12,8 +11,9 @@ const metadata = {
     icons: ['https://amet.finance/meta/amet-logo-black.jpg']
 }
 
-const CHAINS = [base, joltevmDev]
+const CHAINS = [base, arbitrum]
 const defaultChain = CHAINS[0];
+
 const wagmiConfig = defaultWagmiConfig({
     chains: CHAINS,
     projectId,
@@ -32,7 +32,7 @@ function getChainIcon(chainId: string | number | undefined) {
     return `/svg/chains/${chainId}.svg`;
 }
 
-function getChain(chainId: string | number| undefined): Chain|undefined {
+function getChain(chainId: string | number | undefined): Chain | undefined {
     return CHAINS.find(item => item.id === Number(chainId))
 }
 

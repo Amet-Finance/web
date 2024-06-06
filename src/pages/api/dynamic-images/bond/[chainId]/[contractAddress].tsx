@@ -4,8 +4,8 @@ import GraphqlAPI from "@/modules/api/graphql";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import {shortenString} from "@/modules/utils/string";
 import {formatTime} from "@/modules/utils/dates";
-import {constants} from 'amet-utils'
 import {URLS} from "@/modules/utils/urls";
+import {CHAIN_BLOCK_TIMES} from "@/modules/web3/constants";
 
 export const config = {
     runtime: "edge"
@@ -34,7 +34,7 @@ export default async function DynamicImageBond(req: NextRequest) {
     const payoutSymbolShort = shortenString(payout.symbol, 5)
     const purchaseSymbolShort = shortenString(purchase.symbol, 5)
 
-    const maturityPeriodClean = (constants.CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
+    const maturityPeriodClean = (CHAIN_BLOCK_TIMES[chainId] || 1) * maturityPeriodInBlocks
     const maturityInTime = formatTime(maturityPeriodClean, true, true, true)
 
     const issuanceDateInFormat = new Date(issuanceDate);
