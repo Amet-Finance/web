@@ -19,7 +19,7 @@ function score(contract: ContractCoreDetails) {
 }
 
 function securedPercentage(contract: ContractCoreDetails, includeMin?: boolean) {
-    const {payout, payoutBalance, totalBonds, redeemed,} = contract;
+    const {payout, payoutBalance, totalBonds, redeemed} = contract;
 
     const payoutBalanceClean = BigNumber(payoutBalance.toString()).div(BigNumber(10).pow(BigNumber(payout.decimals))).toNumber()
     const notRedeemed = BigNumber(totalBonds - redeemed).times(payout.amountClean).toNumber();

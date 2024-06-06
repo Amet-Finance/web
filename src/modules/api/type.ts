@@ -75,6 +75,7 @@ type User = {
     email?: string
     emailCode?: string,
     emailPending?: string,
+    gitcoinScore?: number
 }
 
 
@@ -83,6 +84,7 @@ type Social = {
     username: string
 }
 
+type GetUserConfig = { includeGitcoinScore?: boolean }
 
 export type  {
     User,
@@ -98,5 +100,6 @@ export type  {
     ContractBalance,
     AuthenticatedRequest,
     SuccessResult,
-    FailedResult
+    FailedResult,
+    GetUserConfig
 }

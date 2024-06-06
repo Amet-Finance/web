@@ -33,7 +33,8 @@ export default function ExploreBondId(params: Readonly<ExploreBondIdType>) {
 
     return (
         <GeneralContainer className='flex flex-col gap-4 w-full sm:py-24 py-12' isPadding>
-            <HeadlineContainer contractInfo={bondDetailed.contractInfo} refreshHandler={refreshHandler} refreshLoader={refreshLoader}/>
+            <HeadlineContainer contractInfo={bondDetailed.contractInfo} refreshHandler={refreshHandler}
+                               refreshLoader={refreshLoader}/>
             <FinishedComponent contractInfo={bondDetailed.contractInfo}/>
             <StatisticsContainer contractInfo={bondDetailed.contractInfo}/>
             <div className='grid grid-cols-12 w-full gap-4 h-full'>
@@ -73,7 +74,6 @@ function useExtendedFetch({bondDetailedTmp, queryParams}: Readonly<ExploreBondId
                 .catch(nop)
                 .finally(() => setRefreshLoader(false))
         }
-
 
         updater();
         const interval = setInterval(updater, UPDATE_INTERVAL)

@@ -3,7 +3,7 @@ import {API_URL} from "@/modules/api/constants";
 import {
     AuthenticatedRequest,
     GeneralStatistics,
-    GeneralStatsKey,
+    GeneralStatsKey, GetUserConfig,
     StatisticsTypes, SuccessResult,
     TBVStatistics,
     TokensResponse,
@@ -13,9 +13,9 @@ import {TokenResponseDetailed} from "@/modules/web3/type";
 import {ContractDescription, DescriptionEditParams, EmailEditParams, ReportBody} from "@/modules/api/contract-type";
 
 
-async function getUser(address: string): Promise<User> {
+async function getUser(address: string, config?: GetUserConfig): Promise<User> {
     const url = `${API_URL}/v1/address`;
-    return await requestAPI({url, params: {address}})
+    return await requestAPI({url, params: {address, includeGitcoinScore: config?.includeGitcoinScore}})
 }
 
 async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T extends GeneralStatsKey ? GeneralStatistics : TBVStatistics> {
@@ -25,7 +25,11 @@ async function getStatistics<T extends StatisticsTypes>(type: T): Promise<T exte
 }
 
 
-async function getTokens(params: { chainId?: number, contractAddresses?: string[], verified?: boolean }): Promise<TokensResponse> {
+async function getTokens(params: {
+    chainId?: number,
+    contractAddresses?: string[],
+    verified?: boolean
+}): Promise<TokensResponse> {
     const url = `${API_URL}/v1/token`
     return await requestAPI({
         url,
