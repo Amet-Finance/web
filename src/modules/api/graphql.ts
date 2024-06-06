@@ -13,6 +13,7 @@ import {Balances, ContractBalance} from "@/modules/api/type";
 import {GRAPH_CONFIG, LogTypes} from "@/modules/web3/constants";
 import {priorityBonds} from "@/modules/web3/featured";
 import {ethers} from "ethers";
+import {getChain} from "@/modules/utils/chain";
 
 const BOND_DETAILS_QUERY = `id
                     hash
@@ -138,12 +139,14 @@ async function getContractExtended(params: ContractQuery): Promise<ContractExten
     const contractInfo = transformCoreDetails(bond, chainId, block);
     const actionLogs = transformActionDetails(bond)
     const contractDescription = await requestAPI({url: bond?.uri});
+
+    const chain = getChain(chainId)
     if (!contractInfo) return null;
 
 
     return {
         contractDescription: {
-            name: `Amet Finance | ${contractInfo.purchase.symbol}-${contractInfo.payout.symbol} | Fixed Flex`,
+            name: `Amet Finance | ${contractInfo.purchase.symbol}-${contractInfo.payout.symbol} | Fixed Flex | ${chain?.name}`,
             isInitiated: Boolean(contractDescription),
             ...(contractDescription || {})
         },

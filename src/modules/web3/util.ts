@@ -1,4 +1,4 @@
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {ExplorerTypes} from "@/modules/web3/type";
 import {FIXED_FLEX_ISSUER_CONTRACTS} from "@/modules/web3/constants";
 

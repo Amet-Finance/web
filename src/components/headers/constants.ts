@@ -9,13 +9,15 @@ const MetaConstants: StringKeyedObject<MetaInfo> = {
         title: "Issue On-Chain Bonds Seamlessly | Amet Finance",
         description: "Create and issue on-chain bonds with ease using Amet Finance. Tailor your financial instruments for maximum impact in the decentralized finance landscape."
     },
-    [PageId.BondsPage]: {
-        title: "Invest in On-Chain Bonds - Secure & Transparent | Amet Finance",
-        description: "Explore secure and transparent on-chain bonds on Amet Finance. Invest wisely in the future of decentralized finance with trusted on-chain solutions."
-    },
     [PageId.ExplorePage]: {
         title: "Explore Top On-Chain Bonds | Amet Finance",
         description: "Browse through top on-chain bonds offered by Amet Finance. Discover the best investment opportunities in a decentralized finance environment."
+    },
+
+
+    [PageId.BondsPage]: {
+        title: "Invest in On-Chain Bonds - Secure & Transparent | Amet Finance",
+        description: "Explore secure and transparent on-chain bonds on Amet Finance. Invest wisely in the future of decentralized finance with trusted on-chain solutions."
     },
     [PageId.AddressId]: {
         title: "Account Explorer - Manage Your Profile & Investments | Amet Finance",

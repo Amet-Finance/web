@@ -245,8 +245,6 @@ function ChangeOwner({contractInfo}: Readonly<{ contractInfo: ContractCoreDetail
 
     const handler = [owner, setOwner];
 
-    console.log(`owner`, owner)
-
     const {submitTransaction, isLoading} = useTransaction(chainId, TxTypes.ChangeOwner, {contractAddress, owner})
 
     async function submit() {

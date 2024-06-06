@@ -1,9 +1,8 @@
 import AddressId from "@/components/pages/address/address-id";
 import GraphqlAPI from "@/modules/api/graphql";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {defaultChain} from "@/modules/utils/constants";
 import {AccountExtendedFormat} from "@/modules/api/contract-type";
 import {PageId} from "@/components/pages/constants";
-import AccountStore from "@/store/redux/account";
 import CloudAPI from "@/modules/api/cloud";
 
 export default function AddressPage({accountExtendedFormat}: Readonly<{

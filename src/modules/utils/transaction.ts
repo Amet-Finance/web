@@ -1,7 +1,7 @@
 import {getContractInfoByType, trackTransaction} from "@/modules/web3";
 import {useNetworkExtended} from "@/modules/utils/chain";
 import {useAccount, useSendTransaction, useSignMessage} from "wagmi";
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {StringKeyedObject} from "@/components/utils/types";
 import {useConnectWallet} from "@/modules/utils/address";
 

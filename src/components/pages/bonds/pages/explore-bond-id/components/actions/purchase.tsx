@@ -1,6 +1,6 @@
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useAccount} from "wagmi";
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import BigNumber from "bignumber.js";

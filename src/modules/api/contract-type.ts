@@ -21,6 +21,12 @@ type ContractQuery = {
     payoutToken?: string
 }
 
+type UrlQuery = {
+    chainId?: number,
+    purchaseToken?: string,
+    payoutToken?: string
+}
+
 type AmountInfo = {
     amount: string
     amountClean: number,
@@ -140,7 +146,8 @@ export type  {
     DescriptionEditParams,
     AccountExtendedFormat,
     EmailEditParams,
-    ReportBody
+    ReportBody,
+    UrlQuery
 }
 
 

@@ -1,5 +1,5 @@
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {isAddress} from "viem";
 import {toast} from "react-toastify";
 import {ContractExtendedFormat} from "@/modules/api/contract-type";

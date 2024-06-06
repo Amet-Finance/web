@@ -1,8 +1,8 @@
 import BondCard from "@/components/pages/bonds/utils/bond-card";
 import React, {useState} from "react";
-import {ContractQuery} from "@/modules/api/contract-type";
+import {ContractQuery, UrlQuery} from "@/modules/api/contract-type";
 import ArrowBasicSVG from "../../../../../../public/svg/utils/arrow-basic";
-import {CHAINS, defaultChain, getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {SupportedChains, defaultChain} from "@/modules/utils/constants";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
 import {ConditionalRenderer, GeneralContainer, ToggleBetweenChildren, useShow} from "@/components/utils/container";
@@ -14,11 +14,15 @@ import {TokenResponse} from "@/modules/api/type";
 import makeBlockie from "ethereum-blockies-base64";
 import {zeroAddress} from "viem";
 import XmarkSVG from "../../../../../../public/svg/utils/xmark";
+import {getChain, getChainIcon} from "@/modules/utils/chain";
 
-export default function Explore() {
+export default function Explore({config}: { config: UrlQuery }) {
 
-
-    const [filter, setFilter] = useState<ContractQuery>({chainId: defaultChain.id})
+    const [filter, setFilter] = useState<ContractQuery>({
+        chainId: config?.chainId || defaultChain.id,
+        purchaseToken: config?.purchaseToken || "",
+        payoutToken: config?.payoutToken || ""
+    })
 
     return (
         <GeneralContainer className='flex flex-col justify-center items-center w-full sm:py-24 py-12 gap-12' isPadding>
@@ -86,7 +90,7 @@ function ChainSelector({params, selectChain}: Readonly<{
             <ConditionalRenderer isOpen={isOpen}>
                 <div className='flex flex-col absolute top-[110%] bg-neutral-900 rounded-md p-2 w-max z-50'>
                     {
-                        CHAINS.map(chain =>
+                        SupportedChains.map(chain =>
                             <ChainWrapper chain={chain} selectChain={selectChainAndClose}
                                           key={chain.id}/>
                         )}
@@ -190,7 +194,6 @@ function ChainWrapper({chain, selectChain}: Readonly<{ chain: Chain, selectChain
 function BondCards({filter}: Readonly<{ filter: ContractQuery }>) {
     const {isLoading, contracts} = useContracts(filter);
 
-    console.log(isLoading, contracts)
     return (
         <ToggleBetweenChildren isOpen={isLoading}>
             <HorizontalLoading className='col-span-3 h-32'/>

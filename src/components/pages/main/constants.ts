@@ -1,6 +1,6 @@
 import {Article, Question} from "@/components/pages/main/types";
 import {ContractCoreDetails, FinancialAttributeExtended} from "@/modules/api/contract-type";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {defaultChain} from "@/modules/utils/constants";
 
 const ARTICLES: Article[] = [
     {

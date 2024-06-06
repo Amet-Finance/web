@@ -8,7 +8,7 @@ import {
 } from "@/components/pages/bonds/pages/issue/type";
 import {Chain, useAccount} from "wagmi";
 import {InfoBox} from "@/components/utils/info-box";
-import {CHAINS, defaultChain, getChain} from "@/modules/utils/wallet-connect";
+import {SupportedChains, defaultChain} from "@/modules/utils/constants";
 import {InfoSections} from "@/components/pages/bonds/pages/issue/constants";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
@@ -38,9 +38,14 @@ import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/co
 import BigNumber from "bignumber.js";
 import {useTokensByChain} from "@/modules/utils/token";
 import {getIssuerContract} from "@/modules/web3/util";
+import {UrlQuery} from "@/modules/api/contract-type";
+import {getChain} from "@/modules/utils/chain";
 
-export default function Issue() {
-    const [bondInfo, setBondInfo] = useState({chainId: defaultChain.id} as BondInfoForIssuance);
+export default function Issue({config}: { config: UrlQuery }) {
+
+    const [bondInfo, setBondInfo] = useState({
+        chainId: config.chainId || defaultChain.id
+    } as BondInfoForIssuance);
     const [tokens, setTokens] = useState({} as TokensResponse)
     const [issuerContractInfo, setIssuerContractInfo] = useState({} as IssuerContractInfoDetailed)
     const {isOpen, setIsOpen} = useShow();
@@ -80,7 +85,9 @@ export default function Issue() {
     )
 }
 
-function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo, isLoading}: BondCombinedData & {isLoading: boolean}) {
+function IssuerContainer({bondInfoHandler, tokensHandler, issuerContractInfo, isLoading}: BondCombinedData & {
+    isLoading: boolean
+}) {
 
     const [bondInfo] = bondInfoHandler;
     const [tokens] = tokensHandler
@@ -264,7 +271,7 @@ function TokenSelector({type, bondInfoHandler, tokensHandler}: BondAndTokenDataW
                 className='absolute flex flex-col gap-1 bg-[#131313] w-full rounded-md top-[110%] left-0 z-10 max-h-56 overflow-y-auto'>
                 {verifiedTokensArray.map(token => <TokenForSelector token={token}
                                                                     key={token.contractAddress}
-                                                            onClick={selectToken}/>)}
+                                                                    onClick={selectToken}/>)}
             </div>
         </ConditionalRenderer>
     </div>
@@ -288,7 +295,7 @@ function TokenForSelector({token, onClick}: Readonly<{ token: TokenResponse, onC
 
     return <button
         className='flex items-center gap-1 w-full cursor-pointer px-4 py-2 hover:bg-neutral-800 rounded-md whitespace-nowrap'
-                   onClick={() => onClick(token.contractAddress)}>
+        onClick={() => onClick(token.contractAddress)}>
         <Image src={iconSrc} alt={token.name} width={22} height={22}
                className='rounded-full border border-neutral-800'/>
         <p className='text-neutral-300 text-sm'>{token.name} <span
@@ -412,7 +419,8 @@ function ChainSelector({bondInfoHandler}: Readonly<BondData>) {
             </div>
             <ConditionalRenderer isOpen={isOpen}>
                 <div className="flex absolute flex-col bg-[#131313] rounded-md left-0 top-[110%] z-10 w-full">
-                    {CHAINS.map(chain => <ChainContainer chain={chain} selectChain={selectChain} key={chain.id}/>)}
+                    {SupportedChains.map(chain => <ChainContainer chain={chain} selectChain={selectChain}
+                                                                  key={chain.id}/>)}
                 </div>
             </ConditionalRenderer>
         </button>

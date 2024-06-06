@@ -3,7 +3,7 @@ import {AccountExtendedFormat, ContractCoreDetails} from "@/modules/api/contract
 import BondCard from "@/components/pages/bonds/utils/bond-card";
 import {useEffect, useState} from "react";
 import {useTokensByChain} from "@/modules/utils/token";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {defaultChain} from "@/modules/utils/constants";
 import {formatLargeNumber} from "@/modules/utils/numbers";
 import CopySVG from "../../../../../public/svg/utils/copy";
 import {copyToClipboard} from "@/modules/utils/address";

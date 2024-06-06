@@ -3,7 +3,6 @@ import {ContractCoreDetails, ContractQuery} from "@/modules/api/contract-type";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import GraphqlAPI from "@/modules/api/graphql";
 import {arbitrum, base} from "wagmi/chains";
-import {nop} from "@/modules/utils/function";
 
 function useMixedContracts(intervalMs = UPDATE_INTERVAL) {
 

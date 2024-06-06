@@ -1,7 +1,7 @@
 import AmetLogo from "../../../public/svg/amet-logo";
 import {useEffect, useRef, useState} from "react";
 import {useAccount, useDisconnect, useNetwork} from "wagmi";
-import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {getChain, getChainIcon} from "@/modules/utils/chain";
 import {LinkBaseType, LinkExtendedType} from "@/components/navbar/types";
 import makeBlockie from "ethereum-blockies-base64";
 import {zeroAddress} from "viem";

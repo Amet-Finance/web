@@ -1,4 +1,4 @@
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {useState} from "react";
 import {CHAIN_BLOCK_TIMES, TxTypes} from "@/modules/web3/constants";
 import BigNumber from "bignumber.js";

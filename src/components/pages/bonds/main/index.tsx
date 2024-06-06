@@ -12,11 +12,7 @@ import CloudAPI from "../../../../modules/api/cloud";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {GeneralStatistics} from "@/modules/api/type";
 import {GeneralContainer, ToggleBetweenChildren} from "@/components/utils/container";
-import {useContracts, useMixedContracts} from "@/components/pages/bonds/utils/contracts";
-import {defaultChain} from "@/modules/utils/wallet-connect";
-import {priorityBonds} from "@/modules/web3/featured";
-import {polygonZkEvm} from "viem/chains";
-import {base} from "wagmi/chains";
+import {useMixedContracts} from "@/components/pages/bonds/utils/contracts";
 
 export default function Bonds() {
     const [isStatisticsLoading, setStatisticsLoading] = useState(true)

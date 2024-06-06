@@ -1,4 +1,5 @@
-import {useNetwork, useSwitchNetwork} from "wagmi";
+import {Chain, useNetwork, useSwitchNetwork} from "wagmi";
+import {SupportedChains} from "@/modules/utils/constants";
 
 function useNetworkExtended(chainId: number | string) {
 
@@ -15,6 +16,16 @@ function useNetworkExtended(chainId: number | string) {
     }
 }
 
+function getChainIcon(chainId: string | number | undefined) {
+    return `/svg/chains/${chainId}.svg`;
+}
+
+function getChain(chainId: string | number | undefined): Chain | undefined {
+    return SupportedChains.find(item => item.id === Number(chainId))
+}
+
 export {
-    useNetworkExtended
+    useNetworkExtended,
+    getChainIcon,
+    getChain
 }

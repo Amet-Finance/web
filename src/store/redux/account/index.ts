@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import store from "@/store/store";
 import GraphqlAPI from "@/modules/api/graphql";
-import {defaultChain} from "@/modules/utils/wallet-connect";
+import {defaultChain} from "@/modules/utils/constants";
 import {AccountState} from "@/store/redux/account/type";
 import CloudAPI from "@/modules/api/cloud";
 

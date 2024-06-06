@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {nop} from "@/modules/utils/function";
 import {UPDATE_INTERVAL} from "@/components/pages/bonds/pages/explore-bond-id/constants";
 import {Erc20Controller} from "amet-utils";

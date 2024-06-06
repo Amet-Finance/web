@@ -1,4 +1,4 @@
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import ExploreBondId from "@/components/pages/bonds/pages/explore-bond-id";
 import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {ExploreIdQueryParams} from "@/components/pages/bonds/pages/explore-bond-id/type";

@@ -1,7 +1,7 @@
 import {ContractCoreDetails} from "@/modules/api/contract-type";
 import {useEffect, useState} from "react";
 import {DefaultButton} from "@/components/utils/buttons";
-import {getChain} from "@/modules/utils/wallet-connect";
+import {getChain} from "@/modules/utils/chain";
 import {ReferralInfo} from "@/components/pages/bonds/pages/explore-bond-id/components/actions/types";
 import {nop} from "@/modules/utils/function";
 import {formatLargeNumber} from "@/modules/utils/numbers";

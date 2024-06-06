@@ -1,6 +1,6 @@
 import {ContractExtendedFormat} from "@/modules/api/contract-type";
 import {formatTime} from "@/modules/utils/dates";
-import {getChain, getChainIcon} from "@/modules/utils/wallet-connect";
+import {getChain, getChainIcon} from "@/modules/utils/chain";
 import makeBlockie from "ethereum-blockies-base64";
 import Image from "next/image";
 import {shortenString} from "@/modules/utils/string";
